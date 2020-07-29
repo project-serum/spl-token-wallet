@@ -11,6 +11,8 @@
     "@testing-library/user-event": "^7.1.2",
     "bip32": "^2.0.5",
     "bip39": "^3.0.2",
+    "bn.js": "^5.1.2",
+    "buffer-layout": "^1.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
