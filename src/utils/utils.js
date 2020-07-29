@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -30,4 +30,11 @@ export function useLocalStorageState(key, defaultState = null) {
   );
 
   return [state, setLocalStorageState];
+}
+
+export function useEffectAfterTimeout(effect, timeout) {
+  useEffect(() => {
+    let handle = setTimeout(effect, timeout);
+    return () => clearTimeout(handle);
+  });
 }
