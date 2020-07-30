@@ -22,7 +22,7 @@ export default function WalletPage() {
             mint: new Account(),
             amount: 1000,
             decimals: 2,
-            initialAccount: new Account(),
+            initialAccount: wallet.getAccount(wallet.accountCount),
             mintOwner: wallet.account,
           })
             .then(console.log)
