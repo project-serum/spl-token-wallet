@@ -1,7 +1,10 @@
 import React, { Suspense } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+  unstable_createMuiStrictModeTheme as createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';

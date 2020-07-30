@@ -38,3 +38,8 @@ export function useEffectAfterTimeout(effect, timeout) {
     return () => clearTimeout(handle);
   });
 }
+
+export function abbreviateAddress(address) {
+  let base58 = address.toBase58();
+  return base58.slice(0, 4) + '…' + base58.slice(base58.length - 4);
+}

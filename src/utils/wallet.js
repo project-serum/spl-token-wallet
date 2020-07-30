@@ -1,12 +1,12 @@
 import React, { useContext, useMemo } from 'react';
 import * as bip32 from 'bip32';
-import { Account, PublicKey } from '@solana/web3.js';
+import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { useConnection } from './connection';
 import { createAndInitializeTokenAccount } from './tokens';
 import { resourceCache } from 'use-async-resource';
 import { TOKEN_PROGRAM_ID } from './token-instructions';
-import { parseTokenAccountData } from './token-state';
+import { parseMintData, parseTokenAccountData } from './token-state';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
@@ -41,12 +41,14 @@ export class Wallet {
         );
         return null;
       }
+      let mintInfo = await this.connection.getAccountInfo(mint, 'single');
+      let { decimals } = parseMintData(mintInfo.data);
       return {
         amount,
-        decimals: 0, // TODO
+        decimals,
         mint,
-        tokenName: '???', // TODO
-        tokenTicker: '???', // TODO
+        tokenName: null, // TODO
+        tokenTicker: null, // TODO
         initialized: true,
       };
     }
