@@ -6,7 +6,13 @@ import { useConnection } from './connection';
 import { createAndInitializeTokenAccount } from './tokens';
 import { resourceCache } from 'use-async-resource';
 import { TOKEN_PROGRAM_ID } from './token-instructions';
-import { parseMintData, parseTokenAccountData } from './token-state';
+import {
+  ACCOUNT_LAYOUT,
+  parseMintData,
+  parseTokenAccountData,
+} from './token-state';
+import EventEmitter from 'events';
+import { useListener } from './utils';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
@@ -15,6 +21,8 @@ export class Wallet {
     this.walletIndex = walletIndex;
     this.accountCount = 1;
     this.account = this.getAccount(0);
+
+    this.emitter = new EventEmitter();
   }
 
   getAccount = (index) => {
@@ -30,6 +38,7 @@ export class Wallet {
 
     if (info && this.accountCount < index + 1) {
       this.accountCount = index + 1;
+      this.emitter.emit('accountCountChange');
     }
 
     if (info?.owner.equals(TOKEN_PROGRAM_ID)) {
@@ -73,6 +82,13 @@ export class Wallet {
     });
     ++this.accountCount;
     resourceCache(this.getAccountBalance).delete(index);
+    this.emitter.emit('accountCountChange');
+  };
+
+  tokenAccountCost = async () => {
+    return this.connection.getMinimumBalanceForRentExemption(
+      ACCOUNT_LAYOUT.span,
+    );
   };
 }
 
@@ -102,6 +118,12 @@ export function WalletProvider({ children }) {
 
 export function useWallet() {
   return useContext(WalletContext).wallet;
+}
+
+export function useWalletAccountCount() {
+  let wallet = useWallet();
+  useListener(wallet.emitter, 'accountCountChange');
+  return wallet.accountCount;
 }
 
 export async function mnemonicToSecretKey(mnemonic) {

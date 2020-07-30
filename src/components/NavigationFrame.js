@@ -17,7 +17,7 @@ export default function NavigationFrame({ children }) {
     <>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6">Solana SPL Wallet</Typography>
+          <Typography variant="h6">Solana SPL Token Wallet</Typography>
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>

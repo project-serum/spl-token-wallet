@@ -39,6 +39,15 @@ export function useEffectAfterTimeout(effect, timeout) {
   });
 }
 
+export function useListener(emitter, eventName) {
+  let [, forceUpdate] = useState(0);
+  useEffect(() => {
+    let listener = () => forceUpdate((i) => i + 1);
+    emitter.on(eventName, listener);
+    return () => emitter.removeListener(eventName, listener);
+  }, [emitter, eventName]);
+}
+
 export function abbreviateAddress(address) {
   let base58 = address.toBase58();
   return base58.slice(0, 4) + '…' + base58.slice(base58.length - 4);
