@@ -1,8 +1,13 @@
-import { sendAndConfirmTransaction, SystemProgram } from '@solana/web3.js';
+import {
+  sendAndConfirmTransaction,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js';
 import {
   initializeAccount,
   initializeMint,
   TOKEN_PROGRAM_ID,
+  transfer,
 } from './token-instructions';
 import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './token-state';
 
@@ -83,6 +88,27 @@ export async function createAndInitializeTokenAccount({
     }),
   );
   let signers = [payer, newAccount];
+  return await sendAndConfirmTransaction(connection, transaction, signers, {
+    confirmations: 1,
+  });
+}
+
+export async function transferTokens({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+}) {
+  let transaction = new Transaction().add(
+    transfer({
+      source: sourcePublicKey,
+      destination: destinationPublicKey,
+      owner: owner.publicKey,
+      amount,
+    }),
+  );
+  let signers = [owner];
   return await sendAndConfirmTransaction(connection, transaction, signers, {
     confirmations: 1,
   });

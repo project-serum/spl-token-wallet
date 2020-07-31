@@ -24,6 +24,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { preloadResource } from 'use-async-resource/lib';
 import AddTokenDialog from './AddTokenDialog';
+import SendDialog from './SendDialog';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -56,6 +57,7 @@ export default function BalancesList() {
           <Tooltip title="Refresh" arrow>
             <IconButton
               onClick={() => resourceCache(wallet.getAccountBalance).clear()}
+              style={{ marginRight: -12 }}
             >
               <RefreshIcon />
             </IconButton>
@@ -100,8 +102,10 @@ function BalanceListItem({ index }) {
   const [getBalance] = useAsyncResource(wallet.getAccountBalance, index);
   const [open, setOpen] = useState(false);
   const classes = useStyles();
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
 
   const account = wallet.getAccount(index);
+  const balanceInfo = getBalance();
   let {
     amount,
     decimals,
@@ -109,7 +113,7 @@ function BalanceListItem({ index }) {
     tokenName,
     tokenTicker,
     initialized,
-  } = getBalance();
+  } = balanceInfo;
 
   if (!initialized && index !== 0) {
     return null;
@@ -140,7 +144,12 @@ function BalanceListItem({ index }) {
             >
               Receive
             </Button>
-            <Button variant="outlined" color="primary" startIcon={<SendIcon />}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<SendIcon />}
+              onClick={() => setSendDialogOpen(true)}
+            >
               Send
             </Button>
           </div>
@@ -169,6 +178,12 @@ function BalanceListItem({ index }) {
           </Typography>
         </div>
       </Collapse>
+      <SendDialog
+        open={sendDialogOpen}
+        onClose={() => setSendDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        index={index}
+      />
     </>
   );
 }

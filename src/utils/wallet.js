@@ -3,7 +3,7 @@ import * as bip32 from 'bip32';
 import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { useConnection } from './connection';
-import { createAndInitializeTokenAccount } from './tokens';
+import { createAndInitializeTokenAccount, transferTokens } from './tokens';
 import { resourceCache } from 'use-async-resource';
 import { TOKEN_PROGRAM_ID } from './token-instructions';
 import {
@@ -89,6 +89,17 @@ export class Wallet {
     return this.connection.getMinimumBalanceForRentExemption(
       ACCOUNT_LAYOUT.span,
     );
+  };
+
+  transferToken = async (index, destination, amount) => {
+    let tokenAccount = this.getAccount(index);
+    await transferTokens({
+      connection: this.connection,
+      owner: this.account,
+      sourcePublicKey: tokenAccount.publicKey,
+      destinationPublicKey: destination,
+      amount,
+    });
   };
 }
 

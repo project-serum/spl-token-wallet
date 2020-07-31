@@ -82,3 +82,18 @@ export function initializeAccount({ account, mint, owner }) {
     programId: TOKEN_PROGRAM_ID,
   });
 }
+
+export function transfer({ source, destination, amount, owner }) {
+  let keys = [
+    { pubkey: source, isSigner: false, isWritable: true },
+    { pubkey: destination, isSigner: false, isWritable: true },
+    { pubkey: owner, isSigner: true, isWritable: false },
+  ];
+  return new TransactionInstruction({
+    keys,
+    data: encodeTokenInstructionData({
+      transfer: { amount },
+    }),
+    programId: TOKEN_PROGRAM_ID,
+  });
+}
