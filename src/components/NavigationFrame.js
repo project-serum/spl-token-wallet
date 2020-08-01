@@ -8,6 +8,15 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { clusterApiUrl } from '@solana/web3.js';
+import { useWalletSelector } from '../utils/wallet';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import CheckIcon from '@material-ui/icons/Check';
+import AddIcon from '@material-ui/icons/Add';
+import AccountIcon from '@material-ui/icons/AccountCircle';
+import Divider from '@material-ui/core/Divider';
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
+import SolanaIcon from './SolanaIcon';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -17,8 +26,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-  selectedNetwork: {
-    fontWeight: 'bold',
+  button: {
+    marginLeft: theme.spacing(1),
+  },
+  menuItemIcon: {
+    minWidth: 32,
   },
 }));
 
@@ -31,6 +43,7 @@ export default function NavigationFrame({ children }) {
           <Typography variant="h6" className={classes.title} component="h1">
             Solana SPL Token Wallet
           </Typography>
+          <WalletSelector />
           <NetworkSelector />
         </Toolbar>
       </AppBar>
@@ -51,29 +64,116 @@ function NetworkSelector() {
     'http://localhost:8899',
   ];
 
+  const networkLabels = {
+    [clusterApiUrl('mainnet-beta')]: 'Mainnet Beta',
+    [clusterApiUrl('devnet')]: 'Devnet',
+    [clusterApiUrl('testnet')]: 'Testnet',
+  };
+
   return (
     <>
-      <Button color="inherit" onClick={(e) => setAnchorEl(e.target)}>
-        Network
-      </Button>
+      <Hidden xsDown>
+        <Button
+          color="inherit"
+          onClick={(e) => setAnchorEl(e.target)}
+          className={classes.button}
+        >
+          {networkLabels[endpoint] ?? 'Network'}
+        </Button>
+      </Hidden>
+      <Hidden smUp>
+        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
+          <SolanaIcon />
+        </IconButton>
+      </Hidden>
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
         onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        getContentAnchorEl={null}
       >
         {networks.map((network) => (
           <MenuItem
             key={network}
             onClick={() => {
-              setEndpoint(network);
               setAnchorEl(null);
+              setEndpoint(network);
             }}
             selected={network === endpoint}
-            className={network === endpoint ? classes.selectedNetwork : null}
           >
+            <ListItemIcon className={classes.menuItemIcon}>
+              {network === endpoint ? <CheckIcon fontSize="small" /> : null}
+            </ListItemIcon>
             {network}
           </MenuItem>
         ))}
+      </Menu>
+    </>
+  );
+}
+
+function WalletSelector() {
+  const { addresses, walletIndex, setWalletIndex } = useWalletSelector();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles();
+
+  return (
+    <>
+      <Hidden xsDown>
+        <Button
+          color="inherit"
+          onClick={(e) => setAnchorEl(e.target)}
+          className={classes.button}
+        >
+          Account
+        </Button>
+      </Hidden>
+      <Hidden smUp>
+        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
+          <AccountIcon />
+        </IconButton>
+      </Hidden>
+      <Menu
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        getContentAnchorEl={null}
+      >
+        {addresses.map((address, index) => (
+          <MenuItem
+            key={address.toBase58()}
+            onClick={() => {
+              setAnchorEl(null);
+              setWalletIndex(index);
+            }}
+            selected={index === walletIndex}
+          >
+            <ListItemIcon className={classes.menuItemIcon}>
+              {index === walletIndex ? <CheckIcon fontSize="small" /> : null}
+            </ListItemIcon>
+            {address.toBase58()}
+          </MenuItem>
+        ))}
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            setWalletIndex(addresses.length);
+          }}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+            <AddIcon fontSize="small" />
+          </ListItemIcon>
+          Create Account
+        </MenuItem>
       </Menu>
     </>
   );

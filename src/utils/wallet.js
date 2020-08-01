@@ -12,7 +12,7 @@ import {
   parseTokenAccountData,
 } from './token-state';
 import EventEmitter from 'events';
-import { useListener } from './utils';
+import { useListener, useLocalStorageState } from './utils';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
@@ -25,11 +25,15 @@ export class Wallet {
     this.emitter = new EventEmitter();
   }
 
-  getAccount = (index) => {
+  static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
     const derivedSeed = bip32
-      .fromSeed(this.seed)
-      .derivePath(`m/501'/${this.walletIndex}'/0/${index}`).privateKey;
+      .fromSeed(seed)
+      .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
     return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
+  }
+
+  getAccount = (index) => {
+    return Wallet.getAccountFromSeed(this.seed, this.walletIndex, index);
   };
 
   getAccountBalance = async (index) => {
@@ -116,12 +120,15 @@ export function WalletProvider({ children }) {
     return localStorage.getItem('seed');
   }, []);
   const connection = useConnection();
+  const [walletIndex, setWalletIndex] = useLocalStorageState('walletIndex', 0);
   const wallet = useMemo(
-    () => new Wallet(connection, Buffer.from(seed, 'hex')),
-    [connection, seed],
+    () => new Wallet(connection, Buffer.from(seed, 'hex'), walletIndex),
+    [connection, seed, walletIndex],
   );
   return (
-    <WalletContext.Provider value={{ wallet }}>
+    <WalletContext.Provider
+      value={{ wallet, walletIndex, setWalletIndex, seed }}
+    >
       {children}
     </WalletContext.Provider>
   );
@@ -135,6 +142,25 @@ export function useWalletAccountCount() {
   let wallet = useWallet();
   useListener(wallet.emitter, 'accountCountChange');
   return wallet.accountCount;
+}
+
+export function useWalletSelector() {
+  const { walletIndex, setWalletIndex, seed } = useContext(WalletContext);
+  const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
+  function selectWallet(walletIndex) {
+    if (walletIndex >= walletCount) {
+      setWalletCount(walletIndex + 1);
+    }
+    setWalletIndex(walletIndex);
+  }
+  const addresses = useMemo(() => {
+    const seedBuffer = Buffer.from(seed, 'hex');
+    return [...Array(walletCount).keys()].map(
+      (walletIndex) =>
+        Wallet.getAccountFromSeed(seedBuffer, walletIndex).publicKey,
+    );
+  }, [seed, walletCount]);
+  return { addresses, walletIndex, setWalletIndex: selectWallet };
 }
 
 export async function mnemonicToSecretKey(mnemonic) {
