@@ -19,7 +19,7 @@ export function useLocalStorageState(key, defaultState = null) {
       if (!changed) {
         return;
       }
-      setState(state);
+      setState(newState);
       if (newState === null) {
         localStorage.removeItem(key);
       } else {

@@ -46,7 +46,7 @@ export default function BalancesList() {
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
             Balances
           </Typography>
           <Tooltip title="Add Token" arrow>

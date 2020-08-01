@@ -22,3 +22,8 @@ export function ConnectionProvider({ children }) {
 export function useConnection() {
   return useContext(ConnectionContext).connection;
 }
+
+export function useConnectionConfig() {
+  let context = useContext(ConnectionContext);
+  return { endpoint: context.endpoint, setEndpoint: context.setEndpoint };
+}
