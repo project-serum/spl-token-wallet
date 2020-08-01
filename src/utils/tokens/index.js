@@ -8,8 +8,8 @@ import {
   initializeMint,
   TOKEN_PROGRAM_ID,
   transfer,
-} from './token-instructions';
-import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './token-state';
+} from './instructions';
+import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './data';
 
 export async function createAndInitializeMint({
   connection,

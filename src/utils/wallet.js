@@ -1,18 +1,19 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import * as bip32 from 'bip32';
 import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { useConnection } from './connection';
 import { createAndInitializeTokenAccount, transferTokens } from './tokens';
 import { resourceCache } from 'use-async-resource';
-import { TOKEN_PROGRAM_ID } from './token-instructions';
+import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
   parseMintData,
   parseTokenAccountData,
-} from './token-state';
+} from './tokens/data';
 import EventEmitter from 'events';
-import { useListener, useLocalStorageState } from './utils';
+import { sleep, useListener, useLocalStorageState } from './utils';
+import { useTokenName } from './tokens/names';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
@@ -60,8 +61,8 @@ export class Wallet {
         amount,
         decimals,
         mint,
-        tokenName: null, // TODO
-        tokenTicker: null, // TODO
+        tokenName: null,
+        tokenSymbol: null,
         initialized: true,
       };
     }
@@ -71,7 +72,7 @@ export class Wallet {
       decimals: 9,
       mint: null,
       tokenName: 'Solana',
-      tokenTicker: 'SOL',
+      tokenSymbol: 'SOL',
       initialized: false,
     };
   };
@@ -142,6 +143,37 @@ export function useWalletAccountCount() {
   let wallet = useWallet();
   useListener(wallet.emitter, 'accountCountChange');
   return wallet.accountCount;
+}
+
+export function useBalanceInfo(tokenIndex) {
+  let wallet = useWallet();
+  let [info, setInfo] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      let errors = 0;
+      while (!cancelled) {
+        try {
+          let info = await wallet.getAccountBalance(tokenIndex);
+          setInfo(info);
+          errors = 0;
+          await sleep(60000 * (1 + Math.random()));
+        } catch (e) {
+          ++errors;
+          await sleep(
+            1000 * Math.min(Math.pow(2, errors), 30) * (1 + Math.random()),
+          );
+        }
+      }
+    })();
+    return () => (cancelled = true);
+  }, [wallet, tokenIndex]);
+  let { name, symbol } = useTokenName(info?.mint);
+
+  if (info?.mint && !info?.tokenSymbol) {
+    info = { ...info, tokenName: name, tokenSymbol: symbol };
+  }
+  return info;
 }
 
 export function useWalletSelector() {

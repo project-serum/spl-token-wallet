@@ -1,10 +1,13 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import { useWallet, useWalletAccountCount } from '../utils/wallet';
-import { resourceCache, useAsyncResource } from 'use-async-resource';
+import {
+  useBalanceInfo,
+  useWallet,
+  useWalletAccountCount,
+} from '../utils/wallet';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
@@ -22,7 +25,6 @@ import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import { preloadResource } from 'use-async-resource/lib';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 
@@ -33,14 +35,9 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
 });
 
 export default function BalancesList() {
-  const wallet = useWallet();
   const accountCount = useWalletAccountCount();
-  useEffect(() => {
-    for (let i = 0; i < accountCount + 5; ++i) {
-      preloadResource(wallet.getAccountBalance, i);
-    }
-  }, [wallet, accountCount]);
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <Paper>
@@ -56,7 +53,7 @@ export default function BalancesList() {
           </Tooltip>
           <Tooltip title="Refresh" arrow>
             <IconButton
-              onClick={() => resourceCache(wallet.getAccountBalance).clear()}
+              onClick={() => setRefreshKey((i) => i + 1)}
               style={{ marginRight: -12 }}
             >
               <RefreshIcon />
@@ -65,10 +62,8 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {[...Array(accountCount + 1).keys()].map((i) => (
-          <Suspense key={i} fallback={<LoadingIndicator />}>
-            <BalanceListItem index={i} />
-          </Suspense>
+        {[...Array(accountCount + 5).keys()].map((i) => (
+          <BalanceListItem key={i + ' ' + refreshKey} index={i} />
         ))}
       </List>
       <AddTokenDialog
@@ -99,19 +94,26 @@ const useStyles = makeStyles((theme) => ({
 
 function BalanceListItem({ index }) {
   const wallet = useWallet();
-  const [getBalance] = useAsyncResource(wallet.getAccountBalance, index);
+  const accountCount = useWalletAccountCount();
+  const balanceInfo = useBalanceInfo(index);
   const [open, setOpen] = useState(false);
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
 
+  if (!balanceInfo) {
+    if (index <= accountCount) {
+      return <LoadingIndicator />;
+    }
+    return null;
+  }
+
   const account = wallet.getAccount(index);
-  const balanceInfo = getBalance();
   let {
     amount,
     decimals,
     mint,
     tokenName,
-    tokenTicker,
+    tokenSymbol,
     initialized,
   } = balanceInfo;
 
@@ -126,7 +128,7 @@ function BalanceListItem({ index }) {
           primary={
             <>
               {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-              {tokenTicker ?? abbreviateAddress(mint)}
+              {tokenSymbol ?? abbreviateAddress(mint)}
             </>
           }
           secondary={account.publicKey.toBase58()}
@@ -160,7 +162,7 @@ function BalanceListItem({ index }) {
             Token Name: {tokenName ?? 'Unknown'}
           </Typography>
           <Typography variant="body2">
-            Token Symbol: {tokenTicker ?? 'Unknown'}
+            Token Symbol: {tokenSymbol ?? 'Unknown'}
           </Typography>
           {mint ? (
             <Typography variant="body2" className={classes.address}>

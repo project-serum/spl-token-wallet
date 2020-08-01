@@ -9,6 +9,7 @@ import DialogForm from './DialogForm';
 import { useAsyncResource } from 'use-async-resource/lib';
 import { useWallet } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { useUpdateTokenName } from '../utils/tokens/names';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -18,6 +19,7 @@ const feeFormat = new Intl.NumberFormat(undefined, {
 export default function AddTokenDialog({ open, onClose }) {
   let wallet = useWallet();
   let [getCost] = useAsyncResource(wallet.tokenAccountCost, []);
+  let updateTokenName = useUpdateTokenName();
 
   let [mintAddress, setMintAddress] = useState('');
   let [tokenName, setTokenName] = useState('');
@@ -27,7 +29,9 @@ export default function AddTokenDialog({ open, onClose }) {
   async function onSubmit() {
     setSubmitting(true);
     try {
-      await wallet.createTokenAccount(new PublicKey(mintAddress));
+      let mint = new PublicKey(mintAddress);
+      await wallet.createTokenAccount(mint);
+      updateTokenName(mint, tokenName, tokenSymbol);
       onClose();
     } catch (e) {
       console.warn(e);

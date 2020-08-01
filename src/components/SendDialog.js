@@ -21,7 +21,7 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
     decimals,
     mint,
     tokenName,
-    tokenTicker,
+    tokenSymbol,
   } = balanceInfo;
 
   async function onSubmit() {
@@ -50,7 +50,7 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
     <DialogForm open={open} onClose={onClose} onSubmit={onSubmit}>
       <DialogTitle>
         Send {tokenName ?? abbreviateAddress(mint)}
-        {tokenTicker ? ` (${tokenTicker})` : null}
+        {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
       <DialogContent>
         <TextField
@@ -68,8 +68,8 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
           margin="normal"
           type="number"
           InputProps={{
-            endAdornment: tokenTicker ? (
-              <InputAdornment position="end">{tokenTicker}</InputAdornment>
+            endAdornment: tokenSymbol ? (
+              <InputAdornment position="end">{tokenSymbol}</InputAdornment>
             ) : null,
             inputProps: {
               step: Math.pow(10, -decimals),

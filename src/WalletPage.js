@@ -7,6 +7,7 @@ import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createAndInitializeMint } from './utils/tokens';
 import Grid from '@material-ui/core/Grid';
 import { useIsProdNetwork } from './utils/connection';
+import { useUpdateTokenName } from './utils/tokens/names';
 
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();
@@ -28,6 +29,7 @@ export default function WalletPage() {
 
 function DevnetButtons() {
   const wallet = useWallet();
+  const updateTokenName = useUpdateTokenName();
   return (
     <div style={{ display: 'flex' }}>
       <Button
@@ -46,10 +48,16 @@ function DevnetButtons() {
         variant="contained"
         color="primary"
         onClick={() => {
+          let mint = new Account();
+          updateTokenName(
+            mint.publicKey,
+            `Test Token ${mint.publicKey.toBase58().slice(40)}`,
+            `TEST${mint.publicKey.toBase58().slice(40)}`,
+          );
           createAndInitializeMint({
             connection: wallet.connection,
             payer: wallet.account,
-            mint: new Account(),
+            mint,
             amount: 1000,
             decimals: 2,
             initialAccount: wallet.getAccount(wallet.accountCount),
