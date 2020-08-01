@@ -27,3 +27,8 @@ export function useConnectionConfig() {
   let context = useContext(ConnectionContext);
   return { endpoint: context.endpoint, setEndpoint: context.setEndpoint };
 }
+
+export function useIsProdNetwork() {
+  const endpoint = useContext(ConnectionContext).endpoint;
+  return endpoint === clusterApiUrl('mainnet-beta');
+}
