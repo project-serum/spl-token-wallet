@@ -7801,7 +7801,7 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-object-hash@^2.0.1, object-hash@^2.0.3:
+object-hash@^2.0.1:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-2.0.3.tgz#d12db044e03cd2ca3d77c0570d87225b02e1e6ea"
   integrity sha512-JPKn0GMu+Fa3zt3Bmr66JhokJU5BaNBIh4ZeTlaCBzrBsOeXzwcKKAK1tbLiPKgvwmPXsDvvLHoWh5Bm7ofIYg==
@@ -11101,13 +11101,6 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
-
-use-async-resource@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/use-async-resource/-/use-async-resource-2.2.0.tgz#c083a77d9ed8d1795a66eb42308753716dc9f6c5"
-  integrity sha512-v61Aj5xmdMlbKw/Q99U42Y6m7/l/At0glNMwaKs60v5TEXe9oCRh6ep9byfcZCvKdjcymSy954FxhEj9kZJW+A==
-  dependencies:
-    object-hash "^2.0.3"
 
 use@^3.1.0:
   version "3.1.1"

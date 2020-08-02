@@ -4,7 +4,6 @@ import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { useConnection } from './connection';
 import { createAndInitializeTokenAccount, transferTokens } from './tokens';
-import { resourceCache } from 'use-async-resource';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
@@ -86,7 +85,7 @@ export class Wallet {
       newAccount: this.getAccount(index),
     });
     ++this.accountCount;
-    resourceCache(this.getAccountBalance).delete(index);
+    // TODO: clear cache
     this.emitter.emit('accountCountChange');
   };
 

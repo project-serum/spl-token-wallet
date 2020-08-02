@@ -6,10 +6,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DialogForm from './DialogForm';
-import { useAsyncResource } from 'use-async-resource/lib';
 import { useWallet } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../utils/tokens/names';
+import { useAsyncData } from '../utils/fetch-loop';
+import LoadingIndicator from './LoadingIndicator';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -18,7 +19,10 @@ const feeFormat = new Intl.NumberFormat(undefined, {
 
 export default function AddTokenDialog({ open, onClose }) {
   let wallet = useWallet();
-  let [getCost] = useAsyncResource(wallet.tokenAccountCost, []);
+  let [tokenAccountCost] = useAsyncData(
+    wallet.tokenAccountCost,
+    'tokenAccountCost',
+  );
   let updateTokenName = useUpdateTokenName();
 
   let [mintAddress, setMintAddress] = useState('');
@@ -44,10 +48,14 @@ export default function AddTokenDialog({ open, onClose }) {
     <DialogForm open={open} onClose={onClose} onSubmit={onSubmit}>
       <DialogTitle>Add Token</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Add a token to your wallet. This will cost{' '}
-          {feeFormat.format(getCost() / LAMPORTS_PER_SOL)} Solana.
-        </DialogContentText>
+        {tokenAccountCost ? (
+          <DialogContentText>
+            Add a token to your wallet. This will cost{' '}
+            {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} Solana.
+          </DialogContentText>
+        ) : (
+          <LoadingIndicator />
+        )}
         <TextField
           label="Token Mint Address"
           fullWidth
