@@ -11,6 +11,7 @@ import { ConnectionProvider } from './utils/connection';
 import WalletPage from './WalletPage';
 import { WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   // TODO: add toggle for dark mode
@@ -25,19 +26,22 @@ function App() {
       }),
     [prefersDarkMode],
   );
+
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ConnectionProvider>
-          <WalletProvider>
-            <NavigationFrame>
-              <Suspense fallback={<LoadingIndicator />}>
-                <WalletPage />
-              </Suspense>
-            </NavigationFrame>
-          </WalletProvider>
-        </ConnectionProvider>
+        <SnackbarProvider maxSnack={5}>
+          <ConnectionProvider>
+            <WalletProvider>
+              <NavigationFrame>
+                <Suspense fallback={<LoadingIndicator />}>
+                  <WalletPage />
+                </Suspense>
+              </NavigationFrame>
+            </WalletProvider>
+          </ConnectionProvider>
+        </SnackbarProvider>
       </ThemeProvider>
     </Suspense>
   );

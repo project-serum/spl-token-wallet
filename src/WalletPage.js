@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import { refreshAccountInfo, useIsProdNetwork } from './utils/connection';
 import { useUpdateTokenName } from './utils/tokens/names';
 import { sleep } from './utils/utils';
+import { useCallAsync, useSendTransaction } from './utils/notifications';
 
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();
@@ -31,22 +32,26 @@ export default function WalletPage() {
 function DevnetButtons() {
   const wallet = useWallet();
   const updateTokenName = useUpdateTokenName();
+  const [sendTransaction, sending] = useSendTransaction();
+  const callAsync = useCallAsync();
   return (
     <div style={{ display: 'flex' }}>
       <Button
         variant="contained"
         color="primary"
-        onClick={async () => {
-          try {
-            await wallet.connection.requestAirdrop(
+        onClick={() => {
+          callAsync(
+            wallet.connection.requestAirdrop(
               wallet.account.publicKey,
               LAMPORTS_PER_SOL,
-            );
-            await sleep(1000);
-            refreshAccountInfo(wallet.connection, wallet.account.publicKey);
-          } catch (e) {
-            console.warn(e);
-          }
+            ),
+            {
+              onSuccess: async () => {
+                await sleep(1000);
+                refreshAccountInfo(wallet.connection, wallet.account.publicKey);
+              },
+            },
+          );
         }}
       >
         Request Airdrop
@@ -61,18 +66,19 @@ function DevnetButtons() {
             `Test Token ${mint.publicKey.toBase58().slice(0, 4)}`,
             `TEST${mint.publicKey.toBase58().slice(0, 4)}`,
           );
-          createAndInitializeMint({
-            connection: wallet.connection,
-            payer: wallet.account,
-            mint,
-            amount: 1000,
-            decimals: 2,
-            initialAccount: wallet.getAccount(wallet.accountCount),
-            mintOwner: wallet.account,
-          })
-            .then(console.log)
-            .catch(console.warn);
+          sendTransaction(
+            createAndInitializeMint({
+              connection: wallet.connection,
+              payer: wallet.account,
+              mint,
+              amount: 1000,
+              decimals: 2,
+              initialAccount: wallet.getAccount(wallet.accountCount),
+              mintOwner: wallet.account,
+            }),
+          );
         }}
+        disabled={sending}
         style={{ marginLeft: 24 }}
       >
         Mint Test Token

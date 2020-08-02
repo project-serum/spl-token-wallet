@@ -1,8 +1,4 @@
-import {
-  sendAndConfirmTransaction,
-  SystemProgram,
-  Transaction,
-} from '@solana/web3.js';
+import { SystemProgram, Transaction } from '@solana/web3.js';
 import {
   initializeAccount,
   initializeMint,
@@ -60,9 +56,7 @@ export async function createAndInitializeMint({
       mintOwner: mintOwner.publicKey,
     }),
   );
-  return await sendAndConfirmTransaction(connection, transaction, signers, {
-    confirmations: 1,
-  });
+  return await connection.sendTransaction(transaction, signers);
 }
 
 export async function createAndInitializeTokenAccount({
@@ -88,9 +82,7 @@ export async function createAndInitializeTokenAccount({
     }),
   );
   let signers = [payer, newAccount];
-  return await sendAndConfirmTransaction(connection, transaction, signers, {
-    confirmations: 1,
-  });
+  return await connection.sendTransaction(transaction, signers);
 }
 
 export async function transferTokens({
@@ -109,7 +101,5 @@ export async function transferTokens({
     }),
   );
   let signers = [owner];
-  return await sendAndConfirmTransaction(connection, transaction, signers, {
-    confirmations: 1,
-  });
+  return await connection.sendTransaction(transaction, signers);
 }

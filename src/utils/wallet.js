@@ -27,6 +27,7 @@ export class Wallet {
     this.account = this.getAccount(0);
 
     this.emitter = new EventEmitter();
+    this.emitter.setMaxListeners(50);
   }
 
   static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
@@ -61,7 +62,7 @@ export class Wallet {
 
   transferToken = async (index, destination, amount) => {
     let tokenAccount = this.getAccount(index);
-    await transferTokens({
+    return await transferTokens({
       connection: this.connection,
       owner: this.account,
       sourcePublicKey: tokenAccount.publicKey,

@@ -52,6 +52,7 @@ export function useAccountInfo(publicKey) {
       refreshCache(cacheKey),
     );
     return () => connection.removeAccountChangeListener(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connection, publicKey?.toBase58(), cacheKey]);
   return [accountInfo, loaded];
 }

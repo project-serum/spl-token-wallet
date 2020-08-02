@@ -9,12 +9,13 @@ import { useWallet } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { useSendTransaction } from '../utils/notifications';
 
 export default function SendDialog({ open, onClose, index, balanceInfo }) {
   const wallet = useWallet();
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [sendTransaction, sending] = useSendTransaction();
 
   let {
     amount: balanceAmount,
@@ -24,26 +25,17 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
     tokenSymbol,
   } = balanceInfo;
 
-  async function onSubmit() {
-    setSubmitting(true);
-    try {
-      let amount = Math.round(
-        parseFloat(transferAmountString) * Math.pow(10, decimals),
-      );
-      if (!amount || amount <= 0) {
-        throw new Error('Invalid amount');
-      }
-      await wallet.transferToken(
-        index,
-        new PublicKey(destinationAddress),
-        amount,
-      );
-      onClose();
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      setSubmitting(false);
+  function onSubmit() {
+    let amount = Math.round(
+      parseFloat(transferAmountString) * Math.pow(10, decimals),
+    );
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid amount');
     }
+    sendTransaction(
+      wallet.transferToken(index, new PublicKey(destinationAddress), amount),
+      { onSuccess: onClose },
+    );
   }
 
   return (
@@ -82,7 +74,7 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" color="primary" disabled={submitting}>
+        <Button type="submit" color="primary" disabled={sending}>
           Send
         </Button>
       </DialogActions>
