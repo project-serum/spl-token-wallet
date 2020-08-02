@@ -168,11 +168,15 @@ export function useAsyncData(
   return [data, loaded];
 }
 
-export function refreshCache(cacheKey) {
-  return globalLoops.loops.get(cacheKey)?.refresh();
-}
-
-export function clearCache(cacheKey) {
-  globalCache.delete(cacheKey);
-  return globalLoops.loops.get(cacheKey)?.notifyListeners();
+export function refreshCache(cacheKey, clearCache = false) {
+  if (clearCache) {
+    globalCache.delete(cacheKey);
+  }
+  const loop = globalLoops.loops.get(cacheKey);
+  if (loop) {
+    loop.refresh();
+    if (clearCache) {
+      loop.notifyListeners();
+    }
+  }
 }

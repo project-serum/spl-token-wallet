@@ -1,8 +1,12 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import * as bip32 from 'bip32';
 import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
-import { useConnection } from './connection';
+import {
+  refreshAccountInfo,
+  useAccountInfo,
+  useConnection,
+} from './connection';
 import { createAndInitializeTokenAccount, transferTokens } from './tokens';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
@@ -11,7 +15,7 @@ import {
   parseTokenAccountData,
 } from './tokens/data';
 import EventEmitter from 'events';
-import { sleep, useListener, useLocalStorageState } from './utils';
+import { useListener, useLocalStorageState } from './utils';
 import { useTokenName } from './tokens/names';
 
 export class Wallet {
@@ -36,46 +40,6 @@ export class Wallet {
     return Wallet.getAccountFromSeed(this.seed, this.walletIndex, index);
   };
 
-  getAccountBalance = async (index) => {
-    let publicKey = this.getAccount(index).publicKey;
-    let info = await this.connection.getAccountInfo(publicKey, 'single');
-
-    if (info && this.accountCount < index + 1) {
-      this.accountCount = index + 1;
-      this.emitter.emit('accountCountChange');
-    }
-
-    if (info?.owner.equals(TOKEN_PROGRAM_ID)) {
-      let { mint, owner, amount } = parseTokenAccountData(info.data);
-      if (!owner.equals(this.account.publicKey)) {
-        console.warn(
-          'token account %s not owned by wallet',
-          publicKey.toBase58(),
-        );
-        return null;
-      }
-      let mintInfo = await this.connection.getAccountInfo(mint, 'single');
-      let { decimals } = parseMintData(mintInfo.data);
-      return {
-        amount,
-        decimals,
-        mint,
-        tokenName: null,
-        tokenSymbol: null,
-        initialized: true,
-      };
-    }
-
-    return {
-      amount: info?.lamports ?? 0,
-      decimals: 9,
-      mint: null,
-      tokenName: 'Solana',
-      tokenSymbol: 'SOL',
-      initialized: false,
-    };
-  };
-
   createTokenAccount = async (tokenAddress) => {
     let index = this.accountCount;
     await createAndInitializeTokenAccount({
@@ -85,7 +49,7 @@ export class Wallet {
       newAccount: this.getAccount(index),
     });
     ++this.accountCount;
-    // TODO: clear cache
+    refreshAccountInfo(this.connection, this.getAccount(index).publicKey, true);
     this.emitter.emit('accountCountChange');
   };
 
@@ -144,35 +108,47 @@ export function useWalletAccountCount() {
   return wallet.accountCount;
 }
 
-export function useBalanceInfo(tokenIndex) {
+export function useBalanceInfo(index) {
   let wallet = useWallet();
-  let [info, setInfo] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      let errors = 0;
-      while (!cancelled) {
-        try {
-          let info = await wallet.getAccountBalance(tokenIndex);
-          setInfo(info);
-          errors = 0;
-          await sleep(60000 * (1 + Math.random()));
-        } catch (e) {
-          ++errors;
-          await sleep(
-            1000 * Math.min(Math.pow(2, errors), 30) * (1 + Math.random()),
-          );
-        }
-      }
-    })();
-    return () => (cancelled = true);
-  }, [wallet, tokenIndex]);
-  let { name, symbol } = useTokenName(info?.mint);
+  let publicKey = wallet.getAccount(index).publicKey;
+  let [accountInfo, accountInfoLoaded] = useAccountInfo(publicKey);
+  let { mint, owner, amount } = accountInfo?.owner.equals(TOKEN_PROGRAM_ID)
+    ? parseTokenAccountData(accountInfo.data)
+    : {};
+  let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
+  let { name, symbol } = useTokenName(mint);
 
-  if (info?.mint && !info?.tokenSymbol) {
-    info = { ...info, tokenName: name, tokenSymbol: symbol };
+  useEffect(() => {
+    if (accountInfo && wallet.accountCount < index + 1) {
+      wallet.accountCount = index + 1;
+      wallet.emitter.emit('accountCountChange');
+    }
+  }, [wallet, accountInfo, index]);
+
+  if (accountInfoLoaded && mint && mintInfoLoaded) {
+    let { decimals } = parseMintData(mintInfo.data);
+    return {
+      amount,
+      decimals,
+      mint,
+      owner,
+      tokenName: name,
+      tokenSymbol: symbol,
+      initialized: true,
+    };
+  } else if (accountInfoLoaded && !mint) {
+    return {
+      amount: accountInfo?.lamports ?? 0,
+      decimals: 9,
+      mint: null,
+      owner: publicKey,
+      tokenName: 'Solana',
+      tokenSymbol: 'SOL',
+      initialized: false,
+    };
+  } else {
+    return null;
   }
-  return info;
 }
 
 export function useWalletSelector() {

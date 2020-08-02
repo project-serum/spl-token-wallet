@@ -27,6 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
+import { refreshAccountInfo } from '../utils/connection';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -35,9 +36,9 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
 });
 
 export default function BalancesList() {
+  const wallet = useWallet();
   const accountCount = useWalletAccountCount();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   return (
     <Paper>
@@ -53,7 +54,15 @@ export default function BalancesList() {
           </Tooltip>
           <Tooltip title="Refresh" arrow>
             <IconButton
-              onClick={() => setRefreshKey((i) => i + 1)}
+              onClick={() =>
+                [...Array(accountCount + 5).keys()].map((i) =>
+                  refreshAccountInfo(
+                    wallet.connection,
+                    wallet.getAccount(i).publicKey,
+                    true,
+                  ),
+                )
+              }
               style={{ marginRight: -12 }}
             >
               <RefreshIcon />
@@ -63,7 +72,7 @@ export default function BalancesList() {
       </AppBar>
       <List disablePadding>
         {[...Array(accountCount + 5).keys()].map((i) => (
-          <BalanceListItem key={i + ' ' + refreshKey} index={i} />
+          <BalanceListItem key={i} index={i} />
         ))}
       </List>
       <AddTokenDialog

@@ -6,8 +6,9 @@ import { useWallet } from './utils/wallet';
 import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createAndInitializeMint } from './utils/tokens';
 import Grid from '@material-ui/core/Grid';
-import { useIsProdNetwork } from './utils/connection';
+import { refreshAccountInfo, useIsProdNetwork } from './utils/connection';
 import { useUpdateTokenName } from './utils/tokens/names';
+import { sleep } from './utils/utils';
 
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();
@@ -35,11 +36,17 @@ function DevnetButtons() {
       <Button
         variant="contained"
         color="primary"
-        onClick={() => {
-          wallet.connection
-            .requestAirdrop(wallet.account.publicKey, LAMPORTS_PER_SOL)
-            .then(console.log)
-            .catch(console.warn);
+        onClick={async () => {
+          try {
+            await wallet.connection.requestAirdrop(
+              wallet.account.publicKey,
+              LAMPORTS_PER_SOL,
+            );
+            await sleep(1000);
+            refreshAccountInfo(wallet.connection, wallet.account.publicKey);
+          } catch (e) {
+            console.warn(e);
+          }
         }}
       >
         Request Airdrop
@@ -51,8 +58,8 @@ function DevnetButtons() {
           let mint = new Account();
           updateTokenName(
             mint.publicKey,
-            `Test Token ${mint.publicKey.toBase58().slice(40)}`,
-            `TEST${mint.publicKey.toBase58().slice(40)}`,
+            `Test Token ${mint.publicKey.toBase58().slice(0, 4)}`,
+            `TEST${mint.publicKey.toBase58().slice(0, 4)}`,
           );
           createAndInitializeMint({
             connection: wallet.connection,
