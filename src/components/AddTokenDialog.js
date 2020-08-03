@@ -6,11 +6,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DialogForm from './DialogForm';
-import { useWallet } from '../utils/wallet';
+import { refreshWalletPublicKeys, useWallet } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
+import { useSendTransaction } from '../utils/notifications';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -28,20 +29,17 @@ export default function AddTokenDialog({ open, onClose }) {
   let [mintAddress, setMintAddress] = useState('');
   let [tokenName, setTokenName] = useState('');
   let [tokenSymbol, setTokenSymbol] = useState('');
-  let [submitting, setSubmitting] = useState(false);
+  let [sendTransaction, sending] = useSendTransaction();
 
-  async function onSubmit() {
-    setSubmitting(true);
-    try {
-      let mint = new PublicKey(mintAddress);
-      await wallet.createTokenAccount(mint);
-      updateTokenName(mint, tokenName, tokenSymbol);
-      onClose();
-    } catch (e) {
-      console.warn(e);
-    } finally {
-      setSubmitting(false);
-    }
+  function onSubmit() {
+    let mint = new PublicKey(mintAddress);
+    sendTransaction(wallet.createTokenAccount(mint), {
+      onSuccess: () => {
+        updateTokenName(mint, tokenName, tokenSymbol);
+        refreshWalletPublicKeys(wallet);
+        onClose();
+      },
+    });
   }
 
   return (
@@ -83,7 +81,7 @@ export default function AddTokenDialog({ open, onClose }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" color="primary" disabled={submitting}>
+        <Button type="submit" color="primary" disabled={sending}>
           Add
         </Button>
       </DialogActions>

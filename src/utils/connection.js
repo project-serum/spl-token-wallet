@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo } from 'react';
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 import { useLocalStorageState } from './utils';
-import { refreshCache, useAsyncData } from './fetch-loop';
+import { refreshCache, setCache, useAsyncData } from './fetch-loop';
 import tuple from 'immutable-tuple';
 
 const ConnectionContext = React.createContext(null);
@@ -37,6 +37,16 @@ export function useIsProdNetwork() {
   return endpoint === clusterApiUrl('mainnet-beta');
 }
 
+export function useSolanaExplorerUrlSuffix() {
+  const endpoint = useContext(ConnectionContext).endpoint;
+  if (endpoint === clusterApiUrl('devnet')) {
+    return '?cluster=devnet';
+  } else if (endpoint === clusterApiUrl('testnet')) {
+    return '?cluster=testnet';
+  }
+  return '';
+}
+
 export function useAccountInfo(publicKey) {
   const connection = useConnection();
   const cacheKey = tuple(connection, publicKey?.toBase58());
@@ -60,4 +70,9 @@ export function useAccountInfo(publicKey) {
 export function refreshAccountInfo(connection, publicKey, clearCache = false) {
   const cacheKey = tuple(connection, publicKey.toBase58());
   refreshCache(cacheKey, clearCache);
+}
+
+export function setInitialAccountInfo(connection, publicKey, accountInfo) {
+  const cacheKey = tuple(connection, publicKey.toBase58());
+  setCache(cacheKey, accountInfo, { initializeOnly: true });
 }

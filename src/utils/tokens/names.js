@@ -8,6 +8,7 @@ const customTokenNamesByNetwork = JSON.parse(
 );
 
 const nameUpdated = new EventEmitter();
+nameUpdated.setMaxListeners(100);
 
 export function useTokenName(mint) {
   const { endpoint } = useConnectionConfig();

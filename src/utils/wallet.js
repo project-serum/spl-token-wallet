@@ -1,33 +1,33 @@
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import * as bip32 from 'bip32';
 import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import {
-  refreshAccountInfo,
+  setInitialAccountInfo,
   useAccountInfo,
   useConnection,
 } from './connection';
-import { createAndInitializeTokenAccount, transferTokens } from './tokens';
+import {
+  createAndInitializeTokenAccount,
+  getOwnedTokenAccounts,
+  transferTokens,
+} from './tokens';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
   parseMintData,
   parseTokenAccountData,
 } from './tokens/data';
-import EventEmitter from 'events';
-import { useListener, useLocalStorageState } from './utils';
+import { useLocalStorageState } from './utils';
 import { useTokenName } from './tokens/names';
+import { refreshCache, useAsyncData } from './fetch-loop';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
     this.connection = connection;
     this.seed = seed;
     this.walletIndex = walletIndex;
-    this.accountCount = 1;
-    this.account = this.getAccount(0);
-
-    this.emitter = new EventEmitter();
-    this.emitter.setMaxListeners(50);
+    this.account = Wallet.getAccountFromSeed(this.seed, this.walletIndex);
   }
 
   static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
@@ -37,21 +37,24 @@ export class Wallet {
     return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
   }
 
-  getAccount = (index) => {
-    return Wallet.getAccountFromSeed(this.seed, this.walletIndex, index);
+  getTokenPublicKeys = async () => {
+    let accounts = await getOwnedTokenAccounts(
+      this.connection,
+      this.account.publicKey,
+    );
+    return accounts.map(({ publicKey, accountInfo }) => {
+      setInitialAccountInfo(this.connection, publicKey, accountInfo);
+      return publicKey;
+    });
   };
 
   createTokenAccount = async (tokenAddress) => {
-    let index = this.accountCount;
-    await createAndInitializeTokenAccount({
+    return await createAndInitializeTokenAccount({
       connection: this.connection,
       payer: this.account,
       mintPublicKey: tokenAddress,
-      newAccount: this.getAccount(index),
+      newAccount: new Account(),
     });
-    ++this.accountCount;
-    refreshAccountInfo(this.connection, this.getAccount(index).publicKey, true);
-    this.emitter.emit('accountCountChange');
   };
 
   tokenAccountCost = async () => {
@@ -60,12 +63,11 @@ export class Wallet {
     );
   };
 
-  transferToken = async (index, destination, amount) => {
-    let tokenAccount = this.getAccount(index);
+  transferToken = async (source, destination, amount) => {
     return await transferTokens({
       connection: this.connection,
       owner: this.account,
-      sourcePublicKey: tokenAccount.publicKey,
+      sourcePublicKey: source,
       destinationPublicKey: destination,
       amount,
     });
@@ -103,28 +105,27 @@ export function useWallet() {
   return useContext(WalletContext).wallet;
 }
 
-export function useWalletAccountCount() {
+export function useWalletPublicKeys() {
   let wallet = useWallet();
-  useListener(wallet.emitter, 'accountCountChange');
-  return wallet.accountCount;
+  let [tokenPublicKeys, loaded] = useAsyncData(
+    wallet.getTokenPublicKeys,
+    wallet.getTokenPublicKeys,
+  );
+  let publicKeys = [wallet.account.publicKey, ...(tokenPublicKeys ?? [])];
+  return [publicKeys, loaded];
 }
 
-export function useBalanceInfo(index) {
-  let wallet = useWallet();
-  let publicKey = wallet.getAccount(index).publicKey;
+export function refreshWalletPublicKeys(wallet) {
+  refreshCache(wallet.getTokenPublicKeys);
+}
+
+export function useBalanceInfo(publicKey) {
   let [accountInfo, accountInfoLoaded] = useAccountInfo(publicKey);
   let { mint, owner, amount } = accountInfo?.owner.equals(TOKEN_PROGRAM_ID)
     ? parseTokenAccountData(accountInfo.data)
     : {};
   let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
   let { name, symbol } = useTokenName(mint);
-
-  useEffect(() => {
-    if (accountInfo && wallet.accountCount < index + 1) {
-      wallet.accountCount = index + 1;
-      wallet.emitter.emit('accountCountChange');
-    }
-  }, [wallet, accountInfo, index]);
 
   if (accountInfoLoaded && mint && mintInfoLoaded) {
     let { decimals } = parseMintData(mintInfo.data);

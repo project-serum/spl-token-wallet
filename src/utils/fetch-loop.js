@@ -180,3 +180,14 @@ export function refreshCache(cacheKey, clearCache = false) {
     }
   }
 }
+
+export function setCache(cacheKey, value, { initializeOnly = false } = {}) {
+  if (!initializeOnly && globalCache.has(cacheKey)) {
+    return;
+  }
+  globalCache.set(cacheKey, value);
+  const loop = globalLoops.loops.get(cacheKey);
+  if (loop) {
+    loop.notifyListeners();
+  }
+}

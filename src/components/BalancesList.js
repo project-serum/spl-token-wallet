@@ -4,9 +4,10 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import {
+  refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
-  useWalletAccountCount,
+  useWalletPublicKeys,
 } from '../utils/wallet';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
@@ -27,7 +28,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
-import { refreshAccountInfo } from '../utils/connection';
+import {
+  refreshAccountInfo,
+  useSolanaExplorerUrlSuffix,
+} from '../utils/connection';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -37,7 +41,7 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
 
 export default function BalancesList() {
   const wallet = useWallet();
-  const accountCount = useWalletAccountCount();
+  const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
 
   return (
@@ -54,15 +58,12 @@ export default function BalancesList() {
           </Tooltip>
           <Tooltip title="Refresh" arrow>
             <IconButton
-              onClick={() =>
-                [...Array(accountCount + 5).keys()].map((i) =>
-                  refreshAccountInfo(
-                    wallet.connection,
-                    wallet.getAccount(i).publicKey,
-                    true,
-                  ),
-                )
-              }
+              onClick={() => {
+                refreshWalletPublicKeys(wallet);
+                publicKeys.map((publicKey) =>
+                  refreshAccountInfo(wallet.connection, publicKey, true),
+                );
+              }}
               style={{ marginRight: -12 }}
             >
               <RefreshIcon />
@@ -71,9 +72,10 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {[...Array(accountCount + 5).keys()].map((i) => (
-          <BalanceListItem key={i} index={i} />
+        {publicKeys.map((publicKey) => (
+          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
         ))}
+        {loaded ? null : <LoadingIndicator />}
       </List>
       <AddTokenDialog
         open={showAddTokenDialog}
@@ -101,34 +103,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function BalanceListItem({ index }) {
-  const wallet = useWallet();
-  const accountCount = useWalletAccountCount();
-  const balanceInfo = useBalanceInfo(index);
-  const [open, setOpen] = useState(false);
+function BalanceListItem({ publicKey }) {
+  const balanceInfo = useBalanceInfo(publicKey);
+  const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
 
   if (!balanceInfo) {
-    if (index <= accountCount) {
-      return <LoadingIndicator />;
-    }
-    return null;
+    return <LoadingIndicator delay={0} />;
   }
 
-  const account = wallet.getAccount(index);
-  let {
-    amount,
-    decimals,
-    mint,
-    tokenName,
-    tokenSymbol,
-    initialized,
-  } = balanceInfo;
-
-  if (!initialized && index !== 0) {
-    return null;
-  }
+  let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
   return (
     <>
@@ -140,7 +126,7 @@ function BalanceListItem({ index }) {
               {tokenSymbol ?? abbreviateAddress(mint)}
             </>
           }
-          secondary={account.publicKey.toBase58()}
+          secondary={publicKey.toBase58()}
           secondaryTypographyProps={{ className: classes.address }}
         />
         {open ? <ExpandLess /> : <ExpandMore />}
@@ -165,7 +151,7 @@ function BalanceListItem({ index }) {
             </Button>
           </div>
           <Typography variant="body2" className={classes.address}>
-            Deposit Address: {account.publicKey.toBase58()}
+            Deposit Address: {publicKey.toBase58()}
           </Typography>
           <Typography variant="body2">
             Token Name: {tokenName ?? 'Unknown'}
@@ -180,7 +166,10 @@ function BalanceListItem({ index }) {
           ) : null}
           <Typography variant="body2">
             <Link
-              href={`https://explorer.solana.com/account/${account.publicKey.toBase58()}`}
+              href={
+                `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                urlSuffix
+              }
               target="_blank"
               rel="noopener"
             >
@@ -193,7 +182,6 @@ function BalanceListItem({ index }) {
         open={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}
         balanceInfo={balanceInfo}
-        index={index}
       />
     </>
   );

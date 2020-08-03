@@ -31,17 +31,17 @@ function App() {
     <Suspense fallback={<LoadingIndicator />}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <SnackbarProvider maxSnack={5}>
-          <ConnectionProvider>
-            <WalletProvider>
+        <ConnectionProvider>
+          <WalletProvider>
+            <SnackbarProvider maxSnack={5}>
               <NavigationFrame>
                 <Suspense fallback={<LoadingIndicator />}>
                   <WalletPage />
                 </Suspense>
               </NavigationFrame>
-            </WalletProvider>
-          </ConnectionProvider>
-        </SnackbarProvider>
+            </SnackbarProvider>
+          </WalletProvider>
+        </ConnectionProvider>
       </ThemeProvider>
     </Suspense>
   );

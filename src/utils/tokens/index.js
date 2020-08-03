@@ -1,11 +1,58 @@
-import { SystemProgram, Transaction } from '@solana/web3.js';
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import {
   initializeAccount,
   initializeMint,
   TOKEN_PROGRAM_ID,
   transfer,
 } from './instructions';
-import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './data';
+import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
+import bs58 from 'bs58';
+
+export async function getOwnedTokenAccounts(connection, publicKey) {
+  let filters = getOwnedAccountsFilters(publicKey);
+  let resp = await connection._rpcRequest('getProgramAccounts', [
+    TOKEN_PROGRAM_ID.toBase58(),
+    {
+      commitment: connection.commitment,
+      filters,
+    },
+  ]);
+  if (resp.error) {
+    throw new Error(
+      'failed to get token accounts owned by ' +
+        publicKey.toBase58() +
+        ': ' +
+        resp.error.message,
+    );
+  }
+  return resp.result
+    .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
+      publicKey: new PublicKey(pubkey),
+      accountInfo: {
+        data: bs58.decode(data),
+        executable,
+        owner: new PublicKey(owner),
+        lamports,
+      },
+    }))
+    .filter(({ accountInfo }) => {
+      // TODO: remove this check once mainnet is updated
+      return filters.every((filter) => {
+        if (filter.dataSize) {
+          return accountInfo.data.length === filter.dataSize;
+        } else if (filter.memcmp) {
+          let filterBytes = bs58.decode(filter.memcmp.bytes);
+          return accountInfo.data
+            .slice(
+              filter.memcmp.offset,
+              filter.memcmp.offset + filterBytes.length,
+            )
+            .equals(filterBytes);
+        }
+        return false;
+      });
+    });
+}
 
 export async function createAndInitializeMint({
   connection,

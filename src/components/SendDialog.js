@@ -11,7 +11,7 @@ import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useSendTransaction } from '../utils/notifications';
 
-export default function SendDialog({ open, onClose, index, balanceInfo }) {
+export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const wallet = useWallet();
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
@@ -33,7 +33,11 @@ export default function SendDialog({ open, onClose, index, balanceInfo }) {
       throw new Error('Invalid amount');
     }
     sendTransaction(
-      wallet.transferToken(index, new PublicKey(destinationAddress), amount),
+      wallet.transferToken(
+        publicKey,
+        new PublicKey(destinationAddress),
+        amount,
+      ),
       { onSuccess: onClose },
     );
   }

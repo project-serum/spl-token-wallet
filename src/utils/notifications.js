@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { useConnection } from './connection';
+import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@material-ui/core/Button';
 
 export function useSendTransaction() {
@@ -8,7 +8,10 @@ export function useSendTransaction() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [sending, setSending] = useState(false);
 
-  async function sendTransaction(signaturePromise, { onSuccess, onError }) {
+  async function sendTransaction(
+    signaturePromise,
+    { onSuccess, onError } = {},
+  ) {
     let id = enqueueSnackbar('Sending transaction...', {
       variant: 'info',
       persist: true,
@@ -36,6 +39,7 @@ export function useSendTransaction() {
     } catch (e) {
       closeSnackbar(id);
       setSending(false);
+      console.warn(e.message);
       enqueueSnackbar(e.message, { variant: 'error' });
       if (onError) {
         onError(e);
@@ -47,13 +51,14 @@ export function useSendTransaction() {
 }
 
 function ViewTransactionOnExplorerButton({ signature }) {
+  const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
       color="inherit"
       component="a"
       target="_blank"
       rel="noopener"
-      href={`https://explorer.solana.com/tx/${signature}`}
+      href={`https://explorer.solana.com/tx/${signature}` + urlSuffix}
     >
       View on Solana Explorer
     </Button>
@@ -69,7 +74,7 @@ export function useCallAsync() {
       successMessage = 'Success',
       onSuccess,
       onError,
-    },
+    } = {},
   ) {
     let id = enqueueSnackbar(progressMessage, {
       variant: 'info',

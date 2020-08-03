@@ -14,11 +14,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoadingIndicator({ height = null, ...rest }) {
+export default function LoadingIndicator({
+  height = null,
+  delay = 500,
+  ...rest
+}) {
   const classes = useStyles();
   const [visible, setVisible] = useState(false);
 
-  useEffectAfterTimeout(() => setVisible(true), 500);
+  useEffectAfterTimeout(() => setVisible(true), delay);
 
   let style = {};
   if (height) {
