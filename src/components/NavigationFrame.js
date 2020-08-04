@@ -22,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
   content: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   title: {
     flexGrow: 1,

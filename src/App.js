@@ -2,8 +2,8 @@ import React, { Suspense } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
-  unstable_createMuiStrictModeTheme as createMuiTheme,
   ThemeProvider,
+  unstable_createMuiStrictModeTheme as createMuiTheme,
 } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/NavigationFrame';
@@ -12,8 +12,9 @@ import WalletPage from './WalletPage';
 import { WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
+import PopupPage from './PopupPage';
 
-function App() {
+export default function App() {
   // TODO: add toggle for dark mode
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = React.useMemo(
@@ -27,6 +28,11 @@ function App() {
     [prefersDarkMode],
   );
 
+  // Disallow rendering inside an iframe to prevent clickjacking.
+  if (window.self !== window.top) {
+    return null;
+  }
+
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <ThemeProvider theme={theme}>
@@ -36,7 +42,7 @@ function App() {
             <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
               <NavigationFrame>
                 <Suspense fallback={<LoadingIndicator />}>
-                  <WalletPage />
+                  <PageContents />
                 </Suspense>
               </NavigationFrame>
             </SnackbarProvider>
@@ -47,4 +53,9 @@ function App() {
   );
 }
 
-export default App;
+function PageContents() {
+  if (window.opener) {
+    return <PopupPage opener={window.opener} />;
+  }
+  return <WalletPage />;
+}
