@@ -33,7 +33,7 @@ function App() {
         <CssBaseline />
         <ConnectionProvider>
           <WalletProvider>
-            <SnackbarProvider maxSnack={5}>
+            <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
               <NavigationFrame>
                 <Suspense fallback={<LoadingIndicator />}>
                   <WalletPage />

@@ -182,6 +182,7 @@ function BalanceListItem({ publicKey }) {
         open={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}
         balanceInfo={balanceInfo}
+        publicKey={publicKey}
       />
     </>
   );
