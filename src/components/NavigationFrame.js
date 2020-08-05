@@ -123,6 +123,10 @@ function WalletSelector() {
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
 
+  if (addresses.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <Hidden xsDown>

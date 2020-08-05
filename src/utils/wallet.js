@@ -18,9 +18,10 @@ import {
   parseMintData,
   parseTokenAccountData,
 } from './tokens/data';
-import { useLocalStorageState } from './utils';
+import { useListener, useLocalStorageState } from './utils';
 import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
+import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 
 export class Wallet {
   constructor(connection, seed, walletIndex = 0) {
@@ -35,6 +36,10 @@ export class Wallet {
       .fromSeed(seed)
       .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
     return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
+  }
+
+  get publicKey() {
+    return this.account.publicKey;
   }
 
   getTokenPublicKeys = async () => {
@@ -77,24 +82,20 @@ export class Wallet {
 const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
-  const seed = useMemo(() => {
-    if (!localStorage.getItem('seed')) {
-      localStorage.setItem(
-        'seed',
-        new Buffer(nacl.randomBytes(64)).toString('hex'),
-      );
-    }
-    return localStorage.getItem('seed');
-  }, []);
+  useListener(walletSeedChanged, 'change');
+  const { mnemonic, seed } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
   const [walletIndex, setWalletIndex] = useLocalStorageState('walletIndex', 0);
   const wallet = useMemo(
-    () => new Wallet(connection, Buffer.from(seed, 'hex'), walletIndex),
+    () =>
+      seed
+        ? new Wallet(connection, Buffer.from(seed, 'hex'), walletIndex)
+        : null,
     [connection, seed, walletIndex],
   );
   return (
     <WalletContext.Provider
-      value={{ wallet, walletIndex, setWalletIndex, seed }}
+      value={{ wallet, walletIndex, setWalletIndex, seed, mnemonic }}
     >
       {children}
     </WalletContext.Provider>
@@ -163,6 +164,9 @@ export function useWalletSelector() {
     setWalletIndex(walletIndex);
   }
   const addresses = useMemo(() => {
+    if (!seed) {
+      return [];
+    }
     const seedBuffer = Buffer.from(seed, 'hex');
     return [...Array(walletCount).keys()].map(
       (walletIndex) =>

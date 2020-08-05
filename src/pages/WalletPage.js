@@ -1,9 +1,9 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
-import BalancesList from './components/BalancesList';
+import BalancesList from '../components/BalancesList';
 import Grid from '@material-ui/core/Grid';
-import { useIsProdNetwork } from './utils/connection';
-import DebugButtons from './components/DebugButtons';
+import { useIsProdNetwork } from '../utils/connection';
+import DebugButtons from '../components/DebugButtons';
 
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();

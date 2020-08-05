@@ -8,11 +8,12 @@ import {
 import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
-import WalletPage from './WalletPage';
-import { WalletProvider } from './utils/wallet';
+import WalletPage from './pages/WalletPage';
+import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
-import PopupPage from './PopupPage';
+import PopupPage from './pages/PopupPage';
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -54,6 +55,10 @@ export default function App() {
 }
 
 function PageContents() {
+  const wallet = useWallet();
+  if (!wallet) {
+    return <LoginPage />;
+  }
   if (window.opener) {
     return <PopupPage opener={window.opener} />;
   }

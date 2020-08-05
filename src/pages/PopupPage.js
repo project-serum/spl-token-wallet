@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useWallet } from './utils/wallet';
+import { useWallet } from '../utils/wallet';
 import { Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -48,7 +48,7 @@ export default function PopupPage({ opener }) {
   useEffect(() => {
     if (
       connectedAccount &&
-      !connectedAccount.publicKey.equals(wallet.account.publicKey)
+      !connectedAccount.publicKey.equals(wallet.publicKey)
     ) {
       setConnectedAccount(null);
     }
@@ -68,22 +68,16 @@ export default function PopupPage({ opener }) {
     return () => window.removeEventListener('message', messageHandler);
   }, [origin, postMessage]);
 
-  // Switch focus to the parent window. This requires that the parent
-  // runs `window.name = 'parent'` before opening the popup.
-  function focusParent() {
-    window.open('', 'parent');
-  }
-
   if (
     !connectedAccount ||
-    !connectedAccount.publicKey.equals(wallet.account.publicKey)
+    !connectedAccount.publicKey.equals(wallet.publicKey)
   ) {
     // Approve the parent page to connect to this wallet.
     function connect() {
       setConnectedAccount(wallet.account);
       postMessage({
         method: 'connected',
-        params: { publicKey: wallet.account.publicKey.toBase58() },
+        params: { publicKey: wallet.publicKey.toBase58() },
       });
       focusParent();
     }
@@ -95,6 +89,7 @@ export default function PopupPage({ opener }) {
     const request = requests[0];
     assert(request.method === 'signTransaction');
     const message = bs58.decode(request.params.message);
+
     function sendSignature() {
       setRequests((requests) => requests.slice(1));
       postMessage({
@@ -102,7 +97,7 @@ export default function PopupPage({ opener }) {
           signature: bs58.encode(
             nacl.sign.detached(message, wallet.account.secretKey),
           ),
-          publicKey: wallet.account.publicKey.toBase58(),
+          publicKey: wallet.publicKey.toBase58(),
         },
         id: request.id,
       });
@@ -110,6 +105,7 @@ export default function PopupPage({ opener }) {
         focusParent();
       }
     }
+
     function sendReject() {
       setRequests((requests) => requests.slice(1));
       postMessage({
@@ -120,6 +116,7 @@ export default function PopupPage({ opener }) {
         focusParent();
       }
     }
+
     return (
       <ApproveSignatureForm
         origin={origin}
@@ -133,6 +130,14 @@ export default function PopupPage({ opener }) {
   return (
     <Typography>Please keep this window open in the background.</Typography>
   );
+}
+
+/**
+ * Switch focus to the parent window. This requires that the parent runs
+ * `window.name = 'parent'` before opening the popup.
+ */
+function focusParent() {
+  window.open('', 'parent');
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -161,7 +166,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
         <div className={classes.connection}>
           <Typography>{origin}</Typography>
           <ImportExportIcon fontSize="large" />
-          <Typography>{wallet.account.publicKey.toBase58()}</Typography>
+          <Typography>{wallet.publicKey.toBase58()}</Typography>
         </div>
         <Typography>Only connect with sites you trust.</Typography>
       </CardContent>
