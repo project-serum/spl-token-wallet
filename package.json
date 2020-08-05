@@ -1,5 +1,5 @@
 {
-  "name": "sol-wallet",
+  "name": "spl-token-wallet",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
