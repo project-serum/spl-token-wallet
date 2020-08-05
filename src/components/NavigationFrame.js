@@ -17,6 +17,8 @@ import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
+import CodeIcon from '@material-ui/icons/Code';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -47,6 +49,31 @@ export default function NavigationFrame({ children }) {
           </Typography>
           <WalletSelector />
           <NetworkSelector />
+          <Hidden xsDown>
+            <Button
+              component="a"
+              color="inherit"
+              target="_blank"
+              rel="noopener"
+              href="https://github.com/serum-foundation/spl-token-wallet"
+              className={classes.button}
+            >
+              Source
+            </Button>
+          </Hidden>
+          <Hidden smUp>
+            <Tooltip title="View Source" arrow>
+              <IconButton
+                component="a"
+                color="inherit"
+                target="_blank"
+                rel="noopener"
+                href="https://github.com/serum-foundation/spl-token-wallet"
+              >
+                <CodeIcon />
+              </IconButton>
+            </Tooltip>
+          </Hidden>
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
@@ -84,9 +111,11 @@ function NetworkSelector() {
         </Button>
       </Hidden>
       <Hidden smUp>
-        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
-          <SolanaIcon />
-        </IconButton>
+        <Tooltip title="Select Network" arrow>
+          <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
+            <SolanaIcon />
+          </IconButton>
+        </Tooltip>
       </Hidden>
       <Menu
         anchorEl={anchorEl}
@@ -139,9 +168,11 @@ function WalletSelector() {
         </Button>
       </Hidden>
       <Hidden smUp>
-        <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
-          <AccountIcon />
-        </IconButton>
+        <Tooltip title="Select Account" arrow>
+          <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
+            <AccountIcon />
+          </IconButton>
+        </Tooltip>
       </Hidden>
       <Menu
         anchorEl={anchorEl}
