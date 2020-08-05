@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import * as bip32 from 'bip32';
-import { Account } from '@solana/web3.js';
+import { Account, SystemProgram } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import {
   setInitialAccountInfo,
@@ -69,6 +69,9 @@ export class Wallet {
   };
 
   transferToken = async (source, destination, amount) => {
+    if (source.equals(this.publicKey)) {
+      return this.transferSol(destination, amount);
+    }
     return await transferTokens({
       connection: this.connection,
       owner: this.account,
@@ -76,6 +79,17 @@ export class Wallet {
       destinationPublicKey: destination,
       amount,
     });
+  };
+
+  transferSol = async (destination, amount) => {
+    return await this.connection.sendTransaction(
+      SystemProgram.transfer({
+        fromPubkey: this.publicKey,
+        toPubkey: destination,
+        lamports: amount,
+      }),
+      [this.account],
+    );
   };
 }
 
