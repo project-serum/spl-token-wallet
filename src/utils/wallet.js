@@ -12,7 +12,7 @@ import {
   getOwnedTokenAccounts,
   transferTokens,
 } from './tokens';
-import { TOKEN_PROGRAM_ID } from './tokens/instructions';
+import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
   parseMintData,
@@ -142,30 +142,60 @@ export function useBalanceInfo(publicKey) {
   let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
   let { name, symbol } = useTokenName(mint);
 
-  if (accountInfoLoaded && mint && mintInfoLoaded) {
-    let { decimals } = parseMintData(mintInfo.data);
+  if (!accountInfoLoaded) {
+    return null;
+  }
+
+  if (mint && mint.equals(WRAPPED_SOL_MINT)) {
     return {
       amount,
-      decimals,
+      decimals: 9,
       mint,
       owner,
-      tokenName: name,
-      tokenSymbol: symbol,
-      initialized: true,
+      tokenName: 'Wrapped SOL',
+      tokenSymbol: 'SOL',
+      valid: true,
     };
-  } else if (accountInfoLoaded && !mint) {
+  }
+
+  if (mint && mintInfoLoaded) {
+    try {
+      let { decimals } = parseMintData(mintInfo.data);
+      return {
+        amount,
+        decimals,
+        mint,
+        owner,
+        tokenName: name,
+        tokenSymbol: symbol,
+        valid: true,
+      };
+    } catch (e) {
+      return {
+        amount,
+        decimals: 0,
+        mint,
+        owner,
+        tokenName: 'Invalid',
+        tokenSymbol: 'INVALID',
+        valid: false,
+      };
+    }
+  }
+
+  if (!mint) {
     return {
       amount: accountInfo?.lamports ?? 0,
       decimals: 9,
       mint: null,
       owner: publicKey,
-      tokenName: 'Solana',
+      tokenName: 'SOL',
       tokenSymbol: 'SOL',
-      initialized: false,
+      valid: true,
     };
-  } else {
-    return null;
   }
+
+  return null;
 }
 
 export function useWalletSelector() {

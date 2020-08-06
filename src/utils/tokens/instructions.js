@@ -5,6 +5,10 @@ export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenSVp5gheXUvJ6jGWGeCsgPKgnE3YgdGKRVCMY9o',
 );
 
+export const WRAPPED_SOL_MINT = new PublicKey(
+  'So11111111111111111111111111111111111111111',
+);
+
 const LAYOUT = BufferLayout.union(BufferLayout.u8('instruction'));
 LAYOUT.addVariant(
   0,
