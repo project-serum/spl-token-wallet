@@ -1,9 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import App from './App';
+import { sleep } from './utils/utils';
 
-test('renders learn react link', () => {
+test('renders learn react link', async () => {
   const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
+  await act(() => sleep(1000));
+  const linkElement = getByText(/Create New Wallet/i);
   expect(linkElement).toBeInTheDocument();
 });

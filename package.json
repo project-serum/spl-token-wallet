@@ -32,6 +32,11 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "^.+\\.cjs$"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",

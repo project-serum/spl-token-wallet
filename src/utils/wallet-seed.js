@@ -7,7 +7,7 @@ export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
   const mnemonic = bip39.generateMnemonic(128);
   const seed = await bip39.mnemonicToSeed(mnemonic);
-  return { mnemonic, seed: new Buffer(seed).toString('hex') };
+  return { mnemonic, seed: Buffer.from(seed).toString('hex') };
 }
 
 export async function mnemonicToSeed(mnemonic) {
@@ -16,7 +16,7 @@ export async function mnemonicToSeed(mnemonic) {
     throw new Error('Invalid seed words');
   }
   const seed = await bip39.mnemonicToSeed(mnemonic);
-  return new Buffer(seed).toString('hex');
+  return Buffer.from(seed).toString('hex');
 }
 
 let unlockedMnemonicAndSeed = JSON.parse(
@@ -86,7 +86,7 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   if (!plaintext) {
     throw new Error('Incorrect password');
   }
-  const decodedPlaintext = new Buffer(plaintext).toString();
+  const decodedPlaintext = Buffer.from(plaintext).toString();
   const { mnemonic, seed } = JSON.parse(decodedPlaintext);
   if (stayLoggedIn) {
     sessionStorage.setItem('unlocked', decodedPlaintext);
