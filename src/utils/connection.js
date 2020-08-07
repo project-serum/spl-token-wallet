@@ -9,7 +9,7 @@ const ConnectionContext = React.createContext(null);
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     'endpoint',
-    clusterApiUrl('devnet'),
+    clusterApiUrl('mainnet-beta'),
   );
 
   const connection = useMemo(() => new Connection(endpoint, 'single'), [
