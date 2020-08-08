@@ -1,18 +1,26 @@
-import { refreshWalletPublicKeys, useWallet } from '../utils/wallet';
+import {
+  refreshWalletPublicKeys,
+  useBalanceInfo,
+  useWallet,
+} from '../utils/wallet';
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
-import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Account, clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { abbreviateAddress, sleep } from '../utils/utils';
-import { refreshAccountInfo } from '../utils/connection';
+import { refreshAccountInfo, useConnectionConfig } from '../utils/connection';
 import { createAndInitializeMint } from '../utils/tokens';
-import Button from '@material-ui/core/Button';
+import { Tooltip, Button } from '@material-ui/core';
 import React from 'react';
 
 export default function DebugButtons() {
   const wallet = useWallet();
   const updateTokenName = useUpdateTokenName();
+  const { endpoint } = useConnectionConfig();
+  const balanceInfo = useBalanceInfo(wallet.account.publicKey);
   const [sendTransaction, sending] = useSendTransaction();
   const callAsync = useCallAsync();
+
+  let { amount } = balanceInfo || {};
 
   function requestAirdrop() {
     callAsync(
@@ -52,20 +60,47 @@ export default function DebugButtons() {
     );
   }
 
+  const noSol = amount === 0;
+  const requestAirdropDisabled = endpoint !== clusterApiUrl('devnet');
   return (
     <div style={{ display: 'flex' }}>
-      <Button variant="contained" color="primary" onClick={requestAirdrop}>
-        Request Airdrop
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={mintTestToken}
-        disabled={sending}
-        style={{ marginLeft: 24 }}
+      <Tooltip
+        title={
+          requestAirdropDisabled
+            ? 'Receive some devnet SOL for free. Only enabled on the devnet'
+            : 'Receive some devnet SOL for free'
+        }
       >
-        Mint Test Token
-      </Button>
+        <span>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={requestAirdrop}
+            disabled={requestAirdropDisabled}
+          >
+            Request Airdrop
+          </Button>
+        </span>
+      </Tooltip>
+      <Tooltip
+        title={
+          noSol
+            ? 'Generate and receive balances in a new test token. Requires SOL balance'
+            : 'Generate and receive balances in a new test token'
+        }
+      >
+        <span>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={mintTestToken}
+            disabled={sending || noSol}
+            style={{ marginLeft: 24 }}
+          >
+            Mint Test Token
+          </Button>
+        </span>
+      </Tooltip>
     </div>
   );
 }
