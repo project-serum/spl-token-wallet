@@ -103,8 +103,8 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
         )}
         <Typography paragraph>
           Your private keys are only stored on your current computer or device.
-          You will need these words to restore your wallet if your device is
-          damaged or lost.
+          You will need these words to restore your wallet if your browser's
+          storage is cleared or your device is damaged or lost.
         </Typography>
         <FormControlLabel
           control={
