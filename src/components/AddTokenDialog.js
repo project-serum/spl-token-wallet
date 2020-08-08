@@ -12,6 +12,7 @@ import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
 import { useSendTransaction } from '../utils/notifications';
+import { useBalanceInfo } from '../utils/wallet';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -30,6 +31,10 @@ export default function AddTokenDialog({ open, onClose }) {
   let [tokenName, setTokenName] = useState('');
   let [tokenSymbol, setTokenSymbol] = useState('');
   let [sendTransaction, sending] = useSendTransaction();
+  let balanceInfo = useBalanceInfo(wallet.account.publicKey);
+
+  let { amount } = balanceInfo || {};
+  let noSol = amount === 0;
 
   function onSubmit() {
     let mint = new PublicKey(mintAddress);
@@ -81,8 +86,8 @@ export default function AddTokenDialog({ open, onClose }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" color="primary" disabled={sending}>
-          Add
+        <Button type="submit" color="primary" disabled={sending || noSol}>
+          {noSol ? 'Requires SOL Balance' : 'Add'}
         </Button>
       </DialogActions>
     </DialogForm>
