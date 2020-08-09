@@ -12,7 +12,7 @@ import {
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import TokenInfoDialog from './TokenInfoDialog';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,14 +25,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
+import InfoIcon from '@material-ui/icons/Info';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
-import {
-  refreshAccountInfo,
-  useSolanaExplorerUrlSuffix,
-} from '../utils/connection';
+import { refreshAccountInfo } from '../utils/connection';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -106,17 +104,17 @@ const useStyles = makeStyles((theme) => ({
 
 function BalanceListItem({ publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey);
-  const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
+  let { amount, decimals, mint, tokenName, tokenSymbol, owner } = balanceInfo;
 
   return (
     <>
@@ -125,7 +123,8 @@ function BalanceListItem({ publicKey }) {
           primary={
             <>
               {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-              {tokenSymbol ?? abbreviateAddress(mint)}
+              {tokenName ?? abbreviateAddress(mint)}
+              {tokenSymbol ? ` (${tokenSymbol})` : null}
             </>
           }
           secondary={publicKey.toBase58()}
@@ -136,6 +135,16 @@ function BalanceListItem({ publicKey }) {
       <Collapse in={open} timeout="auto" unmountOnExit>
         <div className={classes.itemDetails}>
           <div className={classes.buttonContainer}>
+            {!publicKey.equals(owner) && (
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<InfoIcon />}
+                onClick={() => setTokenInfoDialogOpen(true)}
+              >
+                Token Info
+              </Button>
+            )}
             <Button
               variant="outlined"
               color="primary"
@@ -153,32 +162,6 @@ function BalanceListItem({ publicKey }) {
               Send
             </Button>
           </div>
-          <Typography variant="body2" className={classes.address}>
-            Deposit Address: {publicKey.toBase58()}
-          </Typography>
-          <Typography variant="body2">
-            Token Name: {tokenName ?? 'Unknown'}
-          </Typography>
-          <Typography variant="body2">
-            Token Symbol: {tokenSymbol ?? 'Unknown'}
-          </Typography>
-          {mint ? (
-            <Typography variant="body2" className={classes.address}>
-              Token Address: {mint.toBase58()}
-            </Typography>
-          ) : null}
-          <Typography variant="body2">
-            <Link
-              href={
-                `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-                urlSuffix
-              }
-              target="_blank"
-              rel="noopener"
-            >
-              View on Solana Explorer
-            </Link>
-          </Typography>
         </div>
       </Collapse>
       <SendDialog
@@ -190,6 +173,12 @@ function BalanceListItem({ publicKey }) {
       <DepositDialog
         open={depositDialogOpen}
         onClose={() => setDepositDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <TokenInfoDialog
+        open={tokenInfoDialogOpen}
+        onClose={() => setTokenInfoDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />

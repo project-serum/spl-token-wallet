@@ -25,6 +25,7 @@ export default function CopyableDisplay({
   label,
   autoFocus,
   buttonProps,
+  helperText,
 }) {
   const { enqueueSnackbar } = useSnackbar();
   const textareaRef = useRef();
@@ -34,8 +35,8 @@ export default function CopyableDisplay({
     if (textArea) {
       textArea.select();
       document.execCommand('copy');
-      enqueueSnackbar('Address copied', {
-        variant: 'success',
+      enqueueSnackbar(`Copied ${label}`, {
+        variant: 'info',
         autoHideDuration: 2500,
       });
     }
@@ -52,6 +53,7 @@ export default function CopyableDisplay({
         onFocus={(e) => e.currentTarget.select()}
         className={classes.textArea}
         fullWidth
+        helperText={helperText}
         label={label}
         spellCheck={false}
       />
