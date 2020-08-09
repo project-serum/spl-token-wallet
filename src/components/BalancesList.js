@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { abbreviateAddress } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
-import ReceiveIcon from '@material-ui/icons/CallReceived';
+import ReceiveIcon from '@material-ui/icons/WorkOutline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
@@ -28,6 +28,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
+import DepositDialog from './DepositDialog';
 import {
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
@@ -109,6 +110,7 @@ function BalanceListItem({ publicKey }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -138,6 +140,7 @@ function BalanceListItem({ publicKey }) {
               variant="outlined"
               color="primary"
               startIcon={<ReceiveIcon />}
+              onClick={() => setDepositDialogOpen(true)}
             >
               Receive
             </Button>
@@ -181,6 +184,12 @@ function BalanceListItem({ publicKey }) {
       <SendDialog
         open={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <DepositDialog
+        open={depositDialogOpen}
+        onClose={() => setDepositDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
