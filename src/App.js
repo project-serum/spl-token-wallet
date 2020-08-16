@@ -11,10 +11,13 @@ import { ConnectionProvider } from './utils/connection';
 import WalletPage from './pages/WalletPage';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
+import BasicLayout from './components/layout/BasicLayout';
 import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
 import LoginPage from './pages/LoginPage';
-
+import { GlobalStyle } from './modules/styles/global';
+import pageRouter from './routes/pageRouter';
+import { BrowserRouter } from 'react-router-dom';
 export default function App() {
   // TODO: add toggle for dark mode
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -41,11 +44,12 @@ export default function App() {
         <ConnectionProvider>
           <WalletProvider>
             <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-              <NavigationFrame>
-                <Suspense fallback={<LoadingIndicator />}>
-                  <PageContents />
-                </Suspense>
-              </NavigationFrame>
+              {/* <NavigationFrame> */}
+              <GlobalStyle />
+              <Suspense fallback={<LoadingIndicator />}>
+                <PageContents />
+              </Suspense>
+              {/* </NavigationFrame> */}
             </SnackbarProvider>
           </WalletProvider>
         </ConnectionProvider>
@@ -62,5 +66,10 @@ function PageContents() {
   if (window.opener) {
     return <PopupPage opener={window.opener} />;
   }
-  return <WalletPage />;
+  return (
+    <BrowserRouter>
+      <BasicLayout>{pageRouter()}</BasicLayout>
+    </BrowserRouter>
+  );
+  // return <WalletPage />;
 }
