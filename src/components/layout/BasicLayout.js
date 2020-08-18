@@ -2,7 +2,7 @@ import * as React from 'react'
 import { hideHeaderLogo } from '../../config/whiteList'
 import imageMapping from '../../modules/shared/imageMapping'
 import styled from 'styled-components'
-import {withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 const LayoutWrapper = styled.div`
   background: url(${imageMapping.solanaBg}) no-repeat;
   background-size: cover;
@@ -23,10 +23,10 @@ const ContentWrapper = styled.div`
   border-radius: 20px;
   overflow: hidden;
   height: 787px;
+  background: url(${imageMapping.contentBg}) right top no-repeat;
 `
 const Header = styled.div`
   padding-left: 28px;
-  background: url(${imageMapping.solanaTopBg}) right top no-repeat;
   height: 109px;
   line-height: 109px;
 `

@@ -7,6 +7,8 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 const Wrapper = styled.div`
   padding: 107px 195px 0;
+  height: 100%;
+  background: #2b2c34;
 `
 const Title = styled.div`
   color: #fff;

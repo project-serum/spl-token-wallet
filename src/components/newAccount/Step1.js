@@ -1,14 +1,14 @@
 import {
   CloudDownloadOutlined,
   ExclamationCircleFilled,
-  LockFilled
-} from '@ant-design/icons'
-import { Row } from 'antd'
-import React from 'react'
-import styled from 'styled-components'
+  LockFilled,
+} from '@ant-design/icons';
+import { Row } from 'antd';
+import React from 'react';
+import styled from 'styled-components';
 const Title = styled.h1`
   font-size: 30px;
-`
+`;
 const Warning = styled(Row)`
   color: #e6ac71;
   border-radius: 10px;
@@ -16,17 +16,17 @@ const Warning = styled(Row)`
   padding: 9px 12px;
   width: fit-content;
   margin-bottom: 32px;
-`
+`;
 const LockWrapper = styled.div`
-  padding: 0 40px;
-  height: 120px;
-  line-height: 120px;
+  padding: 24px 40px;
   border-radius: 10px;
   background-color: #2b2c34;
   font-size: 22px;
   position: relative;
   border: solid 1px #74daf6;
-`
+  color: #fff;
+  font-weight: bold;
+`;
 const Lock = styled.div`
   position: absolute;
   top: -1px;
@@ -40,10 +40,10 @@ const Lock = styled.div`
   cursor: pointer;
   border: solid 1px #585a68;
   border-radius: 10px;
-`
+`;
 
 const Step1 = (props) => {
-  const { openLock, isDisabled } = props
+  const { openLock, isDisabled } = props;
   return (
     <>
       <Title>Secret Backup Phrase</Title>
@@ -51,7 +51,7 @@ const Step1 = (props) => {
         Your secret backup phrase makes it easy t backup and restore your
         account.
       </div>
-      <Warning align='middle'>
+      <Warning align="middle">
         <ExclamationCircleFilled style={{ marginRight: 6 }} />
         WARNING: Never disclose your backup phrase.Anyone with this phrasecan
         take your Ether forever.
@@ -66,7 +66,7 @@ const Step1 = (props) => {
           </Lock>
         )}
       </LockWrapper>
-      <Row style={{ color: '#6099ff', margin: '27px 0 16px' }} align='middle'>
+      <Row style={{ color: '#6099ff', margin: '27px 0 16px' }} align="middle">
         <CloudDownloadOutlined style={{ fontSize: 20, marginRight: 6 }} />
         Download this Secret Backup Phrase
       </Row>
@@ -75,6 +75,6 @@ const Step1 = (props) => {
         medium.
       </span>
     </>
-  )
-}
-export default React.memo(Step1)
+  );
+};
+export default React.memo(Step1);

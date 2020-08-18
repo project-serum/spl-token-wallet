@@ -6,7 +6,7 @@ import Card from './AddTokenCard'
 const Wrapper = styled.div`
   input:-webkit-autofill,.ant-form-item-has-error .ant-input-affix-wrapper input:focus {
     -webkit-text-fill-color: #fff;
-    box-shadow: 0 0 0px 1000px #1f1f1f inset !important;
+    box-shadow: 0 0 0px 1000px #2b2c34 inset !important;
   }
 `
 const Btn = styled(Button)`
@@ -83,64 +83,64 @@ const ModalComponent = (props) => {
           </Button>
         </>
       ) : (
-        <Wrapper>
-          <Form
-            {...layout}
-            name='basic'
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-          >
-            <Form.Item
-              label='Token Mint Address'
-              name='mintAddress'
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your Token Mint Address!'
-                }
-              ]}
+          <Wrapper>
+            <Form
+              {...layout}
+              name='basic'
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
             >
-              <Input size='large' />
-            </Form.Item>
-            <Form.Item
-              label='Token Name'
-              name='tokenName'
-              rules={[
-                { required: true, message: 'Please input your Token Name!' }
-              ]}
-            >
-              <Input size='large' />
-            </Form.Item>
-            <Form.Item
-              label='Token Symbol'
-              name='tokenSymbol'
-              rules={[
-                { required: true, message: 'Please input your Token Symbol!' }
-              ]}
-            >
-              <Input size='large' />
-            </Form.Item>
-            <Form.Item style={{ marginTop: 39 }}>
-              <Btn
-                type='primary'
-                ghost
-                style={{ marginRight: 20 }}
-                onClick={onCancel}
+              <Form.Item
+                label='Token Mint Address'
+                name='mintAddress'
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your Token Mint Address!'
+                  }
+                ]}
               >
-                Cancel
-              </Btn>
-              <Btn
-                type='primary'
-                htmlType='submit'
-                style={{ background: '#00c853' }}
+                <Input size='large' />
+              </Form.Item>
+              <Form.Item
+                label='Token Name'
+                name='tokenName'
+                rules={[
+                  { required: true, message: 'Please input your Token Name!' }
+                ]}
               >
-                Add
+                <Input size='large' />
+              </Form.Item>
+              <Form.Item
+                label='Token Symbol'
+                name='tokenSymbol'
+                rules={[
+                  { required: true, message: 'Please input your Token Symbol!' }
+                ]}
+              >
+                <Input size='large' />
+              </Form.Item>
+              <Form.Item style={{ marginTop: 39 }}>
+                <Btn
+                  type='primary'
+                  ghost
+                  style={{ marginRight: 20 }}
+                  onClick={onCancel}
+                >
+                  Cancel
               </Btn>
-            </Form.Item>
-          </Form>
-        </Wrapper>
-      )}
+                <Btn
+                  type='primary'
+                  htmlType='submit'
+                  style={{ background: '#00c853' }}
+                >
+                  Add
+              </Btn>
+              </Form.Item>
+            </Form>
+          </Wrapper>
+        )}
     </Modal>
   )
 }

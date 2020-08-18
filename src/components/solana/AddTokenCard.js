@@ -29,12 +29,12 @@ const Card = (props) => {
   const { name, addressId, logo } = props
   const [isAdded, setIsAdded] = useState(false)
   const [visible, setVisible] = useState(false)
-  const handleOk = useCallback(()=>{
+  const handleOk = useCallback(() => {
     setVisible(false)
-  },[])
-  const toggleModal = useCallback(()=>{
+  }, [])
+  const toggleModal = useCallback(() => {
     setVisible(!visible)
-  },[visible])
+  }, [visible])
   const handleAdd = useCallback(() => {
     message.success(
       'Success! Please wait up to 30 seconds for the SOL tokens to appear in your wallet'
@@ -43,17 +43,17 @@ const Card = (props) => {
   }, [])
   return (
     <CardWrapper justify='space-between' align='middle'>
-        <Modal
-          visible={visible}
-          footer={null}
-          onCancel={toggleModal}
-        >
-          <p style={{padding: '20px 0 46px'}}>You already have an Serum (SRM) deposit address. Are you sure you want to create one more? </p>
-          <Row justify='center'>
-            <Button size='large' ghost style={{width: 200, marginRight:24}} onClick={toggleModal}>Cancel</Button>
-            <Button size='large' type='primary' style={{width: 200}} onClick={handleOk}>Confirm</Button>
-          </Row>
-        </Modal>
+      <Modal
+        visible={visible}
+        footer={null}
+        onCancel={toggleModal}
+      >
+        <p style={{ padding: '20px 0 46px' }}>You already have an Serum (SRM) deposit address. Are you sure you want to create one more? </p>
+        <Row justify='center'>
+          <Button size='large' ghost style={{ width: 200, marginRight: 24 }} onClick={toggleModal}>Cancel</Button>
+          <Button size='large' type='primary' style={{ width: 200 }} onClick={handleOk}>Confirm</Button>
+        </Row>
+      </Modal>
       <Col style={{ fontSize: 24 }}>
         <img src={logo} width='30' style={{ marginRight: 16 }} alt='' />
         {name}
@@ -69,7 +69,7 @@ const Card = (props) => {
             />
           </CopyToClipboard>
           {isAdded && (
-            <div style={{ color: '#fff' }}>
+            <div style={{ color: '#fff', marginTop: 16 }}>
               {
                 'If you want to create another deposit address under this account, '
               }

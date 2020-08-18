@@ -30,6 +30,7 @@ const ModalComponent = (props) => {
       title='Deposit BTC'
       onCancel={onCancel}
       footer={null}
+      width={800}
     >
       <p>All deposits go to your Solana wallet</p>
       <p>
@@ -40,7 +41,7 @@ const ModalComponent = (props) => {
       <p>
         <Input
           value={'3AVEBnfbw6Je9NruXwdoW7E8GD5o9Ab9Pj'}
-          style={{ width: 'calc(100% - 140px)' }}
+          style={{ width: 'calc(100% - 140px)', height: 52 }}
           size='large'
         />
         <CopyToClipboard

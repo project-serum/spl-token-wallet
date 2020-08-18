@@ -1,17 +1,18 @@
 import {
   CopyOutlined,
   PlusCircleOutlined,
-  RedoOutlined
-} from '@ant-design/icons'
-import { Avatar, Button, Col, Collapse, Popover, Row, message } from 'antd'
-import React, { useCallback, useState } from 'react'
-import CopyToClipboard from 'react-copy-to-clipboard'
-import styled from 'styled-components'
+  RedoOutlined,
+  DownOutlined,
+} from '@ant-design/icons';
+import { Avatar, Button, Col, Collapse, Popover, Row, message } from 'antd';
+import React, { useCallback, useState } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import styled from 'styled-components';
 
-import AddToken from './AddTokenModal'
-import ModalComponent from './Modal'
-import imageMapping from '../../modules/shared/imageMapping'
-const { Panel } = Collapse
+import AddToken from './AddTokenModal';
+import ModalComponent from './Modal';
+import imageMapping from '../../modules/shared/imageMapping';
+const { Panel } = Collapse;
 const Wrapper = styled.div`
   .ant-collapse,
   .ant-collapse-item {
@@ -25,50 +26,63 @@ const Wrapper = styled.div`
   .ant-collapse-header {
     border-radius: 4px !important;
   }
-`
+`;
 const HeaderWrapper = styled(Row)`
   margin-top: 40px;
   svg {
     cursor: pointer;
   }
-`
+`;
 const Title = styled(Col)`
   font-size: 30px;
   margin-bottom: 4px;
   color: #fff;
-`
+  font-family: Roboto;
+  font-weight: bold;
+`;
 const CoinName = styled.span`
   font-size: 24px;
   padding: 0 24px 0 12px;
-`
+`;
 const CollapseWrapper = styled(Collapse)`
   margin-top: 16px;
-`
+`;
+const ActionRow = styled(Row)`
+  .ant-avatar-circle {
+    background: transparent;
+    :hover {
+      background: #17181c;
+    }
+  }
+`;
+const ArrowWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+  line-height: 40px !important;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+`;
 const Account = (props) => {
-  const { handleClickSendButton, isNetwork } = props
-  const [visible, setVisible] = useState(false)
-  const [showAddToken, setShowAddToken] = useState(false)
+  const { handleClickSendButton, isNetwork } = props;
+  const [visible, setVisible] = useState(false);
+  const [showAddToken, setShowAddToken] = useState(false);
   const handleCancel = useCallback(() => {
-    setVisible(false)
-    setShowAddToken(false)
-  }, [])
+    setVisible(false);
+    setShowAddToken(false);
+  }, []);
   const handleClick = useCallback(() => {
-    setVisible(true)
-  }, [])
+    setVisible(true);
+  }, []);
   const showAddTokenModal = useCallback(() => {
-    setShowAddToken(true)
-  }, [])
-  const PanelHeader = ({
-    tokenId,
-    name,
-    addressId
-  }) => (
-    <Row align='middle' justify='space-between' style={{ padding: '0 16px' }}>
+    setShowAddToken(true);
+  }, []);
+  const PanelHeader = ({ tokenId, name, addressId }) => (
+    <Row align="middle" justify="space-between" style={{ padding: '0 16px', height: 74 }}>
       <Col
         style={{
           display: 'flex',
           alignItems: 'center',
-          color: 'rgba(255 255 255, 0.8)'
+          color: 'rgba(255 255 255, 0.8)',
         }}
       >
         {tokenId ? (
@@ -76,59 +90,66 @@ const Account = (props) => {
             {name.slice(0, 1)}
           </Avatar>
         ) : (
-          <img src={imageMapping.logo} width='30' alt='' />
-        )}
+            <img src={imageMapping.logo} width="30" alt="" />
+          )}
         <CoinName>{name}</CoinName>
-        <div>
+        <div style={{ paddingTop: tokenId ? 18 : 0 }}>
           {addressId}
           <CopyToClipboard
             onCopy={(text, result) => result && message.success('copy success')}
             text={'0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E'}
           >
             <CopyOutlined
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
               style={{ color: '#fff', marginLeft: '4px' }}
             />
           </CopyToClipboard>
           {tokenId && (
             <div style={{ color: '#fff' }}>
-              {'Token ID'}
+              <span style={{ fontWeight: 500 }}>{'Token ID'}</span>
               <span style={{ opacity: 0.6, marginLeft: '1em' }}>{tokenId}</span>
             </div>
           )}
         </div>
       </Col>
       <Col>
-        <Row align='middle'>
+        <Row
+          style={{ fontWeight: 'bold', fontFamily: 'Roboto', fontStyle: 'italic', marginRight: 24, alignItems: 'baseline' }}
+        >
           <Col style={{ fontSize: 44, marginRight: 6 }}>45.62</Col>
           <Col style={{ fontSize: 16 }}>{name}</Col>
         </Row>
       </Col>
     </Row>
-  )
+  );
+  const DownArrow = ({ isActive }) => (
+    <ArrowWrapper>
+      <DownOutlined rotate={isActive ? -180 : 0} />
+    </ArrowWrapper>
+  );
 
   return (
     <Wrapper>
       <ModalComponent visible={visible} onCancel={handleCancel} />
       <AddToken showAddToken={showAddToken} onCancel={handleCancel} />
-      <HeaderWrapper justify='space-between'>
+      <HeaderWrapper justify="space-between">
         <Col>
-          <Row align='middle' style={{ marginBottom: 16 }}>
+          <Row align="middle" style={{ marginBottom: 16 }}>
             <Title>Balances</Title>
             {isNetwork && (
               <>
                 <Col style={{ margin: '0 20px 0 28px' }}>
-                  <Button type='primary' size='large' style={{ width: 184 }}>
+                  <Button type="primary" size="large" style={{ width: 184 }}>
                     Request Airdrop
                   </Button>
                 </Col>
                 <Col>
                   <Button
-                    size='large'
+                    size="large"
                     style={{
                       background: 'rgba(255, 255, 255, 0.1)',
                       color: '#fff',
-                      width: 184
+                      width: 184,
                     }}
                   >
                     Mint test token
@@ -141,10 +162,10 @@ const Account = (props) => {
           Please View Your Trade Status on Solana Explorer
         </Col>
         <Col>
-          <Row align='middle'>
+          <ActionRow align="middle">
             <Popover
-              content='Add Token'
-              trigger='hover'
+              content="Add Token"
+              trigger="hover"
               style={{ fontSize: 12, color: '#fff' }}
             >
               <Avatar
@@ -153,10 +174,9 @@ const Account = (props) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: '#17181c',
                   padding: 12,
                   height: 'auto',
-                  width: 'auto'
+                  width: 'auto',
                 }}
                 icon={
                   <PlusCircleOutlined
@@ -167,20 +187,24 @@ const Account = (props) => {
               />
             </Popover>
             <RedoOutlined style={{ fontSize: 26, margin: '0 28px' }} />
-          </Row>
+          </ActionRow>
         </Col>
       </HeaderWrapper>
-      <CollapseWrapper defaultActiveKey={['1']} expandIconPosition='right'>
+      <CollapseWrapper
+        defaultActiveKey={['1']}
+        expandIconPosition="right"
+        expandIcon={DownArrow}
+      >
         <Panel
           header={
             <PanelHeader
-              addressId='0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E'
-              name='SOL'
+              addressId="0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E"
+              name="SOL"
             />
           }
-          key='1'
+          key="1"
         >
-          <Row align='middle' justify='space-between'>
+          <Row align="middle" justify="space-between" style={{ height: 60 }}>
             <Col>
               Token Name: <span>SOL</span>
             </Col>
@@ -188,24 +212,24 @@ const Account = (props) => {
               <a
                 style={{
                   textDecoration: 'underline',
-                  color: 'rgba(255,255,255, 0.6)'
+                  color: 'rgba(255,255,255, 0.6)',
                 }}
-                href='/'
+                href="/"
               >
                 View on Solana Explorer
               </a>
               <Button
-                type='primary'
+                type="primary"
                 ghost
                 style={{ margin: '0 16px 0 24px', width: 160 }}
-                size='large'
+                size="large"
                 onClick={handleClick}
               >
                 Deposit
               </Button>
               <Button
-                type='primary'
-                size='large'
+                type="primary"
+                size="large"
                 style={{ width: 160 }}
                 onClick={handleClickSendButton}
               >
@@ -216,18 +240,18 @@ const Account = (props) => {
         </Panel>
       </CollapseWrapper>
 
-      <CollapseWrapper expandIconPosition='right'>
+      <CollapseWrapper expandIconPosition="right" expandIcon={DownArrow}>
         <Panel
           header={
             <PanelHeader
-              tokenId='0xd4e9a6DD7d47Ba556D3bf261'
-              name='BTC'
-              addressId='0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E'
+              tokenId="0xd4e9a6DD7d47Ba556D3bf261"
+              name="BTC"
+              addressId="0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E"
             />
           }
-          key='1'
+          key="1"
         >
-          <Row align='middle' justify='space-between'>
+          <Row align="middle" justify="space-between">
             <Col>
               Token Name: <span>BTC</span>
             </Col>
@@ -235,24 +259,24 @@ const Account = (props) => {
               <a
                 style={{
                   textDecoration: 'underline',
-                  color: 'rgba(255,255,255, 0.6)'
+                  color: 'rgba(255,255,255, 0.6)',
                 }}
-                href='/'
+                href="/"
               >
                 View on Solana Explorer
               </a>
               <Button
-                type='primary'
+                type="primary"
                 ghost
                 style={{ margin: '0 16px 0 24px', width: 160 }}
-                size='large'
+                size="large"
                 onClick={handleClick}
               >
                 Deposit
               </Button>
               <Button
-                type='primary'
-                size='large'
+                type="primary"
+                size="large"
                 style={{ width: 160 }}
                 onClick={handleClickSendButton}
               >
@@ -263,6 +287,6 @@ const Account = (props) => {
         </Panel>
       </CollapseWrapper>
     </Wrapper>
-  )
-}
-export default React.memo(Account)
+  );
+};
+export default React.memo(Account);

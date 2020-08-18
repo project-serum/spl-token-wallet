@@ -1,12 +1,12 @@
-import { CaretRightFilled } from '@ant-design/icons'
-import { Button, Col, Row, Steps } from 'antd'
-import { withRouter } from "react-router-dom";
-import React, { useCallback, useState } from 'react'
-import Step1 from '../components/newAccount/Step1'
-import Step2 from '../components/newAccount/Step2'
-import imageMapping from '../modules/shared/imageMapping'
-import styled from 'styled-components'
-const { Step } = Steps
+import { CaretRightFilled } from '@ant-design/icons';
+import { Button, Col, Row, Steps } from 'antd';
+import { withRouter } from 'react-router-dom';
+import React, { useCallback, useState } from 'react';
+import Step1 from '../components/newAccount/Step1';
+import Step2 from '../components/newAccount/Step2';
+import imageMapping from '../modules/shared/imageMapping';
+import styled from 'styled-components';
+const { Step } = Steps;
 
 const Wrapper = styled(Row)`
   position: relative;
@@ -35,82 +35,95 @@ const Wrapper = styled(Row)`
     > .ant-steps-item-title::after {
     background-color: #3e5af2;
   }
-`
+`;
 const ContentWrapper = styled.div`
   padding-top: 36px;
-`
+`;
 const StepWrapper = styled(Col)`
   border-radius: 20px;
   background-color: #34363f;
   height: 678px;
   padding: 32px 49px;
-`
+`;
 const ButtonWrapper = styled(Row)`
   position: absolute;
   bottom: 37px;
-`
+`;
 const Tip = styled(Col)`
   padding: 34px 40px;
   width: 528px;
   font-size: 16px;
   position: relative;
-`
+  background: #2b2c33;
+  border-radius: 20px;
+`;
 const Title = styled.h1`
   font-size: 30px;
-`
+`;
 const TipWrapper = styled.div`
   border-radius: 6px;
   background-color: #2b2c34;
   padding: 40px 24px;
-`
+`;
 const TipTitle = styled.h2`
   font-size: 22px;
   color: #e6ac71;
-`
+`;
 const TipContent = styled.ul`
   margin-bottom: 0;
   li {
     margin-bottom: 12px;
+    list-style: none;
     &:last-child {
       margin-bottom: 0;
     }
+    &:before {
+      content: '';
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+      width: 6px;
+      height: 6px;
+      background: #e6ac71;
+      border-radius: 50%;
+    }
   }
-`
+`;
 const Send = (props) => {
-  const [current, setCurrent] = useState(0)
-  const [isDisabled, setIsDisabled] = useState(true)
-  const [disableConfirmBtn, setDisableConfirmBtn] = useState(true)
-  const [isDone, setIsDone] = useState(false)
+  const [current, setCurrent] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [disableConfirmBtn, setDisableConfirmBtn] = useState(true);
+  const [isDone, setIsDone] = useState(false);
   const handleNext = useCallback(() => {
-    setCurrent(1)
-  }, [])
+    setCurrent(1);
+  }, []);
   const openLock = useCallback(() => {
-    setIsDisabled(false)
-  }, [])
-  const setConfirmBtn = useCallback(b => {
-    setDisableConfirmBtn(b)
-  }, [])
+    setIsDisabled(false);
+  }, []);
+  const setConfirmBtn = useCallback((b) => {
+    setDisableConfirmBtn(b);
+  }, []);
   const setAllDone = useCallback(() => {
-    setIsDone(true)
-  }, [])
+    setIsDone(true);
+  }, []);
   const toWelcome = useCallback(() => {
-    props.history.push('/setPassword?status=success')
-  }, [props.history])
+    props.history.push('/setPassword?status=success');
+  }, [props.history]);
   const StepsList = [
     {
       content: <Step1 openLock={openLock} isDisabled={isDisabled} />,
-      title: 'step1'
+      title: 'step1',
     },
-    { content: <Step2 setConfirmBtn={setConfirmBtn} />, title: 'step2' }
-  ]
-  const RenderContent = StepsList[current].content
+    { content: <Step2 setConfirmBtn={setConfirmBtn} />, title: 'step2' },
+  ];
+  const RenderContent = StepsList[current].content;
   return (
     <Wrapper>
       {isDone ? (
         <>
           <StepWrapper style={{ width: 'calc(100% - 528px)' }}>
             <ContentWrapper>
-              <Title>Confirm your Secret Backup Phrase</Title>
+              <Title>Congratulations</Title>
               <div style={{ margin: '20px 0 40px' }}>
                 Phrase Please select each phrase in orderto make sureitiscorect.
               </div>
@@ -136,17 +149,17 @@ const Send = (props) => {
               </TipWrapper>
             </ContentWrapper>
             <ButtonWrapper
-              align='middle'
-              justify='space-between'
+              align="middle"
+              justify="space-between"
               style={{ width: 'calc(100% - 98px)' }}
             >
               <Button
-                type='primary'
-                size='large'
+                type="primary"
+                size="large"
                 style={{
                   width: 240,
                   height: 52,
-                  borderRadius: 6
+                  borderRadius: 6,
                 }}
                 onClick={toWelcome}
               >
@@ -154,7 +167,7 @@ const Send = (props) => {
               </Button>
               <div style={{ display: 'inherit' }}>
                 {'*MetaMask cannot recover your seedphrase.'}
-                <a style={{ marginLeft: 8, color: '#6099ff' }} href='#' >
+                <a style={{ marginLeft: 8, color: '#6099ff' }} href="#">
                   Learn more
                   <CaretRightFilled style={{ verticalAlign: 'middle' }} />
                 </a>
@@ -162,7 +175,11 @@ const Send = (props) => {
             </ButtonWrapper>
           </StepWrapper>
           <Tip>
-            <img src={imageMapping.allDone} style={{position: 'relative', left: -66}} alt='' />
+            <img
+              src={imageMapping.allDone}
+              style={{ position: 'relative', left: -66 }}
+              alt=""
+            />
           </Tip>
         </>
       ) : (
@@ -171,35 +188,51 @@ const Send = (props) => {
             style={{ width: current === 0 ? 'calc(100% - 528px)' : '100%' }}
           >
             <Steps current={current} style={{ width: 200 }}>
-              {StepsList.map(item => (
+              {StepsList.map((item) => (
                 <Step key={item.title} />
               ))}
             </Steps>
             <ContentWrapper>{RenderContent}</ContentWrapper>
             <ButtonWrapper>
               {current === 0 ? (
-                <Button
-                  type='primary'
-                  disabled={isDisabled}
-                  size='large'
-                  style={{
-                    width: 240,
-                    height: 52,
-                    borderRadius: 6
-                  }}
-                  onClick={handleNext}
-                >
-                  Next
-                </Button>
+                <>
+                  <Button
+                    type="primary"
+                    ghost
+                    size="large"
+                    style={{
+                      width: 240,
+                      height: 52,
+                      borderRadius: 6,
+                      marginRight: 20,
+                    }}
+                    onClick={handleNext}
+                  >
+                    Remind me late
+                  </Button>
+                  <Button
+                    type="primary"
+                    disabled={isDisabled}
+                    size="large"
+                    style={{
+                      width: 240,
+                      height: 52,
+                      borderRadius: 6,
+                    }}
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                </>
               ) : (
                 <Button
-                  type='primary'
+                  type="primary"
                   disabled={disableConfirmBtn}
-                  size='large'
+                  size="large"
                   style={{
                     width: 240,
                     height: 52,
-                    borderRadius: 6
+                    borderRadius: 6,
                   }}
                   onClick={setAllDone}
                 >
@@ -221,12 +254,12 @@ const Send = (props) => {
                 locations.
               </p>
               <div>Memorize this phrase.</div>
-              <img src={imageMapping.processMan} alt='' />
+              <img src={imageMapping.processMan} alt="" />
             </Tip>
           )}
         </>
       )}
     </Wrapper>
-  )
-}
-export default withRouter(React.memo(Send))
+  );
+};
+export default withRouter(React.memo(Send));
