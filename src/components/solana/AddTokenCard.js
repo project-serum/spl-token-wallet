@@ -14,9 +14,14 @@ const CardWrapper = styled(Row)`
   }
   .ant-btn-primary {
     background: #00c853;
+    border-color: #00c853;
   }
   .ant-btn-primary[disabled] {
     background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    :hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 `
 const Btn = styled(Button)`

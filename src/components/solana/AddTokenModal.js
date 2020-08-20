@@ -133,7 +133,7 @@ const ModalComponent = (props) => {
                 <Btn
                   type='primary'
                   htmlType='submit'
-                  style={{ background: '#00c853' }}
+                  style={{ background: '#00c853', borderColor: '#00c853' }}
                 >
                   Add
               </Btn>

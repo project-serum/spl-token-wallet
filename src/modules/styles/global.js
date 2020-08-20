@@ -80,7 +80,6 @@ html,body{
 .ant-form-item-label > label {
   font-size: 20px;
   color:#fff;
-  font-weight: 600;
 }
 .ant-btn-primary {
   font-size: 18px;
