@@ -61,7 +61,7 @@ export default function DebugButtons() {
   }
 
   const noSol = amount === 0;
-  const requestAirdropDisabled = endpoint !== clusterApiUrl('devnet');
+  const requestAirdropDisabled = endpoint === clusterApiUrl('mainnet-beta');
   return (
     <div style={{ display: 'flex' }}>
       <Tooltip
