@@ -92,12 +92,12 @@ const ModalComponent = (props) => {
               onFinishFailed={onFinishFailed}
             >
               <Form.Item
-                label='Token Mint Address'
-                name='mintAddress'
+                label='Token ID'
+                name='tokenId'
                 rules={[
                   {
                     required: true,
-                    message: 'Please input your Token Mint Address!'
+                    message: 'Please input your Token ID!'
                   }
                 ]}
               >
