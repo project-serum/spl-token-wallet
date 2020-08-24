@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@material-ui/core/Button';
+import { confirmTransaction } from './utils';
 
 export function useSendTransaction() {
   const connection = useConnection();
@@ -25,7 +26,7 @@ export function useSendTransaction() {
         persist: true,
         action: <ViewTransactionOnExplorerButton signature={signature} />,
       });
-      await connection.confirmTransaction(signature, 1);
+      await confirmTransaction(connection, signature);
       closeSnackbar(id);
       setSending(false);
       enqueueSnackbar('Transaction confirmed', {

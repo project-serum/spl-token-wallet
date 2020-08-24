@@ -108,7 +108,7 @@ export default function AddTokenDialog({ open, onClose }) {
             />
           </Tabs>
         )}
-        {tab === 'manual' ? (
+        {tab === 'manual' || !popularTokens ? (
           <React.Fragment>
             <TextField
               label="Token Mint Address"
@@ -139,6 +139,7 @@ export default function AddTokenDialog({ open, onClose }) {
           <List disablePadding>
             {popularTokens.map((token) => (
               <TokenListItem
+                key={token.mintAddress}
                 {...token}
                 onSubmit={onSubmit}
                 disalbed={sending}
