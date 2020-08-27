@@ -5,7 +5,8 @@ html,body{
   min-width: 1440px;
   background: #171b26;
   font-size: 16px;
-  color: rgba(255,255,255,0.6)
+  color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.8)'};
 }
 .ant-table-tbody > tr.ant-table-row:hover > td {
   background: #273043;
@@ -62,27 +63,52 @@ html,body{
   left: -1px;
 }
 .ant-steps-item-wait .ant-steps-item-icon{
-  background: #232429;
+  background: ${({ theme }) => (theme.mode === 'dark' ? '#232429' : '#9b9b9b')};
   border:none;
   > .ant-steps-icon{
-    color:#adaeb2;
+    color: ${({ theme }) => (theme.mode === 'dark' ? '#adaeb2' : '#fff')};
   }
 }
 .ant-btn-primary[disabled],.ant-btn-primary[disabled]:hover {
   background:#74daf6;
   opacity: 0.5;
-  color: #21222a;
+  color: ${({ theme }) => (theme.mode === 'dark' ? '#21222a' : '#fff')};
 }
 .ant-btn-primary,.ant-btn-primary:hover, .ant-btn-primary:focus {
-  color: #21222a;
+  color: ${({ theme }) => (theme.mode === 'dark' ? '#21222a' : '#fff')};
   height: 52px;
+}
+.ant-btn-background-ghost.ant-btn-primary{
+  color: ${({ theme }) => theme[theme.mode].primaryColor};
+  border-color: ${({ theme }) => theme[theme.mode].primaryColor};
+  :active,:focus {
+    color: ${({ theme }) => theme[theme.mode].primaryColor};
+    border-color: ${({ theme }) => theme[theme.mode].primaryColor};
+  }
+}
+.ant-btn {
+  height: 52px;
+}
+.ant-modal-close {
+  color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.45)' : '#000'};
+    :hover{
+      color: ${({ theme }) =>
+        theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.75)' : '#333'};
+    }
 }
 .ant-form-item-label > label {
   font-size: 20px;
-  color:#fff;
+  color: ${({ theme }) => (theme.mode === 'dark' ? '#fff' : '#98a1af')};
+}
+.ant-btn-background-ghost {
+  border-color: ${({ theme }) => theme[theme.mode].primaryColor};
+  color: ${({ theme }) => theme[theme.mode].primaryColor};
 }
 .ant-btn-primary {
   font-size: 18px;
+  background: ${({ theme }) => theme[theme.mode].primaryColor};
+  border-color: ${({ theme }) => theme[theme.mode].primaryColor};
 }
 .anticon-check.ant-steps-finish-icon {
   vertical-align: -4px;
@@ -91,14 +117,39 @@ html,body{
 }
 .ant-input-affix-wrapper-lg {
   height:52px;
-  background-color: #232429;
+  background-color: ${({ theme }) =>
+    theme.mode === 'dark' ? '#232429' : '#f5efff'};
+  border-color: ${({ theme }) =>
+    theme.mode === 'dark' ? '#434343' : '#7541eb'};
+}
+.ant-input-affix-wrapper {
+  color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : '#000'};
+}
+input::-webkit-input-placeholder {
+  color: ${({ theme }) => (theme.mode === 'dark' ? '' : '#4a4a4a')}!important;
 }
 .ant-modal-content,.ant-modal-header {
   border-radius: 20px;
-  background: #2b2c34;
+  background: ${({ theme }) => theme[theme.mode].background};
 }
 .ant-modal-header {
   padding-top: 32px;
+  border:none;
+  .ant-modal-title{
+     color: ${({ theme }) =>
+       theme.mode === 'dark'
+         ? 'rgba(255, 255, 255, 0.65)'
+         : '#4a4a4a'}!important;
+  }
+}
+.ant-input {
+  color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.65)' : '#4a4a4a'}!important;
+  background-color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'transparent' : '#f5efff'};
+  border-color: ${({ theme }) =>
+    theme.mode === 'dark' ? '#434343' : '#3b06b5'};
 }
 .ant-select-item {
   font-size: 16px;

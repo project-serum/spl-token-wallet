@@ -17,8 +17,9 @@ const Warning = styled(Row)`
   width: fit-content;
   margin-bottom: 32px;
 `;
-const LockWrapper = styled.div`
-  padding: 24px 40px;
+const LockWrapper = styled(Row)`
+  height: 120px;
+  padding: 0 40px;
   border-radius: 10px;
   background-color: #2b2c34;
   font-size: 22px;
@@ -56,7 +57,7 @@ const Step1 = (props) => {
         WARNING: Never disclose your backup phrase.Anyone with this phrasecan
         take your Ether forever.
       </Warning>
-      <LockWrapper>
+      <LockWrapper align="middle">
         phrase lens defense jacket around increase link oppose grab february
         later stamp
         {isDisabled && (

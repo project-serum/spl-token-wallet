@@ -3,18 +3,19 @@ import React from 'react';
 import styled from 'styled-components';
 const Wrapper = styled.div`
   border-radius: 4px;
-  background-color: #34363f;
+  background-color: ${({ theme }) =>
+    theme.mode === 'dark' ? '#34363f' : '#f6f6f6'};
 `;
 const Amount = styled.span`
   font-size: 44px;
   line-height: initial;
 `;
 const RowWrapper = styled(Row)`
+  color: ${({ theme }) => (theme.mode === 'dark' ? '#fff' : '#4a4a4a')};
   height: 98px;
-  align-items:center;
+  align-items: center;
   margin: 0 20px;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-  // font-style: italic;
   &:last-child {
     border-bottom: none;
   }
@@ -30,14 +31,16 @@ const Step2 = () => {
           >
             B
           </Avatar>
-          <span
-            style={{ fontSize: 24, verticalAlign: 'middle', color: '#fff' }}
-          >
-            BTC
-          </span>
+          <span style={{ fontSize: 24, verticalAlign: 'middle' }}>BTC</span>
         </Col>
         <Col style={{ marginRight: 65, textAlign: 'right' }}>
-          <div style={{ color: '#fff', fontStyle: 'italic', fontWeight: 900, fontFamily: 'Roboto' }}>
+          <div
+            style={{
+              fontStyle: 'italic',
+              fontWeight: 900,
+              fontFamily: 'Roboto',
+            }}
+          >
             <Amount>45.62</Amount>BTC
           </div>
         </Col>
@@ -49,16 +52,18 @@ const Step2 = () => {
               fontSize: 16,
               verticalAlign: 'middle',
               marginLeft: 60,
-              color: '#fff',
               fontStyle: 'italic',
-              fontWeight: 900, fontFamily: 'Roboto'
+              fontWeight: 900,
+              fontFamily: 'Roboto',
             }}
           >
             GAS FEE
           </span>
         </Col>
-        <Col style={{ marginRight: 65, textAlign: 'right', fontStyle: 'italic' }}>
-          <div style={{ color: '#fff', fontWeight: 900, fontFamily: 'Roboto' }}>
+        <Col
+          style={{ marginRight: 65, textAlign: 'right', fontStyle: 'italic' }}
+        >
+          <div style={{ fontWeight: 900, fontFamily: 'Roboto' }}>
             <Amount>0.01</Amount>SOL
           </div>
           <div>
@@ -73,9 +78,9 @@ const Step2 = () => {
               fontSize: 20,
               verticalAlign: 'middle',
               marginLeft: 60,
-              color: '#fff',
               fontStyle: 'italic',
-              fontWeight: 900, fontFamily: 'Roboto'
+              fontWeight: 900,
+              fontFamily: 'Roboto',
             }}
           >
             TOTAL
@@ -83,14 +88,20 @@ const Step2 = () => {
         </Col>
         <Col style={{ marginRight: 65, textAlign: 'right' }}>
           <div>Amount + GAS FEE</div>
-          <div style={{ color: '#fff', fontStyle: 'italic', fontWeight: 900, fontFamily: 'Roboto' }}>
+          <div
+            style={{
+              fontStyle: 'italic',
+              fontWeight: 900,
+              fontFamily: 'Roboto',
+            }}
+          >
             <Amount>45.62</Amount>
             {' BTC '}
             <Amount>{'+ '}0.01</Amount>SOL
           </div>
         </Col>
       </RowWrapper>
-    </Wrapper >
+    </Wrapper>
   );
 };
 export default React.memo(Step2);

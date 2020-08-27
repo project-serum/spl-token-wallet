@@ -1,21 +1,25 @@
-import logo from '../../assets/logo.png'
-import man from '../../assets/man.png'
-import solanaBg from '../../assets/solanaBg.jpg'
-import success from '../../assets/success.png'
-import MegaLogo from '../../assets/MegaLogo.png'
-import headerLogo from '../../assets/headerLogo.png'
-import processMan from '../../assets/processMan.png'
-import allDone from '../../assets/AllDone.png'
-import contentBg from '../../assets/contentBg.png'
+import logo from '../../assets/logo.png';
+import setpassword from '../../assets/setpassword.png';
+import solanaBg from '../../assets/solanaBg.jpg';
+import solanaBgLight from '../../assets/solanaBgLight.jpg';
+import success from '../../assets/success.png';
+import MegaLogo from '../../assets/MegaLogo.png';
+import headerLogo from '../../assets/headerLogo.png';
+import newAccount1 from '../../assets/newAccount1.png';
+import newAccount2 from '../../assets/newAccount2.png';
+import newAccount3 from '../../assets/newAccount3.png';
+import contentBg from '../../assets/contentBg.png';
 
 export default {
   solanaBg,
-  man,
+  solanaBgLight,
+  setpassword,
   logo,
   success,
   MegaLogo,
   headerLogo,
-  processMan,
-  allDone,
-  contentBg
-}
+  newAccount1,
+  newAccount2,
+  newAccount3,
+  contentBg,
+};

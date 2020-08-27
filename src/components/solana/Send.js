@@ -22,13 +22,15 @@ const Wrapper = styled.div`
     border-color: #3e5af2;
   }
   .ant-steps-item-title::after {
-    background: #3e5af2;
     height: 8px;
     border-radius: 7px;
     top: 14px;
   }
-  .ant-steps-item-content > .ant-steps-item-title::after {
-    background-color: #3e5af2;
+  .ant-steps-item-container
+    .ant-steps-item-content
+    > .ant-steps-item-title::after {
+    background-color: ${({ theme }) =>
+      theme.mode === 'dark' ? '#242427' : '#9b9b9b'};
   }
   .ant-steps-item-finish
     > .ant-steps-item-container
@@ -45,21 +47,20 @@ const Wrapper = styled.div`
       width: 60px;
       height: 60px;
       margin-bottom: 12px;
-      margin-right:0;
+      margin-right: 0;
       .ant-steps-icon {
         font-size: 30px;
         top: 13px;
         left: -2px;
       }
-     
     }
-    &:last-child .ant-steps-item-icon{
-      left:0;
+    &:last-child .ant-steps-item-icon {
+      left: 0;
     }
   }
-  .ant-steps-item  {
+  .ant-steps-item {
     &:last-child .ant-steps-item-container {
-      text-align:center;
+      text-align: center;
     }
   }
   .ant-steps-item-title::after {
@@ -95,7 +96,7 @@ const Send = () => {
       </Steps>
       <ContentWrapper>{RenderContent}</ContentWrapper>
       <ButtonWrapper>
-        {current < 2 ? (
+        {current < 1 ? (
           <>
             <Button type="primary" ghost size="large" style={{ width: 200 }}>
               Cancel
@@ -110,25 +111,25 @@ const Send = () => {
             </Button>
           </>
         ) : (
-            <>
-              <Button
-                type="primary"
-                ghost
-                size="large"
-                style={{ width: current > 0 ? 200 : 300 }}
-              >
-                Reject
+          <>
+            <Button
+              type="primary"
+              ghost
+              size="large"
+              style={{ width: current > 0 ? 200 : 300 }}
+            >
+              Reject
             </Button>
-              <Button
-                type="primary"
-                size="large"
-                style={{ width: 200, marginLeft: 24 }}
-                onClick={HandleNext}
-              >
-                Confirm
+            <Button
+              type="primary"
+              size="large"
+              style={{ width: 200, marginLeft: 24 }}
+              onClick={HandleNext}
+            >
+              Confirm
             </Button>
-            </>
-          )}
+          </>
+        )}
       </ButtonWrapper>
     </Wrapper>
   );

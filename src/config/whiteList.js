@@ -1,3 +1,4 @@
-import { ROUTE } from '../routes'
-const { connectWallet,setPassword } = ROUTE
-export const hideHeaderLogo = [connectWallet,setPassword]
+import { ROUTE } from '../routes';
+const { connectWallet, setPassword, index } = ROUTE;
+export const hideHeaderLogo = [connectWallet, setPassword];
+export const supportLightMode = [index];

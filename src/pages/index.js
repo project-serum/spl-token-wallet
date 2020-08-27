@@ -7,15 +7,29 @@ import {
   PlusCircleOutlined,
   DownOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Input, Layout, Menu, Modal, Row, Select } from 'antd';
-import React, { useCallback, useState } from 'react';
+import {
+  Avatar,
+  Button,
+  Input,
+  Layout,
+  Menu,
+  Modal,
+  Row,
+  Select,
+  Switch,
+} from 'antd';
+import React, { useCallback, useState, useContext } from 'react';
 import Account from '../components/solana/Account';
 import Send from '../components/solana/Send';
 import styled from 'styled-components';
-
+import { ThemeContext } from '../App';
 const { Option } = Select;
 const { Content, Sider } = Layout;
 const LayoutWrapper = styled(Layout)`
+  .ant-btn-primary {
+    background: ${({ theme }) => theme[theme.mode].primaryColor};
+    border-color: ${({ theme }) => theme[theme.mode].primaryColor};
+  }
   width: 100%;
   height: 678px;
   padding-left: 28px;
@@ -27,9 +41,10 @@ const LayoutWrapper = styled(Layout)`
     border-right: none;
   }
   .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
-    background-color: #2b2c33;
-    color: #fff;
+    background: ${({ theme }) => theme[theme.mode].background};
+    color: ${({ theme }) => theme[theme.mode].menu};
     border-radius: 25px 0 0 25px;
+    font-weight: 600;
   }
   .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
     border: none;
@@ -42,18 +57,19 @@ const LayoutWrapper = styled(Layout)`
     border: none;
   }
   .ant-menu-item {
-    padding-left: 8px!important;
+    padding-left: 8px !important;
+    border-radius: 25px 0 0 25px;
     .ant-select {
       width: 196px;
     }
   }
   .ant-select-selection-item {
     display: flex;
-    align-items:center;
+    align-items: center;
   }
 `;
 const PageContent = styled(Content)`
-  background: #2b2c34;
+  background: ${({ theme }) => theme[theme.mode].background};
   border-radius: 20px;
 `;
 const AccountMenu = styled(Menu)`
@@ -68,6 +84,14 @@ const SettingMenu = styled(Menu)`
   &.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
     border-radius: 0;
     background-color: transparent;
+  }
+  .ant-menu-item {
+    margin-top: 0;
+    margin-bottom: 51px !important;
+    height: 24px;
+    line-height: 24px;
+    color: #fff !important;
+    font-weight: normal !important;
   }
   .ant-select-selector {
     padding-left: 0 !important;
@@ -102,9 +126,15 @@ const ArrowWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.1);
 `;
 const MainPage = () => {
+  const { mode, toggleTheme } = useContext(ThemeContext);
+
   const [showAccount, setShowAccount] = useState(true);
   const [visible, setVisible] = useState(false);
   const [isNetwork, setIsNetwork] = useState(false);
+  const onChange = (checked) => {
+    toggleTheme();
+    sessionStorage.setItem('theme', checked ? 'dark' : 'light');
+  };
   const handleOk = useCallback(() => {
     setVisible(false);
   }, []);
@@ -148,7 +178,7 @@ const MainPage = () => {
             style={{ width: 200 }}
             onClick={handleOk}
           >
-            Create
+            Save
           </Button>
         </Row>
       </Modal>
@@ -158,7 +188,7 @@ const MainPage = () => {
           mode="inline"
           defaultSelectedKeys={['MAIN ACCOUNT']}
           defaultOpenKeys={['MAIN ACCOUNT']}
-          style={{ height: 'calc(100% - 160px)', overflowY: 'scroll' }}
+          style={{ height: 'calc(100% - 235px)', overflowY: 'scroll' }}
         >
           <Menu.Item key="MAIN ACCOUNT">
             <UserAvatar style={{ background: '#50e3c2' }}></UserAvatar>MAIN
@@ -178,12 +208,17 @@ const MainPage = () => {
           mode="inline"
           defaultSelectedKeys={['Main Beta']}
           defaultOpenKeys={['Main Beta']}
-          style={{ height: 145 }}
+          style={{ height: 220 }}
         >
           <Menu.Item key="Main Beta">
             <Select
               defaultValue="Main Beta"
-              dropdownStyle={{ boxShadow: 'none', border: '1px solid #98a1af', background: '#34363e', padding: '20px 0' }}
+              dropdownStyle={{
+                boxShadow: 'none',
+                border: '1px solid #98a1af',
+                background: '#34363e',
+                padding: '20px 0',
+              }}
               bordered={false}
               style={{ width: '196px', color: '#fff' }}
               onChange={handleChange}
@@ -193,7 +228,7 @@ const MainPage = () => {
                 <BlockOutlined
                   style={{
                     fontSize: 21,
-                    marginRight: 28,
+                    marginRight: 23,
                     verticalAlign: 'middle',
                   }}
                 />
@@ -204,7 +239,7 @@ const MainPage = () => {
                 <HeatMapOutlined
                   style={{
                     fontSize: 21,
-                    marginRight: 28,
+                    marginRight: 23,
                     verticalAlign: 'middle',
                   }}
                 />
@@ -214,17 +249,17 @@ const MainPage = () => {
                 <BuildOutlined
                   style={{
                     fontSize: 21,
-                    marginRight: 28,
+                    marginRight: 23,
                     verticalAlign: 'middle',
                   }}
                 />
                 TESTNET
               </SelectOption>
-              <SelectOption value="NETWORK" >
+              <SelectOption value="NETWORK">
                 <GlobalOutlined
                   style={{
                     fontSize: 21,
-                    marginRight: 28,
+                    marginRight: 23,
                     verticalAlign: 'middle',
                   }}
                 />
@@ -232,9 +267,22 @@ const MainPage = () => {
               </SelectOption>
             </Select>
           </Menu.Item>
+          <Menu.Item key="theme">
+            <Switch
+              size="small"
+              defaultChecked={mode === 'dark'}
+              onChange={onChange}
+              style={{ marginRight: 14, transform: ' translateX(-4px)' }}
+            />
+            {mode === 'dark' ? 'Dark made ON' : 'Dark made OFF'}
+          </Menu.Item>
           <Menu.Item key="Source">
             <InfoCircleOutlined
-              style={{ fontSize: 20, verticalAlign: 'middle' }}
+              style={{
+                fontSize: 20,
+                verticalAlign: 'middle',
+                marginRight: 20,
+              }}
             />
             Source
           </Menu.Item>

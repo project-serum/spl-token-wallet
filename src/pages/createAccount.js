@@ -57,6 +57,15 @@ const Tip = styled(Col)`
   background: #2b2c33;
   border-radius: 20px;
 `;
+const NewAccountTip = styled(Tip)`
+  background: url(${(props) =>
+      props['data-done']
+        ? imageMapping.newAccount3
+        : props['data-disabled']
+        ? imageMapping.newAccount1
+        : imageMapping.newAccount2})
+    left bottom no-repeat #2b2c33;
+`;
 const Title = styled.h1`
   font-size: 30px;
 `;
@@ -89,7 +98,7 @@ const TipContent = styled.ul`
     }
   }
 `;
-const Send = (props) => {
+const CreateAccount = (props) => {
   const [current, setCurrent] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
   const [disableConfirmBtn, setDisableConfirmBtn] = useState(true);
@@ -174,13 +183,7 @@ const Send = (props) => {
               </div>
             </ButtonWrapper>
           </StepWrapper>
-          <Tip>
-            <img
-              src={imageMapping.allDone}
-              style={{ position: 'relative', left: -66 }}
-              alt=""
-            />
-          </Tip>
+          <NewAccountTip data-done={isDone} />
         </>
       ) : (
         <>
@@ -242,7 +245,7 @@ const Send = (props) => {
             </ButtonWrapper>
           </StepWrapper>
           {current === 0 && (
-            <Tip>
+            <NewAccountTip data-disabled={isDisabled}>
               <h3>tips</h3>
               <div style={{ margin: '32px 0 20px' }}>
                 Store this phrase in a password manager like 1Password.
@@ -254,12 +257,11 @@ const Send = (props) => {
                 locations.
               </p>
               <div>Memorize this phrase.</div>
-              <img src={imageMapping.processMan} alt="" />
-            </Tip>
+            </NewAccountTip>
           )}
         </>
       )}
     </Wrapper>
   );
 };
-export default withRouter(React.memo(Send));
+export default withRouter(React.memo(CreateAccount));

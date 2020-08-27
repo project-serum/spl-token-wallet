@@ -14,14 +14,26 @@ import ModalComponent from './Modal';
 import imageMapping from '../../modules/shared/imageMapping';
 const { Panel } = Collapse;
 const Wrapper = styled.div`
+  .ant-avatar {
+    color: ${({ theme }) => theme[theme.mode].menu};
+  }
   .ant-collapse,
   .ant-collapse-item {
     border: none;
   }
+  .ant-collapse {
+    border: ${({ theme }) =>
+    theme.mode === 'dark' ? 'none' : 'solid 1px rgba(151,151,151,.2)'};
+  }
   .ant-collapse-content {
-    border-top: 1px dashed rgba(255, 255, 255, 0.2);
-    background: #33343b;
+    border-top: ${({ theme }) =>
+    theme.mode === 'dark'
+      ? '1px dashed rgba(255, 255, 255, 0.2)'
+      : '1px dashed rgba(151, 151, 151, 0.2)'};
+    background: ${({ theme }) => (theme.mode === 'dark' ? '#33343b' : '#fff')};
     margin: 0 16px;
+    color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.8)'};
   }
   .ant-collapse-header {
     border-radius: 4px !important;
@@ -36,7 +48,7 @@ const HeaderWrapper = styled(Row)`
 const Title = styled(Col)`
   font-size: 30px;
   margin-bottom: 4px;
-  color: #fff;
+  color: ${({ theme }) => theme[theme.mode].text};
   font-family: Roboto;
   font-weight: bold;
 `;
@@ -51,6 +63,7 @@ const ActionRow = styled(Row)`
   .ant-avatar-circle {
     background: transparent;
     :hover {
+      color: #fff;
       background: #17181c;
     }
   }
@@ -60,7 +73,43 @@ const ArrowWrapper = styled.div`
   height: 40px;
   line-height: 40px !important;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#7857c6'};
+`;
+const AirdropButton = styled(Button)`
+  color: ${({ theme }) => theme[theme.mode].background}!important;
+  width: 184px;
+`;
+const MinTokenButton = styled(Button)`
+  color: #fff;
+  width: 184px;
+  background: ${({ theme }) => theme[theme.mode].disabled};
+  border-color: ${({ theme }) => theme[theme.mode].disabled};
+`;
+const PanelHeaderCol = styled(Col)`
+  color: ${({ theme }) => `rgba(${theme.mode !== 'dark' && '0,0,0, 0.8'})`};
+`;
+const CopyOutlinedIcon = styled(CopyOutlined)`
+  color: ${({ theme }) => theme[theme.mode].text};
+  margin-left: 4px;
+`;
+const TokenId = styled.div`
+  color: ${({ theme }) => theme[theme.mode].text};
+`;
+const Explorer = styled.a`
+  color: rgba(
+    ${({ theme }) => (theme.mode === 'dark' ? '255,255,255' : '0,0,0')},
+    0.6
+  );
+`;
+const RedoOutlinedIcon = styled(RedoOutlined)`
+  font-size: 26px;
+  margin: 0 28px;
+  color: ${({ theme }) => theme[theme.mode].menu};
+`;
+const Price = styled(Row)`
+  color: ${({ theme }) =>
+    theme.mode === 'dark' ? 'rgba(255,255,255,.85)' : '#4a4a4a'};
 `;
 const Account = (props) => {
   const { handleClickSendButton, isNetwork } = props;
@@ -77,16 +126,19 @@ const Account = (props) => {
     setShowAddToken(true);
   }, []);
   const PanelHeader = ({ tokenId, name, addressId }) => (
-    <Row align="middle" justify="space-between" style={{ padding: '0 16px', height: 74 }}>
-      <Col
+    <Row
+      align="middle"
+      justify="space-between"
+      style={{ padding: '0 16px', height: 74 }}
+    >
+      <PanelHeaderCol
         style={{
           display: 'flex',
           alignItems: 'center',
-          color: 'rgba(255 255 255, 0.8)',
         }}
       >
         {tokenId ? (
-          <Avatar size={46} style={{ fontSize: 30, background: '#004390' }}>
+          <Avatar size={46} style={{ fontSize: 30, background: '#004390', color: '#fff' }}>
             {name.slice(0, 1)}
           </Avatar>
         ) : (
@@ -99,26 +151,29 @@ const Account = (props) => {
             onCopy={(text, result) => result && message.success('copy success')}
             text={'0xd4e9a6DD7d47Ba556D3bf2615bf72C92955B328E'}
           >
-            <CopyOutlined
-              onClick={(e) => e.stopPropagation()}
-              style={{ color: '#fff', marginLeft: '4px' }}
-            />
+            <CopyOutlinedIcon onClick={(e) => e.stopPropagation()} />
           </CopyToClipboard>
           {tokenId && (
-            <div style={{ color: '#fff' }}>
+            <TokenId>
               <span style={{ fontWeight: 500 }}>{'Token ID'}</span>
               <span style={{ opacity: 0.6, marginLeft: '1em' }}>{tokenId}</span>
-            </div>
+            </TokenId>
           )}
         </div>
-      </Col>
+      </PanelHeaderCol>
       <Col>
-        <Row
-          style={{ fontWeight: 'bold', fontFamily: 'Roboto', fontStyle: 'italic', marginRight: 24, alignItems: 'baseline' }}
+        <Price
+          style={{
+            fontWeight: 'bold',
+            fontFamily: 'Roboto',
+            fontStyle: 'italic',
+            marginRight: 24,
+            alignItems: 'baseline',
+          }}
         >
           <Col style={{ fontSize: 44, marginRight: 6 }}>45.62</Col>
           <Col style={{ fontSize: 16 }}>{name}</Col>
-        </Row>
+        </Price>
       </Col>
     </Row>
   );
@@ -139,21 +194,12 @@ const Account = (props) => {
             {isNetwork && (
               <>
                 <Col style={{ margin: '0 20px 0 28px' }}>
-                  <Button type="primary" size="large" style={{ width: 184 }}>
+                  <AirdropButton type="primary" size="large">
                     Request Airdrop
-                  </Button>
+                  </AirdropButton>
                 </Col>
                 <Col>
-                  <Button
-                    size="large"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      color: '#fff',
-                      width: 184,
-                    }}
-                  >
-                    Mint test token
-                  </Button>
+                  <MinTokenButton size="large">Mint test token</MinTokenButton>
                 </Col>
               </>
             )}
@@ -186,7 +232,7 @@ const Account = (props) => {
                 }
               />
             </Popover>
-            <RedoOutlined style={{ fontSize: 26, margin: '0 28px' }} />
+            <RedoOutlinedIcon />
           </ActionRow>
         </Col>
       </HeaderWrapper>
@@ -209,15 +255,14 @@ const Account = (props) => {
               Token Name: <span>SOL</span>
             </Col>
             <Col>
-              <a
+              <Explorer
                 style={{
                   textDecoration: 'underline',
-                  color: 'rgba(255,255,255, 0.6)',
                 }}
                 href="/"
               >
                 View on Solana Explorer
-              </a>
+              </Explorer>
               <Button
                 type="primary"
                 ghost

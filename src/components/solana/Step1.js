@@ -3,8 +3,15 @@ import { Avatar, Button, Col, Input, Modal, Row } from 'antd';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+const Wrapper = styled.div`
+  .ant-input-clear-icon {
+    color: ${({ theme }) =>
+      theme.mode === 'dark' ? 'rgba(255,255,255,.3)' : '#4a4a4a'};
+  }
+`;
 const CulcWrapper = styled.div`
-  background: #34363f;
+  background-color: ${({ theme }) =>
+    theme.mode === 'dark' ? '#34363f' : '#f6f6f6'};
   border-radius: 4px;
   padding: 26px 285px;
   display: flex;
@@ -48,7 +55,7 @@ const Step1 = (props) => {
     setIsRight(e.target.value);
   }, []);
   return (
-    <>
+    <Wrapper>
       <Modal
         title="Add to address book"
         visible={visible}
@@ -146,7 +153,7 @@ const Step1 = (props) => {
           }
         />
       </CulcWrapper>
-    </>
+    </Wrapper>
   );
 };
 export default React.memo(Step1);

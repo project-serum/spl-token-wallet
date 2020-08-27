@@ -8,7 +8,7 @@ const LoginWrapper = styled(Col)`
   height: 612px;
   border-radius: 20px;
   background-color: #2b2c34;
-  
+
   input:-webkit-autofill,
   .ant-form-item-has-error .ant-input-affix-wrapper input:focus {
     -webkit-text-fill-color: #fff;
@@ -25,6 +25,12 @@ const Title = styled.div`
   text-align: center;
   font-family: Robotoo;
   font-weight: bold;
+`;
+const Background = styled(Col)`
+  background: url(${imageMapping.setpassword}) bottom center no-repeat;
+  background-size: contain;
+  height: 678px;
+  width: 720px;
 `;
 const layout = {
   labelCol: { span: 24 },
@@ -51,20 +57,9 @@ const SetPassword = (props) => {
     setStatusSuccess(getQueryString('status') || '');
   }, [props.history]);
   return (
-    <Row justify="space-between" style={{ padding: '0 78px' }}>
-      <Col style={{ width: '46.89%' }}>
-        <img
-          src={imageMapping.man}
-          alt=""
-          style={{
-            position: 'absolute',
-            bottom: -66,
-            left: '50%',
-            transform: 'translateX(-60%)',
-          }}
-        />
-      </Col>
-      <LoginWrapper style={{ width: '53.11%' }}>
+    <Row justify="space-between" style={{ padding: '0 78px 0 0' }}>
+      <Background />
+      <LoginWrapper style={{ width: 'calc(100% - 720px)' }}>
         {statusSuccess ? (
           <>
             <Title style={{ marginBottom: 3 }}>Welcom Back!</Title>
@@ -121,66 +116,66 @@ const SetPassword = (props) => {
             </Form>
           </>
         ) : (
-            <>
-              <Title>Set your pass words</Title>
-              <Form
-                {...layout}
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
+          <>
+            <Title>Set your pass words</Title>
+            <Form
+              {...layout}
+              name="basic"
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+            >
+              <Form.Item
+                label="Password（min 8 chars）"
+                name="password"
+                rules={[
+                  { required: true, message: 'Please input your password!' },
+                  { min: 8, message: 'Username must be minimum 8 characters.' },
+                ]}
               >
-                <Form.Item
-                  label="Password（min 8 chars）"
-                  name="password"
-                  rules={[
-                    { required: true, message: 'Please input your password!' },
-                    { min: 8, message: 'Username must be minimum 8 characters.' },
-                  ]}
-                >
-                  <Input.Password size="large" />
-                </Form.Item>
+                <Input.Password size="large" />
+              </Form.Item>
 
-                <Form.Item
-                  label="Comfirm password"
-                  name="comfirmPassword"
-                  rules={[
-                    { required: true, message: 'Please input your password!' },
-                    { min: 5, message: 'Username must be minimum 8 characters.' },
-                  ]}
+              <Form.Item
+                label="Comfirm password"
+                name="comfirmPassword"
+                rules={[
+                  { required: true, message: 'Please input your password!' },
+                  { min: 5, message: 'Username must be minimum 8 characters.' },
+                ]}
+              >
+                <Input.Password size="large" />
+              </Form.Item>
+              <Form.Item
+                name="agreement"
+                valuePropName="checked"
+                rules={[
+                  {
+                    validator: (_, value) =>
+                      value
+                        ? Promise.resolve()
+                        : Promise.reject('Should accept agreement'),
+                  },
+                ]}
+              >
+                <Checkbox>
+                  I have read and agree to the{' '}
+                  <span style={{ color: '#2a87f6' }}>T&C</span>
+                </Checkbox>
+              </Form.Item>
+              <Form.Item style={{ marginTop: 8 }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ height: 52, fontSize: 18 }}
+                  block
                 >
-                  <Input.Password size="large" />
-                </Form.Item>
-                <Form.Item
-                  name="agreement"
-                  valuePropName="checked"
-                  rules={[
-                    {
-                      validator: (_, value) =>
-                        value
-                          ? Promise.resolve()
-                          : Promise.reject('Should accept agreement'),
-                    },
-                  ]}
-                >
-                  <Checkbox>
-                    I have read and agree to the{' '}
-                    <span style={{ color: '#2a87f6' }}>T&C</span>
-                  </Checkbox>
-                </Form.Item>
-                <Form.Item style={{ marginTop: 8 }}>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    style={{ height: 52, fontSize: 18 }}
-                    block
-                  >
-                    Confirm
+                  Confirm
                 </Button>
-                </Form.Item>
-              </Form>
-            </>
-          )}
+              </Form.Item>
+            </Form>
+          </>
+        )}
       </LoginWrapper>
     </Row>
   );
