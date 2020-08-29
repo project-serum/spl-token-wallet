@@ -7,12 +7,12 @@ import { clusterApiUrl } from '@solana/web3.js';
 export const TOKENS = {
   [clusterApiUrl('mainnet-beta')]: [
     {
-      mintAddress: '7JMYnisD7vu9c5LQDxaEfmiGrvAa11nT8M6QW3YZ3xN4',
+      mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
       tokenName: 'Serum',
       tokenSymbol: 'SRM',
     },
     {
-      mintAddress: 'MSRMmR98uWsTBgusjwyNkE8nDtV79sJznTedhJLzS4B',
+      mintAddress: 'MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L',
       tokenName: 'MegaSerum',
       tokenSymbol: 'MSRM',
     },
