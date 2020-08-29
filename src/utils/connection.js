@@ -12,7 +12,7 @@ export function ConnectionProvider({ children }) {
     clusterApiUrl('mainnet-beta'),
   );
 
-  const connection = useMemo(() => new Connection(endpoint, 'single'), [
+  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
     endpoint,
   ]);
 

@@ -49,12 +49,11 @@ export default function DebugButtons() {
     sendTransaction(
       createAndInitializeMint({
         connection: wallet.connection,
-        payer: wallet.account,
+        owner: wallet.account,
         mint,
         amount: 1000,
         decimals: 2,
         initialAccount: new Account(),
-        mintOwner: wallet.account,
       }),
       { onSuccess: () => refreshWalletPublicKeys(wallet) },
     );

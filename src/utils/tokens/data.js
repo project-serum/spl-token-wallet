@@ -5,13 +5,13 @@ export const ACCOUNT_LAYOUT = BufferLayout.struct([
   BufferLayout.blob(32, 'mint'),
   BufferLayout.blob(32, 'owner'),
   BufferLayout.nu64('amount'),
-  BufferLayout.blob(48),
+  BufferLayout.blob(93),
 ]);
 
 export const MINT_LAYOUT = BufferLayout.struct([
-  BufferLayout.blob(36),
+  BufferLayout.blob(44),
   BufferLayout.u8('decimals'),
-  BufferLayout.blob(3),
+  BufferLayout.blob(37),
 ]);
 
 export function parseTokenAccountData(data) {

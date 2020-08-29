@@ -1,8 +1,12 @@
 import * as BufferLayout from 'buffer-layout';
-import { PublicKey, TransactionInstruction } from '@solana/web3.js';
+import {
+  PublicKey,
+  SYSVAR_RENT_PUBKEY,
+  TransactionInstruction,
+} from '@solana/web3.js';
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
-  'TokenSVp5gheXUvJ6jGWGeCsgPKgnE3YgdGKRVCMY9o',
+  'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
 );
 
 export const WRAPPED_SOL_MINT = new PublicKey(
@@ -13,9 +17,10 @@ const LAYOUT = BufferLayout.union(BufferLayout.u8('instruction'));
 LAYOUT.addVariant(
   0,
   BufferLayout.struct([
-    // TODO: does this need to be aligned?
-    BufferLayout.nu64('amount'),
     BufferLayout.u8('decimals'),
+    BufferLayout.blob(32, 'mintAuthority'),
+    BufferLayout.u8('freezeAuthorityOption'),
+    BufferLayout.blob(32, 'freezeAuthority'),
   ]),
   'initializeMint',
 );
@@ -48,24 +53,22 @@ function encodeTokenInstructionData(instruction) {
 
 export function initializeMint({
   mint,
-  amount,
   decimals,
-  initialAccount,
-  mintOwner,
+  mintAuthority,
+  freezeAuthority,
 }) {
-  let keys = [{ pubkey: mint, isSigner: false, isWritable: true }];
-  if (amount) {
-    keys.push({ pubkey: initialAccount, isSigner: false, isWritable: true });
-  }
-  if (mintOwner) {
-    keys.push({ pubkey: mintOwner, isSigner: false, isWritable: false });
-  }
+  let keys = [
+    { pubkey: mint, isSigner: false, isWritable: true },
+    { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
+  ];
   return new TransactionInstruction({
     keys,
     data: encodeTokenInstructionData({
       initializeMint: {
-        amount,
         decimals,
+        mintAuthority: mintAuthority.toBuffer(),
+        freezeAuthorityOption: !!freezeAuthority,
+        freezeAuthority: (freezeAuthority || new PublicKey()).toBuffer(),
       },
     }),
     programId: TOKEN_PROGRAM_ID,
@@ -77,6 +80,7 @@ export function initializeAccount({ account, mint, owner }) {
     { pubkey: account, isSigner: false, isWritable: true },
     { pubkey: mint, isSigner: false, isWritable: false },
     { pubkey: owner, isSigner: false, isWritable: false },
+    { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
   ];
   return new TransactionInstruction({
     keys,
@@ -97,6 +101,23 @@ export function transfer({ source, destination, amount, owner }) {
     keys,
     data: encodeTokenInstructionData({
       transfer: { amount },
+    }),
+    programId: TOKEN_PROGRAM_ID,
+  });
+}
+
+export function mintTo({ mint, destination, amount, mintAuthority }) {
+  let keys = [
+    { pubkey: mint, isSigner: false, isWritable: true },
+    { pubkey: destination, isSigner: false, isWritable: true },
+    { pubkey: mintAuthority, isSigner: true, isWritable: false },
+  ];
+  return new TransactionInstruction({
+    keys,
+    data: encodeTokenInstructionData({
+      mintTo: {
+        amount,
+      },
     }),
     programId: TOKEN_PROGRAM_ID,
   });

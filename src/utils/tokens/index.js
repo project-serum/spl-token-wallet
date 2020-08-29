@@ -2,6 +2,7 @@ import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import {
   initializeAccount,
   initializeMint,
+  mintTo,
   TOKEN_PROGRAM_ID,
   transfer,
 } from './instructions';
@@ -56,15 +57,14 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
 
 export async function createAndInitializeMint({
   connection,
-  payer, // Account for paying fees
+  owner, // Account for paying fees and allowed to mint new tokens
   mint, // Account to hold token information
   amount, // Number of tokens to issue
   decimals,
   initialAccount, // Account to hold newly issued tokens, if amount > 0
-  mintOwner, // Optional account, allowed to mint tokens
 }) {
   let transaction = SystemProgram.createAccount({
-    fromPubkey: payer.publicKey,
+    fromPubkey: owner.publicKey,
     newAccountPubkey: mint.publicKey,
     lamports: await connection.getMinimumBalanceForRentExemption(
       MINT_LAYOUT.span,
@@ -72,11 +72,18 @@ export async function createAndInitializeMint({
     space: MINT_LAYOUT.span,
     programId: TOKEN_PROGRAM_ID,
   });
-  let signers = [payer, mint];
-  if (amount) {
+  transaction.add(
+    initializeMint({
+      mint: mint.publicKey,
+      decimals,
+      mintAuthority: owner.publicKey,
+    }),
+  );
+  let signers = [owner, mint];
+  if (amount > 0) {
     transaction.add(
       SystemProgram.createAccount({
-        fromPubkey: payer.publicKey,
+        fromPubkey: owner.publicKey,
         newAccountPubkey: initialAccount.publicKey,
         lamports: await connection.getMinimumBalanceForRentExemption(
           ACCOUNT_LAYOUT.span,
@@ -90,19 +97,18 @@ export async function createAndInitializeMint({
       initializeAccount({
         account: initialAccount.publicKey,
         mint: mint.publicKey,
-        owner: payer.publicKey,
+        owner: owner.publicKey,
+      }),
+    );
+    transaction.add(
+      mintTo({
+        mint: mint.publicKey,
+        destination: initialAccount.publicKey,
+        amount,
+        mintAuthority: owner.publicKey,
       }),
     );
   }
-  transaction.add(
-    initializeMint({
-      mint: mint.publicKey,
-      amount,
-      decimals,
-      initialAccount: initialAccount?.publicKey,
-      mintOwner: mintOwner.publicKey,
-    }),
-  );
   return await connection.sendTransaction(transaction, signers);
 }
 

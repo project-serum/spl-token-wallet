@@ -45,7 +45,7 @@ export default function AddTokenDialog({ open, onClose }) {
   let wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
-    'tokenAccountCost',
+    wallet.tokenAccountCost,
   );
   let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
