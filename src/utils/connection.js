@@ -9,7 +9,7 @@ const ConnectionContext = React.createContext(null);
 export const MAINNET_URL = 'https://solana-api.projectserum.com';
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
-    'endpoint',
+    'connectionEndpoint',
     MAINNET_URL,
   );
 
