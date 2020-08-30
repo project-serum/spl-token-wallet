@@ -15,6 +15,46 @@ export const TOKENS = {
       tokenName: 'MegaSerum',
       tokenSymbol: 'MSRM',
     },
+    {
+      tokenSymbol: 'BTC',
+      mintAddress: '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
+      tokenName: 'Wrapped Bitcoin',
+    },
+    {
+      tokenSymbol: 'ETH',
+      mintAddress: '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
+      tokenName: 'Wrapped Ethereum',
+    },
+    {
+      tokenSymbol: 'FTT',
+      mintAddress: 'AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3',
+      tokenName: 'Wrapped FTT',
+    },
+    {
+      tokenSymbol: 'YFI',
+      mintAddress: '3JSf5tPeuscJGtaCp5giEiDhv51gQ4v3zWg8DGgyLfAB',
+      tokenName: 'Wrapped YFI',
+    },
+    {
+      tokenSymbol: 'LINK',
+      mintAddress: 'CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG',
+      tokenName: 'Wrapped Chainlink',
+    },
+    {
+      tokenSymbol: 'XRP',
+      mintAddress: 'Ga2AXHpfAF6mv2ekZwcsJFqu7wB4NV331qNH7fW9Nst8',
+      tokenName: 'Wrapped XRP',
+    },
+    {
+      tokenSymbol: 'USDT',
+      mintAddress: 'BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4',
+      tokenName: 'Wrapped USDT',
+    },
+    {
+      tokenSymbol: 'USDC',
+      mintAddress: 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
+      tokenName: 'Wrapped USDC',
+    },
   ],
 };
 
