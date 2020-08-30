@@ -1,11 +1,10 @@
 import EventEmitter from 'events';
-import { useConnectionConfig } from '../connection';
+import { useConnectionConfig, MAINNET_URL } from '../connection';
 import { useListener } from '../utils';
 import { useCallback } from 'react';
-import { clusterApiUrl } from '@solana/web3.js';
 
 export const TOKENS = {
-  [clusterApiUrl('mainnet-beta')]: [
+  [MAINNET_URL]: [
     {
       mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
       tokenName: 'Serum',

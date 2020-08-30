@@ -5,9 +5,9 @@ import {
 } from '../utils/wallet';
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
-import { Account, clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { abbreviateAddress, sleep } from '../utils/utils';
-import { refreshAccountInfo, useConnectionConfig } from '../utils/connection';
+import { refreshAccountInfo, useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import { createAndInitializeMint } from '../utils/tokens';
 import { Tooltip, Button } from '@material-ui/core';
 import React from 'react';
@@ -60,7 +60,7 @@ export default function DebugButtons() {
   }
 
   const noSol = amount === 0;
-  const requestAirdropDisabled = endpoint === clusterApiUrl('mainnet-beta');
+  const requestAirdropDisabled = endpoint === MAINNET_URL;
   return (
     <div style={{ display: 'flex' }}>
       <Tooltip

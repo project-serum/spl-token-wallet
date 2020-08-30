@@ -3,7 +3,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { useConnectionConfig } from '../utils/connection';
+import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -87,14 +87,14 @@ function NetworkSelector() {
   const classes = useStyles();
 
   const networks = [
-    clusterApiUrl('mainnet-beta'),
+    MAINNET_URL,
     clusterApiUrl('devnet'),
     clusterApiUrl('testnet'),
     'http://localhost:8899',
   ];
 
   const networkLabels = {
-    [clusterApiUrl('mainnet-beta')]: 'Mainnet Beta',
+    [MAINNET_URL]: 'Mainnet Beta',
     [clusterApiUrl('devnet')]: 'Devnet',
     [clusterApiUrl('testnet')]: 'Testnet',
   };
