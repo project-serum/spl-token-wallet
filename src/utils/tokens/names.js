@@ -55,6 +55,11 @@ export const TOKENS = {
       mintAddress: 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
       tokenName: 'Wrapped USDC',
     },
+    {
+      tokenSymbol: 'SUSHI',
+      mintAddress: 'AR1Mtgh7zAtxuxGd2XPovXPVjcSdY3i4rQYisNadjfKy',
+      tokenName: 'Wrapped SUSHI',
+    },
   ],
 };
 
