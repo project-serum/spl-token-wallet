@@ -60,6 +60,16 @@ export const TOKENS = {
       mintAddress: 'AR1Mtgh7zAtxuxGd2XPovXPVjcSdY3i4rQYisNadjfKy',
       tokenName: 'Wrapped SUSHI',
     },
+    {
+      tokenSymbol: 'ALEPH',
+      mintAddress: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
+      tokenName: 'Wrapped ALEPH',
+    },
+    {
+      tokenSymbol: 'SXP',
+      mintAddress: 'SF3oTvfWzEP3DTwGSvUXRrGTvr75pdZNnBLAH9bzMuX',
+      tokenName: 'Wrapped SXP',
+    },
   ],
 };
 
