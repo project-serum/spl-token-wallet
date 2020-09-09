@@ -1,0 +1,16 @@
+export const MARKET_INFO_BY_ADDRESS = {
+  '7kgkDyW7dmyMeP8KFXzbcUZz1R2WHsovDZ7n3ihZuNDS': 'MSRM/USDC',
+  H4snTKK9adiU15gP22ErfZYtro3aqR9BTMXiH3AwiUTQ: 'MSRM/USDT',
+  CAgAeMD7quTdnr6RPa7JySQpjf3irAmefYNdTb6anemq: 'BTC/USDC',
+  '8AcVjMG2LTbpkjNoyq8RwysokqZunkjy3d5JDzxC6BJa': 'BTC/USDT',
+  ASKiV944nKg1W9vsf7hf3fTsjawK6DwLwrnB2LH9n61c: 'ETH/USDC',
+  HfCZdJ1wfsWKfYP2qyWdXTT5PWAGWFctzFjLH48U1Hsd: 'ETH/USDT',
+  '68J6nkWToik6oM9rTatKSR5ibVSykAtzftBUEAvpRsys': 'SRM/USDC',
+  HARFLhSq8nECZk4DVFKvzqXMNMA9a3hjvridGMFizeLa: 'SRM/USDT',
+  FZqrBXz7ADGsmDf1TM9YgysPUfvtG8rJiNUrqDpHc9Au: 'FTT/USDC',
+  DHDdghmkBhEpReno3tbzBPtsxCt6P3KrMzZvxavTktJt: 'FTT/USDT',
+  FJg9FUtbN3fg3YFbMCFiZKjGh5Bn4gtzxZmtxFzmz9kT: 'YFI/USDC',
+  '5zu5bTZZvqESAAgFsr12CUMxdQvMrvU9CgvC1GW8vJdf': 'YFI/USDT',
+  '7GZ59DMgJ7D6dfoJTpszPayTRyua9jwcaGJXaRMMF1my': 'LINK/USDC',
+  F5xschQBMpu1gD2q1babYEAVJHR1buj1YazLiXyQNqSW: 'LINK/USDT',
+};

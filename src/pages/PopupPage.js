@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '../utils/wallet';
+import { decodeMessage } from '../utils/transactions';
+import { useConnection } from '../utils/connection';
 import { Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -10,6 +12,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+import CancelOrder from '../components/instructions/CancelOrder';
+import NewOrder from '../components/instructions/NewOrder';
+import SettleFunds from '../components/instructions/SettleFunds';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -182,18 +187,44 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
 function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   const classes = useStyles();
+  const connection = useConnection();
 
-  // TODO: decode message
+  const [instructions, setInstructions] = useState([]);
+
+  useEffect(() => {
+    decodeMessage(connection, message).then(setInstructions);
+  }, [message, connection]);
+
+  const getContent = (instruction) => {
+    if (!instruction?.type) {
+      return null;
+    }
+    switch (instruction?.type) {
+      case 'cancelOrder':
+        return (
+          <CancelOrder
+            origin={origin}
+            instruction={instruction}
+          />
+        );
+      case 'newOrder':
+        return (
+          <NewOrder
+            origin={origin}
+            instruction={instruction}
+          />
+        );
+      case 'settleFunds':
+        return <SettleFunds origin={origin} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" component="h1" gutterBottom>
-          {origin} would like to send the following transaction:
-        </Typography>
-        <Typography className={classes.transaction}>
-          {bs58.encode(message)}
-        </Typography>
+        {instructions.map((instruction) => getContent(instruction))}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
