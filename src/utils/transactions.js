@@ -4,10 +4,10 @@ import { decodeInstruction, Market, MARKETS } from '@project-serum/serum';
 
 export const decodeMessage = async (connection, message) => {
   const transactionMessage = Message.from(message);
-  const instructions = [];
   if (!transactionMessage?.instructions || !transactionMessage?.accountKeys) {
-    return instructions;
+    return;
   }
+  const instructions = [];
   for (let transactionInstruction of transactionMessage.instructions) {
     const instruction = await toInstruction(
       connection,

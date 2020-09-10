@@ -199,9 +199,6 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   }, [message, connection]);
 
   const getContent = (instruction) => {
-    if (!instruction?.type) {
-      return null;
-    }
     switch (instruction?.type) {
       case 'cancelOrder':
         return <CancelOrder instruction={instruction} />;
@@ -222,12 +219,16 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
         <Typography variant="h6" gutterBottom>
           {origin} wants to:
         </Typography>
-        {instructions.map((instruction) => (
-          <Box style={{ marginTop: 20 }}>
-            {getContent(instruction)}
-            <Divider style={{ marginTop: 20 }} />
-          </Box>
-        ))}
+        {instructions ? (
+          instructions.map((instruction) => (
+            <Box style={{ marginTop: 20 }}>
+              {getContent(instruction)}
+              <Divider style={{ marginTop: 20 }} />
+            </Box>
+          ))
+        ) : (
+          <UnknownInstruction message={message} />
+        )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
