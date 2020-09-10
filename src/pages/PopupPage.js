@@ -3,6 +3,7 @@ import { useWallet } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection } from '../utils/connection';
 import { Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -15,6 +16,7 @@ import nacl from 'tweetnacl';
 import CancelOrder from '../components/instructions/CancelOrder';
 import NewOrder from '../components/instructions/NewOrder';
 import SettleFunds from '../components/instructions/SettleFunds';
+import UnknownInstruction from '../components/instructions/UnknownInstruction';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -201,30 +203,24 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
     }
     switch (instruction?.type) {
       case 'cancelOrder':
-        return (
-          <CancelOrder
-            origin={origin}
-            instruction={instruction}
-          />
-        );
+        return <CancelOrder origin={origin} instruction={instruction} />;
       case 'newOrder':
-        return (
-          <NewOrder
-            origin={origin}
-            instruction={instruction}
-          />
-        );
+        return <NewOrder origin={origin} instruction={instruction} />;
       case 'settleFunds':
         return <SettleFunds origin={origin} />;
-      default:
+      case 'matchOrders':
         return null;
+      default:
+        return <UnknownInstruction origin={origin} message={message} />;
     }
   };
 
   return (
     <Card>
       <CardContent>
-        {instructions.map((instruction) => getContent(instruction))}
+        {instructions.map((instruction) => (
+          <Box style={{ marginBottom: 20 }}>{getContent(instruction)}</Box>
+        ))}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>

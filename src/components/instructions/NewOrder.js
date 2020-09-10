@@ -2,14 +2,10 @@ import React from 'react';
 import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import { MARKET_INFO_BY_ADDRESS } from '../../utils/markets';
 
 export default function Neworder({ origin, instruction }) {
-  const { data, market } = instruction;
+  const { data, market, marketName } = instruction;
   const { side, limitPrice, maxQuantity, orderType } = data;
-
-  const marketAddress = market?._decoded?.ownAddress?.toBase58();
-  const marketName = marketAddress && MARKET_INFO_BY_ADDRESS[marketAddress];
 
   return (
     <>

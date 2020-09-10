@@ -1,8 +1,6 @@
 import bs58 from 'bs58';
-import { Message, PublicKey } from '@solana/web3.js';
-import { decodeInstruction, Market } from '@project-serum/serum';
-
-const DEX_PROGRAM_ID = '4ckmDgGdxQoPDLUkDT3vHgSAkzA3QRdNq5ywwY4sUSJn';
+import { Message } from '@solana/web3.js';
+import { decodeInstruction, Market, MARKETS } from '@project-serum/serum';
 
 export const decodeMessage = async (connection, message) => {
   const transactionMessage = Message.from(message);
@@ -14,17 +12,27 @@ export const decodeMessage = async (connection, message) => {
     if (!instruction?.data || !instruction?.accounts) {
       continue;
     }
-    // get market
+    // get market address
     const marketAccountIndex = instruction.accounts[0];
-    const marketAddress = transactionMessage.accountKeys.length > marketAccountIndex && transactionMessage.accountKeys[marketAccountIndex];
+    const marketAddress =
+      transactionMessage.accountKeys.length > marketAccountIndex &&
+      transactionMessage.accountKeys[marketAccountIndex];
     if (!marketAddress) {
+      continue;
+    }
+
+    // get market
+    const marketInfo = MARKETS.find((market) =>
+      market.address.equals(marketAddress),
+    );
+    if (!marketInfo) {
       continue;
     }
     const market = await Market.load(
       connection,
-      marketAddress,
+      marketInfo.address,
       {},
-      new PublicKey(DEX_PROGRAM_ID),
+      marketInfo.programId,
     );
 
     // get instruction data
@@ -32,7 +40,7 @@ export const decodeMessage = async (connection, message) => {
     const decodedInstruction = decodeInstruction(decoded);
     const type = decodedInstruction && Object.keys(decodedInstruction)[0];
 
-    instructions.push({ type, data: decodedInstruction[type], market });
+    instructions.push({ type, data: decodedInstruction[type], market, marketName: marketInfo.name });
   }
   return instructions;
 };
