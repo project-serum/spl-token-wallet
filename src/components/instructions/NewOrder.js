@@ -1,14 +1,20 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import KeyValue from './KeyValue';
+import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
 
 export default function Neworder({ instruction }) {
-  const { data, market, marketAddress, marketName } = instruction;
+  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
+
+  const { data, market, marketInfo } = instruction;
   const { clientId, side, limitPrice, maxQuantity, orderType } = data;
 
   const onOpenAddress = (address) => {
     address &&
-      window.open('https://explorer.solana.com/address/' + address, '_blank');
+      window.open(
+        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
+        '_blank',
+      );
   };
 
   return (
@@ -22,9 +28,9 @@ export default function Neworder({ instruction }) {
       </Typography>
       <KeyValue
         label="Market"
-        value={marketName || marketAddress?.toBase58() || 'Unknown'}
+        value={marketInfo?.name || marketInfo?.address?.toBase58() || 'Unknown'}
         link={true}
-        onClick={() => onOpenAddress(marketAddress?.toBase58())}
+        onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
       />
       <KeyValue
         label="Side"

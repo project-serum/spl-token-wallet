@@ -1,14 +1,20 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import KeyValue from './KeyValue';
+import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
 
 export default function MatchOrder({ instruction }) {
-  const { data, marketAddress, marketName } = instruction;
+  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
+
+  const { data, marketInfo } = instruction;
   const { limit } = data;
 
   const onOpenAddress = (address) => {
     address &&
-      window.open('https://explorer.solana.com/address/' + address, '_blank');
+      window.open(
+        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
+        '_blank',
+      );
   };
 
   return (
@@ -22,9 +28,9 @@ export default function MatchOrder({ instruction }) {
       </Typography>
       <KeyValue
         label="Market"
-        value={marketName || marketAddress?.toBase58() || 'Unknown'}
+        value={marketInfo?.name || marketInfo?.address?.toBase58() || 'Unknown'}
         link={true}
-        onClick={() => onOpenAddress(marketAddress?.toBase58())}
+        onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
       />
       {limit && <KeyValue label="Limit" value={limit} />}
     </>

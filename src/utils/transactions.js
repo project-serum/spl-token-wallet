@@ -30,31 +30,35 @@ const toInstruction = async (connection, accountKeys, instruction) => {
   const decodedInstruction = decodeInstruction(decoded);
   const type = decodedInstruction && Object.keys(decodedInstruction)[0];
 
-  // get market address
-  const marketAccountIndex = accounts && accounts.length > 0 && accounts[0];
-  const marketAddress =
+  // get market info
+  const marketInfo =
     accountKeys &&
-    accountKeys.length > marketAccountIndex &&
-    accountKeys[marketAccountIndex];
+    MARKETS.find(
+      (market) =>
+        accountKeys.findIndex((accountKey) =>
+          accountKey.equals(market.address),
+        ) > -1,
+    );
 
   // get market
-  const marketInfo =
-    marketAddress &&
-    MARKETS.find((market) => market.address.equals(marketAddress));
-  const market =
-    marketInfo &&
-    (await Market.load(
-      connection,
-      marketInfo.address,
-      {},
-      marketInfo.programId,
-    ));
+  let market;
+  try {
+    market =
+      marketInfo &&
+      (await Market.load(
+        connection,
+        marketInfo.address,
+        {},
+        marketInfo.programId,
+      ));
+  } catch (e) {
+    console.log('Error loading market: ' + e.message);
+  }
 
   return {
     type,
     data: decodedInstruction[type],
     market,
-    marketName: marketInfo?.name,
-    marketAddress,
+    marketInfo,
   };
 };
