@@ -1,11 +1,15 @@
 import React from 'react';
-import List from '@material-ui/core/List';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import KeyValue from './KeyValue';
 
 export default function CancelOrder({ instruction }) {
-  const { data, marketName } = instruction;
+  const { data, marketAddress, marketName } = instruction;
   const { side, orderId } = data;
+
+  const onOpenAddress = (address) => {
+    address &&
+      window.open('https://explorer.solana.com/address/' + address, '_blank');
+  };
 
   return (
     <>
@@ -14,16 +18,19 @@ export default function CancelOrder({ instruction }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        - Cancel an order:
+        Cancel an order:
       </Typography>
-      <List>
-        <ListItemText primary="Market" secondary={marketName} />
-        <ListItemText primary="Order Id" secondary={orderId + ''} />
-        <ListItemText
-          primary="Side"
-          secondary={side.charAt(0).toUpperCase() + side.slice(1)}
-        />
-      </List>
+      <KeyValue
+        label="Market"
+        value={marketName || marketAddress?.toBase58() || 'Unknown'}
+        link={true}
+        onClick={() => onOpenAddress(marketAddress?.toBase58())}
+      />
+      <KeyValue label="Order Id" value={orderId + ''} />
+      <KeyValue
+        label="Side"
+        value={side.charAt(0).toUpperCase() + side.slice(1)}
+      />
     </>
   );
 }

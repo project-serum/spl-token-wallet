@@ -8,39 +8,53 @@ export const decodeMessage = async (connection, message) => {
   if (!transactionMessage?.instructions || !transactionMessage?.accountKeys) {
     return instructions;
   }
-  for (let instruction of transactionMessage.instructions) {
-    if (!instruction?.data || !instruction?.accounts) {
-      continue;
-    }
-    // get market address
-    const marketAccountIndex = instruction.accounts[0];
-    const marketAddress =
-      transactionMessage.accountKeys.length > marketAccountIndex &&
-      transactionMessage.accountKeys[marketAccountIndex];
-    if (!marketAddress) {
-      continue;
-    }
-
-    // get market
-    const marketInfo = MARKETS.find((market) =>
-      market.address.equals(marketAddress),
+  for (let transactionInstruction of transactionMessage.instructions) {
+    const instruction = await toInstruction(
+      connection,
+      transactionMessage?.accountKeys,
+      transactionInstruction,
     );
-    if (!marketInfo) {
-      continue;
-    }
-    const market = await Market.load(
+    instructions.push(instruction || { type: 'invalid' });
+  }
+  return instructions;
+};
+
+const toInstruction = async (connection, accountKeys, instruction) => {
+  const { data, accounts } = instruction;
+  if (!data || !accounts) {
+    return;
+  }
+
+  // get instruction data
+  const decoded = bs58.decode(data);
+  const decodedInstruction = decodeInstruction(decoded);
+  const type = decodedInstruction && Object.keys(decodedInstruction)[0];
+
+  // get market address
+  const marketAccountIndex = accounts && accounts.length > 0 && accounts[0];
+  const marketAddress =
+    accountKeys &&
+    accountKeys.length > marketAccountIndex &&
+    accountKeys[marketAccountIndex];
+
+  // get market
+  const marketInfo =
+    marketAddress &&
+    MARKETS.find((market) => market.address.equals(marketAddress));
+  const market =
+    marketInfo &&
+    (await Market.load(
       connection,
       marketInfo.address,
       {},
       marketInfo.programId,
-    );
+    ));
 
-    // get instruction data
-    const decoded = bs58.decode(instruction.data);
-    const decodedInstruction = decodeInstruction(decoded);
-    const type = decodedInstruction && Object.keys(decodedInstruction)[0];
-
-    instructions.push({ type, data: decodedInstruction[type], market, marketName: marketInfo.name });
-  }
-  return instructions;
+  return {
+    type,
+    data: decodedInstruction[type],
+    market,
+    marketName: marketInfo?.name,
+    marketAddress,
+  };
 };

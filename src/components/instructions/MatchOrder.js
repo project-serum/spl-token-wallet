@@ -1,10 +1,15 @@
 import React from 'react';
-import List from '@material-ui/core/List';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import KeyValue from './KeyValue';
 
 export default function MatchOrder({ instruction }) {
-  const { data, marketName } = instruction;
+  const { data, marketAddress, marketName } = instruction;
+  const { limit } = data;
+
+  const onOpenAddress = (address) => {
+    address &&
+      window.open('https://explorer.solana.com/address/' + address, '_blank');
+  };
 
   return (
     <>
@@ -13,13 +18,15 @@ export default function MatchOrder({ instruction }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        - Match orders on market {marketName}
+        Match orders
       </Typography>
-      {data?.limit && (
-        <List>
-          <ListItemText primary="Limit" secondary={'x' + data.limit} />
-        </List>
-      )}
+      <KeyValue
+        label="Market"
+        value={marketName || marketAddress?.toBase58() || 'Unknown'}
+        link={true}
+        onClick={() => onOpenAddress(marketAddress?.toBase58())}
+      />
+      {limit && <KeyValue label="Limit" value={limit} />}
     </>
   );
 }
