@@ -13,6 +13,7 @@ import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
 import TokenInfoDialog from './TokenInfoDialog';
+import Link from '@material-ui/core/Link';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,12 +26,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
-import { refreshAccountInfo } from '../utils/connection';
+import {
+  refreshAccountInfo,
+  useSolanaExplorerUrlSuffix,
+} from '../utils/connection';
+import { showTokenInfoDialog } from '../utils/config';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -106,15 +111,12 @@ function BalanceListItem({ publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [sendDialogOpen, setSendDialogOpen] = useState(false);
-  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
-  const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { amount, decimals, mint, tokenName, tokenSymbol, owner } = balanceInfo;
+  let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
   return (
     <>
@@ -133,37 +135,86 @@ function BalanceListItem({ publicKey }) {
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <div className={classes.itemDetails}>
-          <div className={classes.buttonContainer}>
-            {!publicKey.equals(owner) && (
-              <Button
-                variant="outlined"
-                color="inherit"
-                startIcon={<InfoIcon />}
-                onClick={() => setTokenInfoDialogOpen(true)}
-              >
-                Token Info
-              </Button>
-            )}
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<ReceiveIcon />}
-              onClick={() => setDepositDialogOpen(true)}
-            >
-              Receive
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<SendIcon />}
-              onClick={() => setSendDialogOpen(true)}
-            >
-              Send
-            </Button>
-          </div>
-        </div>
+        <BalanceListItemDetails
+          publicKey={publicKey}
+          balanceInfo={balanceInfo}
+        />
       </Collapse>
+    </>
+  );
+}
+
+function BalanceListItemDetails({ publicKey, balanceInfo }) {
+  const urlSuffix = useSolanaExplorerUrlSuffix();
+  const classes = useStyles();
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
+
+  if (!balanceInfo) {
+    return <LoadingIndicator delay={0} />;
+  }
+
+  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
+
+  return (
+    <>
+      <div className={classes.itemDetails}>
+        <div className={classes.buttonContainer}>
+          {!publicKey.equals(owner) && showTokenInfoDialog ? (
+            <Button
+              variant="outlined"
+              color="default"
+              startIcon={<InfoIcon />}
+              onClick={() => setTokenInfoDialogOpen(true)}
+            >
+              Token Info
+            </Button>
+          ) : null}
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ReceiveIcon />}
+            onClick={() => setDepositDialogOpen(true)}
+          >
+            Receive
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<SendIcon />}
+            onClick={() => setSendDialogOpen(true)}
+          >
+            Send
+          </Button>
+        </div>
+        <Typography variant="body2" className={classes.address}>
+          Deposit Address: {publicKey.toBase58()}
+        </Typography>
+        <Typography variant="body2">
+          Token Name: {tokenName ?? 'Unknown'}
+        </Typography>
+        <Typography variant="body2">
+          Token Symbol: {tokenSymbol ?? 'Unknown'}
+        </Typography>
+        {mint ? (
+          <Typography variant="body2" className={classes.address}>
+            Token Address: {mint.toBase58()}
+          </Typography>
+        ) : null}
+        <Typography variant="body2">
+          <Link
+            href={
+              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+              urlSuffix
+            }
+            target="_blank"
+            rel="noopener"
+          >
+            View on Solana Explorer
+          </Link>
+        </Typography>
+      </div>
       <SendDialog
         open={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}

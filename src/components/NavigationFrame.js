@@ -22,6 +22,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   content: {
+    flexGrow: 1,
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
     paddingLeft: theme.spacing(1),
@@ -49,34 +50,10 @@ export default function NavigationFrame({ children }) {
           </Typography>
           <WalletSelector />
           <NetworkSelector />
-          <Hidden xsDown>
-            <Button
-              component="a"
-              color="inherit"
-              target="_blank"
-              rel="noopener"
-              href="https://github.com/serum-foundation/spl-token-wallet"
-              className={classes.button}
-            >
-              Source
-            </Button>
-          </Hidden>
-          <Hidden smUp>
-            <Tooltip title="View Source" arrow>
-              <IconButton
-                component="a"
-                color="inherit"
-                target="_blank"
-                rel="noopener"
-                href="https://github.com/serum-foundation/spl-token-wallet"
-              >
-                <CodeIcon />
-              </IconButton>
-            </Tooltip>
-          </Hidden>
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
+      <Footer />
     </>
   );
 }
@@ -213,5 +190,32 @@ function WalletSelector() {
         </MenuItem>
       </Menu>
     </>
+  );
+}
+
+const useFooterStyles = makeStyles((theme) => ({
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    margin: theme.spacing(2),
+  },
+}));
+
+function Footer() {
+  const classes = useFooterStyles();
+  return (
+    <footer className={classes.footer}>
+      <Button
+        variant="outlined"
+        color="primary"
+        component="a"
+        target="_blank"
+        rel="noopener"
+        href="https://github.com/serum-foundation/spl-token-wallet"
+        startIcon={<CodeIcon />}
+      >
+        View Source
+      </Button>
+    </footer>
   );
 }

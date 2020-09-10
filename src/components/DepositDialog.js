@@ -3,11 +3,12 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import { abbreviateAddress } from '../utils/utils';
-import { Button, Typography } from '@material-ui/core';
 import CopyableDisplay from './CopyableDisplay';
-import { makeStyles } from '@material-ui/core/styles';
-import QrcodeIcon from 'mdi-material-ui/Qrcode';
-import QRCode from 'qrcode.react';
+import Link from '@material-ui/core/Link';
+import { useSolanaExplorerUrlSuffix } from '../utils/connection';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
 export default function DepositDialog({
   open,
@@ -15,72 +16,50 @@ export default function DepositDialog({
   publicKey,
   balanceInfo,
 }) {
+  const urlSuffix = useSolanaExplorerUrlSuffix();
   let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
 
   return (
     <DialogForm open={open} onClose={onClose}>
       <DialogTitle>
-        Deposit {tokenName ?? abbreviateAddress(mint)}
+        Deposit {tokenName ?? mint.toBase58()}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
       <DialogContent>
         {publicKey.equals(owner) ? (
-          <Typography>
+          <DialogContentText>
             This address can only be used to receive SOL. Do not send other
             tokens to this address.
-          </Typography>
+          </DialogContentText>
         ) : (
-          <Typography>
-            This address can only be used to receive {tokenSymbol}. Do not send
-            SOL to this address.
-          </Typography>
+          <DialogContentText>
+            This address can only be used to receive{' '}
+            {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to this
+            address.
+          </DialogContentText>
         )}
         <CopyableDisplay
           value={publicKey.toBase58()}
           label={'Deposit Address'}
           autoFocus
+          qrCode
         />
-        <Qrcode value={publicKey.toBase58()} />
+        <DialogContentText variant="body2">
+          <Link
+            href={
+              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+              urlSuffix
+            }
+            target="_blank"
+            rel="noopener"
+          >
+            View on Solana Explorer
+          </Link>
+        </DialogContentText>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
     </DialogForm>
-  );
-}
-
-const useQrCodeStyles = makeStyles((theme) => ({
-  qrcodeButton: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(2),
-  },
-  qrcodeIcon: {
-    marginRight: theme.spacing(1),
-  },
-  qrcodeContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-}));
-
-function Qrcode({ value }) {
-  const [showQrcode, setShowQrcode] = React.useState(false);
-
-  const classes = useQrCodeStyles();
-  return (
-    <>
-      <Button
-        variant="contained"
-        onClick={() => setShowQrcode(!showQrcode)}
-        className={classes.qrcodeButton}
-      >
-        <QrcodeIcon className={classes.qrcodeIcon} />
-        {showQrcode ? 'Hide QR Code' : 'Show QR Code'}
-      </Button>
-      {showQrcode && (
-        <div className={classes.qrcodeContainer}>
-          <QRCode value={value} size={256} includeMargin />
-        </div>
-      )}
-    </>
   );
 }
