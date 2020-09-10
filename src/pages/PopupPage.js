@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection } from '../utils/connection';
-import { Typography } from '@material-ui/core';
+import { Typography, Divider } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -17,6 +17,7 @@ import CancelOrder from '../components/instructions/CancelOrder';
 import NewOrder from '../components/instructions/NewOrder';
 import SettleFunds from '../components/instructions/SettleFunds';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
+import MatchOrder from '../components/instructions/MatchOrder';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -203,23 +204,29 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
     }
     switch (instruction?.type) {
       case 'cancelOrder':
-        return <CancelOrder origin={origin} instruction={instruction} />;
+        return <CancelOrder instruction={instruction} />;
       case 'newOrder':
-        return <NewOrder origin={origin} instruction={instruction} />;
+        return <NewOrder instruction={instruction} />;
       case 'settleFunds':
-        return <SettleFunds origin={origin} />;
+        return <SettleFunds />;
       case 'matchOrders':
-        return null;
+        return <MatchOrder instruction={instruction} />;
       default:
-        return <UnknownInstruction origin={origin} message={message} />;
+        return <UnknownInstruction message={message} />;
     }
   };
 
   return (
     <Card>
       <CardContent>
+        <Typography variant="h6" gutterBottom>
+          {origin} wants to:
+        </Typography>
         {instructions.map((instruction) => (
-          <Box style={{ marginBottom: 20 }}>{getContent(instruction)}</Box>
+          <Box style={{ marginTop: 20 }}>
+            {getContent(instruction)}
+            <Divider style={{ marginTop: 20 }} />
+          </Box>
         ))}
       </CardContent>
       <CardActions className={classes.actions}>

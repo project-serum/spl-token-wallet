@@ -3,14 +3,18 @@ import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
-export default function CancelOrder({ origin, instruction }) {
+export default function CancelOrder({ instruction }) {
   const { data, marketName } = instruction;
   const { side, orderId } = data;
 
   return (
     <>
-      <Typography variant="h6" component="h1" gutterBottom>
-        {origin} would like to cancel an order:
+      <Typography
+        variant="subtitle1"
+        style={{ fontWeight: 'bold' }}
+        gutterBottom
+      >
+        - Cancel an order:
       </Typography>
       <List>
         <ListItemText primary="Market" secondary={marketName} />
