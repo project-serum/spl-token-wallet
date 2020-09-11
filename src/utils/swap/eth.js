@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
+import Button from '@material-ui/core/Button';
+import { useCallAsync } from '../notifications';
 
 const web3 = new Web3(window.ethereum);
 
@@ -58,14 +60,14 @@ export async function swapErc20ToSpl({
   const decimals = parseInt(await erc20.methods.decimals().call(), 10);
 
   const approveTx = erc20.methods
-    .approve(swapAddress, Math.floor(amount * 10 ** decimals))
+    .approve(swapAddress, Math.round(amount * 10 ** decimals))
     .send({ from: ethAccount });
   await waitForTxid(approveTx);
 
   onStatusChange({ step: 1 });
 
   const swapTx = swap.methods
-    .swapErc20(erc20Address, destination, Math.floor(amount * 10 ** decimals))
+    .swapErc20(erc20Address, destination, Math.round(amount * 10 ** decimals))
     .send({ from: ethAccount, gasLimit: 100000 });
   const swapTxid = await waitForTxid(swapTx);
 
@@ -101,6 +103,36 @@ export async function swapEthToSpl({
   onStatusChange({ step: 3 });
 }
 
+export async function withdrawEth(from, withdrawal) {
+  const { params, signature } = withdrawal.txData;
+  const swap = new web3.eth.Contract(SWAP_ABI, params[1]);
+  let method;
+  if (params[0] === 'withdrawErc20') {
+    method = swap.methods.withdrawErc20(
+      params[2],
+      params[3],
+      params[4],
+      params[5],
+      signature,
+    );
+  } else if (params[0] === 'withdrawEth') {
+    method = swap.methods.withdrawEth(
+      params[2],
+      params[3],
+      params[4],
+      signature,
+    );
+  } else {
+    return;
+  }
+  try {
+    await method.estimateGas();
+  } catch (e) {
+    return;
+  }
+  await method.send({ from });
+}
+
 function waitForTxid(tx) {
   return new Promise((resolve, reject) => {
     tx.once('transactionHash', resolve).catch(reject);
@@ -123,4 +155,41 @@ function waitForConfirms(tx, onStatusChange) {
       }
     });
   });
+}
+
+export function ConnectToMetamaskButton() {
+  const callAsync = useCallAsync();
+
+  if (!window.ethereum) {
+    return (
+      <Button
+        color="primary"
+        variant="outlined"
+        component="a"
+        href="https://metamask.io/"
+        target="_blank"
+        rel="noopener"
+      >
+        Connect to MetaMask
+      </Button>
+    );
+  }
+
+  function connect() {
+    callAsync(
+      window.ethereum.request({
+        method: 'eth_requestAccounts',
+      }),
+      {
+        progressMessage: 'Connecting to MetaMask...',
+        successMessage: 'Connected to MetaMask',
+      },
+    );
+  }
+
+  return (
+    <Button color="primary" variant="outlined" onClick={connect}>
+      Connect to MetaMask
+    </Button>
+  );
 }

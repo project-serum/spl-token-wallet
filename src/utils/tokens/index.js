@@ -2,6 +2,7 @@ import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import {
   initializeAccount,
   initializeMint,
+  memoInstruction,
   mintTo,
   TOKEN_PROGRAM_ID,
   transfer,
@@ -144,6 +145,7 @@ export async function transferTokens({
   sourcePublicKey,
   destinationPublicKey,
   amount,
+  memo,
 }) {
   let transaction = new Transaction().add(
     transfer({
@@ -153,6 +155,9 @@ export async function transferTokens({
       amount,
     }),
   );
+  if (memo) {
+    transaction.add(memoInstruction(memo));
+  }
   let signers = [owner];
   return await connection.sendTransaction(transaction, signers);
 }

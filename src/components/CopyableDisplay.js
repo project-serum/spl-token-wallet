@@ -5,9 +5,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import QrcodeIcon from 'mdi-material-ui/Qrcode';
 import QRCode from 'qrcode.react';
-import DialogForm from './DialogForm';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@material-ui/core/Dialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,11 +81,11 @@ function Qrcode({ value }) {
       <IconButton onClick={() => setShowQrcode(true)}>
         <QrcodeIcon />
       </IconButton>
-      <DialogForm open={showQrcode} onClose={() => setShowQrcode(false)}>
+      <Dialog open={showQrcode} onClose={() => setShowQrcode(false)}>
         <DialogContent className={classes.qrcodeContainer}>
           <QRCode value={value} size={256} includeMargin />
         </DialogContent>
-      </DialogForm>
+      </Dialog>
     </>
   );
 }

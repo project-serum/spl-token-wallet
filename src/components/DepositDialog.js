@@ -17,6 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useCallAsync } from '../utils/notifications';
 import { SwapApiError, swapApiRequest } from '../utils/swap/api';
 import {
+  ConnectToMetamaskButton,
   getErc20Balance,
   swapErc20ToSpl,
   useEthAccount,
@@ -104,7 +105,7 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
     try {
       return await swapApiRequest('POST', 'swap_to', {
         blockchain: 'sol',
-        coin: balanceInfo.mint.toBase58(),
+        coin: balanceInfo.mint?.toBase58(),
         address: publicKey.toBase58(),
       });
     } catch (e) {
@@ -115,7 +116,7 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
       }
       throw e;
     }
-  }, tuple('swapInfo', balanceInfo.mint.toBase58(), publicKey.toBase58()));
+  }, tuple('swapInfo', balanceInfo.mint?.toBase58(), publicKey.toBase58()));
 
   if (!loaded) {
     return <LoadingIndicator />;
@@ -153,9 +154,7 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
           converted to SPL {tokenName} via MetaMask.
         </Typography>
-        {window.ethereum ? (
-          <MetamaskDeposit swapInfo={swapInfo} ethereum={window.ethereum} />
-        ) : null}
+        <MetamaskDeposit swapInfo={swapInfo} />
       </>
     );
   }
@@ -163,7 +162,7 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
   return null;
 }
 
-function MetamaskDeposit({ ethereum, swapInfo }) {
+function MetamaskDeposit({ swapInfo }) {
   const ethAccount = useEthAccount();
   const [amount, setAmount] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -184,22 +183,7 @@ function MetamaskDeposit({ ethereum, swapInfo }) {
   }, tuple(getErc20Balance, ethAccount, erc20Address));
 
   if (!ethAccount) {
-    function connect() {
-      callAsync(
-        ethereum.request({
-          method: 'eth_requestAccounts',
-        }),
-        {
-          progressMessage: 'Connecting to MetaMask...',
-          successMessage: 'Connected to MetaMask',
-        },
-      );
-    }
-    return (
-      <Button color="primary" variant="outlined" onClick={connect}>
-        Connect to MetaMask
-      </Button>
-    );
+    return <ConnectToMetamaskButton />;
   }
 
   async function submit() {
@@ -208,6 +192,7 @@ function MetamaskDeposit({ ethereum, swapInfo }) {
     await callAsync(
       (async () => {
         let parsedAmount = parseFloat(amount);
+
         if (!parsedAmount || parsedAmount > maxAmount) {
           throw new Error('Invalid amount');
         }
@@ -243,7 +228,13 @@ function MetamaskDeposit({ ethereum, swapInfo }) {
           }}
           value={amount}
           onChange={(e) => setAmount(e.target.value.trim())}
-          helperText={maxAmountLoaded ? `Max: ${maxAmount.toFixed(6)}` : null}
+          helperText={
+            maxAmountLoaded ? (
+              <span onClick={() => setAmount(maxAmount.toFixed(6))}>
+                Max: {maxAmount.toFixed(6)}
+              </span>
+            ) : null
+          }
         />
         <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
           Convert
