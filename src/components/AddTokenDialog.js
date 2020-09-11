@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
 import { refreshWalletPublicKeys, useWallet } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useUpdateTokenName } from '../utils/tokens/names';
+import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
-import { Tab, Tabs, makeStyles } from '@material-ui/core';
+import { makeStyles, Tab, Tabs } from '@material-ui/core';
 import { useSendTransaction } from '../utils/notifications';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { abbreviateAddress } from '../utils/utils';
-import { TOKENS } from '../utils/tokens/names';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
@@ -27,6 +25,7 @@ import {
 } from '../utils/connection';
 import Link from '@material-ui/core/Link';
 import CopyableDisplay from './CopyableDisplay';
+import DialogForm from './DialogForm';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -76,7 +75,7 @@ export default function AddTokenDialog({ open, onClose }) {
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <DialogForm open={open} onClose={onClose}>
       <DialogTitle>Add Token</DialogTitle>
       <DialogContent>
         {tokenAccountCost ? (
@@ -161,7 +160,7 @@ export default function AddTokenDialog({ open, onClose }) {
           </Button>
         )}
       </DialogActions>
-    </Dialog>
+    </DialogForm>
   );
 }
 

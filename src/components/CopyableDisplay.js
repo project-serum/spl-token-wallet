@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+    alignItems: 'baseline',
   },
 }));
 
@@ -57,7 +58,7 @@ export default function CopyableDisplay({
       <IconButton onClick={copyLink}>
         <CopyIcon />
       </IconButton>
-      {qrCode ? <Qrcode value={value} /> : null}
+      {qrCode ? <Qrcode value={qrCode === true ? value : qrCode} /> : null}
     </div>
   );
 }

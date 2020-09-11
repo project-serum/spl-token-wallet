@@ -1,5 +1,7 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export default function DialogForm({
   open,
@@ -8,6 +10,9 @@ export default function DialogForm({
   children,
   ...rest
 }) {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
+
   return (
     <Dialog
       open={open}
@@ -21,6 +26,7 @@ export default function DialogForm({
         },
       }}
       onClose={onClose}
+      fullScreen={fullScreen}
       {...rest}
     >
       {children}

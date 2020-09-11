@@ -160,7 +160,7 @@ export function useAsyncData(
   }, [cacheKey, refreshInterval]);
 
   if (!cacheKey) {
-    return null;
+    return [null, false];
   }
 
   const loaded = globalCache.has(cacheKey);
@@ -182,7 +182,7 @@ export function refreshCache(cacheKey, clearCache = false) {
 }
 
 export function setCache(cacheKey, value, { initializeOnly = false } = {}) {
-  if (!initializeOnly && globalCache.has(cacheKey)) {
+  if (initializeOnly && globalCache.has(cacheKey)) {
     return;
   }
   globalCache.set(cacheKey, value);
