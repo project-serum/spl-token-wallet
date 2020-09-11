@@ -7,7 +7,11 @@ import { useUpdateTokenName } from '../utils/tokens/names';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
 import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { abbreviateAddress, sleep } from '../utils/utils';
-import { refreshAccountInfo, useConnectionConfig, MAINNET_URL } from '../utils/connection';
+import {
+  refreshAccountInfo,
+  useConnectionConfig,
+  MAINNET_URL,
+} from '../utils/connection';
 import { createAndInitializeMint } from '../utils/tokens';
 import { Tooltip, Button } from '@material-ui/core';
 import React from 'react';

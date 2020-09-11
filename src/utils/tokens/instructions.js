@@ -13,6 +13,10 @@ export const WRAPPED_SOL_MINT = new PublicKey(
   'So11111111111111111111111111111111111111111',
 );
 
+export const MEMO_PROGRAM_ID = new PublicKey(
+  'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo',
+);
+
 const LAYOUT = BufferLayout.union(BufferLayout.u8('instruction'));
 LAYOUT.addVariant(
   0,
@@ -120,5 +124,13 @@ export function mintTo({ mint, destination, amount, mintAuthority }) {
       },
     }),
     programId: TOKEN_PROGRAM_ID,
+  });
+}
+
+export function memoInstruction(memo) {
+  return new TransactionInstruction({
+    keys: [],
+    data: Buffer.from(memo, 'utf-8'),
+    programId: MEMO_PROGRAM_ID,
   });
 }

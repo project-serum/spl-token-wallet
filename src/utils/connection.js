@@ -57,11 +57,17 @@ export function useAccountInfo(publicKey) {
   );
   useEffect(() => {
     if (!publicKey) {
-      return () => {};
+      return;
     }
-    const id = connection.onAccountChange(publicKey, () =>
-      refreshCache(cacheKey),
-    );
+    let previousData = null;
+    const id = connection.onAccountChange(publicKey, (info) => {
+      if (info.data) {
+        if (!previousData || !previousData.equals(info.data)) {
+          previousData = info.data;
+          setCache(cacheKey, info);
+        }
+      }
+    });
     return () => connection.removeAccountChangeListener(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connection, publicKey?.toBase58(), cacheKey]);
