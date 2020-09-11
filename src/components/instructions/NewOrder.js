@@ -1,21 +1,10 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import KeyValue from './KeyValue';
-import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
 
-export default function Neworder({ instruction }) {
-  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
-
+export default function Neworder({ instruction, onOpenAddress }) {
   const { data, market, marketInfo } = instruction;
   const { clientId, side, limitPrice, maxQuantity, orderType } = data;
-
-  const onOpenAddress = (address) => {
-    address &&
-      window.open(
-        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
-        '_blank',
-      );
-  };
 
   return (
     <>

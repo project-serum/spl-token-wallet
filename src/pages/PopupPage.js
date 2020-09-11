@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
-import { useConnection } from '../utils/connection';
+import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import { Typography, Divider } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -190,24 +190,48 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
 function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   const classes = useStyles();
+  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
+  const wallet = useWallet();
 
   const [instructions, setInstructions] = useState([]);
 
   useEffect(() => {
-    decodeMessage(connection, message).then(setInstructions);
-  }, [message, connection]);
+    decodeMessage(connection, wallet, message).then(setInstructions);
+  }, [message, connection, wallet]);
+
+  const onOpenAddress = (address) => {
+    address &&
+      window.open(
+        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
+        '_blank',
+      );
+  };
 
   const getContent = (instruction) => {
     switch (instruction?.type) {
       case 'cancelOrder':
-        return <CancelOrder instruction={instruction} />;
+        return (
+          <CancelOrder
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
       case 'newOrder':
-        return <NewOrder instruction={instruction} />;
+        return (
+          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
       case 'settleFunds':
-        return <SettleFunds />;
+        return (
+          <SettleFunds
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
       case 'matchOrders':
-        return <MatchOrder instruction={instruction} />;
+        return (
+          <MatchOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
       default:
         return <UnknownInstruction message={message} />;
     }
@@ -217,22 +241,19 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
     <Card>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          {origin} wants to:
+          {instructions ? `${origin} wants to:` : `Invalid transaction data`}
         </Typography>
-        {instructions ? (
+        {instructions &&
           instructions.map((instruction) => (
             <Box style={{ marginTop: 20 }}>
               {getContent(instruction)}
               <Divider style={{ marginTop: 20 }} />
             </Box>
-          ))
-        ) : (
-          <UnknownInstruction message={message} />
-        )}
+          ))}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
-        <Button color="primary" onClick={onApprove}>
+        <Button color="primary" onClick={onApprove} disabled={!instructions}>
           Approve
         </Button>
       </CardActions>

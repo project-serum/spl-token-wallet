@@ -1,20 +1,10 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import KeyValue from './KeyValue';
-import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
 
-export default function CancelOrder({ instruction }) {
-  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
+export default function CancelOrder({ instruction, onOpenAddress }) {
   const { data, marketInfo } = instruction;
   const { side, orderId } = data;
-
-  const onOpenAddress = (address) => {
-    address &&
-      window.open(
-        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
-        '_blank',
-      );
-  };
 
   return (
     <>
