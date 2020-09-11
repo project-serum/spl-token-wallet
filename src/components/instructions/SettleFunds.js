@@ -10,14 +10,18 @@ export default function SettleFunds({ instruction, onOpenAddress }) {
   const { marketInfo, accounts, accountKeys } = instruction;
 
   // get base wallet key
-  const baseIndex = accounts[SETTLE_FUNDS_BASE_WALLET_INDEX];
+  const baseIndex =
+    accounts.length > SETTLE_FUNDS_BASE_WALLET_INDEX &&
+    accounts[SETTLE_FUNDS_BASE_WALLET_INDEX];
   const baseWalletKey =
-    accountKeys?.length > baseIndex && accountKeys[baseIndex];
+    baseIndex && accountKeys?.length > baseIndex && accountKeys[baseIndex];
 
   // get quote wallet key
-  const quoteIndex = accounts[SETTLE_FUNDS_QUOTE_WALLET_INDEX];
+  const quoteIndex =
+    accounts.length > SETTLE_FUNDS_QUOTE_WALLET_INDEX &&
+    accounts[SETTLE_FUNDS_QUOTE_WALLET_INDEX];
   const quoteWalletKey =
-    accountKeys?.length > quoteIndex && accountKeys[quoteIndex];
+    quoteIndex && accountKeys?.length > quoteIndex && accountKeys[quoteIndex];
 
   return (
     <>
