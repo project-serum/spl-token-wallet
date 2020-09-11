@@ -74,7 +74,11 @@ export default function DepositDialog({
           indicatorColor="primary"
         >
           <Tab label={`SPL ${swapInfo.coin.ticker}`} />
-          <Tab label={describeSwap(swapInfo.coin)} />
+          <Tab
+            label={`${swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'} ${
+              swapInfo.coin.ticker
+            }`}
+          />
         </Tabs>
       ) : null}
       <DialogContent style={{ paddingTop: 16 }}>
@@ -113,7 +117,6 @@ export default function DepositDialog({
           </>
         ) : (
           <SolletSwapDepositAddress
-            publicKey={publicKey}
             balanceInfo={balanceInfo}
             swapInfo={swapInfo}
           />
@@ -126,14 +129,7 @@ export default function DepositDialog({
   );
 }
 
-function describeSwap(swapInfoCoin) {
-  if (swapInfoCoin.blockchain === 'eth' && swapInfoCoin.erc20Contract) {
-    return `ERC20 ${swapInfoCoin.ticker}`;
-  }
-  return `native ${swapInfoCoin.ticker}`;
-}
-
-function SolletSwapDepositAddress({ publicKey, balanceInfo, swapInfo }) {
+function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
   if (!swapInfo) {
     return null;
   }
@@ -151,6 +147,7 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo, swapInfo }) {
         <CopyableDisplay
           value={address}
           label="Native BTC Deposit Address"
+          autoFocus
           qrCode={`bitcoin:${address}`}
         />
       </>

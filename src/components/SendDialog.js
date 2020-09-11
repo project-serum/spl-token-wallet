@@ -68,7 +68,11 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             indicatorColor="primary"
           >
             <Tab label={`SPL ${swapCoinInfo.ticker}`} />
-            <Tab label={describeSwap(swapCoinInfo)} />
+            <Tab
+              label={`${swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'} ${
+                swapCoinInfo.ticker
+              }`}
+            />
           </Tabs>
         ) : null}
         {tab === 0 ? (
@@ -95,13 +99,6 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
       ) : null}
     </>
   );
-}
-
-function describeSwap(swapCoinInfo) {
-  if (swapCoinInfo.blockchain === 'eth' && swapCoinInfo.erc20Contract) {
-    return `ERC20 ${swapCoinInfo.ticker}`;
-  }
-  return `native ${swapCoinInfo.ticker}`;
 }
 
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
@@ -199,7 +196,9 @@ function SendSwapDialog({
     <>
       <DialogContent style={{ paddingTop: 16 }}>
         <DialogContentText>
-          SPL {tokenName} can be converted to {describeSwap(swapCoinInfo)}
+          SPL {tokenName} can be converted to{' '}
+          {swapCoinInfo.erc20Contract ? 'ERC20' : 'native'}{' '}
+          {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </DialogContentText>
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
