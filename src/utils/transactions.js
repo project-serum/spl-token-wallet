@@ -114,7 +114,7 @@ const isValidSettleFundsInstruction = async (
   // check if wallet owns these
   const publicKeys = await wallet.getTokenPublicKeys();
   return (
-    publicKeys.findIndex((ownedKey) => baseWalletKey.equals(ownedKey)) > -1 &&
-    publicKeys.findIndex((ownedKey) => quoteWalletKey.equals(ownedKey))
+    publicKeys.some((ownedKey) => baseWalletKey.equals(ownedKey)) &&
+    publicKeys.some((ownedKey) => quoteWalletKey.equals(ownedKey))
   );
 };

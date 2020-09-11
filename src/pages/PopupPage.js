@@ -3,6 +3,7 @@ import { useWallet } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import { Typography, Divider } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -194,10 +195,14 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   const connection = useConnection();
   const wallet = useWallet();
 
-  const [instructions, setInstructions] = useState([]);
+  const [parsing, setParsing] = useState(true);
+  const [instructions, setInstructions] = useState(null);
 
   useEffect(() => {
-    decodeMessage(connection, wallet, message).then(setInstructions);
+    decodeMessage(connection, wallet, message).then((instructions) => {
+      setInstructions(instructions);
+      setParsing(false);
+    });
   }, [message, connection, wallet]);
 
   const onOpenAddress = (address) => {
@@ -240,20 +245,39 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
-          {instructions ? `${origin} wants to:` : `Invalid transaction data`}
-        </Typography>
-        {instructions &&
-          instructions.map((instruction) => (
-            <Box style={{ marginTop: 20 }}>
-              {getContent(instruction)}
-              <Divider style={{ marginTop: 20 }} />
-            </Box>
-          ))}
+        {parsing ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {instructions
+                ? `${origin} wants to:`
+                : `Unknown transaction data`}
+            </Typography>
+            {instructions ? (
+              instructions.map((instruction) => (
+                <Box style={{ marginTop: 20 }}>
+                  {getContent(instruction)}
+                  <Divider style={{ marginTop: 20 }} />
+                </Box>
+              ))
+            ) : (
+              <UnknownInstruction message={message} />
+            )}
+          </>
+        )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
-        <Button color="primary" onClick={onApprove} disabled={!instructions}>
+        <Button color="primary" onClick={onApprove}>
           Approve
         </Button>
       </CardActions>

@@ -1578,10 +1578,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@project-serum/serum@^0.12.2":
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.12.2.tgz#d3f5e69ad2d62229c91b344583e6841cf1fa34c5"
-  integrity sha512-KZ2Jvh38ys0i0PWcfkbxoJC7AOq2wSrzmYx2vZo8RQB9E2n+a4nhffJ/0uMnANB9T46zCOJ6eeXQHS8id5BThA==
+"@project-serum/serum@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.12.4.tgz#f67d70d87e45562a65807e3c8a6f62046bb63f7b"
+  integrity sha512-LBV+Ioza6bwP/2/Tr00uq58YJVwnqCcY4jeucWptCHJu719z0Agz3mW5WgniL+9cqMPwpcO8Gys9Sd4Xj/OYzw==
   dependencies:
     "@solana/web3.js" "^0.71.10"
     bn.js "^5.1.2"
