@@ -9,7 +9,7 @@ import { useWallet } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { useSendTransaction } from '../utils/notifications';
+import { useCallAsync, useSendTransaction } from '../utils/notifications';
 import { useAsyncData } from '../utils/fetch-loop';
 import { SwapApiError, swapApiRequest } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
@@ -21,7 +21,6 @@ import {
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
-import { useSnackbar } from 'notistack';
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const [tab, setTab] = useState(0);
@@ -65,6 +64,8 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             value={tab}
             variant="fullWidth"
             onChange={(e, value) => setTab(value)}
+            textColor="primary"
+            indicatorColor="primary"
           >
             <Tab label={`SPL ${swapCoinInfo.ticker}`} />
             <Tab label={describeSwap(swapCoinInfo)} />
@@ -196,7 +197,7 @@ function SendSwapDialog({
 
   return (
     <>
-      <DialogContent>
+      <DialogContent style={{ paddingTop: 16 }}>
         <DialogContentText>
           SPL {tokenName} can be converted to {describeSwap(swapCoinInfo)}
           {needMetamask ? ' via MetaMask' : null}.
@@ -290,7 +291,7 @@ function EthWithdrawalCompleter({ ethAccount, publicKey }) {
 }
 
 function EthWithdrawalCompleterItem({ ethAccount, swap }) {
-  const { enqueueSnackbar } = useSnackbar();
+  const callAsync = useCallAsync();
   const { withdrawal } = swap;
   useEffect(() => {
     if (
@@ -300,9 +301,7 @@ function EthWithdrawalCompleterItem({ ethAccount, swap }) {
       !withdrawal.txid.startsWith('0x') &&
       withdrawal.txData
     ) {
-      withdrawEth(ethAccount, withdrawal).catch((e) =>
-        enqueueSnackbar(e.message, { variant: 'error' }),
-      );
+      withdrawEth(ethAccount, withdrawal, callAsync);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withdrawal.txid, withdrawal.status]);

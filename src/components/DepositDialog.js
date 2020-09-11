@@ -10,10 +10,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { useAsyncData } from '../utils/fetch-loop';
 import tuple from 'immutable-tuple';
-import LoadingIndicator from './LoadingIndicator';
-import Divider from '@material-ui/core/Divider';
 import { showSwapAddress } from '../utils/config';
-import { makeStyles } from '@material-ui/core/styles';
 import { useCallAsync } from '../utils/notifications';
 import { SwapApiError, swapApiRequest } from '../utils/swap/api';
 import {
@@ -29,6 +26,9 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import { DialogContentText } from '@material-ui/core';
 
 export default function DepositDialog({
   open,
@@ -38,70 +38,11 @@ export default function DepositDialog({
 }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
-
-  return (
-    <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>
-        Deposit {tokenName ?? mint.toBase58()}
-        {tokenSymbol ? ` (${tokenSymbol})` : null}
-      </DialogTitle>
-      <DialogContent>
-        {publicKey.equals(owner) ? (
-          <Typography paragraph>
-            This address can only be used to receive SOL. Do not send other
-            tokens to this address.
-          </Typography>
-        ) : (
-          <Typography paragraph>
-            This address can only be used to receive{' '}
-            {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to this
-            address.
-          </Typography>
-        )}
-        <CopyableDisplay
-          value={publicKey.toBase58()}
-          label={'Deposit Address'}
-          autoFocus
-          qrCode
-        />
-        <Typography variant="body2">
-          <Link
-            href={
-              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-              urlSuffix
-            }
-            target="_blank"
-            rel="noopener"
-          >
-            View on Solana Explorer
-          </Link>
-        </Typography>
-        {showSwapAddress ? (
-          <SolletSwapDepositAddress
-            publicKey={publicKey}
-            balanceInfo={balanceInfo}
-          />
-        ) : null}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </DialogForm>
-  );
-}
-
-const useStyles = makeStyles((theme) => ({
-  divider: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    marginLeft: theme.spacing(-3),
-    marginRight: theme.spacing(-3),
-  },
-}));
-
-function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
-  const classes = useStyles();
-  const [swapInfo, loaded] = useAsyncData(async () => {
+  const [tab, setTab] = useState(0);
+  const [swapInfo] = useAsyncData(async () => {
+    if (!showSwapAddress) {
+      return null;
+    }
     try {
       return await swapApiRequest('POST', 'swap_to', {
         blockchain: 'sol',
@@ -118,10 +59,81 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
     }
   }, tuple('swapInfo', balanceInfo.mint?.toBase58(), publicKey.toBase58()));
 
-  if (!loaded) {
-    return <LoadingIndicator />;
-  }
+  return (
+    <DialogForm open={open} onClose={onClose}>
+      <DialogTitle>
+        Deposit {tokenName ?? mint.toBase58()}
+        {tokenSymbol ? ` (${tokenSymbol})` : null}
+      </DialogTitle>
+      {swapInfo ? (
+        <Tabs
+          value={tab}
+          variant="fullWidth"
+          onChange={(e, value) => setTab(value)}
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab label={`SPL ${swapInfo.coin.ticker}`} />
+          <Tab label={describeSwap(swapInfo.coin)} />
+        </Tabs>
+      ) : null}
+      <DialogContent style={{ paddingTop: 16 }}>
+        {tab === 0 ? (
+          <>
+            {publicKey.equals(owner) ? (
+              <DialogContentText>
+                This address can only be used to receive SOL. Do not send other
+                tokens to this address.
+              </DialogContentText>
+            ) : (
+              <DialogContentText>
+                This address can only be used to receive{' '}
+                {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
+                this address.
+              </DialogContentText>
+            )}
+            <CopyableDisplay
+              value={publicKey.toBase58()}
+              label={'Deposit Address'}
+              autoFocus
+              qrCode
+            />
+            <DialogContentText variant="body2">
+              <Link
+                href={
+                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                  urlSuffix
+                }
+                target="_blank"
+                rel="noopener"
+              >
+                View on Solana Explorer
+              </Link>
+            </DialogContentText>
+          </>
+        ) : (
+          <SolletSwapDepositAddress
+            publicKey={publicKey}
+            balanceInfo={balanceInfo}
+            swapInfo={swapInfo}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
+      </DialogActions>
+    </DialogForm>
+  );
+}
 
+function describeSwap(swapInfoCoin) {
+  if (swapInfoCoin.blockchain === 'eth' && swapInfoCoin.erc20Contract) {
+    return `ERC20 ${swapInfoCoin.ticker}`;
+  }
+  return `native ${swapInfoCoin.ticker}`;
+}
+
+function SolletSwapDepositAddress({ publicKey, balanceInfo, swapInfo }) {
   if (!swapInfo) {
     return null;
   }
@@ -132,11 +144,10 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
   if (blockchain === 'btc' && memo === null) {
     return (
       <>
-        <Divider className={classes.divider} />
-        <Typography paragraph>
+        <DialogContentText>
           Native BTC can be converted to SPL {tokenName} by sending it to the
           following address:
-        </Typography>
+        </DialogContentText>
         <CopyableDisplay
           value={address}
           label="Native BTC Deposit Address"
@@ -149,11 +160,10 @@ function SolletSwapDepositAddress({ publicKey, balanceInfo }) {
   if (blockchain === 'eth') {
     return (
       <>
-        <Divider className={classes.divider} />
-        <Typography gutterBottom>
+        <DialogContentText>
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
           converted to SPL {tokenName} via MetaMask.
-        </Typography>
+        </DialogContentText>
         <MetamaskDeposit swapInfo={swapInfo} />
       </>
     );
