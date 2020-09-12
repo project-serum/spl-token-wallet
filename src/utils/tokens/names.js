@@ -70,6 +70,11 @@ export const TOKENS = {
       mintAddress: 'SF3oTvfWzEP3DTwGSvUXRrGTvr75pdZNnBLAH9bzMuX',
       tokenName: 'Wrapped SXP',
     },
+    {
+      tokenSymbol: 'HGET',
+      mintAddress: 'BtZQfWqDGbk9Wf2rXEiWyQBdBY1etnUUn6zEphvVS7yN',
+      tokenName: 'Wrapped HGET',
+    },
   ],
 };
 
