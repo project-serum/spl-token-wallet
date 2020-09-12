@@ -10,8 +10,7 @@ import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
-import { useAsyncData } from '../utils/fetch-loop';
-import { SwapApiError, swapApiRequest } from '../utils/swap/api';
+import { swapApiRequest, useSwapApiGet } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -26,24 +25,11 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const [tab, setTab] = useState(0);
   const onSubmitRef = useRef();
 
-  const [swapCoinInfo] = useAsyncData(async () => {
-    if (!showSwapAddress) {
-      return null;
-    }
-    try {
-      return await swapApiRequest(
-        'GET',
-        `coins/sol/${balanceInfo.mint?.toBase58()}`,
-      );
-    } catch (e) {
-      if (e instanceof SwapApiError) {
-        if (e.status === 404) {
-          return null;
-        }
-      }
-      throw e;
-    }
-  }, ['swapCoinInfo', balanceInfo.mint?.toBase58()]);
+  const [swapCoinInfo] = useSwapApiGet(
+    showSwapAddress && balanceInfo.mint
+      ? `coins/sol/${balanceInfo.mint.toBase58()}`
+      : null,
+  );
   const ethAccount = useEthAccount();
 
   const { mint, tokenName, tokenSymbol } = balanceInfo;
@@ -272,11 +258,9 @@ function useForm(balanceInfo) {
 }
 
 function EthWithdrawalCompleter({ ethAccount, publicKey }) {
-  const [swaps] = useAsyncData(
-    () => swapApiRequest('GET', `swaps_from/sol/${publicKey.toBase58()}`),
-    `swaps_from/sol/${publicKey.toBase58()}`,
-    { refreshInterval: 10000 },
-  );
+  const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
+    refreshInterval: 10000,
+  });
   if (!swaps) {
     return null;
   }
