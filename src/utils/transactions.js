@@ -6,6 +6,7 @@ import {
   MARKETS,
   SETTLE_FUNDS_BASE_WALLET_INDEX,
   SETTLE_FUNDS_QUOTE_WALLET_INDEX,
+  OpenOrders,
 } from '@project-serum/serum';
 
 export const decodeMessage = async (connection, wallet, message) => {
@@ -30,17 +31,47 @@ export const decodeMessage = async (connection, wallet, message) => {
 };
 
 const toInstruction = async (connection, wallet, accountKeys, instruction) => {
-  const { data, accounts } = instruction;
-  if (!data || !accounts) {
+  if (!instruction?.data) {
     return;
   }
 
   // get instruction data
-  const decoded = bs58.decode(data);
-  const decodedInstruction = decodeInstruction(decoded);
-  if (Object.keys(decodedInstruction).length > 1) {
+  const decoded = bs58.decode(instruction?.data);
+  let decodedInstruction;
+
+  // try dex instruction decoding
+  try {
+    decodedInstruction = decodeInstruction(decoded);
+    return await handleDexInstruction(
+      connection,
+      wallet,
+      instruction,
+      accountKeys,
+      decodedInstruction,
+    );
+  } catch {}
+
+  // try open orders decoding
+  try {
+    decodedInstruction = OpenOrders.LAYOUT.decode(decoded);
+    return handleOpenOrdersInstruction(decodedInstruction);
+  } catch {}
+
+  // both decodings failed
+  return;
+};
+
+const handleDexInstruction = async (
+  connection,
+  wallet,
+  instruction,
+  accountKeys,
+  decodedInstruction,
+) => {
+  if (!instruction?.accounts) {
     return;
   }
+
   const type = decodedInstruction && Object.keys(decodedInstruction)[0];
   if (type === 'settleFunds') {
     const valid = await isValidSettleFundsInstruction(
@@ -81,8 +112,20 @@ const toInstruction = async (connection, wallet, accountKeys, instruction) => {
     data: decodedInstruction[type],
     market,
     marketInfo,
-    accounts,
+    accounts: instruction?.accounts,
     accountKeys,
+  };
+};
+
+const handleOpenOrdersInstruction = (instruction) => {
+  const { accountFlags, market, owner } = instruction;
+  if (!accountFlags || !market || !owner) {
+    return;
+  }
+
+  return {
+    type: 'createAccount',
+    data: { marketAddress: market, owner },
   };
 };
 

@@ -23,6 +23,11 @@ export default function SettleFunds({ instruction, onOpenAddress }) {
   const quoteWalletKey =
     quoteIndex && accountKeys?.length > quoteIndex && accountKeys[quoteIndex];
 
+  const marketLabel =
+    marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '') ||
+    marketInfo?.address?.toBase58() ||
+    'Unknown';
+
   return (
     <>
       <Typography
@@ -34,7 +39,7 @@ export default function SettleFunds({ instruction, onOpenAddress }) {
       </Typography>
       <KeyValue
         label="Market"
-        value={marketInfo?.name || marketInfo?.address?.toBase58() || 'Unknown'}
+        value={marketLabel}
         link={true}
         onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
       />

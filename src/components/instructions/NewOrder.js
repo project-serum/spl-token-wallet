@@ -6,6 +6,11 @@ export default function Neworder({ instruction, onOpenAddress }) {
   const { data, market, marketInfo } = instruction;
   const { clientId, side, limitPrice, maxQuantity, orderType } = data;
 
+  const marketLabel =
+    marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '') ||
+    marketInfo?.address?.toBase58() ||
+    'Unknown';
+
   return (
     <>
       <Typography
@@ -17,7 +22,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
       </Typography>
       <KeyValue
         label="Market"
-        value={marketInfo?.name || marketInfo?.address?.toBase58() || 'Unknown'}
+        value={marketLabel}
         link={true}
         onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
       />

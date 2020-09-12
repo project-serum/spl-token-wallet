@@ -19,6 +19,7 @@ import NewOrder from '../components/instructions/NewOrder';
 import SettleFunds from '../components/instructions/SettleFunds';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
 import MatchOrder from '../components/instructions/MatchOrder';
+import CreateAccount from '../components/instructions/CreateAccount';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -236,6 +237,10 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
       case 'matchOrders':
         return (
           <MatchOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
+      case 'createAccount':
+        return (
+          <CreateAccount instruction={instruction} onOpenAddress={onOpenAddress} />
         );
       default:
         return <UnknownInstruction message={message} />;
