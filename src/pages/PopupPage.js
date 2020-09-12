@@ -20,6 +20,8 @@ import SettleFunds from '../components/instructions/SettleFunds';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
 import MatchOrder from '../components/instructions/MatchOrder';
 import CreateAccount from '../components/instructions/CreateAccount';
+import InitializeMint from '../components/instructions/InitializeMint';
+import OtherInstruction from '../components/instructions/OtherInstruction';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -240,8 +242,24 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
         );
       case 'createAccount':
         return (
-          <CreateAccount instruction={instruction} onOpenAddress={onOpenAddress} />
+          <CreateAccount
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
         );
+      case 'initializeMint':
+        return (
+          <InitializeMint
+            instruction={instructions}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'initializeAccount':
+      case 'transfer':
+      case 'approve':
+      case 'mintTo':
+      case 'closeAccount':
+        return <OtherInstruction instruction={instruction} />;
       default:
         return <UnknownInstruction message={message} />;
     }

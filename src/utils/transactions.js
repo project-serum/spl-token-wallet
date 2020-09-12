@@ -2,6 +2,7 @@ import bs58 from 'bs58';
 import { Message } from '@solana/web3.js';
 import {
   decodeInstruction,
+  decodeTokenInstructionData,
   Market,
   MARKETS,
   SETTLE_FUNDS_BASE_WALLET_INDEX,
@@ -57,6 +58,12 @@ const toInstruction = async (connection, wallet, accountKeys, instruction) => {
     return handleOpenOrdersInstruction(decodedInstruction);
   } catch {}
 
+  // try token decoding
+  try {
+    decodedInstruction = decodeTokenInstructionData(decoded);
+    return handleTokenInstruction(decodedInstruction);
+  } catch {}
+
   // both decodings failed
   return;
 };
@@ -68,11 +75,11 @@ const handleDexInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  if (!instruction?.accounts) {
+  if (!instruction?.accounts || !decodedInstruction || Object.keys(decodedInstruction).length > 1) {
     return;
   }
 
-  const type = decodedInstruction && Object.keys(decodedInstruction)[0];
+  const type = Object.keys(decodedInstruction)[0];
   if (type === 'settleFunds') {
     const valid = await isValidSettleFundsInstruction(
       wallet,
@@ -126,6 +133,18 @@ const handleOpenOrdersInstruction = (instruction) => {
   return {
     type: 'createAccount',
     data: { marketAddress: market, owner },
+  };
+};
+
+const handleTokenInstruction = (decodedInstruction) => {
+  if (!decodedInstruction || Object.keys(decodedInstruction).length > 1) {
+    return;
+  }
+
+  const type = Object.keys(decodedInstruction)[0];
+  return {
+    type,
+    data: decodedInstruction[type],
   };
 };
 
