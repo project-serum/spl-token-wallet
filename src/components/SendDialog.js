@@ -20,7 +20,7 @@ import {
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
-import { useConnection } from '../utils/connection';
+import { useConnection, useIsProdNetwork } from '../utils/connection';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -30,11 +30,12 @@ import { useAsyncData } from '../utils/fetch-loop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
+  const isProdNetwork = useIsProdNetwork();
   const [tab, setTab] = useState(0);
   const onSubmitRef = useRef();
 
   const [swapCoinInfo] = useSwapApiGet(
-    showSwapAddress && balanceInfo.mint
+    showSwapAddress && balanceInfo.mint && isProdNetwork
       ? `coins/sol/${balanceInfo.mint.toBase58()}`
       : null,
   );
@@ -98,9 +99,12 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
-  const { fields, destinationAddress, transferAmountString } = useForm(
-    balanceInfo,
-  );
+  const {
+    fields,
+    destinationAddress,
+    transferAmountString,
+    validAmount,
+  } = useForm(balanceInfo);
   const { decimals } = balanceInfo;
 
   async function makeTransaction() {
@@ -124,7 +128,11 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" color="primary" disabled={sending}>
+        <Button
+          type="submit"
+          color="primary"
+          disabled={sending || !validAmount}
+        >
           Send
         </Button>
       </DialogActions>
@@ -148,6 +156,7 @@ function SendSwapDialog({
     destinationAddress,
     transferAmountString,
     setDestinationAddress,
+    validAmount,
   } = useForm(balanceInfo);
 
   const { tokenName, decimals } = balanceInfo;
@@ -170,6 +179,7 @@ function SendSwapDialog({
       blockchain,
       coin: swapCoinInfo.erc20Contract,
       address: destinationAddress,
+      size: amount / 10 ** decimals,
     });
     if (swapInfo.blockchain !== 'sol') {
       throw new Error('Unexpected blockchain');
@@ -214,7 +224,7 @@ function SendSwapDialog({
         <Button
           type="submit"
           color="primary"
-          disabled={sending || (needMetamask && !ethAccount)}
+          disabled={sending || (needMetamask && !ethAccount) || !validAmount}
         >
           Send
         </Button>
@@ -305,6 +315,9 @@ function useForm(balanceInfo) {
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
 
+  const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
+  const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
+
   const fields = (
     <>
       <TextField
@@ -351,6 +364,7 @@ function useForm(balanceInfo) {
     destinationAddress,
     transferAmountString,
     setDestinationAddress,
+    validAmount,
   };
 }
 

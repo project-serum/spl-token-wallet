@@ -2,4 +2,4 @@ export const showTokenInfoDialog = !!localStorage.getItem(
   'showTokenInfoDialog',
 );
 
-export const showSwapAddress = !!localStorage.getItem('showSwapAddress');
+export const showSwapAddress = true;

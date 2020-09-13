@@ -4,7 +4,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
-import { useSolanaExplorerUrlSuffix } from '../utils/connection';
+import {
+  useIsProdNetwork,
+  useSolanaExplorerUrlSuffix,
+} from '../utils/connection';
 import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -36,11 +39,12 @@ export default function DepositDialog({
   publicKey,
   balanceInfo,
 }) {
+  const isProdNetwork = useIsProdNetwork();
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
   const [swapInfo] = useAsyncData(async () => {
-    if (!showSwapAddress) {
+    if (!showSwapAddress || !isProdNetwork) {
       return null;
     }
     return await swapApiRequest(
@@ -53,7 +57,12 @@ export default function DepositDialog({
       },
       { ignoreUserErrors: true },
     );
-  }, ['swapInfo', balanceInfo.mint?.toBase58(), publicKey.toBase58()]);
+  }, [
+    'swapInfo',
+    isProdNetwork,
+    balanceInfo.mint?.toBase58(),
+    publicKey.toBase58(),
+  ]);
 
   let tabs = null;
   if (swapInfo) {
