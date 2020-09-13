@@ -275,22 +275,6 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
             <StepLabel>Withdraw Funds</StepLabel>
           </Step>
         </Stepper>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ marginRight: 16 }}>
-            <CircularProgress />
-          </div>
-          {confirms ? (
-            <Typography>{confirms} / 35 Confirmations</Typography>
-          ) : (
-            <Typography>Transaction Pending</Typography>
-          )}
-        </div>
         {ethTxid ? (
           <Typography variant="body2" align="center">
             <Link
@@ -301,7 +285,24 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
               View on Etherscan
             </Link>
           </Typography>
-        ) : null}
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ marginRight: 16 }}>
+              <CircularProgress />
+            </div>
+            {confirms ? (
+              <Typography>{confirms} / 35 Confirmations</Typography>
+            ) : (
+              <Typography>Transaction Pending</Typography>
+            )}
+          </div>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
