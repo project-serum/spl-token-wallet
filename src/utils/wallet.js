@@ -42,14 +42,14 @@ export class Wallet {
     return this.account.publicKey;
   }
 
-  getTokenPublicKeys = async () => {
+  getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(
       this.connection,
       this.account.publicKey,
     );
     return accounts.map(({ publicKey, accountInfo }) => {
       setInitialAccountInfo(this.connection, publicKey, accountInfo);
-      return publicKey;
+      return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };
     });
   };
 
@@ -126,16 +126,26 @@ export function useWallet() {
 
 export function useWalletPublicKeys() {
   let wallet = useWallet();
-  let [tokenPublicKeys, loaded] = useAsyncData(
-    wallet.getTokenPublicKeys,
-    wallet.getTokenPublicKeys,
+  let [tokenAccountInfo, loaded] = useAsyncData(
+    wallet.getTokenAccountInfo,
+    wallet.getTokenAccountInfo,
   );
-  let publicKeys = [wallet.account.publicKey, ...(tokenPublicKeys ?? [])];
+  let publicKeys = [
+    wallet.account.publicKey,
+    ...(tokenAccountInfo
+      ? tokenAccountInfo.map(({ publicKey }) => publicKey)
+      : []),
+  ];
   return [publicKeys, loaded];
 }
 
+export function useWalletTokenAccounts() {
+  let wallet = useWallet();
+  return useAsyncData(wallet.getTokenAccountInfo, wallet.getTokenAccountInfo);
+}
+
 export function refreshWalletPublicKeys(wallet) {
-  refreshCache(wallet.getTokenPublicKeys);
+  refreshCache(wallet.getTokenAccountInfo);
 }
 
 export function useBalanceInfo(publicKey) {

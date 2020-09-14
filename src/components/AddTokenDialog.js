@@ -5,7 +5,11 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
-import { refreshWalletPublicKeys, useWallet } from '../utils/wallet';
+import {
+  refreshWalletPublicKeys,
+  useWallet,
+  useWalletTokenAccounts,
+} from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
@@ -55,6 +59,7 @@ export default function AddTokenDialog({ open, onClose }) {
   let [sendTransaction, sending] = useSendTransaction();
   const { endpoint } = useConnectionConfig();
   const popularTokens = TOKENS[endpoint];
+  const [walletAccounts] = useWalletTokenAccounts();
   const [tab, setTab] = useState(!!popularTokens ? 'popular' : 'manual');
 
   useEffect(() => {
@@ -140,6 +145,10 @@ export default function AddTokenDialog({ open, onClose }) {
               <TokenListItem
                 key={token.mintAddress}
                 {...token}
+                existingAccount={(walletAccounts || []).find(
+                  (account) =>
+                    account.parsed.mint.toBase58() === token.mintAddress,
+                )}
                 onSubmit={onSubmit}
                 disalbed={sending}
               />
@@ -170,10 +179,11 @@ function TokenListItem({
   mintAddress,
   onSubmit,
   disabled,
+  existingAccount,
 }) {
   const [open, setOpen] = useState(false);
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  const alreadyExists = false; // TODO
+  const alreadyExists = !!existingAccount;
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }} key={tokenName}>

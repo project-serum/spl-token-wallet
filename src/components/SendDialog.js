@@ -10,8 +10,7 @@ import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
-import { useAsyncData } from '../utils/fetch-loop';
-import { SwapApiError, swapApiRequest } from '../utils/swap/api';
+import { swapApiRequest, useSwapApiGet } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -21,29 +20,25 @@ import {
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
+import { useConnection, useIsProdNetwork } from '../utils/connection';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import { useAsyncData } from '../utils/fetch-loop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
+  const isProdNetwork = useIsProdNetwork();
   const [tab, setTab] = useState(0);
   const onSubmitRef = useRef();
 
-  const [swapCoinInfo] = useAsyncData(async () => {
-    if (!showSwapAddress) {
-      return null;
-    }
-    try {
-      return await swapApiRequest(
-        'GET',
-        `coins/sol/${balanceInfo.mint?.toBase58()}`,
-      );
-    } catch (e) {
-      if (e instanceof SwapApiError) {
-        if (e.status === 404) {
-          return null;
-        }
-      }
-      throw e;
-    }
-  }, ['swapCoinInfo', balanceInfo.mint?.toBase58()]);
+  const [swapCoinInfo] = useSwapApiGet(
+    showSwapAddress && balanceInfo.mint && isProdNetwork
+      ? `coins/sol/${balanceInfo.mint.toBase58()}`
+      : null,
+  );
   const ethAccount = useEthAccount();
 
   const { mint, tokenName, tokenSymbol } = balanceInfo;
@@ -104,9 +99,12 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
-  const { fields, destinationAddress, transferAmountString } = useForm(
-    balanceInfo,
-  );
+  const {
+    fields,
+    destinationAddress,
+    transferAmountString,
+    validAmount,
+  } = useForm(balanceInfo);
   const { decimals } = balanceInfo;
 
   async function makeTransaction() {
@@ -130,7 +128,11 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" color="primary" disabled={sending}>
+        <Button
+          type="submit"
+          color="primary"
+          disabled={sending || !validAmount}
+        >
           Send
         </Button>
       </DialogActions>
@@ -148,11 +150,13 @@ function SendSwapDialog({
 }) {
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
+  const [signature, setSignature] = useState(null);
   const {
     fields,
     destinationAddress,
     transferAmountString,
     setDestinationAddress,
+    validAmount,
   } = useForm(balanceInfo);
 
   const { tokenName, decimals } = balanceInfo;
@@ -175,6 +179,7 @@ function SendSwapDialog({
       blockchain,
       coin: swapCoinInfo.erc20Contract,
       address: destinationAddress,
+      size: amount / 10 ** decimals,
     });
     if (swapInfo.blockchain !== 'sol') {
       throw new Error('Unexpected blockchain');
@@ -188,9 +193,20 @@ function SendSwapDialog({
   }
 
   async function onSubmit() {
-    return sendTransaction(makeTransaction(), { onSuccess: onClose });
+    return sendTransaction(makeTransaction(), { onSuccess: setSignature });
   }
   onSubmitRef.current = onSubmit;
+
+  if (signature) {
+    return (
+      <SendSwapProgress
+        key={signature}
+        publicKey={publicKey}
+        signature={signature}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <>
@@ -208,10 +224,88 @@ function SendSwapDialog({
         <Button
           type="submit"
           color="primary"
-          disabled={sending || (needMetamask && !ethAccount)}
+          disabled={sending || (needMetamask && !ethAccount) || !validAmount}
         >
           Send
         </Button>
+      </DialogActions>
+    </>
+  );
+}
+
+function SendSwapProgress({ publicKey, signature, onClose }) {
+  const connection = useConnection();
+  const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
+    refreshInterval: 1000,
+  });
+  const [confirms] = useAsyncData(
+    async () => {
+      const { value } = await connection.getSignatureStatus(signature);
+      return value?.confirmations;
+    },
+    [connection.getSignatureStatus, signature],
+    { refreshInterval: 2000 },
+  );
+
+  let step = 1;
+  let ethTxid = null;
+  for (let swap of swaps) {
+    const { deposit, withdrawal } = swap;
+    if (deposit.txid === signature) {
+      if (withdrawal.txid?.startsWith('0x')) {
+        step = 3;
+        ethTxid = withdrawal.txid;
+      } else {
+        step = 2;
+      }
+    }
+  }
+
+  return (
+    <>
+      <DialogContent>
+        <Stepper activeStep={step}>
+          <Step>
+            <StepLabel>Send Request</StepLabel>
+          </Step>
+          <Step>
+            <StepLabel>Wait for Confirmations</StepLabel>
+          </Step>
+          <Step>
+            <StepLabel>Withdraw Funds</StepLabel>
+          </Step>
+        </Stepper>
+        {ethTxid ? (
+          <Typography variant="body2" align="center">
+            <Link
+              href={`https://etherscan.io/tx/${ethTxid}`}
+              target="_blank"
+              rel="noopener"
+            >
+              View on Etherscan
+            </Link>
+          </Typography>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ marginRight: 16 }}>
+              <CircularProgress />
+            </div>
+            {confirms ? (
+              <Typography>{confirms} / 35 Confirmations</Typography>
+            ) : (
+              <Typography>Transaction Pending</Typography>
+            )}
+          </div>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Close</Button>
       </DialogActions>
     </>
   );
@@ -221,6 +315,9 @@ function useForm(balanceInfo) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
+
+  const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
+  const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
 
   const fields = (
     <>
@@ -268,15 +365,14 @@ function useForm(balanceInfo) {
     destinationAddress,
     transferAmountString,
     setDestinationAddress,
+    validAmount,
   };
 }
 
 function EthWithdrawalCompleter({ ethAccount, publicKey }) {
-  const [swaps] = useAsyncData(
-    () => swapApiRequest('GET', `swaps_from/sol/${publicKey.toBase58()}`),
-    `swaps_from/sol/${publicKey.toBase58()}`,
-    { refreshInterval: 10000 },
-  );
+  const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
+    refreshInterval: 10000,
+  });
   if (!swaps) {
     return null;
   }

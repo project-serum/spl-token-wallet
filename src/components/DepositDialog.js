@@ -4,7 +4,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
-import { useSolanaExplorerUrlSuffix } from '../utils/connection';
+import {
+  useIsProdNetwork,
+  useSolanaExplorerUrlSuffix,
+} from '../utils/connection';
 import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -12,7 +15,7 @@ import { useAsyncData } from '../utils/fetch-loop';
 import tuple from 'immutable-tuple';
 import { showSwapAddress } from '../utils/config';
 import { useCallAsync } from '../utils/notifications';
-import { SwapApiError, swapApiRequest } from '../utils/swap/api';
+import { swapApiRequest } from '../utils/swap/api';
 import {
   ConnectToMetamaskButton,
   getErc20Balance,
@@ -36,28 +39,55 @@ export default function DepositDialog({
   publicKey,
   balanceInfo,
 }) {
+  const isProdNetwork = useIsProdNetwork();
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
+  const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
   const [swapInfo] = useAsyncData(async () => {
-    if (!showSwapAddress) {
+    if (!showSwapAddress || !isProdNetwork) {
       return null;
     }
-    try {
-      return await swapApiRequest('POST', 'swap_to', {
+    return await swapApiRequest(
+      'POST',
+      'swap_to',
+      {
         blockchain: 'sol',
         coin: balanceInfo.mint?.toBase58(),
         address: publicKey.toBase58(),
-      });
-    } catch (e) {
-      if (e instanceof SwapApiError) {
-        if (e.status === 404) {
-          return null;
-        }
-      }
-      throw e;
+      },
+      { ignoreUserErrors: true },
+    );
+  }, [
+    'swapInfo',
+    isProdNetwork,
+    balanceInfo.mint?.toBase58(),
+    publicKey.toBase58(),
+  ]);
+
+  let tabs = null;
+  if (swapInfo) {
+    let firstTab = `SPL ${tokenSymbol ?? swapInfo.coin.ticker}`;
+    let secondTab = swapInfo.coin.ticker;
+    if (!mint) {
+      firstTab = 'SOL';
+    } else {
+      secondTab = `${
+        swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
+      } ${secondTab}`;
     }
-  }, tuple('swapInfo', balanceInfo.mint?.toBase58(), publicKey.toBase58()));
+    tabs = (
+      <Tabs
+        value={tab}
+        variant="fullWidth"
+        onChange={(e, value) => setTab(value)}
+        textColor="primary"
+        indicatorColor="primary"
+      >
+        <Tab label={firstTab} />
+        <Tab label={secondTab} />
+      </Tabs>
+    );
+  }
 
   return (
     <DialogForm open={open} onClose={onClose}>
@@ -65,22 +95,7 @@ export default function DepositDialog({
         Deposit {tokenName ?? mint.toBase58()}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
-      {swapInfo ? (
-        <Tabs
-          value={tab}
-          variant="fullWidth"
-          onChange={(e, value) => setTab(value)}
-          textColor="primary"
-          indicatorColor="primary"
-        >
-          <Tab label={`SPL ${swapInfo.coin.ticker}`} />
-          <Tab
-            label={`${swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'} ${
-              swapInfo.coin.ticker
-            }`}
-          />
-        </Tabs>
-      ) : null}
+      {tabs}
       <DialogContent style={{ paddingTop: 16 }}>
         {tab === 0 ? (
           <>
@@ -135,7 +150,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
   }
 
   const { blockchain, address, memo, coin } = swapInfo;
-  const { tokenName } = balanceInfo;
+  const { mint, tokenName } = balanceInfo;
 
   if (blockchain === 'btc' && memo === null) {
     return (
@@ -159,7 +174,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
       <>
         <DialogContentText>
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
-          converted to SPL {tokenName} via MetaMask.
+          converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
         </DialogContentText>
         <MetamaskDeposit swapInfo={swapInfo} />
       </>
@@ -182,9 +197,12 @@ function MetamaskDeposit({ swapInfo }) {
     coin: { erc20Contract: erc20Address, ticker },
   } = swapInfo;
 
-  const [maxAmount, maxAmountLoaded] = useAsyncData(() => {
+  const [maxAmount, maxAmountLoaded] = useAsyncData(async () => {
     if (ethAccount) {
-      return getErc20Balance(ethAccount, erc20Address);
+      return Math.min(
+        await getErc20Balance(ethAccount, erc20Address),
+        swapInfo.maxSize ?? Infinity,
+      );
     }
     return 0;
   }, tuple(getErc20Balance, ethAccount, erc20Address));
