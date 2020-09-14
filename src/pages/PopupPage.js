@@ -255,15 +255,21 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
     <Card>
       <CardContent>
         {parsing ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <CircularProgress />
-          </div>
+          <>
+            <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 20  }}>
+              <CircularProgress style={{ marginRight: 20 }} />
+              <Typography
+                variant="subtitle1"
+                style={{ fontWeight: 'bold' }}
+                gutterBottom
+              >
+                Parsing transaction:
+              </Typography>
+            </div>
+            <Typography style={{ wordBreak: 'break-all' }}>
+              {bs58.encode(message)}
+            </Typography>
+          </>
         ) : (
           <>
             <Typography variant="h6" gutterBottom>

@@ -47,7 +47,7 @@ const toInstruction = async (
   marketCache,
   index,
 ) => {
-  if (!instruction?.data) {
+  if (!instruction?.data || !instruction?.accounts) {
     return;
   }
 
@@ -61,7 +61,7 @@ const toInstruction = async (
     console.log('[' + index + '] Handled as dex instruction');
     return await handleDexInstruction(
       connection,
-      instruction,
+      instruction.accounts,
       accountKeys,
       decodedInstruction,
       marketCache,
@@ -74,7 +74,7 @@ const toInstruction = async (
     console.log('[' + index + '] Handled as token instruction');
     return handleTokenInstruction(
       publicKey,
-      instruction,
+      instruction.accounts,
       decodedInstruction,
       accountKeys,
     );
@@ -98,13 +98,12 @@ const toInstruction = async (
 
 const handleDexInstruction = async (
   connection,
-  instruction,
+  accounts,
   accountKeys,
   decodedInstruction,
   marketCache,
 ) => {
   if (
-    !instruction?.accounts ||
     !decodedInstruction ||
     Object.keys(decodedInstruction).length > 1
   ) {
@@ -143,7 +142,7 @@ const handleDexInstruction = async (
   let data = decodedInstruction[type];
   if (type === 'settleFunds') {
     const settleFundsData = getSettleFundsData(
-      instruction.accounts,
+      accounts,
       accountKeys,
     );
     if (!settleFundsData) {
@@ -248,7 +247,7 @@ const handleSystemInstruction = (publicKey, instruction, accountKeys) => {
 
 const handleTokenInstruction = (
   publicKey,
-  instruction,
+  accounts,
   decodedInstruction,
   accountKeys,
 ) => {
@@ -262,21 +261,21 @@ const handleTokenInstruction = (
   if (type === 'initializeAccount') {
     const initializeAccountData = getInitializeAccountData(
       publicKey,
-      instruction.accounts,
+      accounts,
       accountKeys,
     );
     data = { ...data, ...initializeAccountData };
   } else if (type === 'transfer') {
     const transferData = getTransferData(
       publicKey,
-      instruction.accounts,
+      accounts,
       accountKeys,
     );
     data = { ...data, ...transferData };
   } else if (type === 'closeAccount') {
     const closeAccountData = getCloseAccountData(
       publicKey,
-      instruction.accounts,
+      accounts,
       accountKeys,
     );
     data = { ...data, ...closeAccountData };
