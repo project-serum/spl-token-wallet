@@ -1,8 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import bs58 from 'bs58';
 
-export default function UnknownInstruction({ message }) {
+export default function UnknownInstruction({ instruction }) {
   return (
     <>
       <Typography
@@ -10,10 +9,10 @@ export default function UnknownInstruction({ message }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        Send the following transaction:
+        Unknown instruction:
       </Typography>
       <Typography style={{ wordBreak: 'break-all' }}>
-        {bs58.encode(message)}
+        {instruction?.data}
       </Typography>
     </>
   );
