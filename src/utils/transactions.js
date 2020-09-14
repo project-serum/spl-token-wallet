@@ -271,6 +271,13 @@ const handleTokenInstruction = (
       accountKeys,
     );
     data = { ...data, ...transferData };
+  } else if (type === 'closeAccount') {
+    const closeAccountData = getCloseAccountData(
+      publicKey,
+      instruction.accounts,
+      accountKeys,
+    );
+    data = { ...data, ...closeAccountData };
   }
 
   return {
@@ -280,14 +287,12 @@ const handleTokenInstruction = (
 };
 
 const getSettleFundsData = (ownedKeys, accounts, accountKeys) => {
-  // get base public key
   const basePubkey = getAccountByIndex(
     accounts,
     accountKeys,
     SETTLE_FUNDS_BASE_WALLET_INDEX,
   );
 
-  // get quote public key
   const quotePubkey = getAccountByIndex(
     accounts,
     accountKeys,
@@ -298,7 +303,6 @@ const getSettleFundsData = (ownedKeys, accounts, accountKeys) => {
     return false;
   }
 
-  // check if wallet owns these
   if (!isOwner(ownedKeys, basePubkey) || !isOwner(ownedKeys, quotePubkey)) {
     return;
   }
@@ -307,29 +311,25 @@ const getSettleFundsData = (ownedKeys, accounts, accountKeys) => {
 };
 
 const getTransferData = (publicKey, accounts, accountKeys) => {
-  // get account public key
   const sourcePubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.TRANSFER_SOURCE_INDEX,
   );
 
-  // get mint public key
   const destinationPubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.TRANSFER_DESTINATION_INDEX,
   );
 
-  // get owner public key
   const ownerPubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.TRANSFER_OWNER_INDEX,
   );
 
-  // check if wallet is owner
-  if (!publicKey.equals(ownerPubkey)) {
+  if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
     return;
   }
 
@@ -337,33 +337,55 @@ const getTransferData = (publicKey, accounts, accountKeys) => {
 };
 
 const getInitializeAccountData = (publicKey, accounts, accountKeys) => {
-  // get account public key
   const accountPubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.INITIALIZE_ACCOUNT_ACCOUNT_INDEX,
   );
 
-  // get mint public key
   const mintPubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.INITIALIZE_ACCOUNT_MINT_INDEX,
   );
 
-  // get owner public key
   const ownerPubkey = getAccountByIndex(
     accounts,
     accountKeys,
     TokenInstructions.INITIALIZE_ACCOUNT_OWNER_INDEX,
   );
 
-  // check if wallet is owner
   if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
     return;
   }
 
   return { accountPubkey, mintPubkey, ownerPubkey };
+};
+
+const getCloseAccountData = (publicKey, accounts, accountKeys) => {
+  const sourcePubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    TokenInstructions.TRANSFER_SOURCE_INDEX,
+  );
+
+  const destinationPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    TokenInstructions.TRANSFER_DESTINATION_INDEX,
+  );
+
+  const ownerPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    TokenInstructions.TRANSFER_OWNER_INDEX,
+  );
+
+  if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
+    return;
+  }
+
+  return { sourcePubkey, destinationPubkey, ownerPubkey };
 };
 
 const isOwner = (ownedKeys, key) => {

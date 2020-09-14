@@ -1,6 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
+import { TOKEN_MINTS } from '@project-serum/serum';
 
 const TYPE_LABELS = {
   initializeMint: 'Initialize mint',
@@ -22,6 +23,11 @@ const DATA_LABELS = {
 export default function TokenInstruction({ instruction, onOpenAddress }) {
   const { type, data } = instruction;
 
+  const getAddressValue = (address) => {
+    const tokenMint = TOKEN_MINTS.find(token => token.address.equals(address));
+    return tokenMint?.name || address.toBase58();
+  };
+
   return (
     <>
       <Typography
@@ -41,7 +47,7 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
           return (
             <LabelValue
               label={label + ''}
-              value={address ? value?.toBase58() : value}
+              value={address ? getAddressValue(value) : value}
               link={address}
               onClick={() => address && onOpenAddress(value?.toBase58())}
             />
