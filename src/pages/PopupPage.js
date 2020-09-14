@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from '../utils/wallet';
-import { Typography } from '@material-ui/core';
+import { decodeMessage } from '../utils/transactions';
+import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
+import { Typography, Divider } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -10,6 +14,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+import NewOrder from '../components/instructions/NewOrder';
+import UnknownInstruction from '../components/instructions/UnknownInstruction';
+import SystemInstruction from '../components/instructions/SystemInstruction';
+import DexInstruction from '../components/instructions/DexInstruction';
+import TokenInstruction from '../components/instructions/TokenInstruction';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -182,18 +191,104 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
 function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   const classes = useStyles();
+  const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
+  const connection = useConnection();
+  const wallet = useWallet();
 
-  // TODO: decode message
+  const [parsing, setParsing] = useState(true);
+  const [instructions, setInstructions] = useState(null);
+
+  useEffect(() => {
+    decodeMessage(connection, wallet, message).then((instructions) => {
+      setInstructions(instructions);
+      setParsing(false);
+    });
+  }, [message, connection, wallet]);
+
+  const onOpenAddress = (address) => {
+    address &&
+      window.open(
+        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
+        '_blank',
+      );
+  };
+
+  const getContent = (instruction) => {
+    switch (instruction?.type) {
+      case 'cancelOrder':
+      case 'matchOrders':
+      case 'settleFunds':
+        return (
+          <DexInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'closeAccount':
+      case 'initializeAccount':
+      case 'transfer':
+      case 'approve':
+      case 'mintTo':
+        return (
+          <TokenInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'create':
+        return (
+          <SystemInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'newOrder':
+        return (
+          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
+      default:
+        return <UnknownInstruction message={message} />;
+    }
+  };
 
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" component="h1" gutterBottom>
-          {origin} would like to send the following transaction:
-        </Typography>
-        <Typography className={classes.transaction}>
-          {bs58.encode(message)}
-        </Typography>
+        {parsing ? (
+          <>
+            <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 20  }}>
+              <CircularProgress style={{ marginRight: 20 }} />
+              <Typography
+                variant="subtitle1"
+                style={{ fontWeight: 'bold' }}
+                gutterBottom
+              >
+                Parsing transaction:
+              </Typography>
+            </div>
+            <Typography style={{ wordBreak: 'break-all' }}>
+              {bs58.encode(message)}
+            </Typography>
+          </>
+        ) : (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {instructions
+                ? `${origin} wants to:`
+                : `Unknown transaction data`}
+            </Typography>
+            {instructions ? (
+              instructions.map((instruction) => (
+                <Box style={{ marginTop: 20 }}>
+                  {getContent(instruction)}
+                  <Divider style={{ marginTop: 20 }} />
+                </Box>
+              ))
+            ) : (
+              <UnknownInstruction message={message} />
+            )}
+          </>
+        )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
