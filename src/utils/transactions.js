@@ -24,19 +24,20 @@ export const decodeMessage = async (connection, wallet, message) => {
   const marketCache = {};
 
   // get instructions
-  const promises = transactionMessage.instructions.map(
-    (transactionInstruction, index) => {
-      return toInstruction(
-        connection,
-        publicKey,
-        transactionMessage?.accountKeys,
-        transactionInstruction,
-        marketCache,
-        index,
-      );
-    },
-  );
-  return await Promise.all(promises);
+  const instructions = [];
+  for (var i = 0; i < transactionMessage.instructions.length; i++) {
+    let transactionInstruction = transactionMessage.instructions[i];
+    const instruction = await toInstruction(
+      connection,
+      publicKey,
+      transactionMessage?.accountKeys,
+      transactionInstruction,
+      marketCache,
+      i,
+    );
+    instructions.push(instruction);
+  }
+  return instructions;
 };
 
 const toInstruction = async (
@@ -103,10 +104,7 @@ const handleDexInstruction = async (
   decodedInstruction,
   marketCache,
 ) => {
-  if (
-    !decodedInstruction ||
-    Object.keys(decodedInstruction).length > 1
-  ) {
+  if (!decodedInstruction || Object.keys(decodedInstruction).length > 1) {
     return;
   }
 
@@ -141,10 +139,7 @@ const handleDexInstruction = async (
   const type = Object.keys(decodedInstruction)[0];
   let data = decodedInstruction[type];
   if (type === 'settleFunds') {
-    const settleFundsData = getSettleFundsData(
-      accounts,
-      accountKeys,
-    );
+    const settleFundsData = getSettleFundsData(accounts, accountKeys);
     if (!settleFundsData) {
       return;
     } else {
@@ -266,11 +261,7 @@ const handleTokenInstruction = (
     );
     data = { ...data, ...initializeAccountData };
   } else if (type === 'transfer') {
-    const transferData = getTransferData(
-      publicKey,
-      accounts,
-      accountKeys,
-    );
+    const transferData = getTransferData(publicKey, accounts, accountKeys);
     data = { ...data, ...transferData };
   } else if (type === 'closeAccount') {
     const closeAccountData = getCloseAccountData(
