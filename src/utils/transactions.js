@@ -35,7 +35,9 @@ export const decodeMessage = async (connection, wallet, message) => {
       marketCache,
       i,
     );
-    instructions.push(instruction);
+    instructions.push(
+      instruction || { type: 'unknown', data: transactionInstruction?.data },
+    );
   }
   return instructions;
 };

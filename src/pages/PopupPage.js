@@ -247,7 +247,7 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
         );
       default:
-        return <UnknownInstruction message={message} />;
+        return <UnknownInstruction instruction={instruction} />;
     }
   };
 
@@ -256,7 +256,13 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
       <CardContent>
         {parsing ? (
           <>
-            <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 20  }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                marginBottom: 20,
+              }}
+            >
               <CircularProgress style={{ marginRight: 20 }} />
               <Typography
                 variant="subtitle1"
@@ -285,7 +291,18 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
                 </Box>
               ))
             ) : (
-              <UnknownInstruction message={message} />
+              <>
+                <Typography
+                  variant="subtitle1"
+                  style={{ fontWeight: 'bold' }}
+                  gutterBottom
+                >
+                  Unknown transaction:
+                </Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>
+                  {bs58.encode(message)}
+                </Typography>
+              </>
             )}
           </>
         )}
