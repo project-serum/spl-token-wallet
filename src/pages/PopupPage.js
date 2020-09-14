@@ -14,14 +14,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
-import CancelOrder from '../components/instructions/CancelOrder';
 import NewOrder from '../components/instructions/NewOrder';
-import SettleFunds from '../components/instructions/SettleFunds';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
-import MatchOrder from '../components/instructions/MatchOrder';
-import CreateAccount from '../components/instructions/CreateAccount';
-import InitializeMint from '../components/instructions/InitializeMint';
-import OtherInstruction from '../components/instructions/OtherInstruction';
+import SystemInstruction from '../components/instructions/SystemInstruction';
+import DexInstruction from '../components/instructions/DexInstruction';
+import TokenInstruction from '../components/instructions/TokenInstruction';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -219,8 +216,28 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
   const getContent = (instruction) => {
     switch (instruction?.type) {
       case 'cancelOrder':
+      case 'matchOrders':
+      case 'settleFunds':
         return (
-          <CancelOrder
+          <DexInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'closeAccount':
+      case 'initializeAccount':
+      case 'transfer':
+      case 'approve':
+      case 'mintTo':
+        return (
+          <TokenInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'create':
+        return (
+          <SystemInstruction
             instruction={instruction}
             onOpenAddress={onOpenAddress}
           />
@@ -229,37 +246,6 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
         return (
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
         );
-      case 'settleFunds':
-        return (
-          <SettleFunds
-            instruction={instruction}
-            onOpenAddress={onOpenAddress}
-          />
-        );
-      case 'matchOrders':
-        return (
-          <MatchOrder instruction={instruction} onOpenAddress={onOpenAddress} />
-        );
-      case 'createAccount':
-        return (
-          <CreateAccount
-            instruction={instruction}
-            onOpenAddress={onOpenAddress}
-          />
-        );
-      case 'initializeMint':
-        return (
-          <InitializeMint
-            instruction={instructions}
-            onOpenAddress={onOpenAddress}
-          />
-        );
-      case 'initializeAccount':
-      case 'transfer':
-      case 'approve':
-      case 'mintTo':
-      case 'closeAccount':
-        return <OtherInstruction instruction={instruction} />;
       default:
         return <UnknownInstruction message={message} />;
     }

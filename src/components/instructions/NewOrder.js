@@ -1,6 +1,6 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import KeyValue from './KeyValue';
+import LabelValue from './LabelValue';
 
 export default function Neworder({ instruction, onOpenAddress }) {
   const { data, market, marketInfo } = instruction;
@@ -20,29 +20,29 @@ export default function Neworder({ instruction, onOpenAddress }) {
       >
         Place an order:
       </Typography>
-      <KeyValue
+      <LabelValue
         label="Market"
         value={marketLabel}
         link={true}
         onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
       />
-      <KeyValue
+      <LabelValue
         label="Side"
         value={side.charAt(0).toUpperCase() + side.slice(1)}
       />
-      <KeyValue
+      <LabelValue
         label="Price"
         value={market?.priceLotsToNumber(limitPrice) || '' + limitPrice}
       />
-      <KeyValue
+      <LabelValue
         label="Quantity"
         value={market?.baseSizeLotsToNumber(maxQuantity) || '' + maxQuantity}
       />
-      <KeyValue
+      <LabelValue
         label="Type"
         value={orderType.charAt(0).toUpperCase() + orderType.slice(1)}
       />
-      <KeyValue label="Client ID" value={clientId + ''} />
+      <LabelValue label="Client ID" value={clientId + ''} />
     </>
   );
 }
