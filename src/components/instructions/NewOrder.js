@@ -18,7 +18,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        Place an order:
+        Place an order
       </Typography>
       <LabelValue
         label="Market"
