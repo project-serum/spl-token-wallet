@@ -256,7 +256,13 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
       <CardContent>
         {parsing ? (
           <>
-            <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 20  }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                marginBottom: 20,
+              }}
+            >
               <CircularProgress style={{ marginRight: 20 }} />
               <Typography
                 variant="subtitle1"
