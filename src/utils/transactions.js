@@ -20,6 +20,9 @@ export const decodeMessage = async (connection, wallet, message) => {
   // get owned keys (used for security checks)
   const publicKey = wallet.publicKey;
 
+  // market caching
+  const marketCache = {};
+
   // get instructions
   const promises = transactionMessage.instructions.map(
     (transactionInstruction, index) => {
@@ -28,6 +31,7 @@ export const decodeMessage = async (connection, wallet, message) => {
         publicKey,
         transactionMessage?.accountKeys,
         transactionInstruction,
+        marketCache,
         index,
       );
     },
@@ -40,6 +44,7 @@ const toInstruction = async (
   publicKey,
   accountKeys,
   instruction,
+  marketCache,
   index,
 ) => {
   if (!instruction?.data) {
@@ -59,6 +64,7 @@ const toInstruction = async (
       instruction,
       accountKeys,
       decodedInstruction,
+      marketCache,
     );
   } catch {}
 
@@ -95,6 +101,7 @@ const handleDexInstruction = async (
   instruction,
   accountKeys,
   decodedInstruction,
+  marketCache,
 ) => {
   if (
     !instruction?.accounts ||
@@ -119,12 +126,14 @@ const handleDexInstruction = async (
   try {
     market =
       marketInfo &&
-      (await Market.load(
-        connection,
-        marketInfo.address,
-        {},
-        marketInfo.programId,
-      ));
+      (marketCache[marketInfo.address.toBase58()] ||
+        (await Market.load(
+          connection,
+          marketInfo.address,
+          {},
+          marketInfo.programId,
+        )));
+    if (market) marketCache[marketInfo.address.toBase58()] = market;
   } catch (e) {
     console.log('Error loading market: ' + e.message);
   }
