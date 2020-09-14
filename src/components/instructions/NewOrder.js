@@ -4,7 +4,7 @@ import LabelValue from './LabelValue';
 
 export default function Neworder({ instruction, onOpenAddress }) {
   const { data, market, marketInfo } = instruction;
-  const { clientId, side, limitPrice, maxQuantity, orderType } = data;
+  const { side, limitPrice, maxQuantity, orderType } = data;
 
   const marketLabel =
     marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '') ||
@@ -42,7 +42,6 @@ export default function Neworder({ instruction, onOpenAddress }) {
         label="Type"
         value={orderType.charAt(0).toUpperCase() + orderType.slice(1)}
       />
-      <LabelValue label="Client ID" value={clientId + ''} />
     </>
   );
 }

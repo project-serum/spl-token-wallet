@@ -19,29 +19,25 @@ export const decodeMessage = async (connection, wallet, message) => {
 
   // get owned keys (used for security checks)
   const publicKey = wallet.publicKey;
-  const ownedKeys = await wallet.getTokenPublicKeys();
 
   // get instructions
-  const instructions = [];
-  for (var i = 0; i < transactionMessage.instructions.length; i++) {
-    let transactionInstruction = transactionMessage.instructions[i];
-    const instruction = await toInstruction(
-      connection,
-      publicKey,
-      ownedKeys,
-      transactionMessage?.accountKeys,
-      transactionInstruction,
-      i,
-    );
-    instructions.push(instruction ? instruction : { type: 'invalid' });
-  }
-  return instructions;
+  const promises = transactionMessage.instructions.map(
+    (transactionInstruction, index) => {
+      return toInstruction(
+        connection,
+        publicKey,
+        transactionMessage?.accountKeys,
+        transactionInstruction,
+        index,
+      );
+    },
+  );
+  return await Promise.all(promises);
 };
 
 const toInstruction = async (
   connection,
   publicKey,
-  ownedKeys,
   accountKeys,
   instruction,
   index,
@@ -60,7 +56,6 @@ const toInstruction = async (
     console.log('[' + index + '] Handled as dex instruction');
     return await handleDexInstruction(
       connection,
-      ownedKeys,
       instruction,
       accountKeys,
       decodedInstruction,
@@ -97,7 +92,6 @@ const toInstruction = async (
 
 const handleDexInstruction = async (
   connection,
-  ownedKeys,
   instruction,
   accountKeys,
   decodedInstruction,
@@ -140,7 +134,6 @@ const handleDexInstruction = async (
   let data = decodedInstruction[type];
   if (type === 'settleFunds') {
     const settleFundsData = getSettleFundsData(
-      ownedKeys,
       instruction.accounts,
       accountKeys,
     );
@@ -286,7 +279,7 @@ const handleTokenInstruction = (
   };
 };
 
-const getSettleFundsData = (ownedKeys, accounts, accountKeys) => {
+const getSettleFundsData = (accounts, accountKeys) => {
   const basePubkey = getAccountByIndex(
     accounts,
     accountKeys,
@@ -300,10 +293,6 @@ const getSettleFundsData = (ownedKeys, accounts, accountKeys) => {
   );
 
   if (!basePubkey || !quotePubkey) {
-    return false;
-  }
-
-  if (!isOwner(ownedKeys, basePubkey) || !isOwner(ownedKeys, quotePubkey)) {
     return;
   }
 
@@ -386,10 +375,6 @@ const getCloseAccountData = (publicKey, accounts, accountKeys) => {
   }
 
   return { sourcePubkey, destinationPubkey, ownerPubkey };
-};
-
-const isOwner = (ownedKeys, key) => {
-  return ownedKeys.some((ownedKey) => key.equals(ownedKey));
 };
 
 const getAccountByIndex = (accounts, accountKeys, accountIndex) => {
