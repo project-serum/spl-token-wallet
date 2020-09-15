@@ -12,7 +12,7 @@ export default function UnknownInstruction({ instruction }) {
         Unknown instruction:
       </Typography>
       <Typography style={{ wordBreak: 'break-all' }}>
-        {instruction?.data}
+        {instruction?.rawData}
       </Typography>
     </>
   );
