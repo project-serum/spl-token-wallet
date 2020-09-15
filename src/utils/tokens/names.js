@@ -80,6 +80,11 @@ export const TOKENS = {
       mintAddress: '5Fu5UUgbjpUvdBveb3a1JTNirL8rXtiYeSMWvKjtUNQv',
       tokenName: 'Wrapped CREAM',
     },
+    {
+      tokenSymbol: 'UBXT',
+      mintAddress: '873KLxCbz7s9Kc4ZzgYRtNmhfkQrhfyWGZJBmyCbC3ei',
+      tokenName: 'Wrapped UBXT',
+    },
   ],
 };
 
