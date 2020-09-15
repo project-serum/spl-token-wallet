@@ -75,6 +75,11 @@ export const TOKENS = {
       mintAddress: 'BtZQfWqDGbk9Wf2rXEiWyQBdBY1etnUUn6zEphvVS7yN',
       tokenName: 'Wrapped HGET',
     },
+    {
+      tokenSymbol: 'CREAM',
+      mintAddress: '5Fu5UUgbjpUvdBveb3a1JTNirL8rXtiYeSMWvKjtUNQv',
+      tokenName: 'Wrapped CREAM',
+    },
   ],
 };
 
