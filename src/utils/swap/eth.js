@@ -59,15 +59,17 @@ export async function swapErc20ToSpl({
   const swap = new web3.eth.Contract(SWAP_ABI, swapAddress);
   const decimals = parseInt(await erc20.methods.decimals().call(), 10);
 
+  const encodedAmount = Math.round(amount * 10 ** decimals).toFixed();
+
   const approveTx = erc20.methods
-    .approve(swapAddress, Math.round(amount * 10 ** decimals))
+    .approve(swapAddress, encodedAmount)
     .send({ from: ethAccount });
   await waitForTxid(approveTx);
 
   onStatusChange({ step: 1 });
 
   const swapTx = swap.methods
-    .swapErc20(erc20Address, destination, Math.round(amount * 10 ** decimals))
+    .swapErc20(erc20Address, destination, encodedAmount)
     .send({ from: ethAccount, gasLimit: 100000 });
   const swapTxid = await waitForTxid(swapTx);
 
