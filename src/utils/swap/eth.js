@@ -42,7 +42,7 @@ export async function swapErc20ToSpl({
   erc20Address,
   swapAddress,
   destination,
-  amount,
+  amount, // string
   onStatusChange,
 }) {
   if (!erc20Address) {
@@ -59,7 +59,7 @@ export async function swapErc20ToSpl({
   const swap = new web3.eth.Contract(SWAP_ABI, swapAddress);
   const decimals = parseInt(await erc20.methods.decimals().call(), 10);
 
-  const encodedAmount = Math.round(amount * 10 ** decimals).toFixed();
+  const encodedAmount = addDecimals(amount, decimals);
 
   const approveTx = erc20.methods
     .approve(swapAddress, encodedAmount)
@@ -93,9 +93,10 @@ export async function swapEthToSpl({
 }) {
   const swap = new web3.eth.Contract(SWAP_ABI, swapAddress);
 
+  const encodedAmount = addDecimals(amount, 18);
   const swapTx = swap.methods
     .swapEth(destination)
-    .send({ from: ethAccount, value: Math.floor(amount * 1e18) });
+    .send({ from: ethAccount, value: encodedAmount });
   const swapTxid = await waitForTxid(swapTx);
 
   onStatusChange({ step: 2, txid: swapTxid, confirms: 0 });
@@ -103,6 +104,22 @@ export async function swapEthToSpl({
   await Promise.all([swapTx, waitForConfirms(swapTx, onStatusChange)]);
 
   onStatusChange({ step: 3 });
+}
+
+function addDecimals(str, decimals) {
+  if (!/^\d*\.?\d*$/.test(str)) {
+    throw new Error('Invalid number');
+  }
+  if (!str.includes('.')) {
+    str += '.';
+  }
+  let [intStr, fractionStr] = str.split('.');
+  if (fractionStr.length > decimals) {
+    fractionStr = fractionStr.slice(0, decimals);
+  } else {
+    fractionStr += '0'.repeat(decimals - fractionStr.length);
+  }
+  return (intStr + fractionStr).replace(/^0+/, '') || '0';
 }
 
 const pendingNonces = new Set();

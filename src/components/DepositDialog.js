@@ -218,7 +218,7 @@ function MetamaskDeposit({ swapInfo }) {
       (async () => {
         let parsedAmount = parseFloat(amount);
 
-        if (!parsedAmount || parsedAmount > maxAmount) {
+        if (!parsedAmount || parsedAmount > maxAmount || parsedAmount <= 0) {
           throw new Error('Invalid amount');
         }
         await swapErc20ToSpl({
@@ -226,7 +226,7 @@ function MetamaskDeposit({ swapInfo }) {
           erc20Address,
           swapAddress,
           destination,
-          amount: parsedAmount,
+          amount,
           onStatusChange: (e) => setStatus((status) => ({ ...status, ...e })),
         });
       })(),
