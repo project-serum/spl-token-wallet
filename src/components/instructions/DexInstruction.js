@@ -21,11 +21,12 @@ const DATA_LABELS = {
 export default function DexInstruction({ instruction, onOpenAddress }) {
   const wallet = useWallet();
   const [publicKeys] = useWalletPublicKeys();
-  const { type, data, marketInfo } = instruction;
+  const { type, data, market, marketInfo } = instruction;
 
   const marketLabel =
-    marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '') ||
-    marketInfo?.address?.toBase58() ||
+    (marketInfo &&
+      marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '')) ||
+    market?._decoded?.ownAddress?.toBase58() ||
     'Unknown';
 
   const getAddressValue = (address) => {
@@ -49,7 +50,11 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
         label="Market"
         value={marketLabel}
         link={true}
-        onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
+        onClick={() =>
+          onOpenAddress(
+            (marketInfo?.address || market?._decoded?.ownAddress)?.toBase58(),
+          )
+        }
       />
       {data &&
         Object.entries(data).map(([key, value]) => {

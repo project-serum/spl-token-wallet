@@ -7,8 +7,9 @@ export default function Neworder({ instruction, onOpenAddress }) {
   const { side, limitPrice, maxQuantity, orderType } = data;
 
   const marketLabel =
-    marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '') ||
-    marketInfo?.address?.toBase58() ||
+    (marketInfo &&
+      marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '')) ||
+    market?._decoded?.ownAddress?.toBase58() ||
     'Unknown';
 
   return (
@@ -24,7 +25,11 @@ export default function Neworder({ instruction, onOpenAddress }) {
         label="Market"
         value={marketLabel}
         link={true}
-        onClick={() => onOpenAddress(marketInfo?.address?.toBase58())}
+        onClick={() =>
+          onOpenAddress(
+            (marketInfo?.address || market?._decoded?.ownAddress)?.toBase58(),
+          )
+        }
       />
       <LabelValue
         label="Side"

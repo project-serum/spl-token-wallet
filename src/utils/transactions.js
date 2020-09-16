@@ -65,7 +65,7 @@ const toInstruction = async (
     console.log('[' + index + '] Handled as dex instruction');
     return await handleDexInstruction(
       connection,
-      instruction.accounts,
+      instruction,
       accountKeys,
       decodedInstruction,
       marketCache,
@@ -102,7 +102,7 @@ const toInstruction = async (
 
 const handleDexInstruction = async (
   connection,
-  accounts,
+  instruction,
   accountKeys,
   decodedInstruction,
   marketCache,
@@ -110,6 +110,8 @@ const handleDexInstruction = async (
   if (!decodedInstruction || Object.keys(decodedInstruction).length > 1) {
     return;
   }
+
+  const { accounts, programIdIndex } = instruction;
 
   // get market info
   const marketInfo =
@@ -124,16 +126,18 @@ const handleDexInstruction = async (
   // get market
   let market;
   try {
+    const marketAddress =
+      marketInfo?.address || getAccountByIndex(accounts, accountKeys, 0);
+    const programIdAddress =
+      marketInfo?.programId ||
+      getAccountByIndex([programIdIndex], accountKeys, 0);
+
     market =
-      marketInfo &&
-      (marketCache[marketInfo.address.toBase58()] ||
-        (await Market.load(
-          connection,
-          marketInfo.address,
-          {},
-          marketInfo.programId,
-        )));
-    if (market) marketCache[marketInfo.address.toBase58()] = market;
+      marketAddress &&
+      programIdAddress &&
+      (marketCache[marketAddress] ||
+        (await Market.load(connection, marketAddress, {}, programIdAddress)));
+    if (market) marketCache[marketAddress.toBase58()] = market;
   } catch (e) {
     console.log('Error loading market: ' + e.message);
   }
