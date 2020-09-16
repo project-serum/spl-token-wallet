@@ -85,6 +85,11 @@ export const TOKENS = {
       mintAddress: '873KLxCbz7s9Kc4ZzgYRtNmhfkQrhfyWGZJBmyCbC3ei',
       tokenName: 'Wrapped UBXT',
     },
+    {
+      tokenSymbol: 'HNT',
+      mintAddress: 'HqB7uswoVg4suaQiDP3wjxob1G5WdZ144zhdStwMCq7e',
+      tokenName: 'Wrapped HNT',
+    },
   ],
 };
 
