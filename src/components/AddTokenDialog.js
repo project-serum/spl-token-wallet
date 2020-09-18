@@ -30,6 +30,8 @@ import {
 import Link from '@material-ui/core/Link';
 import CopyableDisplay from './CopyableDisplay';
 import DialogForm from './DialogForm';
+import { showSwapAddress } from '../utils/config';
+import { swapApiRequest } from '../utils/swap/api';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -40,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
   tabs: {
     marginBottom: theme.spacing(1),
     borderBottom: `1px solid ${theme.palette.background.paper}`,
-    width: '100%',
   },
 }));
 
@@ -52,15 +53,16 @@ export default function AddTokenDialog({ open, onClose }) {
   );
   let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
-
-  let [mintAddress, setMintAddress] = useState('');
-  let [tokenName, setTokenName] = useState('');
-  let [tokenSymbol, setTokenSymbol] = useState('');
-  let [sendTransaction, sending] = useSendTransaction();
+  const [sendTransaction, sending] = useSendTransaction();
   const { endpoint } = useConnectionConfig();
   const popularTokens = TOKENS[endpoint];
   const [walletAccounts] = useWalletTokenAccounts();
+
   const [tab, setTab] = useState(!!popularTokens ? 'popular' : 'manual');
+  const [mintAddress, setMintAddress] = useState('');
+  const [tokenName, setTokenName] = useState('');
+  const [tokenSymbol, setTokenSymbol] = useState('');
+  const [erc20Address, setErc20Address] = useState('');
 
   useEffect(() => {
     if (!popularTokens) {
@@ -68,15 +70,44 @@ export default function AddTokenDialog({ open, onClose }) {
     }
   }, [popularTokens]);
 
-  function onSubmit({ mintAddress, tokenName, tokenSymbol }) {
-    let mint = new PublicKey(mintAddress);
-    sendTransaction(wallet.createTokenAccount(mint), {
+  function onSubmit(params) {
+    if (tab === 'manual') {
+      params = { mintAddress, tokenName, tokenSymbol };
+    } else if (tab === 'erc20') {
+      params = { erc20Address };
+    }
+    sendTransaction(addToken(params), {
       onSuccess: () => {
-        updateTokenName(mint, tokenName, tokenSymbol);
         refreshWalletPublicKeys(wallet);
         onClose();
       },
     });
+  }
+
+  async function addToken({
+    mintAddress,
+    tokenName,
+    tokenSymbol,
+    erc20Address,
+  }) {
+    if (erc20Address) {
+      let tokenInfo = await swapApiRequest('POST', `coins/eth/${erc20Address}`);
+      mintAddress = tokenInfo.splMint;
+      tokenName = tokenInfo.name;
+      tokenSymbol = tokenInfo.ticker;
+      if (tokenInfo.blockchain !== 'sol') {
+        tokenName = 'Wrapped ' + tokenName;
+      }
+    }
+
+    let mint = new PublicKey(mintAddress);
+    updateTokenName(mint, tokenName, tokenSymbol);
+    return await wallet.createTokenAccount(mint);
+  }
+
+  let valid = true;
+  if (tab === 'erc20') {
+    valid = erc20Address.length === 42 && erc20Address.startsWith('0x');
   }
 
   return (
@@ -94,22 +125,14 @@ export default function AddTokenDialog({ open, onClose }) {
         {!!popularTokens && (
           <Tabs
             value={tab}
-            variant="standard"
             textColor="primary"
             indicatorColor="primary"
             className={classes.tabs}
             onChange={(e, value) => setTab(value)}
           >
-            <Tab
-              label={'Popular Tokens'}
-              value="popular"
-              style={{ textDecoration: 'none', width: '50%' }}
-            />
-            <Tab
-              label={'Manual Input'}
-              value="manual"
-              style={{ textDecoration: 'none', width: '50%' }}
-            />
+            <Tab label="Popular Tokens" value="popular" />
+            {showSwapAddress ? <Tab label="ERC20 Token" value="erc20" /> : null}
+            <Tab label="Manual Input" value="manual" />
           </Tabs>
         )}
         {tab === 'manual' || !popularTokens ? (
@@ -121,6 +144,8 @@ export default function AddTokenDialog({ open, onClose }) {
               margin="normal"
               value={mintAddress}
               onChange={(e) => setMintAddress(e.target.value)}
+              autoFocus
+              disabled={sending}
             />
             <TextField
               label="Token Name"
@@ -129,6 +154,7 @@ export default function AddTokenDialog({ open, onClose }) {
               margin="normal"
               value={tokenName}
               onChange={(e) => setTokenName(e.target.value)}
+              disabled={sending}
             />
             <TextField
               label="Token Symbol"
@@ -137,9 +163,10 @@ export default function AddTokenDialog({ open, onClose }) {
               margin="normal"
               value={tokenSymbol}
               onChange={(e) => setTokenSymbol(e.target.value)}
+              disabled={sending}
             />
           </React.Fragment>
-        ) : (
+        ) : tab === 'popular' ? (
           <List disablePadding>
             {popularTokens.map((token) => (
               <TokenListItem
@@ -154,15 +181,37 @@ export default function AddTokenDialog({ open, onClose }) {
               />
             ))}
           </List>
-        )}
+        ) : tab === 'erc20' ? (
+          <>
+            <TextField
+              label="ERC20 Contract Address"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              value={erc20Address}
+              onChange={(e) => setErc20Address(e.target.value.trim())}
+              autoFocus
+              disabled={sending}
+            />
+            {erc20Address && valid ? (
+              <Link
+                href={`https://etherscan.io/token/${erc20Address}`}
+                target="_blank"
+                rel="noopener"
+              >
+                View on Etherscan
+              </Link>
+            ) : null}
+          </>
+        ) : null}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        {tab === 'manual' && (
+        {tab !== 'popular' && (
           <Button
             type="submit"
             color="primary"
-            disabled={sending}
+            disabled={sending || !valid}
             onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
           >
             Add
