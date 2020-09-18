@@ -90,6 +90,11 @@ export const TOKENS = {
       mintAddress: 'HqB7uswoVg4suaQiDP3wjxob1G5WdZ144zhdStwMCq7e',
       tokenName: 'Wrapped HNT',
     },
+    {
+      tokenSymbol: 'FRONT',
+      mintAddress: '9S4t2NEAiJVMvPdRYKVrfJpBafPBLtvbvyS3DecojQHw',
+      tokenName: 'Wrapped FRONT',
+    },
   ],
 };
 
