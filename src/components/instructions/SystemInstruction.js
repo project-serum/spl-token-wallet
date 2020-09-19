@@ -3,7 +3,8 @@ import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 
 const TYPE_LABELS = {
-  create: 'Create account',
+  systemCreate: 'Create account',
+  systemTransfer: 'Transfer SOL',
 };
 
 const DATA_LABELS = {
@@ -16,6 +17,7 @@ const DATA_LABELS = {
   newAuthorizedPubkey: { label: 'New authorized', address: true },
   newAccountPubkey: { label: 'New account', address: true },
   amount: { label: 'Amount', address: false },
+  lamports: { label: 'Lamports', address: false },
 };
 
 export default function SystemInstruction({ instruction, onOpenAddress }) {

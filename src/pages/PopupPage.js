@@ -235,7 +235,8 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
             onOpenAddress={onOpenAddress}
           />
         );
-      case 'create':
+      case 'systemCreate':
+      case 'systemTransfer':
         return (
           <SystemInstruction
             instruction={instruction}

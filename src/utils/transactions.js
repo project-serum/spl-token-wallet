@@ -242,7 +242,7 @@ const handleSystemInstruction = (publicKey, instruction, accountKeys) => {
   }
 
   return {
-    type: type.charAt(0).toLowerCase() + type.slice(1),
+    type: 'system' + type,
     data: decoded,
   };
 };
