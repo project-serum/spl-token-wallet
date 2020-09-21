@@ -10,6 +10,10 @@ import {
   SETTLE_FUNDS_QUOTE_WALLET_INDEX,
 } from '@project-serum/serum';
 
+const marketCache = {};
+let marketCacheConnection = null;
+const cacheDuration = 15 * 1000;
+
 export const decodeMessage = async (connection, wallet, message) => {
   // get message object
   const transactionMessage = Message.from(message);
@@ -20,9 +24,6 @@ export const decodeMessage = async (connection, wallet, message) => {
   // get owned keys (used for security checks)
   const publicKey = wallet.publicKey;
 
-  // market caching
-  const marketCache = {};
-
   // get instructions
   const instructions = [];
   for (var i = 0; i < transactionMessage.instructions.length; i++) {
@@ -32,7 +33,6 @@ export const decodeMessage = async (connection, wallet, message) => {
       publicKey,
       transactionMessage?.accountKeys,
       transactionInstruction,
-      marketCache,
       i,
     );
     instructions.push({
@@ -48,7 +48,6 @@ const toInstruction = async (
   publicKey,
   accountKeys,
   instruction,
-  marketCache,
   index,
 ) => {
   if (!instruction?.data || !instruction?.accounts) {
@@ -68,7 +67,6 @@ const toInstruction = async (
       instruction,
       accountKeys,
       decodedInstruction,
-      marketCache,
     );
   } catch {}
 
@@ -105,7 +103,6 @@ const handleDexInstruction = async (
   instruction,
   accountKeys,
   decodedInstruction,
-  marketCache,
 ) => {
   if (!decodedInstruction || Object.keys(decodedInstruction).length > 1) {
     return;
@@ -131,13 +128,28 @@ const handleDexInstruction = async (
     const programIdAddress =
       marketInfo?.programId ||
       getAccountByIndex([programIdIndex], accountKeys, 0);
-
-    market =
-      marketAddress &&
-      programIdAddress &&
-      (marketCache[marketAddress] ||
-        (await Market.load(connection, marketAddress, {}, programIdAddress)));
-    if (market) marketCache[marketAddress.toBase58()] = market;
+    const strAddress = marketAddress.toBase58();
+    const now = new Date().getTime();
+    if (
+      !(
+        connection === marketCacheConnection &&
+        strAddress in marketCache &&
+        now - marketCache[strAddress].ts < cacheDuration
+      )
+    ) {
+      marketCacheConnection = connection;
+      console.log('Loading market', strAddress);
+      marketCache[strAddress] = {
+        market: await Market.load(
+          connection,
+          marketAddress,
+          {},
+          programIdAddress,
+        ),
+        ts: now,
+      };
+    }
+    market = marketCache[strAddress].market;
   } catch (e) {
     console.log('Error loading market: ' + e.message);
   }
