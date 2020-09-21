@@ -65,6 +65,7 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
           const { label, address } = dataLabel;
           return (
             <LabelValue
+              key={key}
               label={label + ''}
               value={address ? getAddressValue(value) : value + ''}
               link={address}

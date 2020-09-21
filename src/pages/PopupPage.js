@@ -1,8 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useWallet } from '../utils/wallet';
+import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
-import { Typography, Divider } from '@material-ui/core';
+import {
+  Typography,
+  Divider,
+  Switch,
+  FormControlLabel,
+  SnackbarContent,
+} from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -16,9 +22,12 @@ import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import NewOrder from '../components/instructions/NewOrder';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
+import WarningIcon from '@material-ui/icons/Warning';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
+import { useLocalStorageState } from '../utils/utils';
+import { WRAPPED_SOL_MINT } from '../utils/tokens/instructions';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -37,6 +46,7 @@ export default function PopupPage({ opener }) {
   const [connectedAccount, setConnectedAccount] = useState(null);
   const hasConnectedAccount = !!connectedAccount;
   const [requests, setRequests] = useState([]);
+  const [autoApprove, setAutoApprove] = useState(false);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -82,12 +92,13 @@ export default function PopupPage({ opener }) {
     !connectedAccount.publicKey.equals(wallet.publicKey)
   ) {
     // Approve the parent page to connect to this wallet.
-    function connect() {
+    function connect(autoApprove) {
       setConnectedAccount(wallet.account);
       postMessage({
         method: 'connected',
-        params: { publicKey: wallet.publicKey.toBase58() },
+        params: { publicKey: wallet.publicKey.toBase58(), autoApprove },
       });
+      setAutoApprove(autoApprove);
       focusParent();
     }
 
@@ -125,9 +136,9 @@ export default function PopupPage({ opener }) {
         focusParent();
       }
     }
-
     return (
       <ApproveSignatureForm
+        autoApprove={autoApprove}
         origin={origin}
         message={message}
         onApprove={sendSignature}
@@ -161,11 +172,41 @@ const useStyles = makeStyles((theme) => ({
   actions: {
     justifyContent: 'space-between',
   },
+  snackbarRoot: {
+    backgroundColor: theme.palette.background.paper,
+  },
+  warningMessage: {
+    margin: theme.spacing(1),
+    color: theme.palette.text.primary,
+  },
+  warningIcon: {
+    marginRight: theme.spacing(1),
+    fontSize: 24,
+  },
+  warningTitle: {
+    color: theme.palette.warning.light,
+    fontWeight: 600,
+    fontSize: 16,
+    alignItems: 'center',
+    display: 'flex',
+  },
+  warningContainer: {
+    marginTop: theme.spacing(1),
+  },
+  divider: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
   const classes = useStyles();
+  const [autoApprove, setAutoApprove] = useState(false);
+  let [dismissed, setDismissed] = useLocalStorageState(
+    'dismissedAutoApproveWarning',
+    false,
+  );
   return (
     <Card>
       <CardContent>
@@ -178,10 +219,47 @@ function ApproveConnectionForm({ origin, onApprove }) {
           <Typography>{wallet.publicKey.toBase58()}</Typography>
         </div>
         <Typography>Only connect with sites you trust.</Typography>
+        <Divider className={classes.divider} />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={autoApprove}
+              onChange={() => setAutoApprove(!autoApprove)}
+              color="primary"
+            />
+          }
+          label={`Automatically approve Serum DEX transactions`}
+        />
+        {!dismissed && autoApprove && (
+          <SnackbarContent
+            className={classes.warningContainer}
+            message={
+              <div>
+                <span className={classes.warningTitle}>
+                  <WarningIcon className={classes.warningIcon} />
+                  Use at your own risk.
+                </span>
+                <Typography className={classes.warningMessage}>
+                  This setting allows {origin} to send standard Serum DEX
+                  transactions on your behalf without requesting your permission
+                  for the remainder of this session.
+                </Typography>
+              </div>
+            }
+            action={[
+              <Button onClick={() => setDismissed('1')}>I understand</Button>,
+            ]}
+            classes={{ root: classes.snackbarRoot }}
+          />
+        )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={window.close}>Cancel</Button>
-        <Button color="primary" onClick={onApprove}>
+        <Button
+          color="primary"
+          onClick={() => onApprove(autoApprove)}
+          disabled={!dismissed && autoApprove}
+        >
           Connect
         </Button>
       </CardActions>
@@ -189,11 +267,104 @@ function ApproveConnectionForm({ origin, onApprove }) {
   );
 }
 
-function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
+function isSafeInstruction(publicKeys, owner, instructions) {
+  let unsafe = false;
+  const states = {
+    CREATED_AND_OWNED: 0,
+    INITIALIZED_AND_OWNED: 1,
+    CLOSED_TO_OWNED_DESTINATION: 2,
+  };
+  const newAccounts = {};
+  const initializedAccountMints = {};
+
+  function isOwned(pubkey) {
+    if (!pubkey) {
+      return false;
+    }
+    if (
+      publicKeys &&
+      publicKeys.some((ownedAccountPubkey) => ownedAccountPubkey.equals(pubkey))
+    ) {
+      return true;
+    }
+    return newAccounts[pubkey.toBase58()] === states.INITIALIZED_AND_OWNED;
+  }
+
+  instructions.forEach((instruction) => {
+    if (!instruction) {
+      unsafe = true;
+    } else if (
+      ['cancelOrder', 'matchOrders', 'newOrder'].includes(instruction.type)
+    ) {
+      // It is always considered safe to cancel orders, match orders, create new orders
+    } else if (instruction.type === 'systemCreate') {
+      let { newAccountPubkey, fromPubkey } = instruction.data;
+      if (!(fromPubkey && newAccountPubkey && fromPubkey.equals(owner))) {
+        unsafe = true;
+      } else {
+        newAccounts[newAccountPubkey.toBase58()] = states.CREATED_AND_OWNED;
+      }
+    } else if (instruction.type === 'initializeAccount') {
+      // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
+      let { ownerPubkey, accountPubkey, mintPubkey } = instruction.data;
+      if (
+        owner &&
+        ownerPubkey &&
+        owner.equals(ownerPubkey) &&
+        accountPubkey &&
+        newAccounts[accountPubkey.toBase58()] === states.CREATED_AND_OWNED
+      ) {
+        newAccounts[accountPubkey.toBase58()] = states.INITIALIZED_AND_OWNED;
+        initializedAccountMints[accountPubkey.toBase58()] = mintPubkey;
+      } else {
+        unsafe = true;
+      }
+    } else if (instruction.type === 'settleFunds') {
+      // Settling funds is only safe if the destinations are owned
+      let { basePubkey, quotePubkey } = instruction.data;
+      if (!isOwned(basePubkey) || !isOwned(quotePubkey)) {
+        unsafe = true;
+      }
+    } else if (instruction.type === 'closeAccount') {
+      // Closing is only safe if closing newly made Wrapped SOL accounts with this wallet as the destination
+      let { sourcePubkey, destinationPubkey, ownerPubkey } = instruction.data;
+      let mintPubkey = initializedAccountMints[sourcePubkey.toBase58()];
+      if (
+        owner &&
+        destinationPubkey &&
+        owner.equals(destinationPubkey) &&
+        mintPubkey &&
+        mintPubkey.equals(WRAPPED_SOL_MINT) &&
+        ownerPubkey &&
+        owner.equals(ownerPubkey) &&
+        sourcePubkey &&
+        newAccounts[sourcePubkey.toBase58()] === states.INITIALIZED_AND_OWNED
+      ) {
+        newAccounts[sourcePubkey.toBase58()] =
+          states.CLOSED_TO_OWNED_DESTINATION;
+      } else {
+        unsafe = true;
+      }
+    } else {
+      unsafe = true;
+    }
+  });
+  return !unsafe;
+}
+
+function ApproveSignatureForm({
+  origin,
+  message,
+  onApprove,
+  onReject,
+  autoApprove,
+}) {
   const classes = useStyles();
   const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
   const wallet = useWallet();
+  const [publicKeys] = useWalletPublicKeys();
+  const [safe, setSafe] = useState(false);
 
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
@@ -204,6 +375,24 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
       setParsing(false);
     });
   }, [message, connection, wallet]);
+
+  useEffect(() => {
+    if (!!publicKeys && !!instructions) {
+      if (isSafeInstruction(publicKeys, wallet.publicKey, instructions)) {
+        setSafe(true);
+      } else {
+        setSafe(false);
+      }
+    }
+  }, [publicKeys, instructions, wallet]);
+
+  useEffect(() => {
+    if (safe && autoApprove) {
+      console.log('Auto approving safe transaction');
+      onApprove();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safe, autoApprove]);
 
   const onOpenAddress = (address) => {
     address &&
@@ -285,8 +474,8 @@ function ApproveSignatureForm({ origin, message, onApprove, onReject }) {
                 : `Unknown transaction data`}
             </Typography>
             {instructions ? (
-              instructions.map((instruction) => (
-                <Box style={{ marginTop: 20 }}>
+              instructions.map((instruction, i) => (
+                <Box style={{ marginTop: 20 }} key={i}>
                   {getContent(instruction)}
                   <Divider style={{ marginTop: 20 }} />
                 </Box>

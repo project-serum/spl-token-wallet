@@ -41,6 +41,7 @@ export default function SystemInstruction({ instruction, onOpenAddress }) {
           const { label, address } = dataLabel;
           return (
             <LabelValue
+              key={key}
               label={label + ''}
               value={address ? value?.toBase58() : value}
               link={address}
