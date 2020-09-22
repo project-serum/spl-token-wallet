@@ -27,7 +27,6 @@ import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
 import { useLocalStorageState } from '../utils/utils';
-import { WRAPPED_SOL_MINT } from '../utils/tokens/instructions';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -270,85 +269,102 @@ function ApproveConnectionForm({ origin, onApprove }) {
 function isSafeInstruction(publicKeys, owner, instructions) {
   let unsafe = false;
   const states = {
-    CREATED_AND_OWNED: 0,
-    INITIALIZED_AND_OWNED: 1,
+    CREATED: 0,
+    OWNED: 1,
     CLOSED_TO_OWNED_DESTINATION: 2,
   };
-  const newAccounts = {};
-  const initializedAccountMints = {};
+  const accountStates = {};
 
   function isOwned(pubkey) {
     if (!pubkey) {
       return false;
     }
     if (
-      publicKeys &&
-      publicKeys.some((ownedAccountPubkey) => ownedAccountPubkey.equals(pubkey))
+      publicKeys?.some((ownedAccountPubkey) =>
+        ownedAccountPubkey.equals(pubkey),
+      )
     ) {
       return true;
     }
-    return newAccounts[pubkey.toBase58()] === states.INITIALIZED_AND_OWNED;
+    return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
   instructions.forEach((instruction) => {
     if (!instruction) {
       unsafe = true;
-    } else if (
-      ['cancelOrder', 'matchOrders', 'newOrder'].includes(instruction.type)
-    ) {
-      // It is always considered safe to cancel orders, match orders, create new orders
-    } else if (instruction.type === 'systemCreate') {
-      let { newAccountPubkey, fromPubkey } = instruction.data;
-      if (!(fromPubkey && newAccountPubkey && fromPubkey.equals(owner))) {
-        unsafe = true;
-      } else {
-        newAccounts[newAccountPubkey.toBase58()] = states.CREATED_AND_OWNED;
-      }
-    } else if (instruction.type === 'initializeAccount') {
-      // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
-      let { ownerPubkey, accountPubkey, mintPubkey } = instruction.data;
-      if (
-        owner &&
-        ownerPubkey &&
-        owner.equals(ownerPubkey) &&
-        accountPubkey &&
-        newAccounts[accountPubkey.toBase58()] === states.CREATED_AND_OWNED
-      ) {
-        newAccounts[accountPubkey.toBase58()] = states.INITIALIZED_AND_OWNED;
-        initializedAccountMints[accountPubkey.toBase58()] = mintPubkey;
-      } else {
-        unsafe = true;
-      }
-    } else if (instruction.type === 'settleFunds') {
-      // Settling funds is only safe if the destinations are owned
-      let { basePubkey, quotePubkey } = instruction.data;
-      if (!isOwned(basePubkey) || !isOwned(quotePubkey)) {
-        unsafe = true;
-      }
-    } else if (instruction.type === 'closeAccount') {
-      // Closing is only safe if closing newly made Wrapped SOL accounts with this wallet as the destination
-      let { sourcePubkey, destinationPubkey, ownerPubkey } = instruction.data;
-      let mintPubkey = initializedAccountMints[sourcePubkey.toBase58()];
-      if (
-        owner &&
-        destinationPubkey &&
-        owner.equals(destinationPubkey) &&
-        mintPubkey &&
-        mintPubkey.equals(WRAPPED_SOL_MINT) &&
-        ownerPubkey &&
-        owner.equals(ownerPubkey) &&
-        sourcePubkey &&
-        newAccounts[sourcePubkey.toBase58()] === states.INITIALIZED_AND_OWNED
-      ) {
-        newAccounts[sourcePubkey.toBase58()] =
-          states.CLOSED_TO_OWNED_DESTINATION;
-      } else {
-        unsafe = true;
-      }
     } else {
-      unsafe = true;
+      if (
+        ['cancelOrder', 'matchOrders', 'newOrder', 'settleFunds'].includes(
+          instruction.type,
+        )
+      ) {
+        // Verify that the DEX program ID is known
+        if (!instruction.knownProgramId) {
+          unsafe = true;
+        }
+      }
+      if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+        // It is always considered safe to cancel orders, match orders
+      } else if (instruction.type === 'systemCreate') {
+        let { newAccountPubkey } = instruction.data;
+        if (!newAccountPubkey) {
+          unsafe = true;
+        } else {
+          accountStates[newAccountPubkey.toBase58()] = states.CREATED;
+        }
+      } else if (instruction.type === 'newOrder') {
+        // New order instructions are safe if the owner is this wallet
+        let { openOrdersPubkey, ownerPubkey } = instruction.data;
+        if (ownerPubkey && owner.equals(ownerPubkey)) {
+          accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
+        } else {
+          unsafe = false;
+        }
+      } else if (instruction.type === 'initializeAccount') {
+        // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
+        let { ownerPubkey, accountPubkey } = instruction.data;
+        if (
+          owner &&
+          ownerPubkey &&
+          owner.equals(ownerPubkey) &&
+          accountPubkey &&
+          accountStates[accountPubkey.toBase58()] === states.CREATED
+        ) {
+          accountStates[accountPubkey.toBase58()] = states.OWNED;
+        } else {
+          unsafe = true;
+        }
+      } else if (instruction.type === 'settleFunds') {
+        // Settling funds is only safe if the destinations are owned
+        let { basePubkey, quotePubkey } = instruction.data;
+        if (!isOwned(basePubkey) || !isOwned(quotePubkey)) {
+          unsafe = true;
+        }
+      } else if (instruction.type === 'closeAccount') {
+        // Closing is only safe if the destination is owned
+        let { sourcePubkey, destinationPubkey } = instruction.data;
+        if (isOwned(destinationPubkey)) {
+          accountStates[sourcePubkey.toBase58()] =
+            states.CLOSED_TO_OWNED_DESTINATION;
+        } else {
+          unsafe = true;
+        }
+      } else {
+        unsafe = true;
+      }
     }
   });
+
+  // Check that all accounts are owned
+  if (
+    Object.values(accountStates).some(
+      (state) =>
+        ![states.CLOSED_TO_OWNED_DESTINATION, states.OWNED].includes(state),
+    )
+  ) {
+    unsafe = true;
+  }
+
   return !unsafe;
 }
 
@@ -364,7 +380,6 @@ function ApproveSignatureForm({
   const connection = useConnection();
   const wallet = useWallet();
   const [publicKeys] = useWalletPublicKeys();
-  const [safe, setSafe] = useState(false);
 
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
@@ -376,14 +391,12 @@ function ApproveSignatureForm({
     });
   }, [message, connection, wallet]);
 
-  useEffect(() => {
-    if (!!publicKeys && !!instructions) {
-      if (isSafeInstruction(publicKeys, wallet.publicKey, instructions)) {
-        setSafe(true);
-      } else {
-        setSafe(false);
-      }
-    }
+  const safe = useMemo(() => {
+    return (
+      publicKeys &&
+      instructions &&
+      isSafeInstruction(publicKeys, wallet.publicKey, instructions)
+    );
   }, [publicKeys, instructions, wallet]);
 
   useEffect(() => {
@@ -493,6 +506,24 @@ function ApproveSignatureForm({
                   {bs58.encode(message)}
                 </Typography>
               </>
+            )}
+            {!safe && (
+              <SnackbarContent
+                className={classes.warningContainer}
+                message={
+                  <div>
+                    <span className={classes.warningTitle}>
+                      <WarningIcon className={classes.warningIcon} />
+                      Nonstandard DEX transaction
+                    </span>
+                    <Typography className={classes.warningMessage}>
+                      Sollet does not recognize this transaction as a standard
+                      Serum DEX transaction
+                    </Typography>
+                  </div>
+                }
+                classes={{ root: classes.snackbarRoot }}
+              />
             )}
           </>
         )}

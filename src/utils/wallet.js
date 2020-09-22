@@ -130,12 +130,18 @@ export function useWalletPublicKeys() {
     wallet.getTokenAccountInfo,
     wallet.getTokenAccountInfo,
   );
-  let publicKeys = [
+  const getPublicKeys = () => [
     wallet.account.publicKey,
     ...(tokenAccountInfo
       ? tokenAccountInfo.map(({ publicKey }) => publicKey)
       : []),
   ];
+  const serialized = getPublicKeys()
+    .map((pubKey) => pubKey?.toBase58() || '')
+    .toString();
+
+  // Prevent users from re-rendering unless the list of public keys actually changes
+  let publicKeys = useMemo(getPublicKeys, [serialized]);
   return [publicKeys, loaded];
 }
 
