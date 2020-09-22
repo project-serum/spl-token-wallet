@@ -8,6 +8,8 @@ import {
   TokenInstructions,
   SETTLE_FUNDS_BASE_WALLET_INDEX,
   SETTLE_FUNDS_QUOTE_WALLET_INDEX,
+  NEW_ORDER_OPEN_ORDERS_INDEX,
+  NEW_ORDER_OWNER_INDEX,
 } from '@project-serum/serum';
 
 const marketCache = {};
@@ -121,11 +123,11 @@ const handleDexInstruction = async (
     );
 
   // get market
-  let market;
+  let market, programIdAddress;
   try {
     const marketAddress =
       marketInfo?.address || getAccountByIndex(accounts, accountKeys, 0);
-    const programIdAddress =
+    programIdAddress =
       marketInfo?.programId ||
       getAccountByIndex([programIdIndex], accountKeys, 0);
     const strAddress = marketAddress.toBase58();
@@ -164,9 +166,14 @@ const handleDexInstruction = async (
     } else {
       data = { ...data, ...settleFundsData };
     }
+  } else if (type === 'newOrder') {
+    const newOrderData = getNewOrderData(accounts, accountKeys);
+    data = { ...data, ...newOrderData };
   }
-
   return {
+    knownProgramId: MARKETS.some(
+      ({ programId }) => programIdAddress && programIdAddress.equals(programId),
+    ),
     type,
     data,
     market,
@@ -295,6 +302,20 @@ const handleTokenInstruction = (
     type,
     data,
   };
+};
+
+const getNewOrderData = (accounts, accountKeys) => {
+  const openOrdersPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    NEW_ORDER_OPEN_ORDERS_INDEX,
+  );
+  const ownerPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    NEW_ORDER_OWNER_INDEX,
+  );
+  return { openOrdersPubkey, ownerPubkey };
 };
 
 const getSettleFundsData = (accounts, accountKeys) => {

@@ -1,16 +1,23 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
+import { useWallet } from '../../utils/wallet';
 
 export default function Neworder({ instruction, onOpenAddress }) {
-  const { data, market, marketInfo } = instruction;
-  const { side, limitPrice, maxQuantity, orderType } = data;
+  const wallet = useWallet();
+  const { data, market, marketInfo, knownProgramId } = instruction;
+  const { side, limitPrice, maxQuantity, orderType, ownerPubkey } = data;
 
   const marketLabel =
     (marketInfo &&
       marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '')) ||
     market?._decoded?.ownAddress?.toBase58() ||
     'Unknown';
+
+  const getAddressValue = (address) => {
+    const isOwner = wallet.publicKey.equals(address);
+    return isOwner ? 'This wallet' : address?.toBase58() || 'Unknown';
+  };
 
   return (
     <>
@@ -19,7 +26,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        Place an order
+        Place an order {!knownProgramId ? '(Unknown DEX program)' : null}
       </Typography>
       <LabelValue
         label="Market"
@@ -46,6 +53,14 @@ export default function Neworder({ instruction, onOpenAddress }) {
       <LabelValue
         label="Type"
         value={orderType.charAt(0).toUpperCase() + orderType.slice(1)}
+      />
+      <LabelValue
+        label="Owner"
+        link={ownerPubkey}
+        value={ownerPubkey ? getAddressValue(ownerPubkey) : ownerPubkey}
+        onOpenAddress={() =>
+          ownerPubkey && onOpenAddress(ownerPubkey?.toBase58())
+        }
       />
     </>
   );
