@@ -137,6 +137,7 @@ export default function PopupPage({ opener }) {
     }
     return (
       <ApproveSignatureForm
+        key={request.id}
         autoApprove={autoApprove}
         origin={origin}
         message={message}
