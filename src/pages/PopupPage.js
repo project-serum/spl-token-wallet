@@ -227,7 +227,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
               color="primary"
             />
           }
-          label={`Automatically approve Serum DEX transactions`}
+          label={`Automatically approve transactions from ${origin}`}
         />
         {!dismissed && autoApprove && (
           <SnackbarContent
@@ -239,9 +239,9 @@ function ApproveConnectionForm({ origin, onApprove }) {
                   Use at your own risk.
                 </span>
                 <Typography className={classes.warningMessage}>
-                  This setting allows {origin} to send standard Serum DEX
-                  transactions on your behalf without requesting your permission
-                  for the remainder of this session.
+                  This setting allows sending some transactions on your behalf
+                  without requesting your permission for the remainder of this
+                  session.
                 </Typography>
               </div>
             }
