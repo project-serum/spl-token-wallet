@@ -318,7 +318,7 @@ function isSafeInstruction(publicKeys, owner, instructions) {
         if (ownerPubkey && owner.equals(ownerPubkey)) {
           accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
         } else {
-          unsafe = false;
+          unsafe = true;
         }
       } else if (instruction.type === 'initializeAccount') {
         // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
