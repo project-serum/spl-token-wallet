@@ -1,5 +1,5 @@
 import bs58 from 'bs58';
-import { Message, SystemInstruction } from '@solana/web3.js';
+import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
 import {
   decodeInstruction,
   decodeTokenInstructionData,
@@ -11,6 +11,7 @@ import {
   NEW_ORDER_OPEN_ORDERS_INDEX,
   NEW_ORDER_OWNER_INDEX,
 } from '@project-serum/serum';
+import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 
 const marketCache = {};
 let marketCacheConnection = null;
@@ -52,51 +53,58 @@ const toInstruction = async (
   instruction,
   index,
 ) => {
-  if (!instruction?.data || !instruction?.accounts) {
+  if (
+    !instruction?.data ||
+    !instruction?.accounts ||
+    !instruction?.programIdIndex
+  ) {
     return;
   }
 
   // get instruction data
   const decoded = bs58.decode(instruction.data);
-  let decodedInstruction;
 
-  // try dex instruction decoding
-  try {
-    decodedInstruction = decodeInstruction(decoded);
-    console.log('[' + index + '] Handled as dex instruction');
-    return await handleDexInstruction(
-      connection,
-      instruction,
-      accountKeys,
-      decodedInstruction,
-    );
-  } catch {}
+  const programId = getAccountByIndex(
+    [instruction.programIdIndex],
+    accountKeys,
+    0,
+  );
+  if (!programId) {
+    return null;
+  }
 
-  // try token decoding
   try {
-    decodedInstruction = decodeTokenInstruction(decoded);
-    console.log('[' + index + '] Handled as token instruction');
-    return handleTokenInstruction(
-      publicKey,
-      instruction.accounts,
-      decodedInstruction,
-      accountKeys,
-    );
-  } catch {}
-
-  // try system instruction decoding
-  try {
-    const systemInstruction = handleSystemInstruction(
-      publicKey,
-      instruction,
-      accountKeys,
-    );
-    console.log('[' + index + '] Handled as system instruction');
-    return systemInstruction;
+    if (programId.equals(SystemProgram.programId)) {
+      console.log('[' + index + '] Handled as system instruction');
+      return handleSystemInstruction(publicKey, instruction, accountKeys);
+    } else if (programId.equals(TOKEN_PROGRAM_ID)) {
+      console.log('[' + index + '] Handled as token instruction');
+      let decodedInstruction = decodeTokenInstruction(decoded);
+      return handleTokenInstruction(
+        publicKey,
+        instruction.accounts,
+        decodedInstruction,
+        accountKeys,
+      );
+    } else if (
+      MARKETS.some(
+        (market) => market.programId && market.programId.equals(programId),
+      )
+    ) {
+      console.log('[' + index + '] Handled as dex instruction');
+      let decodedInstruction = decodeInstruction(decoded);
+      return await handleDexInstruction(
+        connection,
+        instruction,
+        accountKeys,
+        decodedInstruction,
+      );
+    }
   } catch {}
 
   // all decodings failed
   console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
+
   return;
 };
 
@@ -171,9 +179,6 @@ const handleDexInstruction = async (
     data = { ...data, ...newOrderData };
   }
   return {
-    knownProgramId: MARKETS.some(
-      ({ programId }) => programIdAddress && programIdAddress.equals(programId),
-    ),
     type,
     data,
     market,

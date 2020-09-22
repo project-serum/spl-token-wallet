@@ -21,7 +21,7 @@ const DATA_LABELS = {
 export default function DexInstruction({ instruction, onOpenAddress }) {
   const wallet = useWallet();
   const [publicKeys] = useWalletPublicKeys();
-  const { type, data, market, marketInfo, knownProgramId } = instruction;
+  const { type, data, market, marketInfo } = instruction;
 
   const marketLabel =
     (marketInfo &&
@@ -44,7 +44,7 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        {TYPE_LABELS[type]} {!knownProgramId ? '(Unknown DEX program)' : null}
+        {TYPE_LABELS[type]}
       </Typography>
       <LabelValue
         label="Market"

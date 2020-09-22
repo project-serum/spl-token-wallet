@@ -5,7 +5,7 @@ import { useWallet } from '../../utils/wallet';
 
 export default function Neworder({ instruction, onOpenAddress }) {
   const wallet = useWallet();
-  const { data, market, marketInfo, knownProgramId } = instruction;
+  const { data, market, marketInfo } = instruction;
   const { side, limitPrice, maxQuantity, orderType, ownerPubkey } = data;
 
   const marketLabel =
@@ -26,7 +26,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        Place an order {!knownProgramId ? '(Unknown DEX program)' : null}
+        Place an order
       </Typography>
       <LabelValue
         label="Market"

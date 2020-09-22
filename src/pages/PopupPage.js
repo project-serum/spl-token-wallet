@@ -293,16 +293,6 @@ function isSafeInstruction(publicKeys, owner, instructions) {
     if (!instruction) {
       unsafe = true;
     } else {
-      if (
-        ['cancelOrder', 'matchOrders', 'newOrder', 'settleFunds'].includes(
-          instruction.type,
-        )
-      ) {
-        // Verify that the DEX program ID is known
-        if (!instruction.knownProgramId) {
-          unsafe = true;
-        }
-      }
       if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
         // It is always considered safe to cancel orders, match orders
       } else if (instruction.type === 'systemCreate') {
