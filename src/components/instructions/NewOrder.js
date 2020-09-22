@@ -10,7 +10,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
 
   const marketLabel =
     (marketInfo &&
-      marketInfo?.name + (marketInfo?.deprecated ? '(deprecated)' : '')) ||
+      marketInfo?.name + (marketInfo?.deprecated ? ' (deprecated)' : '')) ||
     market?._decoded?.ownAddress?.toBase58() ||
     'Unknown';
 
