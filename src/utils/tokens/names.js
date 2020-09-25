@@ -95,6 +95,11 @@ export const TOKENS = {
       mintAddress: '9S4t2NEAiJVMvPdRYKVrfJpBafPBLtvbvyS3DecojQHw',
       tokenName: 'Wrapped FRONT',
     },
+    {
+      tokenSymbol: 'AKRO',
+      mintAddress: '6WNVCuxCGJzNjmMZoKyhZJwvJ5tYpsLyAtagzYASqBoF',
+      tokenName: 'Wrapped AKRO',
+    },
   ],
 };
 
