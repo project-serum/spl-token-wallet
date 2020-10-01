@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
-import Typography from '@material-ui/core/Typography';
+import { Layout, Typography } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import Button from '@material-ui/core/Button';
@@ -19,6 +17,8 @@ import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
+
+const { Header, Content } = Layout;
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -42,19 +42,13 @@ const useStyles = makeStyles((theme) => ({
 export default function NavigationFrame({ children }) {
   const classes = useStyles();
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" className={classes.title} component="h1">
-            Solana SPL Token Wallet
-          </Typography>
-          <WalletSelector />
-          <NetworkSelector />
-        </Toolbar>
-      </AppBar>
-      <main className={classes.content}>{children}</main>
+    <Layout style={{ backgroundColor: 'white' }}>
+      <Header style={{ backgroundColor: '#f7f7f7' }}>
+        <span style={{ fontSize: 24 }}>Sollet.io</span>
+      </Header>
+      <Content style={{ flexGrow: 1 }}>{children}</Content>
       <Footer />
-    </>
+    </Layout>
   );
 }
 

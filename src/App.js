@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import 'antd/dist/antd.css';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
@@ -36,20 +37,17 @@ export default function App() {
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ConnectionProvider>
-          <WalletProvider>
-            <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-              <NavigationFrame>
-                <Suspense fallback={<LoadingIndicator />}>
-                  <PageContents />
-                </Suspense>
-              </NavigationFrame>
-            </SnackbarProvider>
-          </WalletProvider>
-        </ConnectionProvider>
-      </ThemeProvider>
+      <ConnectionProvider>
+        <WalletProvider>
+          <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
+            <NavigationFrame>
+              <Suspense fallback={<LoadingIndicator />}>
+                <PageContents />
+              </Suspense>
+            </NavigationFrame>
+          </SnackbarProvider>
+        </WalletProvider>
+      </ConnectionProvider>
     </Suspense>
   );
 }
