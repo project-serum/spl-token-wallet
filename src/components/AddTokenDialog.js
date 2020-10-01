@@ -259,16 +259,16 @@ function TokenListItem({
           <ListItemText
             primary={
               <Link
-                  target="_blank"
-                  rel="noopener"
-                  href={
-                    `https://explorer.solana.com/account/${mintAddress}` +
-                    urlSuffix
-                  }
-                >
-                  {tokenName ?? abbreviateAddress(mintAddress)}
-                  {tokenSymbol ? ` (${tokenSymbol})` : null}
-                </Link>
+                target="_blank"
+                rel="noopener"
+                href={
+                  `https://explorer.solana.com/account/${mintAddress}` +
+                  urlSuffix
+                }
+              >
+                {tokenName ?? abbreviateAddress(mintAddress)}
+                {tokenSymbol ? ` (${tokenSymbol})` : null}
+              </Link>
             }
           />
           {open ? <ExpandLess /> : <ExpandMore />}
