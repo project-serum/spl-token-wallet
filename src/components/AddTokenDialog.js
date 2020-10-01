@@ -19,6 +19,7 @@ import { useSendTransaction } from '../utils/notifications';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { abbreviateAddress } from '../utils/utils';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -222,8 +223,23 @@ export default function AddTokenDialog({ open, onClose }) {
   );
 }
 
+const Logo = ({ icon, tokenName }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if(hasError || !icon) {
+    return null;
+  }
+
+  return <img src={icon} 
+              title={tokenName} 
+              alt={tokenName}
+              style={{ width: 20, height: 20 }} 
+              onError={() => setHasError(true)} />;
+}
+
 function TokenListItem({
   tokenName,
+  icon,
   tokenSymbol,
   mintAddress,
   onSubmit,
@@ -237,19 +253,22 @@ function TokenListItem({
     <React.Fragment>
       <div style={{ display: 'flex' }} key={tokenName}>
         <ListItem button onClick={() => setOpen((open) => !open)}>
+          <ListItemIcon>
+              <Logo icon={icon} tokenName={tokenName} />
+          </ListItemIcon>
           <ListItemText
             primary={
               <Link
-                target="_blank"
-                rel="noopener"
-                href={
-                  `https://explorer.solana.com/account/${mintAddress}` +
-                  urlSuffix
-                }
-              >
-                {tokenName ?? abbreviateAddress(mintAddress)}
-                {tokenSymbol ? ` (${tokenSymbol})` : null}
-              </Link>
+                  target="_blank"
+                  rel="noopener"
+                  href={
+                    `https://explorer.solana.com/account/${mintAddress}` +
+                    urlSuffix
+                  }
+                >
+                  {tokenName ?? abbreviateAddress(mintAddress)}
+                  {tokenSymbol ? ` (${tokenSymbol})` : null}
+                </Link>
             }
           />
           {open ? <ExpandLess /> : <ExpandMore />}
