@@ -233,7 +233,12 @@ const Logo = ({ icon, tokenName }) => {
   return <img src={icon} 
               title={tokenName} 
               alt={tokenName}
-              style={{ width: 20, height: 20 }} 
+              style={{ 
+                width: 20, 
+                height: 20,
+                backgroundColor: 'white',
+                borderRadius: 10
+              }} 
               onError={() => setHasError(true)} />;
 }
 
