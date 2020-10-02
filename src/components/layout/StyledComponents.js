@@ -5,7 +5,7 @@ export const Box = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
-  border-radius: 10px;
+  background-color: white;
   -webkit-box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.075);
   -moz-box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.075);
   box-shadow: 0px 0px 35px 0px rgba(0, 0, 0, 0.075);

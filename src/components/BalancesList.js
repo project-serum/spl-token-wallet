@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import List from '@material-ui/core/List';
+import { PageHeader, Button, Tooltip, List, Row, Col, Grid, Spin } from 'antd';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
@@ -18,7 +18,6 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import { abbreviateAddress } from '../utils/utils';
-import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
 import AppBar from '@material-ui/core/AppBar';
@@ -27,7 +26,6 @@ import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
@@ -36,6 +34,15 @@ import {
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
 import { showTokenInfoDialog } from '../utils/config';
+import {
+  PlusOutlined,
+  ReloadOutlined,
+  SendOutlined,
+  InfoOutlined,
+} from '@ant-design/icons';
+import { Box, Text } from './layout/StyledComponents';
+
+const { useBreakpoint } = Grid;
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -49,43 +56,47 @@ export default function BalancesList() {
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
 
   return (
-    <Paper>
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            Balances
-          </Typography>
-          <Tooltip title="Add Token" arrow>
-            <IconButton onClick={() => setShowAddTokenDialog(true)}>
-              <AddIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Refresh" arrow>
-            <IconButton
+    <Box style={{ padding: 0, flex: 1 }}>
+      <PageHeader
+        ghost={false}
+        title="Balances"
+        extra={[
+          <Tooltip title="Add Token">
+            <Button
+              shape="circle"
+              icon={<PlusOutlined />}
+              onClick={() => setShowAddTokenDialog(true)}
+            />
+          </Tooltip>,
+          <Tooltip title="Refresh">
+            <Button
+              shape="circle"
+              icon={<ReloadOutlined />}
               onClick={() => {
                 refreshWalletPublicKeys(wallet);
                 publicKeys.map((publicKey) =>
                   refreshAccountInfo(wallet.connection, publicKey, true),
                 );
               }}
-              style={{ marginRight: -12 }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-      </AppBar>
-      <List disablePadding>
-        {publicKeys.map((publicKey) => (
-          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
-        ))}
-        {loaded ? null : <LoadingIndicator />}
-      </List>
+            />
+          </Tooltip>,
+        ]}
+      />
+      <div style={{ backgroundColor: 'white', padding: '0px 25px' }}>
+        <List
+          itemLayout="horizontal"
+          loading={!loaded}
+          dataSource={publicKeys}
+          renderItem={(publicKey) => (
+            <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
+          )}
+        />
+      </div>
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
       />
-    </Paper>
+    </Box>
   );
 }
 
@@ -108,6 +119,74 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function BalanceListItem({ publicKey }) {
+  const balanceInfo = useBalanceInfo(publicKey);
+  const screens = useBreakpoint();
+
+  const [open, setOpen] = useState(false);
+
+  if (!balanceInfo) {
+    return <Spin />;
+  }
+
+  let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
+
+  return (
+    <List.Item
+      actions={[
+        <Tooltip title="Info">
+          <Button shape="circle" icon={<InfoOutlined />} />
+        </Tooltip>,
+        <Tooltip title="Send">
+          <Button
+            type="primary"
+            shape="circle"
+            style={{ backgroundColor: '#00D2D3', borderWidth: 0 }}
+            icon={<SendOutlined rotate={-90} />}
+          />
+        </Tooltip>,
+        <Tooltip title="Receive">
+          <Button
+            type="primary"
+            shape="circle"
+            style={{ backgroundColor: '#54A0FF', borderWidth: 0 }}
+            icon={<SendOutlined rotate={90} />}
+          />
+        </Tooltip>,
+      ]}
+    >
+      <Row gutter={[24]} style={{ display: 'flex', flex: 1 }}>
+        <Col span={16}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: 18 }}>
+              {tokenName ?? abbreviateAddress(mint)}
+              {tokenSymbol ? ` (${tokenSymbol})` : null}
+            </span>
+            <Text>
+              {screens['lg']
+                ? publicKey?.toBase58()
+                : abbreviateAddress(publicKey)}
+            </Text>
+          </div>
+        </Col>
+        <Col span={8}>
+          <div
+            style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              fontSize: 18,
+            }}
+          >
+            {balanceFormat.format(amount / Math.pow(10, decimals))}
+          </div>
+        </Col>
+      </Row>
+    </List.Item>
+  );
+}
+
+function BalanceListItem1({ publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const [open, setOpen] = useState(false);

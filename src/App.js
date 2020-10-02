@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
-import 'antd/dist/antd.css';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import './App.less';
+import { GlobalStyle } from './global-style';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
   ThemeProvider,
@@ -37,6 +37,7 @@ export default function App() {
 
   return (
     <Suspense fallback={<LoadingIndicator />}>
+      <GlobalStyle />
       <ConnectionProvider>
         <WalletProvider>
           <SnackbarProvider maxSnack={5} autoHideDuration={8000}>

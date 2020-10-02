@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Row, Col, Typography, Input, Switch, Space, Tag } from 'antd';
+import { Row, Col, Typography, Input, Switch, Space } from 'antd';
 import {
   WalletOutlined,
   CloseOutlined,
@@ -15,13 +15,6 @@ import {
   mnemonicToSeed,
   storeMnemonicAndSeed,
 } from '../utils/wallet-seed';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
 import { useCallAsync } from '../utils/notifications';
 import {
   Box,
@@ -32,7 +25,6 @@ import {
   ActionButton,
 } from '../components/layout/StyledComponents';
 
-const { Content } = Layout;
 const { TextArea } = Input;
 const { Title, Paragraph } = Typography;
 
@@ -187,7 +179,7 @@ function SeedWordsForm({ mnemonicAndSeed, goBack, goForward }) {
                 checked={confirmed}
               />
               <span style={{ marginLeft: 8, fontWeight: 500 }}>
-                I have saved these words in a safe place.
+                I have saved these words in a safe place
               </span>
             </div>
           </Space>
@@ -278,37 +270,52 @@ function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Unlock Wallet
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={stayLoggedIn}
-              onChange={(e) => setStayLoggedIn(e.target.checked)}
+    <Row justify="center">
+      <Col flex="500px" style={{ backgroundColor: 'white' }}>
+        <Box>
+          <Title level={2} style={{ color: '#00d2d3' }}>
+            Unlock wallet
+          </Title>
+          <Space direction="vertical">
+            <Input.Password
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
             />
-          }
-          label="Keep wallet unlocked"
-        />
-      </CardContent>
-      <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" onClick={submit}>
-          Unlock
-        </Button>
-      </CardActions>
-    </Card>
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: '#f7f7f7',
+                padding: 10,
+                borderRadius: 10,
+              }}
+            >
+              <Switch
+                checkedChildren={<CheckOutlined />}
+                unCheckedChildren={<CloseOutlined />}
+                checked={stayLoggedIn}
+                onChange={setStayLoggedIn}
+              />
+              <span style={{ marginLeft: 8, fontWeight: 500 }}>
+                Keep wallet unlocked
+              </span>
+            </div>
+          </Space>
+          <ActionButton
+            block
+            type="primary"
+            size="large"
+            disabled={!password}
+            onClick={submit}
+          >
+            <span style={{ fontWeight: 500 }}>Unlock</span>
+          </ActionButton>
+        </Box>
+      </Col>
+    </Row>
   );
 }
 
@@ -372,7 +379,7 @@ function RestoreWalletForm({ goBack }) {
             block
             type="primary"
             size="large"
-            disabled={!password || password !== passwordConfirm}
+            disabled={!mnemonic || password !== passwordConfirm}
             onClick={submit}
           >
             <span style={{ fontWeight: 500 }}>Restore</span>
