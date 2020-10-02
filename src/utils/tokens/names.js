@@ -100,6 +100,11 @@ export const TOKENS = {
       mintAddress: '6WNVCuxCGJzNjmMZoKyhZJwvJ5tYpsLyAtagzYASqBoF',
       tokenName: 'Wrapped AKRO',
     },
+    {
+      tokenSymbol: 'ODOP',
+      mintAddress: '4pk3pf9nJDN1im1kNwWJN1ThjE8pCYCTexXYGyFjqKVf',
+      tokenName: 'OuroSRL Tokenized Dominican Peso',
+    },
   ],
 };
 
