@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu, Dropdown, Grid, Button, Anchor } from 'antd';
+import { Layout, Menu, Dropdown, Grid, Button } from 'antd';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
@@ -14,22 +14,27 @@ const { useBreakpoint } = Grid;
 export default function NavigationFrame({ children }) {
   return (
     <Layout>
-      <Header style={{ backgroundColor: '#f7f7f7' }}>
-        <Anchor style={{ backgroundColor: '#f7f7f7' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <img
-              src="/solana.svg"
-              alt="logo"
-              style={{ height: 18, marginTop: 2, marginRight: 10 }}
-            />
-            <span style={{ fontSize: 24 }}>Sollet.io</span>
-            <div style={{ flex: 1 }} />
-            <WalletSelector />
-            <NetworkSelector />
-          </div>
-        </Anchor>
+      <Header
+        style={{
+          position: 'fixed',
+          zIndex: 1,
+          width: '100%',
+          backgroundColor: '#f7f7f7',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img
+            src="/solana.svg"
+            alt="logo"
+            style={{ height: 18, marginTop: 2, marginRight: 10 }}
+          />
+          <span style={{ fontSize: 24 }}>Sollet.io</span>
+          <div style={{ flex: 1 }} />
+          <WalletSelector />
+          <NetworkSelector />
+        </div>
       </Header>
-      <Content style={{ flexGrow: 1 }}>{children}</Content>
+      <Content style={{ flexGrow: 1, marginTop: 100 }}>{children}</Content>
       <Footer />
     </Layout>
   );

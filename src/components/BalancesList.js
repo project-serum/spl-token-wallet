@@ -129,7 +129,8 @@ function BalanceListItem({ publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const screens = useBreakpoint();
 
-  const [open, setOpen] = useState(false);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
 
   if (!balanceInfo) {
     return <Skeleton avatar title={false} loading={!balanceInfo} />;
@@ -205,50 +206,66 @@ function BalanceListItem({ publicKey }) {
   };
 
   return (
-    <List.Item
-      actions={[
-        <Tooltip title="Info">
-          <Button shape="circle" icon={<InfoOutlined />} onClick={info} />
-        </Tooltip>,
-        <Tooltip title="Send">
-          <Button
-            type="primary"
-            shape="circle"
-            style={{ backgroundColor: '#00D2D3', borderWidth: 0 }}
-            icon={<SendOutlined rotate={-90} />}
-          />
-        </Tooltip>,
-        <Tooltip title="Receive">
-          <Button
-            type="primary"
-            shape="circle"
-            style={{ backgroundColor: '#54A0FF', borderWidth: 0 }}
-            icon={<SendOutlined rotate={90} />}
-          />
-        </Tooltip>,
-      ]}
-    >
-      <List.Item.Meta
-        avatar={<Avatar src={`/icons/${tokenSymbol?.toLowerCase()}.png`} />}
-        title={`${tokenName ?? abbreviateAddress(mint)} ${
-          tokenSymbol ? ` (${tokenSymbol})` : ''
-        }`}
-        description={
-          screens['lg'] ? publicKey?.toBase58() : abbreviateAddress(publicKey)
-        }
-      />
-      <div
-        style={{
-          display: 'flex',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          fontSize: 18,
-        }}
+    <>
+      <List.Item
+        actions={[
+          <Tooltip title="Info">
+            <Button shape="circle" icon={<InfoOutlined />} onClick={info} />
+          </Tooltip>,
+          <Tooltip title="Send">
+            <Button
+              type="primary"
+              shape="circle"
+              style={{ backgroundColor: '#00D2D3', borderWidth: 0 }}
+              icon={<SendOutlined rotate={-90} />}
+              onClick={() => setSendDialogOpen(true)}
+            />
+          </Tooltip>,
+          <Tooltip title="Receive">
+            <Button
+              type="primary"
+              shape="circle"
+              style={{ backgroundColor: '#54A0FF', borderWidth: 0 }}
+              icon={<SendOutlined rotate={90} />}
+              onClick={() => setDepositDialogOpen(true)}
+            />
+          </Tooltip>,
+        ]}
       >
-        {balanceFormat.format(amount / Math.pow(10, decimals))}
-      </div>
-    </List.Item>
+        <List.Item.Meta
+          avatar={<Avatar src={`/icons/${tokenSymbol?.toLowerCase()}.png`} />}
+          title={`${tokenName ?? abbreviateAddress(mint)} ${
+            tokenSymbol ? ` (${tokenSymbol})` : ''
+          }`}
+          description={
+            screens['lg'] ? publicKey?.toBase58() : abbreviateAddress(publicKey)
+          }
+        />
+        <div
+          style={{
+            display: 'flex',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            fontSize: 18,
+          }}
+        >
+          {balanceFormat.format(amount / Math.pow(10, decimals))}
+        </div>
+      </List.Item>
+      <SendDialog
+        open={sendDialogOpen}
+        onClose={() => setSendDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <DepositDialog
+        open={depositDialogOpen}
+        onClose={() => setDepositDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+    </>
   );
 }
 
