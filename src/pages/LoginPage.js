@@ -146,7 +146,7 @@ function SeedWordsForm({ mnemonicAndSeed, goBack, goForward }) {
               Create new wallet
             </Title>
           </Space>
-          <Space direction="vertical">
+          <Space direction="vertical" size="middle">
             <Text>Create a new wallet to hold Solana and SPL tokens.</Text>
             <Text>
               Please write down the following twelve words and keep them in a
@@ -215,7 +215,7 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
               Choose a Password (Optional)
             </Title>
           </Space>
-          <Space direction="vertical">
+          <Space direction="vertical" size="middle">
             <Text>Optionally pick a password to protect your wallet.</Text>
             <Text>
               Please write down the following twelve words and keep them in a
@@ -346,7 +346,7 @@ function RestoreWalletForm({ goBack }) {
               Restore existing wallet
             </Title>
           </Space>
-          <Space direction="vertical">
+          <Space direction="vertical" size="middle">
             <Text>
               Restore your wallet using your twelve seed words. Note that this
               will delete any existing wallet on this device.
