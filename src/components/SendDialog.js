@@ -1,5 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, Button, Tabs, Input, Space, Typography, Steps, Avatar } from 'antd';
+import {
+  Modal,
+  Button,
+  Tabs,
+  Input,
+  Space,
+  Typography,
+  Steps,
+  Avatar,
+} from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useWallet } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
@@ -42,15 +51,14 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
               src={`/icons/${tokenSymbol?.toLowerCase()}.png`}
               style={{ marginRight: 16 }}
             />
-            <span class="ant-modal-confirm-title">{`Send ${
-              tokenName ?? abbreviateAddress(mint)
-            }
-            ${tokenSymbol ? `(${tokenSymbol})` : ''}`}</span>
+            <span class="ant-modal-confirm-title">
+              Send {tokenName ?? abbreviateAddress(mint)}{' '}
+              {tokenSymbol ? `(${tokenSymbol})` : null}
+            </span>
           </div>
         }
         visible={open}
         onCancel={onClose}
-        onOk={() => onSubmitRef.current()}
         footer={null}
       >
         {swapCoinInfo ? (

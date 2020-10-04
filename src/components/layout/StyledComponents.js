@@ -45,7 +45,7 @@ export const WarningBox = styled.div`
 `;
 
 export const Text = styled.span`
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(0, 0, 0, 0.5);
 `;
 
 export const ActionButton = styled(Button)`
