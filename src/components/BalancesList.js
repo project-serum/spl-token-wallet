@@ -10,7 +10,6 @@ import {
   Grid,
   Modal,
   Skeleton,
-  Avatar,
   Typography,
 } from 'antd';
 import {
@@ -116,9 +115,9 @@ function BalanceListItem({ publicKey }) {
   const info = () => {
     Modal.info({
       title: (
-        <span class="ant-modal-confirm-title">{`${
-          tokenName ?? abbreviateAddress(mint)
-        } ${tokenSymbol ? ` (${tokenSymbol})` : ''}`}</span>
+        <span>{`${tokenName ?? abbreviateAddress(mint)} ${
+          tokenSymbol ? ` (${tokenSymbol})` : ''
+        }`}</span>
       ),
       icon: null,
       content: (
@@ -178,7 +177,15 @@ function BalanceListItem({ publicKey }) {
     <>
       <List.Item
         actions={[
-          <Tooltip title="Delete">
+          <Tooltip
+            title={
+              !mint
+                ? "Can't delete SOL"
+                : amount !== 0
+                ? "Can't delete tokens with non-zero balances"
+                : 'Delete'
+            }
+          >
             <Button
               disabled={!mint || amount !== 0}
               shape="circle"
