@@ -139,6 +139,9 @@ export default function DepositDialog({
             >
               View on Solana Explorer
             </Button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <QRCode value={publicKey.toBase58()} size={256} includeMargin />
+            </div>
           </>
         ) : (
           <SolletSwapDepositAddress
