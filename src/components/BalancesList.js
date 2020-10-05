@@ -33,6 +33,7 @@ import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
+import TokenIcon from './TokenIcon';
 
 const { useBreakpoint } = Grid;
 const { Paragraph } = Typography;
@@ -110,18 +111,14 @@ function BalanceListItem({ publicKey }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  let tokenIcon = <TokenIcon mint={mint} tokenName={tokenName} />;
+
   const info = () => {
     Modal.info({
       title: (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar
-            src={`/icons/${tokenSymbol?.toLowerCase()}.png`}
-            style={{ marginRight: 16 }}
-          />
-          <span class="ant-modal-confirm-title">{`${
-            tokenName ?? abbreviateAddress(mint)
-          } ${tokenSymbol ? ` (${tokenSymbol})` : ''}`}</span>
-        </div>
+        <span class="ant-modal-confirm-title">{`${
+          tokenName ?? abbreviateAddress(mint)
+        } ${tokenSymbol ? ` (${tokenSymbol})` : ''}`}</span>
       ),
       icon: null,
       content: (
@@ -213,7 +210,7 @@ function BalanceListItem({ publicKey }) {
         ]}
       >
         <List.Item.Meta
-          avatar={<Avatar src={`/icons/${tokenSymbol?.toLowerCase()}.png`} />}
+          avatar={tokenIcon}
           title={`${tokenName ?? abbreviateAddress(mint)} ${
             tokenSymbol ? ` (${tokenSymbol})` : ''
           }`}

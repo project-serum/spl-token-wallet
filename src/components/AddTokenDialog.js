@@ -224,6 +224,7 @@ function TokenListItem({
           type="primary"
           disabled={disabled || alreadyExists}
           style={{ width: 75 }}
+          onClick={onSubmit}
         >
           {alreadyExists ? 'Added' : 'Add'}
         </Button>,
