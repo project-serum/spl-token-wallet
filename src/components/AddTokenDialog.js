@@ -33,6 +33,7 @@ import CopyableDisplay from './CopyableDisplay';
 import DialogForm from './DialogForm';
 import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
+import TokenIcon from './TokenIcon';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -223,25 +224,6 @@ export default function AddTokenDialog({ open, onClose }) {
   );
 }
 
-const Logo = ({ icon, tokenName }) => {
-  const [hasError, setHasError] = useState(false);
-
-  if(hasError || !icon) {
-    return null;
-  }
-
-  return <img src={icon} 
-              title={tokenName} 
-              alt={tokenName}
-              style={{ 
-                width: 20, 
-                height: 20,
-                backgroundColor: 'white',
-                borderRadius: 10
-              }} 
-              onError={() => setHasError(true)} />;
-}
-
 function TokenListItem({
   tokenName,
   icon,
@@ -259,7 +241,7 @@ function TokenListItem({
       <div style={{ display: 'flex' }} key={tokenName}>
         <ListItem button onClick={() => setOpen((open) => !open)}>
           <ListItemIcon>
-              <Logo icon={icon} tokenName={tokenName} />
+            <TokenIcon url={icon} tokenName={tokenName} size={20} />
           </ListItemIcon>
           <ListItemText
             primary={

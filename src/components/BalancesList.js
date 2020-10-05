@@ -38,6 +38,8 @@ import {
 } from '../utils/connection';
 import { showTokenInfoDialog } from '../utils/config';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import TokenIcon from './TokenIcon';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -123,6 +125,9 @@ function BalanceListItem({ publicKey }) {
   return (
     <>
       <ListItem button onClick={() => setOpen((open) => !open)}>
+        <ListItemIcon>
+          <TokenIcon mint={mint} tokenName={tokenName} size={28} />
+        </ListItemIcon>
         <ListItemText
           primary={
             <>
