@@ -1,12 +1,6 @@
 import React, { Suspense } from 'react';
 import './App.less';
 import { GlobalStyle } from './global-style';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import {
-  ThemeProvider,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
-} from '@material-ui/core/styles';
-import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
 import WalletPage from './pages/WalletPage';
@@ -17,19 +11,6 @@ import PopupPage from './pages/PopupPage';
 import LoginPage from './pages/LoginPage';
 
 export default function App() {
-  // TODO: add toggle for dark mode
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
-          primary: blue,
-        },
-      }),
-    [prefersDarkMode],
-  );
-
   // Disallow rendering inside an iframe to prevent clickjacking.
   if (window.self !== window.top) {
     return null;

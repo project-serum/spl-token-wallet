@@ -133,6 +133,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         <Button
           type="primary"
           disabled={sending || !validAmount || !destinationAddress}
+          onClick={onSubmit}
         >
           Send
         </Button>
@@ -222,6 +223,7 @@ function SendSwapDialog({
         <Button
           type="primary"
           disabled={sending || (needMetamask && !ethAccount) || !validAmount}
+          onClick={onSubmit}
         >
           Send
         </Button>

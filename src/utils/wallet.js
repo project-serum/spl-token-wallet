@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import * as bip32 from 'bip32';
-import { Account, SystemProgram } from '@solana/web3.js';
+import { Account, SystemProgram, Transaction } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import {
   setInitialAccountInfo,
@@ -8,6 +8,7 @@ import {
   useConnection,
 } from './connection';
 import {
+  closeTokenAccount,
   createAndInitializeTokenAccount,
   getOwnedTokenAccounts,
   transferTokens,
@@ -86,14 +87,24 @@ export class Wallet {
   };
 
   transferSol = async (destination, amount) => {
-    return await this.connection.sendTransaction(
+    const tx = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: this.publicKey,
         toPubkey: destination,
         lamports: amount,
       }),
-      [this.account],
     );
+    return await this.connection.sendTransaction(tx, [this.account], {
+      preflightCommitment: 'single',
+    });
+  };
+
+  closeTokenAccount = async (publicKey) => {
+    return await closeTokenAccount({
+      connection: this.connection,
+      owner: this.account,
+      sourcePublicKey: publicKey,
+    });
   };
 }
 

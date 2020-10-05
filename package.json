@@ -7,8 +7,8 @@
     "@craco/craco": "^5.7.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@project-serum/serum": "0.13.1",
-    "@solana/web3.js": "^0.71.9",
+    "@project-serum/serum": "^0.13.3",
+    "@solana/web3.js": "^0.78.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -31,7 +31,7 @@
     "web3": "^1.2.11"
   },
   "scripts": {
-    "predeploy": "git pull --ff-only && yarn build",
+    "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
     "start": "craco start",
     "build": "craco build",
