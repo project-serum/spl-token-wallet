@@ -1,5 +1,6 @@
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import {
+  closeAccount,
   initializeAccount,
   initializeMint,
   memoInstruction,
@@ -168,6 +169,24 @@ export async function transferTokens({
   if (memo) {
     transaction.add(memoInstruction(memo));
   }
+  let signers = [owner];
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
+}
+
+export async function closeTokenAccount({
+  connection,
+  owner,
+  sourcePublicKey,
+}) {
+  let transaction = new Transaction().add(
+    closeAccount({
+      source: sourcePublicKey,
+      destination: owner.publicKey,
+      owner: owner.publicKey,
+    }),
+  );
   let signers = [owner];
   return await connection.sendTransaction(transaction, signers, {
     preflightCommitment: 'single',

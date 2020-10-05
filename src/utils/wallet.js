@@ -8,6 +8,7 @@ import {
   useConnection,
 } from './connection';
 import {
+  closeTokenAccount,
   createAndInitializeTokenAccount,
   getOwnedTokenAccounts,
   transferTokens,
@@ -95,6 +96,14 @@ export class Wallet {
     );
     return await this.connection.sendTransaction(tx, [this.account], {
       preflightCommitment: 'single',
+    });
+  };
+
+  closeTokenAccount = async (publicKey) => {
+    return await closeTokenAccount({
+      connection: this.connection,
+      owner: this.account,
+      sourcePublicKey: publicKey,
     });
   };
 }
