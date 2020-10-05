@@ -14,23 +14,25 @@ import {
   Typography,
 } from 'antd';
 import {
+  PlusOutlined,
+  ReloadOutlined,
+  SendOutlined,
+  InfoOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+import {
   refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
   useWalletPublicKeys,
 } from '../utils/wallet';
 import { abbreviateAddress } from '../utils/utils';
+import { refreshAccountInfo } from '../utils/connection';
+import { Box } from './layout/StyledComponents';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
-import { refreshAccountInfo } from '../utils/connection';
-import {
-  PlusOutlined,
-  ReloadOutlined,
-  SendOutlined,
-  InfoOutlined,
-} from '@ant-design/icons';
-import { Box } from './layout/StyledComponents';
+import CloseTokenAccountDialog from './CloseTokenAccountButton';
 
 const { useBreakpoint } = Grid;
 const { Paragraph } = Typography;
@@ -97,6 +99,10 @@ function BalanceListItem({ publicKey }) {
 
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [
+    closeTokenAccountDialogOpen,
+    setCloseTokenAccountDialogOpen,
+  ] = useState(false);
 
   if (!balanceInfo) {
     return <Skeleton avatar title={false} loading={!balanceInfo} />;
@@ -175,6 +181,14 @@ function BalanceListItem({ publicKey }) {
     <>
       <List.Item
         actions={[
+          <Tooltip title="Delete">
+            <Button
+              disabled={!mint || amount !== 0}
+              shape="circle"
+              icon={<DeleteOutlined />}
+              onClick={() => setCloseTokenAccountDialogOpen(true)}
+            />
+          </Tooltip>,
           <Tooltip title="Info">
             <Button shape="circle" icon={<InfoOutlined />} onClick={info} />
           </Tooltip>,
@@ -228,6 +242,12 @@ function BalanceListItem({ publicKey }) {
       <DepositDialog
         open={depositDialogOpen}
         onClose={() => setDepositDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <CloseTokenAccountDialog
+        open={closeTokenAccountDialogOpen}
+        onClose={() => setCloseTokenAccountDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
