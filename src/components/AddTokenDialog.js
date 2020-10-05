@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import {
+  Modal,
+  Button,
+  Tabs,
+  Input,
+  Space,
+  Typography,
+  Steps,
+  Avatar,
+  List,
+  Spin,
+} from 'antd';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
@@ -14,9 +25,8 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
-import { makeStyles, Tab, Tabs } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { useSendTransaction } from '../utils/notifications';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { abbreviateAddress } from '../utils/utils';
@@ -32,6 +42,9 @@ import CopyableDisplay from './CopyableDisplay';
 import DialogForm from './DialogForm';
 import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
+import { Text } from './layout/StyledComponents';
+
+const { TabPane } = Tabs;
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -111,64 +124,59 @@ export default function AddTokenDialog({ open, onClose }) {
   }
 
   return (
-    <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>Add Token</DialogTitle>
-      <DialogContent>
-        {tokenAccountCost ? (
-          <DialogContentText>
-            Add a token to your wallet. This will cost{' '}
-            {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
-          </DialogContentText>
-        ) : (
-          <LoadingIndicator />
-        )}
-        {!!popularTokens && (
-          <Tabs
-            value={tab}
-            textColor="primary"
-            indicatorColor="primary"
-            className={classes.tabs}
-            onChange={(e, value) => setTab(value)}
-          >
-            <Tab label="Popular Tokens" value="popular" />
-            {showSwapAddress ? <Tab label="ERC20 Token" value="erc20" /> : null}
-            <Tab label="Manual Input" value="manual" />
-          </Tabs>
-        )}
-        {tab === 'manual' || !popularTokens ? (
-          <React.Fragment>
-            <TextField
-              label="Token Mint Address"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={mintAddress}
-              onChange={(e) => setMintAddress(e.target.value)}
-              autoFocus
-              disabled={sending}
-            />
-            <TextField
-              label="Token Name"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-              disabled={sending}
-            />
-            <TextField
-              label="Token Symbol"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={tokenSymbol}
-              onChange={(e) => setTokenSymbol(e.target.value)}
-              disabled={sending}
-            />
-          </React.Fragment>
-        ) : tab === 'popular' ? (
-          <List disablePadding>
-            {popularTokens.map((token) => (
+    <Modal title="Add Token" visible={open} onCancel={onClose} footer={null}>
+      {tokenAccountCost ? (
+        <Text>
+          Add a token to your wallet. This will cost{' '}
+          {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
+        </Text>
+      ) : (
+        <Spin />
+      )}
+      {!!popularTokens && (
+        <Tabs activeKey={tab} onChange={setTab} centered>
+          <TabPane tab="Popular Tokens" key="popular" />
+          {showSwapAddress && <TabPane tab="ERC20 Token" key="erc20" />}
+          <TabPane tab="Manual Input" key="manual" />
+        </Tabs>
+      )}
+      {tab === 'manual' || !popularTokens ? (
+        <React.Fragment>
+          <TextField
+            label="Token Mint Address"
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            value={mintAddress}
+            onChange={(e) => setMintAddress(e.target.value)}
+            autoFocus
+            disabled={sending}
+          />
+          <TextField
+            label="Token Name"
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            value={tokenName}
+            onChange={(e) => setTokenName(e.target.value)}
+            disabled={sending}
+          />
+          <TextField
+            label="Token Symbol"
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            value={tokenSymbol}
+            onChange={(e) => setTokenSymbol(e.target.value)}
+            disabled={sending}
+          />
+        </React.Fragment>
+      ) : tab === 'popular' ? (
+        <>
+          <List
+            itemLayout="horizontal"
+            dataSource={popularTokens}
+            renderItem={(token) => (
               <TokenListItem
                 key={token.mintAddress}
                 {...token}
@@ -179,32 +187,32 @@ export default function AddTokenDialog({ open, onClose }) {
                 onSubmit={onSubmit}
                 disalbed={sending}
               />
-            ))}
-          </List>
-        ) : tab === 'erc20' ? (
-          <>
-            <TextField
-              label="ERC20 Contract Address"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={erc20Address}
-              onChange={(e) => setErc20Address(e.target.value.trim())}
-              autoFocus
-              disabled={sending}
-            />
-            {erc20Address && valid ? (
-              <Link
-                href={`https://etherscan.io/token/${erc20Address}`}
-                target="_blank"
-                rel="noopener"
-              >
-                View on Etherscan
-              </Link>
-            ) : null}
-          </>
-        ) : null}
-      </DialogContent>
+            )}
+          />
+        </>
+      ) : tab === 'erc20' ? (
+        <>
+          <TextField
+            label="ERC20 Contract Address"
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            value={erc20Address}
+            onChange={(e) => setErc20Address(e.target.value.trim())}
+            autoFocus
+            disabled={sending}
+          />
+          {erc20Address && valid ? (
+            <Link
+              href={`https://etherscan.io/token/${erc20Address}`}
+              target="_blank"
+              rel="noopener"
+            >
+              View on Etherscan
+            </Link>
+          ) : null}
+        </>
+      ) : null}
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         {tab !== 'popular' && (
@@ -218,7 +226,7 @@ export default function AddTokenDialog({ open, onClose }) {
           </Button>
         )}
       </DialogActions>
-    </DialogForm>
+    </Modal>
   );
 }
 
@@ -233,6 +241,7 @@ function TokenListItem({
   const [open, setOpen] = useState(false);
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const alreadyExists = !!existingAccount;
+  
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }} key={tokenName}>
