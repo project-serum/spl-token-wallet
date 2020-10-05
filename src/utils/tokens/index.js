@@ -64,15 +64,18 @@ export async function createAndInitializeMint({
   decimals,
   initialAccount, // Account to hold newly issued tokens, if amount > 0
 }) {
-  let transaction = SystemProgram.createAccount({
-    fromPubkey: owner.publicKey,
-    newAccountPubkey: mint.publicKey,
-    lamports: await connection.getMinimumBalanceForRentExemption(
-      MINT_LAYOUT.span,
-    ),
-    space: MINT_LAYOUT.span,
-    programId: TOKEN_PROGRAM_ID,
-  });
+  let transaction = new Transaction();
+  transaction.add(
+    SystemProgram.createAccount({
+      fromPubkey: owner.publicKey,
+      newAccountPubkey: mint.publicKey,
+      lamports: await connection.getMinimumBalanceForRentExemption(
+        MINT_LAYOUT.span,
+      ),
+      space: MINT_LAYOUT.span,
+      programId: TOKEN_PROGRAM_ID,
+    }),
+  );
   transaction.add(
     initializeMint({
       mint: mint.publicKey,
@@ -110,7 +113,9 @@ export async function createAndInitializeMint({
       }),
     );
   }
-  return await connection.sendTransaction(transaction, signers);
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
 }
 
 export async function createAndInitializeTokenAccount({
@@ -119,15 +124,18 @@ export async function createAndInitializeTokenAccount({
   mintPublicKey,
   newAccount,
 }) {
-  let transaction = SystemProgram.createAccount({
-    fromPubkey: payer.publicKey,
-    newAccountPubkey: newAccount.publicKey,
-    lamports: await connection.getMinimumBalanceForRentExemption(
-      ACCOUNT_LAYOUT.span,
-    ),
-    space: ACCOUNT_LAYOUT.span,
-    programId: TOKEN_PROGRAM_ID,
-  });
+  let transaction = new Transaction();
+  transaction.add(
+    SystemProgram.createAccount({
+      fromPubkey: payer.publicKey,
+      newAccountPubkey: newAccount.publicKey,
+      lamports: await connection.getMinimumBalanceForRentExemption(
+        ACCOUNT_LAYOUT.span,
+      ),
+      space: ACCOUNT_LAYOUT.span,
+      programId: TOKEN_PROGRAM_ID,
+    }),
+  );
   transaction.add(
     initializeAccount({
       account: newAccount.publicKey,
@@ -136,7 +144,9 @@ export async function createAndInitializeTokenAccount({
     }),
   );
   let signers = [payer, newAccount];
-  return await connection.sendTransaction(transaction, signers);
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
 }
 
 export async function transferTokens({
@@ -159,5 +169,7 @@ export async function transferTokens({
     transaction.add(memoInstruction(memo));
   }
   let signers = [owner];
-  return await connection.sendTransaction(transaction, signers);
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
 }
