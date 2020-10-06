@@ -1,20 +1,19 @@
 import React from 'react';
 import { Layout, Menu, Dropdown, Grid, Button } from 'antd';
+import { CodeOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
-import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useWalletSelector } from '../utils/wallet';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import SolanaIcon from './SolanaIcon';
-import CodeIcon from '@material-ui/icons/Code';
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 const { useBreakpoint } = Grid;
 
 export default function NavigationFrame({ children }) {
   return (
-    <Layout>
+    <Layout style={{ height: '100vh' }}>
       <Header
         style={{
           position: 'fixed',
@@ -35,8 +34,28 @@ export default function NavigationFrame({ children }) {
           <NetworkSelector />
         </div>
       </Header>
-      <Content style={{ flexGrow: 1, marginTop: 100 }}>{children}</Content>
-      <Footer />
+      <Content
+        style={{
+          flex: 1,
+          overflow: 'auto',
+          paddingTop: 100,
+          paddingBottom: 36,
+        }}
+      >
+        {children}
+      </Content>
+      <Footer>
+        <Button
+          type="link"
+          component="a"
+          href="https://github.com/serum-foundation/spl-token-wallet"
+          target="_blank"
+          rel="noopener"
+          icon={<CodeOutlined />}
+        >
+          View Source
+        </Button>
+      </Footer>
     </Layout>
   );
 }
@@ -95,10 +114,7 @@ function WalletSelector() {
           {addresses.map((address, index) => (
             <Menu.Item key={index + ''}>{address.toBase58()}</Menu.Item>
           ))}
-          <Menu.Item
-            key={addresses.length}
-            icon={<PlusOutlined />}
-          >
+          <Menu.Item key={addresses.length} icon={<PlusOutlined />}>
             Create account
           </Menu.Item>
         </Menu>
@@ -106,32 +122,5 @@ function WalletSelector() {
     >
       {screens['md'] ? <Button type="link">Account</Button> : <AccountIcon />}
     </Dropdown>
-  );
-}
-
-const useFooterStyles = makeStyles((theme) => ({
-  footer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    margin: theme.spacing(2),
-  },
-}));
-
-function Footer() {
-  const classes = useFooterStyles();
-  return (
-    <footer className={classes.footer}>
-      <Button
-        variant="outlined"
-        color="primary"
-        component="a"
-        target="_blank"
-        rel="noopener"
-        href="https://github.com/serum-foundation/spl-token-wallet"
-        startIcon={<CodeIcon />}
-      >
-        View Source
-      </Button>
-    </footer>
   );
 }

@@ -41,50 +41,50 @@ function EntryPoint() {
 
   if (!formType) {
     return (
-      <Row justify="center" gutter={[24]}>
-        <Col>
-          <CreateWalletBox
-            style={{
-              width: 300,
-              height: 200,
-              backgroundColor: '#00d2d3',
-              textAlign: 'center',
-            }}
-            onClick={() => setFormType('new')}
-          >
-            <WalletOutlined
-              style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
-            />
-            <Title level={3} style={{ color: 'white' }}>
-              Create new wallet
-            </Title>
-            <Paragraph style={{ color: 'white' }}>
-              Create a new wallet to hold Solana and SPL tokens.
-            </Paragraph>
-          </CreateWalletBox>
-        </Col>
-        <Col>
-          <RestoreWalletBox
-            style={{
-              width: 300,
-              height: 200,
-              backgroundColor: '#54a0ff',
-              textAlign: 'center',
-            }}
-            onClick={() => setFormType('restore')}
-          >
-            <WalletOutlined
-              style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
-            />
-            <Title level={3} style={{ color: 'white' }}>
-              Restore wallet
-            </Title>
-            <Paragraph style={{ color: 'white' }}>
-              Restore your wallet using your twelve seed words.
-            </Paragraph>
-          </RestoreWalletBox>
-        </Col>
-      </Row>
+      <Space
+        direction="horizontal"
+        size="large"
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <CreateWalletBox
+          style={{
+            width: 300,
+            height: 200,
+            backgroundColor: '#00d2d3',
+            textAlign: 'center',
+          }}
+          onClick={() => setFormType('new')}
+        >
+          <WalletOutlined
+            style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
+          />
+          <Title level={3} style={{ color: 'white' }}>
+            Create new wallet
+          </Title>
+          <Paragraph style={{ color: 'white' }}>
+            Create a new wallet to hold Solana and SPL tokens.
+          </Paragraph>
+        </CreateWalletBox>
+        <RestoreWalletBox
+          style={{
+            width: 300,
+            height: 200,
+            backgroundColor: '#54a0ff',
+            textAlign: 'center',
+          }}
+          onClick={() => setFormType('restore')}
+        >
+          <WalletOutlined
+            style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
+          />
+          <Title level={3} style={{ color: 'white' }}>
+            Restore wallet
+          </Title>
+          <Paragraph style={{ color: 'white' }}>
+            Restore your wallet using your twelve seed words.
+          </Paragraph>
+        </RestoreWalletBox>
+      </Space>
     );
   }
 
