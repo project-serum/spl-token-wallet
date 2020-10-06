@@ -3,6 +3,7 @@ import {
   useBalanceInfo,
   useWallet,
 } from '../utils/wallet';
+import { Button, Tooltip } from 'antd';
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
 import { Account, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -13,7 +14,6 @@ import {
   MAINNET_URL,
 } from '../utils/connection';
 import { createAndInitializeMint } from '../utils/tokens';
-import { Tooltip, Button } from '@material-ui/core';
 import React from 'react';
 
 export default function DebugButtons() {
@@ -66,7 +66,7 @@ export default function DebugButtons() {
   const noSol = amount === 0;
   const requestAirdropDisabled = endpoint === MAINNET_URL;
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', marginTop: 16 }}>
       <Tooltip
         title={
           requestAirdropDisabled
@@ -74,16 +74,13 @@ export default function DebugButtons() {
             : 'Receive some devnet SOL for free'
         }
       >
-        <span>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={requestAirdrop}
-            disabled={requestAirdropDisabled}
-          >
-            Request Airdrop
-          </Button>
-        </span>
+        <Button
+          type="primary"
+          onClick={requestAirdrop}
+          disabled={requestAirdropDisabled}
+        >
+          Request Airdrop
+        </Button>
       </Tooltip>
       <Tooltip
         title={
@@ -92,17 +89,14 @@ export default function DebugButtons() {
             : 'Generate and receive balances in a new test token'
         }
       >
-        <span>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={mintTestToken}
-            disabled={sending || noSol}
-            style={{ marginLeft: 24 }}
-          >
-            Mint Test Token
-          </Button>
-        </span>
+        <Button
+          type="primary"
+          onClick={mintTestToken}
+          disabled={sending || noSol}
+          style={{ marginLeft: 24 }}
+        >
+          Mint Test Token
+        </Button>
       </Tooltip>
     </div>
   );
