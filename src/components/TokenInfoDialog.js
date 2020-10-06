@@ -21,7 +21,7 @@ export default function TokenInfoDialog({
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <TokenIcon mint={mint} tokenName={tokenName} />
           <span style={{ marginLeft: 16 }}>
-            Send {tokenName ?? abbreviateAddress(mint)}{' '}
+            {tokenName ?? abbreviateAddress(mint)}{' '}
             {tokenSymbol ? `(${tokenSymbol})` : null}
           </span>
         </div>
