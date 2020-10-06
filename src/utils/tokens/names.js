@@ -116,6 +116,17 @@ export const TOKENS = {
       tokenName: 'Wrapped AKRO',
       icon: 'https://raw.githubusercontent.com/trustwallet/assets/878dcab0fab90e6593bcb9b7d941be4915f287dc/blockchains/ethereum/assets/0xb2734a4Cec32C81FDE26B0024Ad3ceB8C9b34037/logo.png',
     },
+    {
+      tokenSymbol: 'HXRO',
+      mintAddress: 'DJafV9qemGp7mLMEn5wrfqaFwxsbLgUsGVS16zKRk9kc',
+      tokenName: 'Wrapped HXRO',
+    },
+    {
+      tokenSymbol: 'UNI',
+      mintAddress: 'DEhAasscXF4kEGxFgJ3bq4PpVGp5wyUxMRvn6TzGVHaw',
+      tokenName: 'Wrapped UNI',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
+    },
   ],
 };
 
