@@ -223,7 +223,7 @@ function TokenListItem({
           type="primary"
           disabled={disabled || alreadyExists}
           style={{ width: 75 }}
-          onClick={onSubmit}
+          onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
         >
           {alreadyExists ? 'Added' : 'Add'}
         </Button>,
