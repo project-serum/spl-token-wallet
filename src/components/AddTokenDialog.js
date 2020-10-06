@@ -110,95 +110,94 @@ export default function AddTokenDialog({ open, onClose }) {
       footer={null}
       width={650}
     >
-      {tokenAccountCost ? (
-        <Text>
-          Add a token to your wallet. This will cost{' '}
-          {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
-        </Text>
-      ) : (
-        <Spin />
-      )}
-      {!!popularTokens && (
-        <Tabs activeKey={tab} onChange={setTab} centered>
-          <TabPane tab="Popular Tokens" key="popular" />
-          {showSwapAddress && <TabPane tab="ERC20 Token" key="erc20" />}
-          <TabPane tab="Manual Input" key="manual" />
-        </Tabs>
-      )}
-      {tab === 'manual' || !popularTokens ? (
-        <Space direction="vertical" style={{ display: 'flex' }}>
-          <Input
-            placeholder="Token Mint Address"
-            value={mintAddress}
-            onChange={(e) => setMintAddress(e.target.value)}
-            autoFocus
-            disabled={sending}
-          />
-          <Input
-            placeholder="Token Name"
-            value={tokenName}
-            onChange={(e) => setTokenName(e.target.value)}
-            disabled={sending}
-          />
-          <Input
-            placeholder="Token Symbol"
-            value={tokenSymbol}
-            onChange={(e) => setTokenSymbol(e.target.value)}
-            disabled={sending}
-          />
-        </Space>
-      ) : tab === 'popular' ? (
-        <List
-          itemLayout="horizontal"
-          dataSource={popularTokens}
-          renderItem={(token) => (
-            <TokenListItem
-              key={token.mintAddress}
-              {...token}
-              existingAccount={(walletAccounts || []).find(
-                (account) =>
-                  account.parsed.mint.toBase58() === token.mintAddress,
-              )}
-              onSubmit={onSubmit}
-              disalbed={sending}
-            />
-          )}
-        />
-      ) : tab === 'erc20' ? (
-        <Space direction="vertical" style={{ display: 'flex' }}>
-          <Input
-            placeholder="ERC20 Contract Address"
-            value={erc20Address}
-            onChange={(e) => setErc20Address(e.target.value.trim())}
-            autoFocus
-            disabled={sending}
-          />
-          {erc20Address && valid ? (
-            <Button
-              type="link"
-              component="a"
-              href={`https://etherscan.io/token/${erc20Address}`}
-              target="_blank"
-              rel="noopener"
-            >
-              View on Etherscan
-            </Button>
-          ) : null}
-        </Space>
-      ) : null}
-      <Space
-        style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}
-      >
-        <Button onClick={onClose}>Cancel</Button>
-        {tab !== 'popular' && (
-          <Button
-            type="primary"
-            disabled={sending || !valid}
-            onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
-          >
-            Send
-          </Button>
+      <Space direction="vertical" style={{ display: 'flex' }}>
+        {tokenAccountCost ? (
+          <Text>
+            Add a token to your wallet. This will cost{' '}
+            {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
+          </Text>
+        ) : (
+          <Spin />
         )}
+        <Tabs activeKey={tab} onChange={setTab} centered>
+          {!!popularTokens && (
+            <TabPane tab="Popular Tokens" key="popular">
+              <List
+                itemLayout="horizontal"
+                dataSource={popularTokens}
+                renderItem={(token) => (
+                  <TokenListItem
+                    key={token.mintAddress}
+                    {...token}
+                    existingAccount={(walletAccounts || []).find(
+                      (account) =>
+                        account.parsed.mint.toBase58() === token.mintAddress,
+                    )}
+                    onSubmit={onSubmit}
+                    disalbed={sending}
+                  />
+                )}
+              />
+            </TabPane>
+          )}
+          {showSwapAddress && (
+            <TabPane tab="ERC20 Token" key="erc20">
+              <Input
+                placeholder="ERC20 Contract Address"
+                value={erc20Address}
+                onChange={(e) => setErc20Address(e.target.value.trim())}
+                autoFocus
+                disabled={sending}
+              />
+              {erc20Address && valid ? (
+                <Button
+                  type="link"
+                  component="a"
+                  href={`https://etherscan.io/token/${erc20Address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Etherscan
+                </Button>
+              ) : null}
+            </TabPane>
+          )}
+          <TabPane tab="Manual Input" key="manual">
+            <Input
+              placeholder="Token Mint Address"
+              value={mintAddress}
+              onChange={(e) => setMintAddress(e.target.value)}
+              autoFocus
+              disabled={sending}
+            />
+            <Input
+              placeholder="Token Name"
+              value={tokenName}
+              onChange={(e) => setTokenName(e.target.value)}
+              disabled={sending}
+            />
+            <Input
+              placeholder="Token Symbol"
+              value={tokenSymbol}
+              onChange={(e) => setTokenSymbol(e.target.value)}
+              disabled={sending}
+            />
+          </TabPane>
+        </Tabs>
+        <Space
+          style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}
+        >
+          <Button onClick={onClose}>Cancel</Button>
+          {tab !== 'popular' && (
+            <Button
+              type="primary"
+              disabled={sending || !valid}
+              onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
+            >
+              Send
+            </Button>
+          )}
+        </Space>
       </Space>
     </Modal>
   );

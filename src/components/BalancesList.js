@@ -4,13 +4,11 @@ import {
   Button,
   Tooltip,
   List,
-  Row,
-  Col,
-  Statistic,
   Grid,
-  Modal,
+  Space,
   Skeleton,
   Typography,
+  Switch,
 } from 'antd';
 import {
   PlusOutlined,
@@ -18,12 +16,15 @@ import {
   SendOutlined,
   InfoOutlined,
   DeleteOutlined,
+  CloseOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import {
   refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
   useWalletPublicKeys,
+  useWalletTokenAccounts,
 } from '../utils/wallet';
 import { abbreviateAddress } from '../utils/utils';
 import { refreshAccountInfo } from '../utils/connection';
@@ -31,11 +32,12 @@ import { Box } from './layout/StyledComponents';
 import AddTokenDialog from './AddTokenDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
+import TokenInfoDialog from './TokenInfoDialog';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import TokenIcon from './TokenIcon';
 
 const { useBreakpoint } = Grid;
-const { Paragraph } = Typography;
+const { Text } = Typography;
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -45,8 +47,19 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
 
 export default function BalancesList() {
   const wallet = useWallet();
-  const [publicKeys, loaded] = useWalletPublicKeys();
+  const [walletAccounts, loaded] = useWalletTokenAccounts();
+  const [publicKeys] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+  const [hideZeroBalances, setHideZeroBalances] = useState(false);
+
+  const accountKeys = [
+    wallet.account.publicKey,
+    ...(
+      (hideZeroBalances
+        ? walletAccounts.filter((account) => account?.parsed?.amount > 0)
+        : walletAccounts) || []
+    ).map(({ publicKey }) => publicKey),
+  ];
 
   return (
     <Box style={{ padding: 0, flex: 1 }}>
@@ -54,6 +67,23 @@ export default function BalancesList() {
         ghost={false}
         title="Balances"
         extra={[
+          <Space
+            direction="horizontal"
+            style={{
+              backgroundColor: '#f7f7f7',
+              padding: '0px 10px',
+              borderRadius: 10,
+              height: 32,
+            }}
+          >
+            <Switch
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+              checked={hideZeroBalances}
+              onChange={setHideZeroBalances}
+            />
+            <Text>Hide zero balances</Text>
+          </Space>,
           <Tooltip title="Add Token">
             <Button
               shape="circle"
@@ -79,7 +109,7 @@ export default function BalancesList() {
         <List
           itemLayout="horizontal"
           loading={!loaded}
-          dataSource={publicKeys}
+          dataSource={accountKeys}
           renderItem={(publicKey) => (
             <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
           )}
@@ -97,6 +127,7 @@ function BalanceListItem({ publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const screens = useBreakpoint();
 
+  const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [
@@ -111,67 +142,6 @@ function BalanceListItem({ publicKey }) {
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
   let tokenIcon = <TokenIcon mint={mint} tokenName={tokenName} />;
-
-  const info = () => {
-    Modal.info({
-      title: (
-        <span>{`${tokenName ?? abbreviateAddress(mint)} ${
-          tokenSymbol ? ` (${tokenSymbol})` : ''
-        }`}</span>
-      ),
-      icon: null,
-      content: (
-        <>
-          <Row style={{ marginTop: 16 }}>
-            <Col span={12}>
-              <Statistic
-                title="Token Name"
-                value={tokenName ?? 'Unknown'}
-                valueStyle={{ fontSize: 18 }}
-              />
-            </Col>
-            <Col span={12}>
-              <Statistic
-                title="Token Symbol"
-                value={tokenSymbol ?? 'Unknown'}
-                valueStyle={{ fontSize: 18 }}
-              />
-            </Col>
-          </Row>
-          <Row style={{ marginTop: 16 }}>
-            <Col>
-              <div class="ant-statistic">
-                <div class="ant-statistic-title">Deposit Address</div>
-                <div class="ant-statistic-content">
-                  <Paragraph style={{ fontSize: 18, marginBottom: 0 }} copyable>
-                    {publicKey.toBase58()}
-                  </Paragraph>
-                </div>
-              </div>
-            </Col>
-          </Row>
-          {mint && (
-            <Row style={{ marginTop: 16 }}>
-              <Col>
-                <div class="ant-statistic">
-                  <div class="ant-statistic-title">Token Address</div>
-                  <div class="ant-statistic-content">
-                    <Paragraph
-                      style={{ fontSize: 18, marginBottom: 0 }}
-                      copyable
-                    >
-                      {mint.toBase58()}
-                    </Paragraph>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          )}
-        </>
-      ),
-      width: 700,
-    });
-  };
 
   return (
     <>
@@ -194,26 +164,31 @@ function BalanceListItem({ publicKey }) {
             />
           </Tooltip>,
           <Tooltip title="Info">
-            <Button shape="circle" icon={<InfoOutlined />} onClick={info} />
-          </Tooltip>,
-          <Tooltip title="Send">
             <Button
-              type="primary"
               shape="circle"
-              style={{ backgroundColor: '#00D2D3', borderWidth: 0 }}
-              icon={<SendOutlined rotate={-90} />}
-              onClick={() => setSendDialogOpen(true)}
+              icon={<InfoOutlined />}
+              onClick={() => setInfoDialogOpen(true)}
             />
           </Tooltip>,
           <Tooltip title="Receive">
             <Button
               type="primary"
               shape="circle"
-              style={{ backgroundColor: '#54A0FF', borderWidth: 0 }}
+              style={{ backgroundColor: '#00D2D3', borderWidth: 0 }}
               icon={<SendOutlined rotate={90} />}
               onClick={() => setDepositDialogOpen(true)}
             />
           </Tooltip>,
+          <Tooltip title="Send">
+            <Button
+              type="primary"
+              shape="circle"
+              style={{ backgroundColor: '#54A0FF', borderWidth: 0 }}
+              icon={<SendOutlined rotate={-90} />}
+              onClick={() => setSendDialogOpen(true)}
+            />
+          </Tooltip>,
+          ,
         ]}
       >
         <List.Item.Meta
@@ -252,6 +227,12 @@ function BalanceListItem({ publicKey }) {
       <CloseTokenAccountDialog
         open={closeTokenAccountDialogOpen}
         onClose={() => setCloseTokenAccountDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <TokenInfoDialog
+        open={infoDialogOpen}
+        onClose={() => setInfoDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
