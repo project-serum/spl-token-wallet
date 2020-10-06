@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout, Menu, Dropdown, Grid, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
@@ -88,12 +89,18 @@ function WalletSelector() {
     <Dropdown
       overlay={
         <Menu
-          selectedKeys={[walletIndex]}
-          onClick={(e) => setWalletIndex(e.key)}
+          selectedKeys={[walletIndex + '']}
+          onClick={(e) => setWalletIndex(Number(e.key))}
         >
           {addresses.map((address, index) => (
-            <Menu.Item key={index}>{address.toBase58()}</Menu.Item>
+            <Menu.Item key={index + ''}>{address.toBase58()}</Menu.Item>
           ))}
+          <Menu.Item
+            key={addresses.length}
+            icon={<PlusOutlined />}
+          >
+            Create account
+          </Menu.Item>
         </Menu>
       }
     >

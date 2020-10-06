@@ -246,7 +246,7 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
             block
             type="primary"
             size="large"
-            disabled={!password || password !== passwordConfirm}
+            disabled={password !== passwordConfirm}
             onClick={() => onSubmit(password)}
           >
             <span style={{ fontWeight: 500 }}>Create wallet</span>
