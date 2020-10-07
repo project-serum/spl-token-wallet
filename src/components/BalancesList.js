@@ -188,7 +188,6 @@ function BalanceListItem({ publicKey }) {
               onClick={() => setSendDialogOpen(true)}
             />
           </Tooltip>,
-          ,
         ]}
       >
         <List.Item.Meta
