@@ -5,18 +5,14 @@ import {
   Tabs,
   Input,
   Space,
-  Typography,
   Steps,
   Avatar,
   Divider,
+  Alert,
 } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import QRCode from 'qrcode.react';
 import { abbreviateAddress } from '../utils/utils';
-import {
-  useIsProdNetwork,
-  useSolanaExplorerUrlSuffix,
-} from '../utils/connection';
+import { useIsProdNetwork } from '../utils/connection';
 import { useAsyncData } from '../utils/fetch-loop';
 import tuple from 'immutable-tuple';
 import { showSwapAddress } from '../utils/config';
@@ -28,10 +24,10 @@ import {
   swapErc20ToSpl,
   useEthAccount,
 } from '../utils/swap/eth';
-import { Text, WarningBox } from './layout/StyledComponents';
+import AddressDisplay from './AddressDisplay';
+import { Text } from './layout/StyledComponents';
 
 const { TabPane } = Tabs;
-const { Paragraph } = Typography;
 const { Step } = Steps;
 
 export default function DepositDialog({
@@ -41,7 +37,6 @@ export default function DepositDialog({
   balanceInfo,
 }) {
   const isProdNetwork = useIsProdNetwork();
-  const urlSuffix = useSolanaExplorerUrlSuffix();
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState('0');
   const [swapInfo] = useAsyncData(async () => {
@@ -108,40 +103,31 @@ export default function DepositDialog({
         {tab === '0' ? (
           <>
             {publicKey.equals(owner) ? (
-              <WarningBox>
-                This address can only be used to receive SOL. Do not send other
-                tokens to this address.
-              </WarningBox>
+              <Alert
+                message="This address can only be used to receive SOL. Do not send other
+                      tokens to this address."
+                type="warning"
+                showIcon
+              />
             ) : (
-              <WarningBox>
-                This address can only be used to receive{' '}
-                {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
-                this address.
-              </WarningBox>
+              <Alert
+                message={
+                  <span>
+                    This address can only be used to receive{' '}
+                    {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
+                    this address.
+                  </span>
+                }
+                type="warning"
+                showIcon
+              />
             )}
-            <div class="ant-statistic">
-              <div class="ant-statistic-title">Deposit Address</div>
-              <div class="ant-statistic-content">
-                <Paragraph style={{ fontSize: 18, marginBottom: 0 }} copyable>
-                  {publicKey.toBase58()}
-                </Paragraph>
-              </div>
-            </div>
-            <Button
-              type="link"
-              component="a"
-              href={
-                `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-                urlSuffix
-              }
-              target="_blank"
-              rel="noopener"
-            >
-              View on Solana Explorer
-            </Button>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <QRCode value={publicKey.toBase58()} size={256} includeMargin />
-            </div>
+            <AddressDisplay
+              title="Deposit Address"
+              address={publicKey.toBase58()}
+              showLink={true}
+              showQR={true}
+            />
           </>
         ) : (
           <SolletSwapDepositAddress
@@ -173,17 +159,11 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
           following address:
         </Text>
         <Divider style={{ margin: '10px 0px' }} />
-        <div class="ant-statistic">
-          <div class="ant-statistic-title">Native BTC Deposit Address</div>
-          <div class="ant-statistic-content">
-            <Paragraph style={{ fontSize: 18, marginBottom: 0 }} copyable>
-              {address}
-            </Paragraph>
-          </div>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <QRCode value={address} size={256} includeMargin />
-        </div>
+        <AddressDisplay
+          title="Native BTC Deposit Address"
+          address={address}
+          showQR={true}
+        />
       </Space>
     );
   }

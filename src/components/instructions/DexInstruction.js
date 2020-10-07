@@ -1,5 +1,5 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Card } from 'antd';
 import LabelValue from './LabelValue';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 
@@ -38,14 +38,11 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
   };
 
   return (
-    <>
-      <Typography
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
-        {TYPE_LABELS[type]}
-      </Typography>
+    <Card
+      bordered={false}
+      size="small"
+      title={TYPE_LABELS[type]}
+    >
       <LabelValue
         label="Market"
         value={marketLabel}
@@ -73,6 +70,6 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
             />
           );
         })}
-    </>
+    </Card>
   );
 }

@@ -1,11 +1,9 @@
 import React from 'react';
 import { Layout, Menu, Dropdown, Grid, Button } from 'antd';
-import { CodeOutlined } from '@ant-design/icons';
-import { PlusOutlined } from '@ant-design/icons';
+import { CodeOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useWalletSelector } from '../utils/wallet';
-import AccountIcon from '@material-ui/icons/AccountCircle';
 import SolanaIcon from './SolanaIcon';
 
 const { Header, Content, Footer } = Layout;
@@ -120,7 +118,11 @@ function WalletSelector() {
         </Menu>
       }
     >
-      {screens['md'] ? <Button type="link">Account</Button> : <AccountIcon />}
+      {screens['md'] ? (
+        <Button type="link">Account</Button>
+      ) : (
+        <UserOutlined style={{ fontSize: 24, marginRight: 8 }} />
+      )}
     </Dropdown>
   );
 }

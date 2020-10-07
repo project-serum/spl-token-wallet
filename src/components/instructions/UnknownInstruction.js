@@ -1,19 +1,14 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Card, Typography } from 'antd';
+
+const { Text } = Typography;
 
 export default function UnknownInstruction({ instruction }) {
   return (
-    <>
-      <Typography
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
-        Unknown instruction:
-      </Typography>
-      <Typography style={{ wordBreak: 'break-all' }}>
+    <Card bordered={false} size="small" title="Unknown instruction">
+      <Text type="secondary" style={{ wordBreak: 'break-all' }}>
         {instruction?.rawData}
-      </Typography>
-    </>
+      </Text>
+    </Card>
   );
 }

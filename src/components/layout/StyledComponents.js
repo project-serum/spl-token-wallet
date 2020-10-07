@@ -33,17 +33,6 @@ export const RestoreWalletBox = styled.div`
   box-shadow: 0px 0px 20px 0px rgba(84, 160, 255, 0.75);
 `;
 
-export const WarningBox = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 10px;
-  border-radius: 10px;
-  color: #fa8c16;
-  background: #fff7e6;
-  border-color: #ffd591;
-`;
-
 export const Text = styled.span`
   color: rgba(0, 0, 0, 0.5);
 `;

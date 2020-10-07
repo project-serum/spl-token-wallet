@@ -1,32 +1,24 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Space, Button, Typography, Alert } from 'antd';
+import { SwapOutlined } from '@ant-design/icons';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
-import {
-  Typography,
-  Divider,
-  Switch,
-  FormControlLabel,
-  SnackbarContent,
-} from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import NewOrder from '../components/instructions/NewOrder';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
-import WarningIcon from '@material-ui/icons/Warning';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
 import { useLocalStorageState } from '../utils/utils';
+import { Box } from '../components/layout/StyledComponents';
+import AddressDisplay from '../components/AddressDisplay';
+import LoadingIndicator from '../components/LoadingIndicator';
+import SwitchComponent from '../components/SwitchComponent';
+
+const { Title, Text } = Typography;
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -160,110 +152,79 @@ function focusParent() {
   window.open('', 'parent');
 }
 
-const useStyles = makeStyles((theme) => ({
-  connection: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    textAlign: 'center',
-  },
-  transaction: {
-    wordBreak: 'break-all',
-  },
-  actions: {
-    justifyContent: 'space-between',
-  },
-  snackbarRoot: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  warningMessage: {
-    margin: theme.spacing(1),
-    color: theme.palette.text.primary,
-  },
-  warningIcon: {
-    marginRight: theme.spacing(1),
-    fontSize: 24,
-  },
-  warningTitle: {
-    color: theme.palette.warning.light,
-    fontWeight: 600,
-    fontSize: 16,
-    alignItems: 'center',
-    display: 'flex',
-  },
-  warningContainer: {
-    marginTop: theme.spacing(1),
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-}));
-
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
-  const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
   let [dismissed, setDismissed] = useLocalStorageState(
     'dismissedAutoApproveWarning',
     false,
   );
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
-        </Typography>
-        <div className={classes.connection}>
-          <Typography>{origin}</Typography>
-          <ImportExportIcon fontSize="large" />
-          <Typography>{wallet.publicKey.toBase58()}</Typography>
-        </div>
-        <Typography>Only connect with sites you trust.</Typography>
-        <Divider className={classes.divider} />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={autoApprove}
-              onChange={() => setAutoApprove(!autoApprove)}
-              color="primary"
-            />
-          }
-          label={`Automatically approve transactions from ${origin}`}
+    <Box>
+      <Space direction="vertical" style={{ display: 'flex' }} size="middle">
+        <Title level={3}>Allow this site to access your Solana account?</Title>
+        <Space
+          direction="vertical"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Text strong>{origin}</Text>
+          <SwapOutlined style={{ fontSize: 24 }} rotate={90} />
+          <AddressDisplay
+            title="Wallet"
+            address={wallet.publicKey.toBase58()}
+            style={{ textAlign: 'center' }}
+            addressStyle={{ fontSize: 14, fontWeight: 500 }}
+          />
+        </Space>
+        <Alert
+          message="Only connect with sites you trust."
+          type="warning"
+          showIcon
+        />
+        <SwitchComponent
+          text={`Automatically approve transactions from ${origin}`}
+          checked={autoApprove}
+          onChange={() => setAutoApprove(!autoApprove)}
         />
         {!dismissed && autoApprove && (
-          <SnackbarContent
-            className={classes.warningContainer}
-            message={
-              <div>
-                <span className={classes.warningTitle}>
-                  <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
-                </span>
-                <Typography className={classes.warningMessage}>
+          <Alert
+            message="Use at your own risk"
+            description={
+              <Space direction="vertical" style={{ display: 'flex' }}>
+                <span>
                   This setting allows sending some transactions on your behalf
                   without requesting your permission for the remainder of this
                   session.
-                </Typography>
-              </div>
+                </span>
+                <Button
+                  type="primary"
+                  style={{ backgroundColor: '#FAAD15', borderWidth: 0 }}
+                  onClick={() => setDismissed('1')}
+                >
+                  I understand
+                </Button>
+              </Space>
             }
-            action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
-            ]}
-            classes={{ root: classes.snackbarRoot }}
+            type="warning"
+            showIcon
+            closable={false}
           />
         )}
-      </CardContent>
-      <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
-        <Button
-          color="primary"
-          onClick={() => onApprove(autoApprove)}
-          disabled={!dismissed && autoApprove}
-        >
-          Connect
-        </Button>
-      </CardActions>
-    </Card>
+        <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button onClick={window.close}>Cancel</Button>
+          <Button
+            type="primary"
+            onClick={() => onApprove(autoApprove)}
+            disabled={!dismissed && autoApprove}
+          >
+            Connect
+          </Button>
+        </Space>
+      </Space>
+    </Box>
   );
 }
 
@@ -366,7 +327,6 @@ function ApproveSignatureForm({
   onReject,
   autoApprove,
 }) {
-  const classes = useStyles();
   const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
   const wallet = useWallet();
@@ -446,85 +406,55 @@ function ApproveSignatureForm({
   };
 
   return (
-    <Card>
-      <CardContent>
+    <Box>
+      <Space direction="vertical" style={{ display: 'flex' }}>
         {parsing ? (
           <>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                marginBottom: 20,
-              }}
-            >
-              <CircularProgress style={{ marginRight: 20 }} />
-              <Typography
-                variant="subtitle1"
-                style={{ fontWeight: 'bold' }}
-                gutterBottom
-              >
-                Parsing transaction:
-              </Typography>
-            </div>
-            <Typography style={{ wordBreak: 'break-all' }}>
+            <LoadingIndicator />
+            <Title level={5}>Parsing transaction:</Title>
+            <Text type="secondary" style={{ wordBreak: 'break-all' }}>
               {bs58.encode(message)}
-            </Typography>
+            </Text>
           </>
         ) : (
           <>
-            <Typography variant="h6" gutterBottom>
+            <Title level={5}>
               {instructions
                 ? `${origin} wants to:`
                 : `Unknown transaction data`}
-            </Typography>
+            </Title>
             {instructions ? (
               instructions.map((instruction, i) => (
-                <Box style={{ marginTop: 20 }} key={i}>
+                <Box style={{ padding: 10 }} key={i}>
                   {getContent(instruction)}
-                  <Divider style={{ marginTop: 20 }} />
                 </Box>
               ))
             ) : (
               <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
-                  gutterBottom
-                >
-                  Unknown transaction:
-                </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>
+                <Title level={5}>Unknown transaction:</Title>
+                <Text type="secondary" style={{ wordBreak: 'break-all' }}>
                   {bs58.encode(message)}
-                </Typography>
+                </Text>
               </>
             )}
             {!safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
-                      Nonstandard DEX transaction
-                    </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
-                    </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
+              <Alert
+                message="Nonstandard DEX transaction"
+                description="Sollet does not recognize this transaction as a standard
+            Serum DEX transaction"
+                type="warning"
+                showIcon
               />
             )}
           </>
         )}
-      </CardContent>
-      <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
-        <Button color="primary" onClick={onApprove}>
-          Approve
-        </Button>
-      </CardActions>
-    </Card>
+        <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button onClick={onReject}>Cancel</Button>
+          <Button type="primary" onClick={onApprove}>
+            Approve
+          </Button>
+        </Space>
+      </Space>
+    </Box>
   );
 }

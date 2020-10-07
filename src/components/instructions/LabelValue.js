@@ -1,18 +1,19 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import { Typography, Space } from 'antd';
+
+const { Text } = Typography;
 
 export default function LabelValue({ label, value, link = false, onClick }) {
   return (
-    <Typography>
-      {label}:{' '}
+    <Space direction="horizontal" style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <Text type="secondary">{label}: </Text>
       {link ? (
-        <Link href="#" onClick={onClick}>
+        <a href="/#" onClick={onClick} style={{ wordBreak: 'break-all' }}>
           {value}
-        </Link>
+        </a>
       ) : (
-        <span style={{ color: '#7B7B7B' }}>{value}</span>
+        <Text>{value}</Text>
       )}
-    </Typography>
+    </Space>
   );
 }

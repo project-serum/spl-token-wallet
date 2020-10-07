@@ -1,10 +1,8 @@
 import React from 'react';
-import { Typography, Button, Row, Col, Statistic, Modal } from 'antd';
-import { useSolanaExplorerUrlSuffix } from '../utils/connection';
+import { Row, Col, Statistic, Modal } from 'antd';
 import { abbreviateAddress } from '../utils/utils';
 import TokenIcon from './TokenIcon';
-
-const { Paragraph } = Typography;
+import AddressDisplay from './AddressDisplay';
 
 export default function TokenInfoDialog({
   open,
@@ -13,7 +11,6 @@ export default function TokenInfoDialog({
   balanceInfo,
 }) {
   let { mint, tokenName, tokenSymbol } = balanceInfo;
-  const urlSuffix = useSolanaExplorerUrlSuffix();
 
   return (
     <Modal
@@ -49,39 +46,20 @@ export default function TokenInfoDialog({
       </Row>
       <Row style={{ marginTop: 16 }}>
         <Col>
-          <div class="ant-statistic">
-            <div class="ant-statistic-title">Deposit Address</div>
-            <div class="ant-statistic-content">
-              <Paragraph style={{ fontSize: 18, marginBottom: 0 }} copyable>
-                {publicKey.toBase58()}
-              </Paragraph>
-            </div>
-          </div>
+          <AddressDisplay
+            title="Deposit Address"
+            address={publicKey.toBase58()}
+          />
         </Col>
       </Row>
       {mint && (
         <Row style={{ marginTop: 16 }}>
           <Col>
-            <div class="ant-statistic">
-              <div class="ant-statistic-title">Token Address</div>
-              <div class="ant-statistic-content">
-                <Paragraph style={{ fontSize: 18, marginBottom: 0 }} copyable>
-                  {mint.toBase58()}
-                </Paragraph>
-              </div>
-            </div>
-            <Button
-              type="link"
-              component="a"
-              href={
-                `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-                urlSuffix
-              }
-              target="_blank"
-              rel="noopener"
-            >
-              View on Solana Explorer
-            </Button>
+            <AddressDisplay
+              title="Token Address"
+              address={mint.toBase58()}
+              showLink={true}
+            />
           </Col>
         </Row>
       )}

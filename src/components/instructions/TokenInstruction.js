@@ -1,5 +1,5 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Card } from 'antd';
 import LabelValue from './LabelValue';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { TOKEN_MINTS } from '@project-serum/serum';
@@ -41,14 +41,7 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
   };
 
   return (
-    <>
-      <Typography
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
-        {TYPE_LABELS[type]}
-      </Typography>
+    <Card bordered={false} size="small" title={TYPE_LABELS[type]}>
       {data &&
         Object.entries(data).map(([key, value]) => {
           const dataLabel = DATA_LABELS[key];
@@ -66,6 +59,6 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
             />
           );
         })}
-    </>
+    </Card>
   );
 }

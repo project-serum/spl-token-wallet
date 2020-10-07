@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  Button,
-  Tabs,
-  Input,
-  Space,
-  Typography,
-  List,
-  Spin,
-} from 'antd';
+import { Modal, Button, Tabs, Input, Space, List } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import {
   refreshWalletPublicKeys,
@@ -29,9 +20,10 @@ import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
 import { Text } from './layout/StyledComponents';
 import TokenIcon from './TokenIcon';
+import AddressDisplay from './AddressDisplay';
+import LoadingIndicator from './LoadingIndicator';
 
 const { TabPane } = Tabs;
-const { Paragraph } = Typography;
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -117,7 +109,7 @@ export default function AddTokenDialog({ open, onClose }) {
             {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
           </Text>
         ) : (
-          <Spin />
+          <LoadingIndicator />
         )}
         <Tabs activeKey={tab} onChange={setTab} centered>
           {!!popularTokens && (
@@ -163,25 +155,27 @@ export default function AddTokenDialog({ open, onClose }) {
             </TabPane>
           )}
           <TabPane tab="Manual Input" key="manual">
-            <Input
-              placeholder="Token Mint Address"
-              value={mintAddress}
-              onChange={(e) => setMintAddress(e.target.value)}
-              autoFocus
-              disabled={sending}
-            />
-            <Input
-              placeholder="Token Name"
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-              disabled={sending}
-            />
-            <Input
-              placeholder="Token Symbol"
-              value={tokenSymbol}
-              onChange={(e) => setTokenSymbol(e.target.value)}
-              disabled={sending}
-            />
+            <Space direction="vertical" style={{ display: 'flex' }}>
+              <Input
+                placeholder="Token Mint Address"
+                value={mintAddress}
+                onChange={(e) => setMintAddress(e.target.value)}
+                autoFocus
+                disabled={sending}
+              />
+              <Input
+                placeholder="Token Name"
+                value={tokenName}
+                onChange={(e) => setTokenName(e.target.value)}
+                disabled={sending}
+              />
+              <Input
+                placeholder="Token Symbol"
+                value={tokenSymbol}
+                onChange={(e) => setTokenSymbol(e.target.value)}
+                disabled={sending}
+              />
+            </Space>
           </TabPane>
         </Tabs>
         <Space
@@ -247,16 +241,7 @@ function TokenListItem({
           </Button>
         }
         description={
-          open && (
-            <div class="ant-statistic">
-              <div class="ant-statistic-title">{tokenSymbol} Mint Address</div>
-              <div class="ant-statistic-content">
-                <Paragraph style={{ fontSize: 16, marginBottom: 0 }} copyable>
-                  {mintAddress}
-                </Paragraph>
-              </div>
-            </div>
-          )
+          open && <AddressDisplay title="Mint Address" address={mintAddress} />
         }
       />
       <Button

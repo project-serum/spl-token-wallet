@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Typography, Input, Switch, Space } from 'antd';
+import { Row, Col, Typography, Input, Space, Alert } from 'antd';
 import {
   WalletOutlined,
-  CloseOutlined,
-  CheckOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
   ArrowLeftOutlined,
@@ -20,10 +18,10 @@ import {
   Box,
   CreateWalletBox,
   RestoreWalletBox,
-  WarningBox,
   Text,
   ActionButton,
 } from '../components/layout/StyledComponents';
+import SwitchComponent from '../components/SwitchComponent';
 
 const { TextArea } = Input;
 const { Title, Paragraph } = Typography;
@@ -159,29 +157,18 @@ function SeedWordsForm({ mnemonicAndSeed, goBack, goForward }) {
               style={{ fontWeight: 500 }}
               autoSize
             />
-            <WarningBox>
-              Your private keys are only stored on your current computer or
-              device. You will need these words to restore your wallet if your
-              browser's storage is cleared or your device is damaged or lost.
-            </WarningBox>
-            <div
-              style={{
-                display: 'flex',
-                backgroundColor: '#f7f7f7',
-                padding: 10,
-                borderRadius: 10,
-              }}
-            >
-              <Switch
-                checkedChildren={<CheckOutlined />}
-                unCheckedChildren={<CloseOutlined />}
-                onChange={setConfirmed}
-                checked={confirmed}
-              />
-              <span style={{ marginLeft: 8, fontWeight: 500 }}>
-                I have saved these words in a safe place
-              </span>
-            </div>
+            <Alert
+              message="Your private keys are only stored on your current computer or
+                device. You will need these words to restore your wallet if your
+                browser's storage is cleared or your device is damaged or lost."
+              type="warning"
+              showIcon
+            />
+            <SwitchComponent
+              text="I have saved these words in a safe place"
+              onChange={setConfirmed}
+              checked={confirmed}
+            />
           </Space>
           <ActionButton
             block
@@ -285,24 +272,11 @@ function LoginForm() {
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
             />
-            <div
-              style={{
-                display: 'flex',
-                backgroundColor: '#f7f7f7',
-                padding: 10,
-                borderRadius: 10,
-              }}
-            >
-              <Switch
-                checkedChildren={<CheckOutlined />}
-                unCheckedChildren={<CloseOutlined />}
-                checked={stayLoggedIn}
-                onChange={setStayLoggedIn}
-              />
-              <span style={{ marginLeft: 8, fontWeight: 500 }}>
-                Keep wallet unlocked
-              </span>
-            </div>
+            <SwitchComponent
+              text="Keep wallet unlocked"
+              checked={stayLoggedIn}
+              onChange={setStayLoggedIn}
+            />
           </Space>
           <ActionButton
             block

@@ -24,6 +24,21 @@ html,body{
     overflow-y: auto;
 }
 
+.ant-alert-warning {
+    border-radius: 10px;
+    background: #fff7e6;
+    border-width: 0px;
+}
+
+.ant-alert-warning .ant-alert-message {
+    color: #FAAD15;
+}
+
+.ant-alert-warning .ant-alert-description {
+    color: #FAAD15;
+    font-size: 12px;
+}
+
 .ant-statistic-content-value {
     display:block;
     width:100%;
