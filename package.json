@@ -5,8 +5,6 @@
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "@craco/craco": "^5.7.0",
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
     "@project-serum/serum": "^0.13.3",
     "@solana/web3.js": "^0.78.2",
     "@testing-library/jest-dom": "^4.2.4",
@@ -20,7 +18,6 @@
     "buffer-layout": "^1.2.0",
     "craco-less": "^1.17.0",
     "immutable-tuple": "^0.4.10",
-    "mdi-material-ui": "^6.17.0",
     "notistack": "^0.9.17",
     "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
