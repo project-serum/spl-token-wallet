@@ -6,7 +6,6 @@ import {
   Input,
   Space,
   Steps,
-  Avatar,
   Divider,
   Alert,
 } from 'antd';
@@ -25,6 +24,7 @@ import {
   useEthAccount,
 } from '../utils/swap/eth';
 import AddressDisplay from './AddressDisplay';
+import TokenIcon from './TokenIcon';
 import { Text } from './layout/StyledComponents';
 
 const { TabPane } = Tabs;
@@ -83,11 +83,8 @@ export default function DepositDialog({
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar
-            src={`/icons/${tokenSymbol?.toLowerCase()}.png`}
-            style={{ marginRight: 16 }}
-          />
-          <span class="ant-modal-confirm-title">
+          <TokenIcon mint={mint} tokenName={tokenName} />
+          <span style={{ marginLeft: 16 }}>
             Deposit {tokenName ?? mint.toBase58()}
             {tokenSymbol ? ` (${tokenSymbol})` : null}
           </span>

@@ -7,7 +7,6 @@ import {
   Space,
   Typography,
   Steps,
-  Avatar,
 } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useWallet } from '../utils/wallet';
@@ -23,6 +22,7 @@ import {
 } from '../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
 import { useAsyncData } from '../utils/fetch-loop';
+import TokenIcon from './TokenIcon';
 
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -47,11 +47,8 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar
-              src={`/icons/${tokenSymbol?.toLowerCase()}.png`}
-              style={{ marginRight: 16 }}
-            />
-            <span class="ant-modal-confirm-title">
+            <TokenIcon mint={mint} tokenName={tokenName} />
+            <span style={{ marginLeft: 16 }}>
               Send {tokenName ?? abbreviateAddress(mint)}{' '}
               {tokenSymbol ? `(${tokenSymbol})` : null}
             </span>
@@ -248,7 +245,7 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
 
   let step = 0;
   let ethTxid = null;
-  for (let swap of (swaps || [])) {
+  for (let swap of swaps || []) {
     const { deposit, withdrawal } = swap;
     if (deposit.txid === signature) {
       if (withdrawal.txid?.startsWith('0x')) {
