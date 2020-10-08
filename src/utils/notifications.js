@@ -91,6 +91,7 @@ export function useCallAsync() {
         onSuccess(result);
       }
     } catch (e) {
+      console.warn(e);
       closeSnackbar(id);
       enqueueSnackbar(e.message, { variant: 'error' });
       if (onError) {

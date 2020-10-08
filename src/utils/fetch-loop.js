@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { useEffect, useReducer } from 'react';
+import tuple from 'immutable-tuple';
 
 const pageLoadTime = new Date();
 
@@ -142,6 +143,8 @@ export function useAsyncData(
   cacheKey,
   { refreshInterval = 60000 } = {},
 ) {
+  cacheKey = formatCacheKey(cacheKey);
+
   const [, rerender] = useReducer((i) => i + 1, 0);
 
   useEffect(() => {
@@ -160,7 +163,7 @@ export function useAsyncData(
   }, [cacheKey, refreshInterval]);
 
   if (!cacheKey) {
-    return null;
+    return [null, false];
   }
 
   const loaded = globalCache.has(cacheKey);
@@ -169,6 +172,7 @@ export function useAsyncData(
 }
 
 export function refreshCache(cacheKey, clearCache = false) {
+  cacheKey = formatCacheKey(cacheKey);
   if (clearCache) {
     globalCache.delete(cacheKey);
   }
@@ -182,7 +186,8 @@ export function refreshCache(cacheKey, clearCache = false) {
 }
 
 export function setCache(cacheKey, value, { initializeOnly = false } = {}) {
-  if (!initializeOnly && globalCache.has(cacheKey)) {
+  cacheKey = formatCacheKey(cacheKey);
+  if (initializeOnly && globalCache.has(cacheKey)) {
     return;
   }
   globalCache.set(cacheKey, value);
@@ -190,4 +195,11 @@ export function setCache(cacheKey, value, { initializeOnly = false } = {}) {
   if (loop) {
     loop.notifyListeners();
   }
+}
+
+function formatCacheKey(cacheKey) {
+  if (Array.isArray(cacheKey)) {
+    return tuple(...cacheKey);
+  }
+  return cacheKey;
 }

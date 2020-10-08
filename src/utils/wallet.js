@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import * as bip32 from 'bip32';
-import { Account, SystemProgram } from '@solana/web3.js';
+import { Account, SystemProgram, Transaction } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import {
   setInitialAccountInfo,
@@ -8,6 +8,7 @@ import {
   useConnection,
 } from './connection';
 import {
+  closeTokenAccount,
   createAndInitializeTokenAccount,
   getOwnedTokenAccounts,
   transferTokens,
@@ -42,14 +43,14 @@ export class Wallet {
     return this.account.publicKey;
   }
 
-  getTokenPublicKeys = async () => {
+  getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(
       this.connection,
       this.account.publicKey,
     );
     return accounts.map(({ publicKey, accountInfo }) => {
       setInitialAccountInfo(this.connection, publicKey, accountInfo);
-      return publicKey;
+      return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };
     });
   };
 
@@ -68,8 +69,11 @@ export class Wallet {
     );
   };
 
-  transferToken = async (source, destination, amount) => {
+  transferToken = async (source, destination, amount, memo = null) => {
     if (source.equals(this.publicKey)) {
+      if (memo) {
+        throw new Error('Memo not implemented');
+      }
       return this.transferSol(destination, amount);
     }
     return await transferTokens({
@@ -78,18 +82,29 @@ export class Wallet {
       sourcePublicKey: source,
       destinationPublicKey: destination,
       amount,
+      memo,
     });
   };
 
   transferSol = async (destination, amount) => {
-    return await this.connection.sendTransaction(
+    const tx = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: this.publicKey,
         toPubkey: destination,
         lamports: amount,
       }),
-      [this.account],
     );
+    return await this.connection.sendTransaction(tx, [this.account], {
+      preflightCommitment: 'single',
+    });
+  };
+
+  closeTokenAccount = async (publicKey) => {
+    return await closeTokenAccount({
+      connection: this.connection,
+      owner: this.account,
+      sourcePublicKey: publicKey,
+    });
   };
 }
 
@@ -122,16 +137,32 @@ export function useWallet() {
 
 export function useWalletPublicKeys() {
   let wallet = useWallet();
-  let [tokenPublicKeys, loaded] = useAsyncData(
-    wallet.getTokenPublicKeys,
-    wallet.getTokenPublicKeys,
+  let [tokenAccountInfo, loaded] = useAsyncData(
+    wallet.getTokenAccountInfo,
+    wallet.getTokenAccountInfo,
   );
-  let publicKeys = [wallet.account.publicKey, ...(tokenPublicKeys ?? [])];
+  const getPublicKeys = () => [
+    wallet.account.publicKey,
+    ...(tokenAccountInfo
+      ? tokenAccountInfo.map(({ publicKey }) => publicKey)
+      : []),
+  ];
+  const serialized = getPublicKeys()
+    .map((pubKey) => pubKey?.toBase58() || '')
+    .toString();
+
+  // Prevent users from re-rendering unless the list of public keys actually changes
+  let publicKeys = useMemo(getPublicKeys, [serialized]);
   return [publicKeys, loaded];
 }
 
+export function useWalletTokenAccounts() {
+  let wallet = useWallet();
+  return useAsyncData(wallet.getTokenAccountInfo, wallet.getTokenAccountInfo);
+}
+
 export function refreshWalletPublicKeys(wallet) {
-  refreshCache(wallet.getTokenPublicKeys);
+  refreshCache(wallet.getTokenAccountInfo);
 }
 
 export function useBalanceInfo(publicKey) {
