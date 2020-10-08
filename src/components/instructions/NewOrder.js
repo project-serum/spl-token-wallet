@@ -1,5 +1,5 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Card } from 'antd';
 import LabelValue from './LabelValue';
 import { useWallet } from '../../utils/wallet';
 
@@ -20,14 +20,7 @@ export default function Neworder({ instruction, onOpenAddress }) {
   };
 
   return (
-    <>
-      <Typography
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
-        Place an order
-      </Typography>
+    <Card bordered={false} size="small" title="Place an order">
       <LabelValue
         label="Market"
         value={marketLabel}
@@ -62,6 +55,6 @@ export default function Neworder({ instruction, onOpenAddress }) {
           ownerPubkey && onOpenAddress(ownerPubkey?.toBase58())
         }
       />
-    </>
+    </Card>
   );
 }

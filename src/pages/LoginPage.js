@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Row, Col, Typography, Input, Space, Alert } from 'antd';
+import {
+  WalletOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  ArrowLeftOutlined,
+} from '@ant-design/icons';
 import {
   generateMnemonicAndSeed,
   hasLockedMnemonicAndSeed,
@@ -6,39 +13,87 @@ import {
   mnemonicToSeed,
   storeMnemonicAndSeed,
 } from '../utils/wallet-seed';
-import Container from '@material-ui/core/Container';
-import LoadingIndicator from '../components/LoadingIndicator';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { Typography } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
 import { useCallAsync } from '../utils/notifications';
-import Link from '@material-ui/core/Link';
+import {
+  Box,
+  CreateWalletBox,
+  RestoreWalletBox,
+  Text,
+  ActionButton,
+} from '../components/layout/StyledComponents';
+import SwitchComponent from '../components/SwitchComponent';
+
+const { TextArea } = Input;
+const { Title, Paragraph } = Typography;
 
 export default function LoginPage() {
-  const [restore, setRestore] = useState(false);
   return (
-    <Container maxWidth="sm">
-      {restore ? (
-        <RestoreWalletForm goBack={() => setRestore(false)} />
-      ) : (
-        <>
-          {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
-          <br />
-          <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
-            Restore existing wallet
-          </Link>
-        </>
-      )}
-    </Container>
+    <div style={{ marginTop: 48 }}>
+      {hasLockedMnemonicAndSeed() ? <LoginForm /> : <EntryPoint />}
+    </div>
   );
 }
 
-function CreateWalletForm() {
+function EntryPoint() {
+  const [formType, setFormType] = useState(null);
+
+  if (!formType) {
+    return (
+      <Space
+        direction="horizontal"
+        size="large"
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <CreateWalletBox
+          style={{
+            width: 300,
+            height: 200,
+            backgroundColor: '#00d2d3',
+            textAlign: 'center',
+          }}
+          onClick={() => setFormType('new')}
+        >
+          <WalletOutlined
+            style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
+          />
+          <Title level={3} style={{ color: 'white' }}>
+            Create new wallet
+          </Title>
+          <Paragraph style={{ color: 'white' }}>
+            Create a new wallet to hold Solana and SPL tokens.
+          </Paragraph>
+        </CreateWalletBox>
+        <RestoreWalletBox
+          style={{
+            width: 300,
+            height: 200,
+            backgroundColor: '#54a0ff',
+            textAlign: 'center',
+          }}
+          onClick={() => setFormType('restore')}
+        >
+          <WalletOutlined
+            style={{ color: 'white', fontSize: 24, marginBottom: 10 }}
+          />
+          <Title level={3} style={{ color: 'white' }}>
+            Restore wallet
+          </Title>
+          <Paragraph style={{ color: 'white' }}>
+            Restore your wallet using your twelve seed words.
+          </Paragraph>
+        </RestoreWalletBox>
+      </Space>
+    );
+  }
+
+  return formType === 'restore' ? (
+    <RestoreWalletForm goBack={() => setFormType(null)} />
+  ) : (
+    <CreateWalletForm goBack={() => setFormType(null)} />
+  );
+}
+
+function CreateWalletForm({ goBack }) {
   const [mnemonicAndSeed, setMnemonicAndSeed] = useState(null);
   useEffect(() => {
     generateMnemonicAndSeed().then(setMnemonicAndSeed);
@@ -58,6 +113,7 @@ function CreateWalletForm() {
     return (
       <SeedWordsForm
         mnemonicAndSeed={mnemonicAndSeed}
+        goBack={goBack}
         goForward={() => setSavedWords(true)}
       />
     );
@@ -72,109 +128,119 @@ function CreateWalletForm() {
   );
 }
 
-function SeedWordsForm({ mnemonicAndSeed, goForward }) {
+function SeedWordsForm({ mnemonicAndSeed, goBack, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Create New Wallet
-        </Typography>
-        <Typography paragraph>
-          Create a new wallet to hold Solana and SPL tokens.
-        </Typography>
-        <Typography>
-          Please write down the following twelve words and keep them in a safe
-          place:
-        </Typography>
-        {mnemonicAndSeed ? (
-          <TextField
-            variant="outlined"
-            fullWidth
-            multiline
-            margin="normal"
-            value={mnemonicAndSeed.mnemonic}
-            label="Seed Words"
-            onFocus={(e) => e.currentTarget.select()}
-          />
-        ) : (
-          <LoadingIndicator />
-        )}
-        <Typography paragraph>
-          Your private keys are only stored on your current computer or device.
-          You will need these words to restore your wallet if your browser's
-          storage is cleared or your device is damaged or lost.
-        </Typography>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={confirmed}
-              disabled={!mnemonicAndSeed}
-              onChange={(e) => setConfirmed(e.target.checked)}
+    <Row justify="center">
+      <Col flex="500px" style={{ backgroundColor: 'white' }}>
+        <Box>
+          <Space align="start">
+            <ArrowLeftOutlined
+              style={{ color: '#00d2d3', fontSize: 30, marginTop: 5 }}
+              onClick={goBack}
             />
-          }
-          label="I have saved these words in a safe place."
-        />
-      </CardContent>
-      <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" disabled={!confirmed} onClick={goForward}>
-          Continue
-        </Button>
-      </CardActions>
-    </Card>
+            <Title level={2} style={{ color: '#00d2d3' }}>
+              Create new wallet
+            </Title>
+          </Space>
+          <Space direction="vertical" size="middle">
+            <Text>Create a new wallet to hold Solana and SPL tokens.</Text>
+            <Text>
+              Please write down the following twelve words and keep them in a
+              safe place:
+            </Text>
+            <TextArea
+              placeholder="Loading seed..."
+              value={mnemonicAndSeed?.mnemonic}
+              contentEditable={false}
+              style={{ fontWeight: 500 }}
+              autoSize
+            />
+            <Alert
+              message="Your private keys are only stored on your current computer or
+                device. You will need these words to restore your wallet if your
+                browser's storage is cleared or your device is damaged or lost."
+              type="warning"
+              showIcon
+            />
+            <SwitchComponent
+              text="I have saved these words in a safe place"
+              onChange={setConfirmed}
+              checked={confirmed}
+            />
+          </Space>
+          <ActionButton
+            block
+            type="primary"
+            size="large"
+            disabled={!confirmed}
+            onClick={goForward}
+          >
+            <span style={{ fontWeight: 500 }}>Continue</span>
+          </ActionButton>
+        </Box>
+      </Col>
+    </Row>
   );
 }
 
 function ChoosePasswordForm({ goBack, onSubmit }) {
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [password, setPassword] = useState(null);
+  const [passwordConfirm, setPasswordConfirm] = useState(null);
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Choose a Password (Optional)
-        </Typography>
-        <Typography>
-          Optionally pick a password to protect your wallet.
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="New Password"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Confirm Password"
-          type="password"
-          autoComplete="new-password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
-        <Typography>
-          If you forget your password you will need to restore your wallet using
-          your seed words.
-        </Typography>
-      </CardContent>
-      <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Back</Button>
-        <Button
-          color="primary"
-          disabled={password !== passwordConfirm}
-          onClick={() => onSubmit(password)}
-        >
-          Create Wallet
-        </Button>
-      </CardActions>
-    </Card>
+    <Row justify="center">
+      <Col flex="500px" style={{ backgroundColor: 'white' }}>
+        <Box>
+          <Space align="start">
+            <ArrowLeftOutlined
+              style={{ color: '#00d2d3', fontSize: 30, marginTop: 5 }}
+              onClick={goBack}
+            />
+            <Title level={2} style={{ color: '#00d2d3' }}>
+              Choose a Password (Optional)
+            </Title>
+          </Space>
+          <Space direction="vertical" size="middle">
+            <Text>Optionally pick a password to protect your wallet.</Text>
+            <Text>
+              Please write down the following twelve words and keep them in a
+              safe place:
+            </Text>
+            <Input.Password
+              placeholder="New Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+            <Input.Password
+              placeholder="Confirm Password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+            <Text>
+              If you forget your password you will need to restore your wallet
+              using your seed words.
+            </Text>
+          </Space>
+          <ActionButton
+            block
+            type="primary"
+            size="large"
+            disabled={password !== passwordConfirm}
+            onClick={() => onSubmit(password)}
+          >
+            <span style={{ fontWeight: 500 }}>Create wallet</span>
+          </ActionButton>
+        </Box>
+      </Col>
+    </Row>
   );
 }
 
@@ -191,37 +257,39 @@ function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Unlock Wallet
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={stayLoggedIn}
-              onChange={(e) => setStayLoggedIn(e.target.checked)}
+    <Row justify="center">
+      <Col flex="500px" style={{ backgroundColor: 'white' }}>
+        <Box>
+          <Title level={2} style={{ color: '#00d2d3' }}>
+            Unlock wallet
+          </Title>
+          <Space direction="vertical">
+            <Input.Password
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
             />
-          }
-          label="Keep wallet unlocked"
-        />
-      </CardContent>
-      <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" onClick={submit}>
-          Unlock
-        </Button>
-      </CardActions>
-    </Card>
+            <SwitchComponent
+              text="Keep wallet unlocked"
+              checked={stayLoggedIn}
+              onChange={setStayLoggedIn}
+            />
+          </Space>
+          <ActionButton
+            block
+            type="primary"
+            size="large"
+            disabled={!password}
+            onClick={submit}
+          >
+            <span style={{ fontWeight: 500 }}>Unlock</span>
+          </ActionButton>
+        </Box>
+      </Col>
+    </Row>
   );
 }
 
@@ -240,56 +308,58 @@ function RestoreWalletForm({ goBack }) {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Restore Existing Wallet
-        </Typography>
-        <Typography>
-          Restore your wallet using your twelve seed words. Note that this will
-          delete any existing wallet on this device.
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={3}
-          margin="normal"
-          label="Seed Words"
-          value={mnemonic}
-          onChange={(e) => setMnemonic(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="New Password (Optional)"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Confirm Password"
-          type="password"
-          autoComplete="new-password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
-      </CardContent>
-      <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Cancel</Button>
-        <Button
-          color="primary"
-          disabled={password !== passwordConfirm}
-          onClick={submit}
-        >
-          Restore
-        </Button>
-      </CardActions>
-    </Card>
+    <Row justify="center">
+      <Col flex="500px" style={{ backgroundColor: 'white' }}>
+        <Box>
+          <Space align="start">
+            <ArrowLeftOutlined
+              style={{ color: '#00d2d3', fontSize: 30, marginTop: 5 }}
+              onClick={goBack}
+            />
+            <Title level={2} style={{ color: '#00d2d3' }}>
+              Restore existing wallet
+            </Title>
+          </Space>
+          <Space direction="vertical" size="middle">
+            <Text>
+              Restore your wallet using your twelve seed words. Note that this
+              will delete any existing wallet on this device.
+            </Text>
+            <TextArea
+              placeholder="Seed words"
+              value={mnemonic}
+              onChange={(e) => setMnemonic(e.target.value)}
+              style={{ fontWeight: 500 }}
+              autoSize
+            />
+            <Input.Password
+              placeholder="New Password (Optional)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+            <Input.Password
+              placeholder="Confirm Password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
+          </Space>
+          <ActionButton
+            block
+            type="primary"
+            size="large"
+            disabled={!mnemonic || password !== passwordConfirm}
+            onClick={submit}
+          >
+            <span style={{ fontWeight: 500 }}>Restore</span>
+          </ActionButton>
+        </Box>
+      </Col>
+    </Row>
   );
 }

@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
+import { Modal, Button, Tabs, Input, Space, List } from 'antd';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import {
   refreshWalletPublicKeys,
   useWallet,
@@ -13,39 +9,26 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
-import LoadingIndicator from './LoadingIndicator';
-import { makeStyles, Tab, Tabs } from '@material-ui/core';
 import { useSendTransaction } from '../utils/notifications';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+
 import { abbreviateAddress } from '../utils/utils';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
 import {
   useConnectionConfig,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
-import Link from '@material-ui/core/Link';
-import CopyableDisplay from './CopyableDisplay';
-import DialogForm from './DialogForm';
 import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
+import { Text } from './layout/StyledComponents';
 import TokenIcon from './TokenIcon';
+import AddressDisplay from './AddressDisplay';
+import LoadingIndicator from './LoadingIndicator';
+
+const { TabPane } = Tabs;
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
   maximumFractionDigits: 6,
 });
-
-const useStyles = makeStyles((theme) => ({
-  tabs: {
-    marginBottom: theme.spacing(1),
-    borderBottom: `1px solid ${theme.palette.background.paper}`,
-  },
-}));
 
 export default function AddTokenDialog({ open, onClose }) {
   let wallet = useWallet();
@@ -53,7 +36,6 @@ export default function AddTokenDialog({ open, onClose }) {
     wallet.tokenAccountCost,
     wallet.tokenAccountCost,
   );
-  let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
   const [sendTransaction, sending] = useSendTransaction();
   const { endpoint } = useConnectionConfig();
@@ -113,114 +95,105 @@ export default function AddTokenDialog({ open, onClose }) {
   }
 
   return (
-    <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>Add Token</DialogTitle>
-      <DialogContent>
+    <Modal
+      title="Add Token"
+      visible={open}
+      onCancel={onClose}
+      footer={null}
+      width={650}
+    >
+      <Space direction="vertical" style={{ display: 'flex' }}>
         {tokenAccountCost ? (
-          <DialogContentText>
+          <Text>
             Add a token to your wallet. This will cost{' '}
             {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
-          </DialogContentText>
+          </Text>
         ) : (
           <LoadingIndicator />
         )}
-        {!!popularTokens && (
-          <Tabs
-            value={tab}
-            textColor="primary"
-            indicatorColor="primary"
-            className={classes.tabs}
-            onChange={(e, value) => setTab(value)}
-          >
-            <Tab label="Popular Tokens" value="popular" />
-            {showSwapAddress ? <Tab label="ERC20 Token" value="erc20" /> : null}
-            <Tab label="Manual Input" value="manual" />
-          </Tabs>
-        )}
-        {tab === 'manual' || !popularTokens ? (
-          <React.Fragment>
-            <TextField
-              label="Token Mint Address"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={mintAddress}
-              onChange={(e) => setMintAddress(e.target.value)}
-              autoFocus
-              disabled={sending}
-            />
-            <TextField
-              label="Token Name"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-              disabled={sending}
-            />
-            <TextField
-              label="Token Symbol"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={tokenSymbol}
-              onChange={(e) => setTokenSymbol(e.target.value)}
-              disabled={sending}
-            />
-          </React.Fragment>
-        ) : tab === 'popular' ? (
-          <List disablePadding>
-            {popularTokens.map((token) => (
-              <TokenListItem
-                key={token.mintAddress}
-                {...token}
-                existingAccount={(walletAccounts || []).find(
-                  (account) =>
-                    account.parsed.mint.toBase58() === token.mintAddress,
+        <Tabs activeKey={tab} onChange={setTab} centered>
+          {!!popularTokens && (
+            <TabPane tab="Popular Tokens" key="popular">
+              <List
+                itemLayout="horizontal"
+                dataSource={popularTokens}
+                renderItem={(token) => (
+                  <TokenListItem
+                    key={token.mintAddress}
+                    {...token}
+                    existingAccount={(walletAccounts || []).find(
+                      (account) =>
+                        account.parsed.mint.toBase58() === token.mintAddress,
+                    )}
+                    onSubmit={onSubmit}
+                    disalbed={sending}
+                  />
                 )}
-                onSubmit={onSubmit}
-                disalbed={sending}
               />
-            ))}
-          </List>
-        ) : tab === 'erc20' ? (
-          <>
-            <TextField
-              label="ERC20 Contract Address"
-              fullWidth
-              variant="outlined"
-              margin="normal"
-              value={erc20Address}
-              onChange={(e) => setErc20Address(e.target.value.trim())}
-              autoFocus
-              disabled={sending}
-            />
-            {erc20Address && valid ? (
-              <Link
-                href={`https://etherscan.io/token/${erc20Address}`}
-                target="_blank"
-                rel="noopener"
-              >
-                View on Etherscan
-              </Link>
-            ) : null}
-          </>
-        ) : null}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        {tab !== 'popular' && (
-          <Button
-            type="submit"
-            color="primary"
-            disabled={sending || !valid}
-            onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
-          >
-            Add
-          </Button>
-        )}
-      </DialogActions>
-    </DialogForm>
+            </TabPane>
+          )}
+          {showSwapAddress && (
+            <TabPane tab="ERC20 Token" key="erc20">
+              <Input
+                placeholder="ERC20 Contract Address"
+                value={erc20Address}
+                onChange={(e) => setErc20Address(e.target.value.trim())}
+                autoFocus
+                disabled={sending}
+              />
+              {erc20Address && valid ? (
+                <Button
+                  type="link"
+                  component="a"
+                  href={`https://etherscan.io/token/${erc20Address}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Etherscan
+                </Button>
+              ) : null}
+            </TabPane>
+          )}
+          <TabPane tab="Manual Input" key="manual">
+            <Space direction="vertical" style={{ display: 'flex' }}>
+              <Input
+                placeholder="Token Mint Address"
+                value={mintAddress}
+                onChange={(e) => setMintAddress(e.target.value)}
+                autoFocus
+                disabled={sending}
+              />
+              <Input
+                placeholder="Token Name"
+                value={tokenName}
+                onChange={(e) => setTokenName(e.target.value)}
+                disabled={sending}
+              />
+              <Input
+                placeholder="Token Symbol"
+                value={tokenSymbol}
+                onChange={(e) => setTokenSymbol(e.target.value)}
+                disabled={sending}
+              />
+            </Space>
+          </TabPane>
+        </Tabs>
+        <Space
+          style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}
+        >
+          <Button onClick={onClose}>Cancel</Button>
+          {tab !== 'popular' && (
+            <Button
+              type="primary"
+              disabled={sending || !valid}
+              onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
+            >
+              Send
+            </Button>
+          )}
+        </Space>
+      </Space>
+    </Modal>
   );
 }
 
@@ -236,45 +209,46 @@ function TokenListItem({
   const [open, setOpen] = useState(false);
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const alreadyExists = !!existingAccount;
+
   return (
-    <React.Fragment>
-      <div style={{ display: 'flex' }} key={tokenName}>
-        <ListItem button onClick={() => setOpen((open) => !open)}>
-          <ListItemIcon>
-            <TokenIcon url={icon} tokenName={tokenName} size={20} />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              <Link
-                target="_blank"
-                rel="noopener"
-                href={
-                  `https://explorer.solana.com/account/${mintAddress}` +
-                  urlSuffix
-                }
-              >
-                {tokenName ?? abbreviateAddress(mintAddress)}
-                {tokenSymbol ? ` (${tokenSymbol})` : null}
-              </Link>
-            }
-          />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+    <List.Item
+      actions={[
         <Button
-          type="submit"
-          color="primary"
+          type="primary"
           disabled={disabled || alreadyExists}
+          style={{ width: 75 }}
           onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
         >
           {alreadyExists ? 'Added' : 'Add'}
-        </Button>
-      </div>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <CopyableDisplay
-          value={mintAddress}
-          label={`${tokenSymbol} Mint Address`}
-        />
-      </Collapse>
-    </React.Fragment>
+        </Button>,
+      ]}
+      style={{ alignItems: 'flex-start' }}
+    >
+      <List.Item.Meta
+        avatar={<TokenIcon url={icon} tokenName={tokenName} />}
+        title={
+          <Button
+            type="text"
+            component="a"
+            href={
+              `https://explorer.solana.com/account/${mintAddress}` + urlSuffix
+            }
+            target="_blank"
+            rel="noopener"
+          >
+            {tokenName ?? abbreviateAddress(mintAddress)}
+            {tokenSymbol ? ` (${tokenSymbol})` : null}
+          </Button>
+        }
+        description={
+          open && <AddressDisplay title="Mint Address" address={mintAddress} />
+        }
+      />
+      <Button
+        type="text"
+        icon={open ? <UpOutlined /> : <DownOutlined />}
+        onClick={() => setOpen((open) => !open)}
+      />
+    </List.Item>
   );
 }

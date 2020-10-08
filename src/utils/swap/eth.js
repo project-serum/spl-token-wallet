@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
-import Button from '@material-ui/core/Button';
+import { Button } from 'antd';
 import { useCallAsync } from '../notifications';
 
 const web3 = new Web3(window.ethereum);
@@ -193,8 +193,7 @@ export function ConnectToMetamaskButton() {
   if (!window.ethereum) {
     return (
       <Button
-        color="primary"
-        variant="outlined"
+        type="primary"
         component="a"
         href="https://metamask.io/"
         target="_blank"

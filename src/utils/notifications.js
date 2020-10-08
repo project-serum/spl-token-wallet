@@ -1,47 +1,56 @@
 import React, { useState } from 'react';
-import { useSnackbar } from 'notistack';
+import { notification, Button } from 'antd';
 import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
-import Button from '@material-ui/core/Button';
 import { confirmTransaction } from './utils';
 
 export function useSendTransaction() {
+  const urlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [sending, setSending] = useState(false);
 
   async function sendTransaction(
     signaturePromise,
     { onSuccess, onError } = {},
   ) {
-    let id = enqueueSnackbar('Sending transaction...', {
+    notify('Sending transaction...', {
       variant: 'info',
-      persist: true,
+      duration: 0,
     });
     setSending(true);
     try {
       let signature = await signaturePromise;
-      closeSnackbar(id);
-      id = enqueueSnackbar('Confirming transaction...', {
+      notification.destroy();
+      notify('Confirming transaction...', {
         variant: 'info',
-        persist: true,
-        action: <ViewTransactionOnExplorerButton signature={signature} />,
+        duration: 0,
+        action: (
+          <ViewTransactionOnExplorerButton
+            signature={signature}
+            urlSuffix={urlSuffix}
+          />
+        ),
       });
       await confirmTransaction(connection, signature);
-      closeSnackbar(id);
       setSending(false);
-      enqueueSnackbar('Transaction confirmed', {
+      notification.destroy();
+      notify('Transaction confirmed', {
         variant: 'success',
-        autoHideDuration: 15000,
-        action: <ViewTransactionOnExplorerButton signature={signature} />,
+        duration: 15,
+        action: (
+          <ViewTransactionOnExplorerButton
+            signature={signature}
+            urlSuffix={urlSuffix}
+          />
+        ),
       });
       if (onSuccess) {
         onSuccess(signature);
       }
     } catch (e) {
-      closeSnackbar(id);
       setSending(false);
       console.warn(e.message);
-      enqueueSnackbar(e.message, { variant: 'error' });
+      notification.destroy();
+      notify(e.message, { variant: 'error' });
       if (onError) {
         onError(e);
       }
@@ -51,11 +60,10 @@ export function useSendTransaction() {
   return [sendTransaction, sending];
 }
 
-function ViewTransactionOnExplorerButton({ signature }) {
-  const urlSuffix = useSolanaExplorerUrlSuffix();
+function ViewTransactionOnExplorerButton({ signature, urlSuffix }) {
   return (
     <Button
-      color="inherit"
+      type="link"
       component="a"
       target="_blank"
       rel="noopener"
@@ -67,7 +75,6 @@ function ViewTransactionOnExplorerButton({ signature }) {
 }
 
 export function useCallAsync() {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   return async function callAsync(
     promise,
     {
@@ -77,26 +84,43 @@ export function useCallAsync() {
       onError,
     } = {},
   ) {
-    let id = enqueueSnackbar(progressMessage, {
+    notify(progressMessage, {
       variant: 'info',
       persist: true,
     });
     try {
       let result = await promise;
-      closeSnackbar(id);
       if (successMessage) {
-        enqueueSnackbar(successMessage, { variant: 'success' });
+        notify(successMessage, { variant: 'success' });
       }
       if (onSuccess) {
         onSuccess(result);
       }
     } catch (e) {
       console.warn(e);
-      closeSnackbar(id);
-      enqueueSnackbar(e.message, { variant: 'error' });
+      notify(e.message, { variant: 'error' });
       if (onError) {
         onError(e);
       }
     }
   };
+}
+
+export function notify(
+  message,
+  params = { variant: 'info', duration: 4 },
+  placement = 'bottomLeft',
+) {
+  const { description, variant, duration, action } = params;
+  notification[variant]({
+    message: <span style={{ color: 'black' }}>{message}</span>,
+    description: action || (
+      <span style={{ color: 'black', opacity: 0.5 }}>{description}</span>
+    ),
+    duration,
+    placement,
+    style: {
+      backgroundColor: 'white',
+    },
+  });
 }

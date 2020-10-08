@@ -1,24 +1,25 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
+import { Row, Col } from 'antd';
 import BalancesList from '../components/BalancesList';
-import Grid from '@material-ui/core/Grid';
 import { useIsProdNetwork } from '../utils/connection';
 import DebugButtons from '../components/DebugButtons';
 
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();
   return (
-    <Container fixed maxWidth="md">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+    <>
+      <Row justify="center">
+        <Col style={{ width: 1000 }}>
           <BalancesList />
-        </Grid>
-        {isProdNetwork ? null : (
-          <Grid item xs={12}>
+        </Col>
+      </Row>
+      {isProdNetwork ? null : (
+        <Row justify="center">
+          <Col>
             <DebugButtons />
-          </Grid>
-        )}
-      </Grid>
-    </Container>
+          </Col>
+        </Row>
+      )}
+    </>
   );
 }

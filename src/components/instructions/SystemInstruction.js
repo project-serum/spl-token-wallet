@@ -1,5 +1,5 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import { Card } from 'antd';
 import LabelValue from './LabelValue';
 
 const TYPE_LABELS = {
@@ -24,14 +24,7 @@ export default function SystemInstruction({ instruction, onOpenAddress }) {
   const { type, data } = instruction;
 
   return (
-    <>
-      <Typography
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
-        {TYPE_LABELS[type]}
-      </Typography>
+    <Card bordered={false} size="small" title={TYPE_LABELS[type]}>
       {data &&
         Object.entries(data).map(([key, value]) => {
           const dataLabel = DATA_LABELS[key];
@@ -49,6 +42,6 @@ export default function SystemInstruction({ instruction, onOpenAddress }) {
             />
           );
         })}
-    </>
+    </Card>
   );
 }

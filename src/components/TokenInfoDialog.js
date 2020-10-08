@@ -1,25 +1,8 @@
-import { Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
 import React from 'react';
-import { useSolanaExplorerUrlSuffix } from '../utils/connection';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogForm from './DialogForm';
+import { Row, Col, Statistic, Modal } from 'antd';
 import { abbreviateAddress } from '../utils/utils';
-import CopyableDisplay from './CopyableDisplay';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  explorerLink: {
-    marginBottom: theme.spacing(2),
-  },
-  warning: {
-    marginBottom: theme.spacing(2),
-  },
-  container: {
-    minWidth: 600,
-  },
-}));
+import TokenIcon from './TokenIcon';
+import AddressDisplay from './AddressDisplay';
 
 export default function TokenInfoDialog({
   open,
@@ -28,50 +11,58 @@ export default function TokenInfoDialog({
   balanceInfo,
 }) {
   let { mint, tokenName, tokenSymbol } = balanceInfo;
-  const urlSuffix = useSolanaExplorerUrlSuffix();
-  const classes = useStyles();
 
   return (
-    <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>
-        {tokenName ?? abbreviateAddress(mint)}
-        {tokenSymbol ? ` (${tokenSymbol})` : null}
-      </DialogTitle>
-      <DialogContent className={classes.container}>
-        <Typography className={classes.warning}>
-          Information about {tokenName ?? abbreviateAddress(mint)}
-        </Typography>
-        <Typography variant="body2" className={classes.explorerLink}>
-          <Link
-            href={
-              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-              urlSuffix
-            }
-            target="_blank"
-            rel="noopener"
-          >
-            View on Solana Explorer
-          </Link>
-        </Typography>
-        {!!mint && (
-          <CopyableDisplay
-            value={mint.toBase58()}
-            label={'Token Mint Address'}
-            autoFocus
-            helperText={
-              <>
-                This is <strong>not</strong> your deposit address
-              </>
-            }
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <TokenIcon mint={mint} tokenName={tokenName} />
+          <span style={{ marginLeft: 16 }}>
+            {tokenName ?? abbreviateAddress(mint)}{' '}
+            {tokenSymbol ? `(${tokenSymbol})` : null}
+          </span>
+        </div>
+      }
+      visible={open}
+      onCancel={onClose}
+      footer={null}
+      width={650}
+    >
+      <Row style={{ marginTop: 16 }}>
+        <Col span={12}>
+          <Statistic
+            title="Token Name"
+            value={tokenName ?? 'Unknown'}
+            valueStyle={{ fontSize: 18 }}
           />
-        )}
-        {!!tokenName && (
-          <CopyableDisplay value={tokenName} label={'Token Name'} />
-        )}
-        {!!tokenSymbol && (
-          <CopyableDisplay value={tokenSymbol} label={'Token Symbol'} />
-        )}
-      </DialogContent>
-    </DialogForm>
+        </Col>
+        <Col span={12}>
+          <Statistic
+            title="Token Symbol"
+            value={tokenSymbol ?? 'Unknown'}
+            valueStyle={{ fontSize: 18 }}
+          />
+        </Col>
+      </Row>
+      <Row style={{ marginTop: 16 }}>
+        <Col>
+          <AddressDisplay
+            title="Deposit Address"
+            address={publicKey.toBase58()}
+          />
+        </Col>
+      </Row>
+      {mint && (
+        <Row style={{ marginTop: 16 }}>
+          <Col>
+            <AddressDisplay
+              title="Token Address"
+              address={mint.toBase58()}
+              showLink={true}
+            />
+          </Col>
+        </Row>
+      )}
+    </Modal>
   );
 }

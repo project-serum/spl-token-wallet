@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogForm from './DialogForm';
-import { abbreviateAddress } from '../utils/utils';
-import CopyableDisplay from './CopyableDisplay';
 import {
-  useIsProdNetwork,
-  useSolanaExplorerUrlSuffix,
-} from '../utils/connection';
-import Typography from '@material-ui/core/Typography';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
+  Modal,
+  Button,
+  Tabs,
+  Input,
+  Space,
+  Steps,
+  Divider,
+  Alert,
+} from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import { abbreviateAddress } from '../utils/utils';
+import { useIsProdNetwork } from '../utils/connection';
 import { useAsyncData } from '../utils/fetch-loop';
 import tuple from 'immutable-tuple';
 import { showSwapAddress } from '../utils/config';
@@ -22,16 +23,12 @@ import {
   swapErc20ToSpl,
   useEthAccount,
 } from '../utils/swap/eth';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Link from '@material-ui/core/Link';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { DialogContentText } from '@material-ui/core';
+import AddressDisplay from './AddressDisplay';
+import TokenIcon from './TokenIcon';
+import { Text } from './layout/StyledComponents';
+
+const { TabPane } = Tabs;
+const { Step } = Steps;
 
 export default function DepositDialog({
   open,
@@ -40,9 +37,8 @@ export default function DepositDialog({
   balanceInfo,
 }) {
   const isProdNetwork = useIsProdNetwork();
-  const urlSuffix = useSolanaExplorerUrlSuffix();
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('0');
   const [swapInfo] = useAsyncData(async () => {
     if (!showSwapAddress || !isProdNetwork) {
       return null;
@@ -76,59 +72,59 @@ export default function DepositDialog({
       } ${secondTab}`;
     }
     tabs = (
-      <Tabs
-        value={tab}
-        variant="fullWidth"
-        onChange={(e, value) => setTab(value)}
-        textColor="primary"
-        indicatorColor="primary"
-      >
-        <Tab label={firstTab} />
-        <Tab label={secondTab} />
+      <Tabs activeKey={tab} onChange={setTab} centered>
+        <TabPane tab={firstTab} key="0" />
+        <TabPane tab={secondTab} key="1" />
       </Tabs>
     );
   }
 
   return (
-    <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>
-        Deposit {tokenName ?? mint.toBase58()}
-        {tokenSymbol ? ` (${tokenSymbol})` : null}
-      </DialogTitle>
+    <Modal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <TokenIcon mint={mint} tokenName={tokenName} />
+          <span style={{ marginLeft: 16 }}>
+            Deposit {tokenName ?? mint.toBase58()}
+            {tokenSymbol ? ` (${tokenSymbol})` : null}
+          </span>
+        </div>
+      }
+      visible={open}
+      onCancel={onClose}
+      footer={null}
+      width={650}
+    >
       {tabs}
-      <DialogContent style={{ paddingTop: 16 }}>
-        {tab === 0 ? (
+      <Space direction="vertical" style={{ display: 'flex' }}>
+        {tab === '0' ? (
           <>
             {publicKey.equals(owner) ? (
-              <DialogContentText>
-                This address can only be used to receive SOL. Do not send other
-                tokens to this address.
-              </DialogContentText>
+              <Alert
+                message="This address can only be used to receive SOL. Do not send other
+                      tokens to this address."
+                type="warning"
+                showIcon
+              />
             ) : (
-              <DialogContentText>
-                This address can only be used to receive{' '}
-                {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
-                this address.
-              </DialogContentText>
-            )}
-            <CopyableDisplay
-              value={publicKey.toBase58()}
-              label={'Deposit Address'}
-              autoFocus
-              qrCode
-            />
-            <DialogContentText variant="body2">
-              <Link
-                href={
-                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-                  urlSuffix
+              <Alert
+                message={
+                  <span>
+                    This address can only be used to receive{' '}
+                    {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
+                    this address.
+                  </span>
                 }
-                target="_blank"
-                rel="noopener"
-              >
-                View on Solana Explorer
-              </Link>
-            </DialogContentText>
+                type="warning"
+                showIcon
+              />
+            )}
+            <AddressDisplay
+              title="Deposit Address"
+              address={publicKey.toBase58()}
+              showLink={true}
+              showQR={true}
+            />
           </>
         ) : (
           <SolletSwapDepositAddress
@@ -136,11 +132,11 @@ export default function DepositDialog({
             swapInfo={swapInfo}
           />
         )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </DialogForm>
+      </Space>
+      <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button onClick={onClose}>Cancel</Button>
+      </Space>
+    </Modal>
   );
 }
 
@@ -154,30 +150,30 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
 
   if (blockchain === 'btc' && memo === null) {
     return (
-      <>
-        <DialogContentText>
+      <Space direction="vertical" style={{ display: 'flex' }}>
+        <Text>
           Native BTC can be converted to SPL {tokenName} by sending it to the
           following address:
-        </DialogContentText>
-        <CopyableDisplay
-          value={address}
-          label="Native BTC Deposit Address"
-          autoFocus
-          qrCode={`bitcoin:${address}`}
+        </Text>
+        <Divider style={{ margin: '10px 0px' }} />
+        <AddressDisplay
+          title="Native BTC Deposit Address"
+          address={address}
+          showQR={true}
         />
-      </>
+      </Space>
     );
   }
 
   if (blockchain === 'eth') {
     return (
-      <>
-        <DialogContentText>
+      <Space direction="vertical" style={{ display: 'flex' }}>
+        <Text>
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
           converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
-        </DialogContentText>
+        </Text>
         <MetamaskDeposit swapInfo={swapInfo} />
-      </>
+      </Space>
     );
   }
 
@@ -236,82 +232,62 @@ function MetamaskDeposit({ swapInfo }) {
 
   if (!submitted) {
     return (
-      <div style={{ display: 'flex', alignItems: 'baseline' }}>
-        <TextField
-          label="Amount"
-          fullWidth
-          variant="outlined"
-          margin="normal"
-          type="number"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">{ticker}</InputAdornment>
-            ),
-            inputProps: {
-              step: 'any',
-            },
-          }}
-          value={amount}
-          onChange={(e) => setAmount(e.target.value.trim())}
-          helperText={
-            maxAmountLoaded ? (
-              <span onClick={() => setAmount(maxAmount.toFixed(6))}>
-                Max: {maxAmount.toFixed(6)}
-              </span>
-            ) : null
-          }
-        />
-        <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
-          Convert
-        </Button>
-      </div>
+      <Space direction="vertical" style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+          <Input
+            placeholder="Amount"
+            fullWidth
+            type="number"
+            suffix={ticker}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value.trim())}
+          />
+          <Button type="primary" onClick={submit} disabled={!amount}>
+            Convert
+          </Button>
+        </div>
+        {maxAmountLoaded && (
+          <Button
+            type="primary"
+            onClick={() => setAmount(maxAmount.toFixed(6))}
+          >
+            Max: {maxAmount.toFixed(6)}
+          </Button>
+        )}
+      </Space>
     );
   }
 
   return (
     <>
-      <Stepper activeStep={status.step}>
-        <Step>
-          <StepLabel>Approve Conversion</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Send Funds</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Wait for Confirmations</StepLabel>
-        </Step>
-      </Stepper>
-      {status.step === 2 ? (
-        <>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ marginRight: 16 }}>
-              <CircularProgress />
-            </div>
-            <div>
-              {status.confirms ? (
-                <Typography>{status.confirms} / 12 Confirmations</Typography>
-              ) : (
-                <Typography>Transaction Pending</Typography>
-              )}
-              <Typography variant="body2">
-                <Link
+      <Steps current={status.step} direction="vertical">
+        <Step title="Approve Conversion" />
+        <Step title="Send Funds" />
+        <Step
+          title="Wait for Confirmations"
+          description={
+            status.step === 2 && (
+              <div>
+                <span>
+                  {status.confirms
+                    ? `${status.confirms} / 12 Confirmations`
+                    : 'Transaction Pending'}
+                </span>
+                <Button
+                  type="link"
+                  component="a"
                   href={`https://etherscan.io/tx/${status.txid}`}
                   target="_blank"
                   rel="noopener"
                 >
                   View on Etherscan
-                </Link>
-              </Typography>
-            </div>
-          </div>
-        </>
-      ) : null}
+                </Button>
+              </div>
+            )
+          }
+          icon={status.step === 2 && <LoadingOutlined />}
+        />
+      </Steps>
     </>
   );
 }

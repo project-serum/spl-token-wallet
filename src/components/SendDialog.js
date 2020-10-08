@@ -1,37 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DialogForm from './DialogForm';
+import {
+  Modal,
+  Button,
+  Tabs,
+  Input,
+  Space,
+  Typography,
+  Steps,
+} from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useWallet } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
 import { swapApiRequest, useSwapApiGet } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 import { useAsyncData } from '../utils/fetch-loop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import TokenIcon from './TokenIcon';
+
+const { TabPane } = Tabs;
+const { Paragraph } = Typography;
+const { Step } = Steps;
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const isProdNetwork = useIsProdNetwork();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState('0');
   const onSubmitRef = useRef();
 
   const [swapCoinInfo] = useSwapApiGet(
@@ -45,32 +44,32 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 
   return (
     <>
-      <DialogForm
-        open={open}
-        onClose={onClose}
-        onSubmit={() => onSubmitRef.current()}
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <TokenIcon mint={mint} tokenName={tokenName} />
+            <span style={{ marginLeft: 16 }}>
+              Send {tokenName ?? abbreviateAddress(mint)}{' '}
+              {tokenSymbol ? `(${tokenSymbol})` : null}
+            </span>
+          </div>
+        }
+        visible={open}
+        onCancel={onClose}
+        footer={null}
       >
-        <DialogTitle>
-          Send {tokenName ?? abbreviateAddress(mint)}
-          {tokenSymbol ? ` (${tokenSymbol})` : null}
-        </DialogTitle>
         {swapCoinInfo ? (
-          <Tabs
-            value={tab}
-            variant="fullWidth"
-            onChange={(e, value) => setTab(value)}
-            textColor="primary"
-            indicatorColor="primary"
-          >
-            <Tab label={`SPL ${swapCoinInfo.ticker}`} />
-            <Tab
-              label={`${swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'} ${
+          <Tabs activeKey={tab} onChange={setTab} centered>
+            <TabPane tab={`SPL ${swapCoinInfo.ticker}`} key="0" />
+            <TabPane
+              tab={`${swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'} ${
                 swapCoinInfo.ticker
               }`}
+              key="1"
             />
           </Tabs>
         ) : null}
-        {tab === 0 ? (
+        {tab === '0' ? (
           <SendSplDialog
             onClose={onClose}
             publicKey={publicKey}
@@ -87,7 +86,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             onSubmitRef={onSubmitRef}
           />
         )}
-      </DialogForm>
+      </Modal>
       {ethAccount &&
       (swapCoinInfo?.blockchain === 'eth' || swapCoinInfo?.erc20Contract) ? (
         <EthWithdrawalCompleter ethAccount={ethAccount} publicKey={publicKey} />
@@ -125,17 +124,17 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   onSubmitRef.current = onSubmit;
   return (
     <>
-      <DialogContent>{fields}</DialogContent>
-      <DialogActions>
+      {fields}
+      <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button
-          type="submit"
-          color="primary"
-          disabled={sending || !validAmount}
+          type="primary"
+          disabled={sending || !validAmount || !destinationAddress}
+          onClick={onSubmit}
         >
           Send
         </Button>
-      </DialogActions>
+      </Space>
     </>
   );
 }
@@ -210,25 +209,22 @@ function SendSwapDialog({
 
   return (
     <>
-      <DialogContent style={{ paddingTop: 16 }}>
-        <DialogContentText>
-          SPL {tokenName} can be converted to{' '}
-          {swapCoinInfo.erc20Contract ? 'ERC20' : 'native'}{' '}
-          {swapCoinInfo.ticker}
-          {needMetamask ? ' via MetaMask' : null}.
-        </DialogContentText>
-        {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
-      </DialogContent>
-      <DialogActions>
+      <Paragraph>
+        SPL {tokenName} can be converted to{' '}
+        {swapCoinInfo.erc20Contract ? 'ERC20' : 'native'} {swapCoinInfo.ticker}
+        {needMetamask ? ' via MetaMask' : null}.
+      </Paragraph>
+      {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
+      <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button
-          type="submit"
-          color="primary"
+          type="primary"
           disabled={sending || (needMetamask && !ethAccount) || !validAmount}
+          onClick={onSubmit}
         >
           Send
         </Button>
-      </DialogActions>
+      </Space>
     </>
   );
 }
@@ -247,66 +243,55 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
     { refreshInterval: 2000 },
   );
 
-  let step = 1;
+  let step = 0;
   let ethTxid = null;
-  for (let swap of (swaps || [])) {
+  for (let swap of swaps || []) {
     const { deposit, withdrawal } = swap;
     if (deposit.txid === signature) {
       if (withdrawal.txid?.startsWith('0x')) {
         step = 3;
         ethTxid = withdrawal.txid;
       } else {
-        step = 2;
+        step = 1;
       }
     }
   }
 
   return (
     <>
-      <DialogContent>
-        <Stepper activeStep={step}>
-          <Step>
-            <StepLabel>Send Request</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Wait for Confirmations</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Withdraw Funds</StepLabel>
-          </Step>
-        </Stepper>
-        {ethTxid ? (
-          <Typography variant="body2" align="center">
-            <Link
-              href={`https://etherscan.io/tx/${ethTxid}`}
-              target="_blank"
-              rel="noopener"
-            >
-              View on Etherscan
-            </Link>
-          </Typography>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ marginRight: 16 }}>
-              <CircularProgress />
-            </div>
-            {confirms ? (
-              <Typography>{confirms} / 35 Confirmations</Typography>
-            ) : (
-              <Typography>Transaction Pending</Typography>
-            )}
-          </div>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
+      <Space direction="vertical">
+        <Steps current={step} direction="vertical">
+          <Step
+            title="Send Request"
+            description={step === 0 && 'Transaction Pending'}
+            icon={step === 0 && <LoadingOutlined />}
+          />
+          <Step
+            title="Wait for Confirmations"
+            description={step === 1 && `${confirms} / 35 Confirmations`}
+            icon={step === 1 && <LoadingOutlined />}
+          />
+          <Step
+            title="Withdraw Funds"
+            description={
+              step === 3 && (
+                <Button
+                  type="link"
+                  component="a"
+                  href={`https://etherscan.io/tx/${ethTxid}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Etherscan
+                </Button>
+              )
+            }
+          />
+        </Steps>
+      </Space>
+      <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button onClick={onClose}>Cancel</Button>
+      </Space>
     </>
   );
 }
@@ -320,44 +305,31 @@ function useForm(balanceInfo) {
   const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
 
   const fields = (
-    <>
-      <TextField
-        label="Recipient Address"
-        fullWidth
-        variant="outlined"
-        margin="normal"
+    <Space direction="vertical" style={{ display: 'flex' }}>
+      <Input
+        placeholder="Recipient Address"
         value={destinationAddress}
         onChange={(e) => setDestinationAddress(e.target.value.trim())}
       />
-      <TextField
-        label="Amount"
-        fullWidth
-        variant="outlined"
-        margin="normal"
+      <Input
+        placeholder="Amount"
         type="number"
-        InputProps={{
-          endAdornment: tokenSymbol ? (
-            <InputAdornment position="end">{tokenSymbol}</InputAdornment>
-          ) : null,
-          inputProps: {
-            step: Math.pow(10, -decimals),
-          },
-        }}
         value={transferAmountString}
         onChange={(e) => setTransferAmountString(e.target.value.trim())}
-        helperText={
-          <span
-            onClick={() =>
-              setTransferAmountString(
-                (balanceAmount / Math.pow(10, decimals)).toFixed(decimals),
-              )
-            }
-          >
-            Max: {balanceAmount / Math.pow(10, decimals)}
-          </span>
-        }
+        step={Math.pow(10, -decimals)}
+        suffix={tokenSymbol}
       />
-    </>
+      <Button
+        type="primary"
+        onClick={() =>
+          setTransferAmountString(
+            (balanceAmount / Math.pow(10, decimals)).toFixed(decimals),
+          )
+        }
+      >
+        Max: {balanceAmount / Math.pow(10, decimals)}
+      </Button>
+    </Space>
   );
 
   return {
