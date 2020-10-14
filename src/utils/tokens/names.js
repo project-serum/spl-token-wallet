@@ -132,6 +132,18 @@ export const TOKENS = {
       mintAddress: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
       tokenName: 'Wrapped ALEPH',
     },
+    {
+      tokenSymbol: 'LUA',
+      mintAddress: 'EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX',
+      tokenName: 'Wrapped LUA',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
+    },
+    {
+      tokenSymbol: 'TOMOE',
+      mintAddress: 'GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd',
+      tokenName: 'Wrapped TOMOE',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0x05D3606d5c81EB9b7B18530995eC9B29da05FaBa/logo.png',
+    }
   ],
 };
 
