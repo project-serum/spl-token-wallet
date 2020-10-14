@@ -6,7 +6,6 @@ import { ConnectionProvider } from './utils/connection';
 import WalletPage from './pages/WalletPage';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
-import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
 import LoginPage from './pages/LoginPage';
 
@@ -21,13 +20,11 @@ export default function App() {
       <GlobalStyle />
       <ConnectionProvider>
         <WalletProvider>
-          <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-            <NavigationFrame>
-              <Suspense fallback={<LoadingIndicator />}>
-                <PageContents />
-              </Suspense>
-            </NavigationFrame>
-          </SnackbarProvider>
+          <NavigationFrame>
+            <Suspense fallback={<LoadingIndicator />}>
+              <PageContents />
+            </Suspense>
+          </NavigationFrame>
         </WalletProvider>
       </ConnectionProvider>
     </Suspense>

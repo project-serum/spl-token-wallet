@@ -18,7 +18,6 @@
     "buffer-layout": "^1.2.0",
     "craco-less": "^1.17.0",
     "immutable-tuple": "^0.4.10",
-    "notistack": "^0.9.17",
     "qrcode.react": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
