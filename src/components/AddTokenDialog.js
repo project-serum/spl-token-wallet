@@ -19,6 +19,7 @@ import { useSendTransaction } from '../utils/notifications';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { abbreviateAddress } from '../utils/utils';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -32,6 +33,7 @@ import CopyableDisplay from './CopyableDisplay';
 import DialogForm from './DialogForm';
 import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
+import TokenIcon from './TokenIcon';
 
 const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
@@ -224,6 +226,7 @@ export default function AddTokenDialog({ open, onClose }) {
 
 function TokenListItem({
   tokenName,
+  icon,
   tokenSymbol,
   mintAddress,
   onSubmit,
@@ -237,6 +240,9 @@ function TokenListItem({
     <React.Fragment>
       <div style={{ display: 'flex' }} key={tokenName}>
         <ListItem button onClick={() => setOpen((open) => !open)}>
+          <ListItemIcon>
+            <TokenIcon url={icon} tokenName={tokenName} size={20} />
+          </ListItemIcon>
           <ListItemText
             primary={
               <Link

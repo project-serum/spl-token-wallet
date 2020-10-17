@@ -59,13 +59,15 @@ export function useAccountInfo(publicKey) {
     if (!publicKey) {
       return;
     }
-    let previousData = null;
+    let previousInfo = null;
     const id = connection.onAccountChange(publicKey, (info) => {
-      if (info.data) {
-        if (!previousData || !previousData.equals(info.data)) {
-          previousData = info.data;
-          setCache(cacheKey, info);
-        }
+      if (
+        !previousInfo ||
+        !previousInfo.data.equals(info.data) ||
+        previousInfo.lamports !== info.lamports
+      ) {
+        previousInfo = info;
+        setCache(cacheKey, info);
       }
     });
     return () => connection.removeAccountChangeListener(id);

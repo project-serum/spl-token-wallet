@@ -55,22 +55,12 @@ export function abbreviateAddress(address) {
 
 export async function confirmTransaction(connection, signature) {
   let startTime = new Date();
-  let result = await Promise.race([
-    connection.confirmTransaction(signature, 1).then((result) => result.value),
-    new Promise((resolve) => connection.onSignature(signature, resolve)),
-  ]);
-  if (!result) {
-    throw new Error('Failed to confirm transaction');
-  }
-  if (result.err) {
+  let result = await connection.confirmTransaction(signature, 'recent');
+  if (result.value.err) {
     throw new Error(
       'Error confirming transaction: ' + JSON.stringify(result.err),
     );
   }
-  console.log(
-    'Transaction confirmed via %s after %sms',
-    result.slot ? 'REST' : 'WS',
-    new Date() - startTime,
-  );
-  return result;
+  console.log('Transaction confirmed after %sms', new Date() - startTime);
+  return result.value;
 }

@@ -44,6 +44,7 @@ LAYOUT.addVariant(
   BufferLayout.struct([BufferLayout.nu64('amount')]),
   'burn',
 );
+LAYOUT.addVariant(9, BufferLayout.struct([]), 'closeAccount');
 
 const instructionMaxSpan = Math.max(
   ...Object.values(LAYOUT.registry).map((r) => r.span),
@@ -122,6 +123,21 @@ export function mintTo({ mint, destination, amount, mintAuthority }) {
       mintTo: {
         amount,
       },
+    }),
+    programId: TOKEN_PROGRAM_ID,
+  });
+}
+
+export function closeAccount({ source, destination, owner }) {
+  const keys = [
+    { pubkey: source, isSigner: false, isWritable: true },
+    { pubkey: destination, isSigner: false, isWritable: true },
+    { pubkey: owner, isSigner: true, isWritable: false },
+  ];
+  return new TransactionInstruction({
+    keys,
+    data: encodeTokenInstructionData({
+      closeAccount: {},
     }),
     programId: TOKEN_PROGRAM_ID,
   });

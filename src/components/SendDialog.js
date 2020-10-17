@@ -249,7 +249,7 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
 
   let step = 1;
   let ethTxid = null;
-  for (let swap of swaps) {
+  for (let swap of (swaps || [])) {
     const { deposit, withdrawal } = swap;
     if (deposit.txid === signature) {
       if (withdrawal.txid?.startsWith('0x')) {

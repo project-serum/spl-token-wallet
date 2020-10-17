@@ -21,6 +21,7 @@ import { abbreviateAddress } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
@@ -36,6 +37,9 @@ import {
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
 import { showTokenInfoDialog } from '../utils/config';
+import CloseTokenAccountDialog from './CloseTokenAccountButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import TokenIcon from './TokenIcon';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -121,6 +125,9 @@ function BalanceListItem({ publicKey }) {
   return (
     <>
       <ListItem button onClick={() => setOpen((open) => !open)}>
+        <ListItemIcon>
+          <TokenIcon mint={mint} tokenName={tokenName} size={28} />
+        </ListItemIcon>
         <ListItemText
           primary={
             <>
@@ -150,12 +157,16 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
+  const [
+    closeTokenAccountDialogOpen,
+    setCloseTokenAccountDialogOpen,
+  ] = useState(false);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
+  let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
 
   return (
     <>
@@ -187,6 +198,17 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
           >
             Send
           </Button>
+          {mint && amount === 0 ? (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              startIcon={<DeleteIcon />}
+              onClick={() => setCloseTokenAccountDialogOpen(true)}
+            >
+              Delete
+            </Button>
+          ) : null}
         </div>
         <Typography variant="body2" className={classes.address}>
           Deposit Address: {publicKey.toBase58()}
@@ -230,6 +252,12 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
         onClose={() => setTokenInfoDialogOpen(false)}
+        balanceInfo={balanceInfo}
+        publicKey={publicKey}
+      />
+      <CloseTokenAccountDialog
+        open={closeTokenAccountDialogOpen}
+        onClose={() => setCloseTokenAccountDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
