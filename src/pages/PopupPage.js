@@ -114,7 +114,7 @@ export default function PopupPage({ opener }) {
       postMessage({
         result: {
           signature: bs58.encode(
-            nacl.sign.detached(message, wallet.account.secretKey),
+            nacl.sign.detached(message, wallet.secretKey),
           ),
           publicKey: wallet.publicKey.toBase58(),
         },

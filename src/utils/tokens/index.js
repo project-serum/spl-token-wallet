@@ -57,9 +57,39 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
     });
 }
 
+export async function signAndSendTransaction(connection, transaction, wallet, signers) {
+  transaction.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
+  transaction.setSigners(
+    // fee payed by the wallet owner
+    wallet.publicKey,
+    ...signers.map(s => s.publicKey)
+  );
+
+  if(signers.length > 0) {
+    transaction.partialSign(...signers);
+  }
+
+  transaction = await wallet.signTransaction(transaction);
+  const rawTransaction = transaction.serialize();
+  return await connection.sendRawTransaction(rawTransaction, {
+    preflightCommitment: 'single',
+  });
+}
+
+export async function nativeTransfer(connection, wallet, destination, amount) {
+  const tx = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: wallet.publicKey,
+      toPubkey: destination,
+      lamports: amount,
+    }),
+  );
+  return await signAndSendTransaction(connection, tx, wallet, []);
+}
+
 export async function createAndInitializeMint({
   connection,
-  owner, // Account for paying fees and allowed to mint new tokens
+  owner, // Wallet for paying fees and allowed to mint new tokens
   mint, // Account to hold token information
   amount, // Number of tokens to issue
   decimals,
@@ -84,7 +114,7 @@ export async function createAndInitializeMint({
       mintAuthority: owner.publicKey,
     }),
   );
-  let signers = [owner, mint];
+  let signers = [mint];
   if (amount > 0) {
     transaction.add(
       SystemProgram.createAccount({
@@ -114,9 +144,8 @@ export async function createAndInitializeMint({
       }),
     );
   }
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+
+  return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
 export async function createAndInitializeTokenAccount({
@@ -144,10 +173,9 @@ export async function createAndInitializeTokenAccount({
       owner: payer.publicKey,
     }),
   );
-  let signers = [payer, newAccount];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+
+  let signers = [newAccount];
+  return await signAndSendTransaction(connection, transaction, payer, signers);
 }
 
 export async function transferTokens({
@@ -169,10 +197,8 @@ export async function transferTokens({
   if (memo) {
     transaction.add(memoInstruction(memo));
   }
-  let signers = [owner];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+  let signers = [];
+  return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
 export async function closeTokenAccount({
@@ -187,8 +213,6 @@ export async function closeTokenAccount({
       owner: owner.publicKey,
     }),
   );
-  let signers = [owner];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+  let signers = [];
+  return await signAndSendTransaction(connection, transaction, owner, signers);
 }

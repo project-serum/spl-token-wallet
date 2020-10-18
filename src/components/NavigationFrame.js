@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { clusterApiUrl } from '@solana/web3.js';
-import { useWalletSelector } from '../utils/wallet';
+import { useWalletSelector, useWalletAuth, useWallet } from '../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -126,10 +126,12 @@ function NetworkSelector() {
 
 function WalletSelector() {
   const { addresses, walletIndex, setWalletIndex } = useWalletSelector();
+  const { logout } = useWalletAuth();
+  const wallet = useWallet();
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
 
-  if (addresses.length === 0) {
+  if (!wallet) {
     return null;
   }
 
@@ -187,6 +189,14 @@ function WalletSelector() {
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Create Account
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            logout(null);
+          }}
+        >
+          Logout
         </MenuItem>
       </Menu>
     </>

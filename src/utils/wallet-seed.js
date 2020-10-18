@@ -34,6 +34,12 @@ export function hasLockedMnemonicAndSeed() {
   return !!localStorage.getItem('locked');
 }
 
+export function lock() {
+  localStorage.removeItem('unlocked');
+  sessionStorage.removeItem('unlocked');
+  setUnlockedMnemonicAndSeed(null, null);
+}
+
 function setUnlockedMnemonicAndSeed(mnemonic, seed) {
   unlockedMnemonicAndSeed = { mnemonic, seed };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
