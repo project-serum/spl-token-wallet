@@ -38,8 +38,9 @@ export default function App() {
     <Suspense fallback={<LoadingIndicator />}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-          <ConnectionProvider>
+
+        <ConnectionProvider>
+          <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
             <WalletProvider>
               <NavigationFrame>
                 <Suspense fallback={<LoadingIndicator />}>
@@ -47,8 +48,8 @@ export default function App() {
                 </Suspense>
               </NavigationFrame>
             </WalletProvider>
-          </ConnectionProvider>
-        </SnackbarProvider>
+          </SnackbarProvider>
+        </ConnectionProvider>
       </ThemeProvider>
     </Suspense>
   );

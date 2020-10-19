@@ -1,5 +1,4 @@
 
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { PublicKey } from "@solana/web3.js";
 const bs58 = require("bs58");
 
@@ -88,8 +87,6 @@ async function solana_ledger_get_pubkey(transport, derivation_path) {
 export async function solana_ledger_sign_transaction(transport, derivation_path, transaction) {
   const msg_bytes = transaction.serializeMessage();
 
-
-  // XXX: Ledger app only supports a single derivation_path per call ATM
   var num_paths = Buffer.alloc(1);
   num_paths.writeUInt8(1);
 

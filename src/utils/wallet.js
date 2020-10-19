@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import * as bip32 from 'bip32';
-import { Account, SystemProgram, Transaction } from '@solana/web3.js';
+import { Account } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import {
   setInitialAccountInfo,
@@ -25,7 +25,9 @@ import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged, loadMnemonicAndSeed, lock } from './wallet-seed';
 import { getPublicKey, solana_derivation_path, solana_ledger_sign_transaction } from './ledger';
-import TransportU2F from "@ledgerhq/hw-transport-u2f";
+import TransportWebUsb from "@ledgerhq/hw-transport-webusb";
+import { useSnackbar } from 'notistack';
+
 import { useCallAsync } from './notifications';
 
 function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
@@ -63,8 +65,7 @@ class LocalStorageWalletProvider {
   }
 
   init = async () => {
-    this.transport = await TransportU2F.create();
-    this.transport.setScrambleKey('BOIL');
+    this.transport = await TransportWebUsb.create();
     this.pubKey = await getPublicKey(this.transport);
     return this;
   }
@@ -101,9 +102,10 @@ export class Wallet {
     this.provider = WalletProviderFactory.getProvider(type, walletIndex)
   }
 
-  init = async () => {
-    await this.provider.init();
-    return this;
+  static create = async (connection, walletIndex = 0, type) => {
+    const instance = new Wallet(connection, walletIndex, type);
+    await instance.provider.init();
+    return instance;
   }
 
   get publicKey() {
@@ -136,7 +138,7 @@ export class Wallet {
     );
   };
 
-  transferToken = async (source, destination, amount, memo = null) => {
+  transferToken = async (source, destination, amount, decimals, memo = null) => {
     if (source.equals(this.publicKey)) {
       if (memo) {
         throw new Error('Memo not implemented');
@@ -179,11 +181,21 @@ export function WalletProvider({ children }) {
   const callAsync = useCallAsync();
   const [walletIndex, setWalletIndex] = useLocalStorageState('walletIndex', 0);
   const [wallet, setWallet] = useState();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     (async () => {
       if(walletType) {
-        setWallet(await (new Wallet(connection, walletIndex, walletType)).init())
+        try {
+          const instance = await Wallet.create(connection, walletIndex, walletType);
+          setWallet(instance);
+        } catch (er) {
+          setWalletType('')
+          enqueueSnackbar(`${er.message}`, {
+            variant: 'error',
+            autoHideDuration: 2500,
+          });
+        }
       } else {
         setWallet(undefined);
       }
