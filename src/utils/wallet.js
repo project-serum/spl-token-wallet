@@ -200,7 +200,7 @@ export function WalletProvider({ children }) {
         setWallet(undefined);
       }
     })();
-  }, [walletType, connection, walletIndex]);
+  }, [enqueueSnackbar, walletType, connection, walletIndex]);
 
   const login = async (method, password, stayLoggedIn) => {
     if (method === 'ledger') {
