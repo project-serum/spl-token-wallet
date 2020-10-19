@@ -25,11 +25,11 @@ import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged, loadMnemonicAndSeed, lock } from './wallet-seed';
 import { getPublicKey, solana_derivation_path, solana_ledger_sign_transaction } from './ledger';
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import TransportU2F from "@ledgerhq/hw-transport-u2f";
 import { useCallAsync } from './notifications';
 
 function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
+
   const derivedSeed = bip32
     .fromSeed(seed)
     .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
@@ -40,7 +40,7 @@ class LocalStorageWalletProvider {
   constructor(walletIndex) {
     const { seed } = getUnlockedMnemonicAndSeed();
     this.walletIndex = walletIndex;
-    this.account = getAccountFromSeed(this.seed, this.walletIndex)
+    this.account = getAccountFromSeed(Buffer.from(seed, 'hex'), this.walletIndex)
   }
 
   init = async () => {
@@ -98,7 +98,7 @@ export class Wallet {
   constructor(connection, walletIndex = 0, type) {
     this.connection = connection;
     this.walletIndex = walletIndex;
-    this.provider = WalletProviderFactory.getProvider(type)
+    this.provider = WalletProviderFactory.getProvider(type, walletIndex)
   }
 
   init = async () => {
