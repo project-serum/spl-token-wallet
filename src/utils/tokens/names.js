@@ -132,6 +132,11 @@ export const TOKENS = {
       mintAddress: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
       tokenName: 'Wrapped ALEPH',
     },
+    {
+      tokenSymbol: 'MATH',
+      mintAddress: 'GeDS162t9yGJuLEHPWXXGrb1zwkzinCgRwnT8vHYjKza',
+      tokenName: 'Wrapped MATH',
+    },
   ],
 };
 
