@@ -94,6 +94,10 @@ export default function AddTokenDialog({ open, onClose }) {
     valid = erc20Address.length === 42 && erc20Address.startsWith('0x');
   }
 
+  let nonDeprecatedPopularTokens = popularTokens.filter(
+    (token) => !token.deprecated,
+  );
+
   return (
     <Modal
       title="Add Token"
@@ -112,11 +116,11 @@ export default function AddTokenDialog({ open, onClose }) {
           <LoadingIndicator />
         )}
         <Tabs activeKey={tab} onChange={setTab} centered>
-          {!!popularTokens && (
+          {!!nonDeprecatedPopularTokens && (
             <TabPane tab="Popular Tokens" key="popular">
               <List
                 itemLayout="horizontal"
-                dataSource={popularTokens}
+                dataSource={nonDeprecatedPopularTokens}
                 renderItem={(token) => (
                   <TokenListItem
                     key={token.mintAddress}

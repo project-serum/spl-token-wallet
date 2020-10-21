@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Modal,
-  Button,
-  Tabs,
-  Input,
-  Space,
-  Typography,
-  Steps,
-} from 'antd';
+import { Modal, Button, Tabs, Input, Space, Typography, Steps } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useWallet } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
@@ -158,7 +150,7 @@ function SendSwapDialog({
     validAmount,
   } = useForm(balanceInfo);
 
-  const { tokenName, decimals } = balanceInfo;
+  const { tokenName, decimals, mint } = balanceInfo;
   const blockchain =
     swapCoinInfo.blockchain === 'sol' ? 'eth' : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
@@ -179,6 +171,8 @@ function SendSwapDialog({
       coin: swapCoinInfo.erc20Contract,
       address: destinationAddress,
       size: amount / 10 ** decimals,
+      wusdcToUsdc:
+        mint?.toBase58() === 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
     });
     if (swapInfo.blockchain !== 'sol') {
       throw new Error('Unexpected blockchain');
@@ -268,7 +262,17 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
           />
           <Step
             title="Wait for Confirmations"
-            description={step === 1 && `${confirms} / 35 Confirmations`}
+            description={
+              step === 1 && (
+                <div>
+                  <span>{`${confirms} / 35 Confirmations`}</span>
+                  <Paragraph>
+                    Please keep this window open. You will need to approve the
+                    request on MetaMask to complete the transaction.
+                  </Paragraph>
+                </div>
+              )
+            }
             icon={step === 1 && <LoadingOutlined />}
           />
           <Step
@@ -290,7 +294,7 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
         </Steps>
       </Space>
       <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>Close</Button>
       </Space>
     </>
   );
