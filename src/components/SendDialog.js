@@ -159,7 +159,7 @@ function SendSwapDialog({
     validAmount,
   } = useForm(balanceInfo);
 
-  const { tokenName, decimals } = balanceInfo;
+  const { tokenName, decimals, mint } = balanceInfo;
   const blockchain =
     swapCoinInfo.blockchain === 'sol' ? 'eth' : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
@@ -180,6 +180,8 @@ function SendSwapDialog({
       coin: swapCoinInfo.erc20Contract,
       address: destinationAddress,
       size: amount / 10 ** decimals,
+      wusdcToUsdc:
+        mint?.toBase58() === 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
     });
     if (swapInfo.blockchain !== 'sol') {
       throw new Error('Unexpected blockchain');
@@ -249,7 +251,7 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
 
   let step = 1;
   let ethTxid = null;
-  for (let swap of (swaps || [])) {
+  for (let swap of swaps || []) {
     const { deposit, withdrawal } = swap;
     if (deposit.txid === signature) {
       if (withdrawal.txid?.startsWith('0x')) {
@@ -303,6 +305,12 @@ function SendSwapProgress({ publicKey, signature, onClose }) {
             )}
           </div>
         )}
+        {!ethTxid ? (
+          <DialogContentText style={{ marginTop: 16, marginBottom: 0 }}>
+            Please keep this window open. You will need to approve the request
+            on MetaMask to complete the transaction.
+          </DialogContentText>
+        ) : null}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
