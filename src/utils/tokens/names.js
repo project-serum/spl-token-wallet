@@ -135,13 +135,13 @@ export const TOKENS = {
     {
       tokenSymbol: 'LUA',
       mintAddress: 'EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX',
-      tokenName: 'Wrapped LUA',
+      tokenName: 'Wrapped LuaToken',
       icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
     },
     {
-      tokenSymbol: 'TOMOE',
+      tokenSymbol: 'TOMO',
       mintAddress: 'GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd',
-      tokenName: 'Wrapped TOMOE',
+      tokenName: 'Wrapped TomoChain',
       icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0x05D3606d5c81EB9b7B18530995eC9B29da05FaBa/logo.png',
     }
   ],
