@@ -69,6 +69,7 @@ export class Wallet {
     );
   };
 
+  // todo: have this include mint
   transferToken = async (source, destination, amount, memo = null) => {
     if (source.equals(this.publicKey)) {
       if (memo) {

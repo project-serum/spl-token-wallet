@@ -1,4 +1,4 @@
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import { PublicKey, SystemProgram, Transaction, Account } from '@solana/web3.js';
 import {
   closeAccount,
   initializeAccount,
@@ -8,7 +8,7 @@ import {
   TOKEN_PROGRAM_ID,
   transfer,
 } from './instructions';
-import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
+import {ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT, parseTokenAccountData} from './data';
 import bs58 from 'bs58';
 
 export async function getOwnedTokenAccounts(connection, publicKey) {
@@ -157,6 +157,54 @@ export async function transferTokens({
   destinationPublicKey,
   amount,
   memo,
+  mint,
+}) {
+  // SystemProgram.programId
+  const destinationAccountInfo = await connection.getAccountInfo(destinationPublicKey);
+  if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
+    return await transferBetweenSplTokenAccounts({
+      connection,
+      owner,
+      sourcePublicKey,
+      destinationPublicKey,
+      amount,
+      memo
+    });
+  }
+  const destinationSplTokenAccount = (await getOwnedTokenAccounts(connection, destinationPublicKey))
+    .map(({ publicKey, accountInfo }) => {
+      return {publicKey, parsed: parseTokenAccountData(accountInfo.data) };
+    })
+    .filter(({parsed}) => parsed.mint.equals(mint))
+    .sort((a, b) => { return b.parsed.amount - a.parsed.amount })[0];
+  if (destinationSplTokenAccount) {
+    return await transferBetweenSplTokenAccounts({
+      connection,
+      owner,
+      sourcePublicKey,
+      destinationSplTokenAccount,
+      amount,
+      memo
+    });
+  }
+  return await createAndTransferToAccount({
+    connection,
+    owner,
+    sourcePublicKey,
+    destinationPublicKey,
+    amount,
+    memo,
+    mint,
+  })
+}
+
+async function createTransferBetweenSplTokenAccountsInstruction({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+  memo,
 }) {
   let transaction = new Transaction().add(
     transfer({
@@ -170,6 +218,73 @@ export async function transferTokens({
     transaction.add(memoInstruction(memo));
   }
   let signers = [owner];
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
+}
+
+async function transferBetweenSplTokenAccounts({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+  memo
+}) {
+  const transaction = createTransferBetweenSplTokenAccountsInstruction({
+    connection,
+    owner,
+    sourcePublicKey,
+    destinationPublicKey,
+    amount,
+    memo
+  })
+  let signers = [owner];
+  return await connection.sendTransaction(transaction, signers, {
+    preflightCommitment: 'single',
+  });
+}
+
+async function createAndTransferToAccount({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+  memo,
+  mint,
+}) {
+  const newAccount = new Account();
+  let transaction = new Transaction();
+  // todo: assert that owner of destinationPublicKey is SystemProgram on-chain
+  transaction.add(
+    SystemProgram.createAccount({
+      fromPubkey: destinationPublicKey,
+      newAccountPubkey: newAccount.publicKey,
+      lamports: await connection.getMinimumBalanceForRentExemption(
+        ACCOUNT_LAYOUT.span,
+      ),
+      space: ACCOUNT_LAYOUT.span,
+      programId: TOKEN_PROGRAM_ID,
+    }),
+  );
+  transaction.add(
+    initializeAccount({
+      account: newAccount.publicKey,
+      mint,
+      owner: destinationPublicKey,
+    }),
+  );
+  const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction({
+    connection,
+    owner,
+    sourcePublicKey,
+    destinationPublicKey: newAccount.publicKey,
+    amount,
+    memo
+  });
+  transaction.add(transferBetweenAccountsTxn);
+  let signers = [owner, newAccount];
   return await connection.sendTransaction(transaction, signers, {
     preflightCommitment: 'single',
   });
