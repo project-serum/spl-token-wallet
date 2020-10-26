@@ -159,7 +159,6 @@ export async function transferTokens({
   memo,
   mint,
 }) {
-  // SystemProgram.programId
   const destinationAccountInfo = await connection.getAccountInfo(destinationPublicKey);
   if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
     return await transferBetweenSplTokenAccounts({
@@ -171,7 +170,7 @@ export async function transferTokens({
       memo
     });
   }
-  const destinationSplTokenAccount = (await getOwnedTokenAccounts(connection, destinationPublicKey))
+  const destinationSplTokenAccount = await getOwnedTokenAccounts(connection, destinationPublicKey)
     .map(({ publicKey, accountInfo }) => {
       return {publicKey, parsed: parseTokenAccountData(accountInfo.data) };
     })
@@ -182,7 +181,7 @@ export async function transferTokens({
       connection,
       owner,
       sourcePublicKey,
-      destinationSplTokenAccount,
+      destinationPublicKey: destinationSplTokenAccount.publicKey,
       amount,
       memo
     });
@@ -198,8 +197,7 @@ export async function transferTokens({
   })
 }
 
-async function createTransferBetweenSplTokenAccountsInstruction({
-  connection,
+function createTransferBetweenSplTokenAccountsInstruction({
   owner,
   sourcePublicKey,
   destinationPublicKey,
@@ -217,10 +215,7 @@ async function createTransferBetweenSplTokenAccountsInstruction({
   if (memo) {
     transaction.add(memoInstruction(memo));
   }
-  let signers = [owner];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+  return transaction;
 }
 
 async function transferBetweenSplTokenAccounts({
@@ -232,7 +227,6 @@ async function transferBetweenSplTokenAccounts({
   memo
 }) {
   const transaction = createTransferBetweenSplTokenAccountsInstruction({
-    connection,
     owner,
     sourcePublicKey,
     destinationPublicKey,
@@ -259,7 +253,7 @@ async function createAndTransferToAccount({
   // todo: assert that owner of destinationPublicKey is SystemProgram on-chain
   transaction.add(
     SystemProgram.createAccount({
-      fromPubkey: destinationPublicKey,
+      fromPubkey: owner.publicKey,
       newAccountPubkey: newAccount.publicKey,
       lamports: await connection.getMinimumBalanceForRentExemption(
         ACCOUNT_LAYOUT.span,
@@ -276,7 +270,6 @@ async function createAndTransferToAccount({
     }),
   );
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction({
-    connection,
     owner,
     sourcePublicKey,
     destinationPublicKey: newAccount.publicKey,

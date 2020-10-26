@@ -150,6 +150,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       publicKey,
       new PublicKey(destinationAddress),
       amount,
+      balanceInfo.mint,
     );
   }
 
@@ -243,6 +244,7 @@ function SendSwapDialog({
       publicKey,
       new PublicKey(swapInfo.address),
       amount,
+      balanceInfo.mint,
       swapInfo.memo,
     );
   }
