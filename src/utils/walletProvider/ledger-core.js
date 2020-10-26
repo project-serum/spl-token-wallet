@@ -1,4 +1,3 @@
-
 import { PublicKey } from "@solana/web3.js";
 const bs58 = require("bs58");
 
@@ -15,8 +14,6 @@ const MAX_PAYLOAD = 255;
 
 const LEDGER_CLA = 0xe0;
 
-const STATUS_OK = 0x9000;
-
 /*
  * Helper for chunked send of large payloads
  */
@@ -30,7 +27,7 @@ async function solana_send(transport, instruction, p1, payload) {
       payload_offset += MAX_PAYLOAD;
       console.log("send", (p2 | P2_MORE).toString(16), buf.length.toString(16), buf);
       const reply = await transport.send(LEDGER_CLA, instruction, p1, (p2 | P2_MORE), buf);
-      if (reply.length != 2) {
+      if (reply.length !== 2) {
         throw new Error(
           "solana_send: Received unexpected reply payload",
           "UnexpectedReplyPayload"
@@ -54,8 +51,8 @@ function _harden(n) {
 
 export function solana_derivation_path(account, change) {
   var length;
-  if (typeof(account) === 'number') {
-    if (typeof(change) === 'number') {
+  if (typeof (account) === 'number') {
+    if (typeof (change) === 'number') {
       length = 4;
     } else {
       length = 3;
@@ -72,7 +69,7 @@ export function solana_derivation_path(account, change) {
 
   if (length > 2) {
     offset = derivation_path.writeUInt32BE(_harden(account), offset);
-    if (length == 4) {
+    if (length === 4) {
       offset = derivation_path.writeUInt32BE(_harden(change), offset);
     }
   }
@@ -99,6 +96,6 @@ export async function getPublicKey(transport) {
   const from_derivation_path = solana_derivation_path();
   const from_pubkey_bytes = await solana_ledger_get_pubkey(transport, from_derivation_path);
   const from_pubkey_string = bs58.encode(from_pubkey_bytes);
-  
+
   return new PublicKey(from_pubkey_string);
 }

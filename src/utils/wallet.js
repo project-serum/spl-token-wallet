@@ -23,77 +23,11 @@ import {
 import { useListener, useLocalStorageState } from './utils';
 import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
-import { getUnlockedMnemonicAndSeed, walletSeedChanged, loadMnemonicAndSeed, lock } from './wallet-seed';
-import { getPublicKey, solana_derivation_path, solana_ledger_sign_transaction } from './ledger';
-import TransportWebUsb from "@ledgerhq/hw-transport-webusb";
+import { walletSeedChanged, loadMnemonicAndSeed, lock } from './wallet-seed';
 import { useSnackbar } from 'notistack';
-
 import { useCallAsync } from './notifications';
-
-function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
-
-  const derivedSeed = bip32
-    .fromSeed(seed)
-    .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
-  return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
-}
-
-class LocalStorageWalletProvider {
-  constructor(walletIndex) {
-    const { seed } = getUnlockedMnemonicAndSeed();
-    this.walletIndex = walletIndex;
-    this.account = getAccountFromSeed(Buffer.from(seed, 'hex'), this.walletIndex)
-  }
-
-  init = async () => {
-    return this;
-  }
-
-  get publicKey() {
-    return this.account.publicKey;
-  }
-
-  signTransaction = async (transaction) => {
-    transaction.partialSign(this.account);
-    return transaction;
-  }
-}
-
- class LedgerWalletProvider {
-  constructor(walletIndex) {
-    this.walletIndex = walletIndex;
-  }
-
-  init = async () => {
-    this.transport = await TransportWebUsb.create();
-    this.pubKey = await getPublicKey(this.transport);
-    return this;
-  }
-
-  get publicKey() {
-    return this.pubKey;
-  }
-
-  signTransaction = async (transaction) => {
-    const from_derivation_path = solana_derivation_path();
-    const sig_bytes = await solana_ledger_sign_transaction(this.transport, from_derivation_path, transaction);
-    transaction.addSignature(this.publicKey, sig_bytes);
-
-    return transaction;
-  }
- }
-
- class WalletProviderFactory {
-   static getProvider(type, walletIndex) {
-     if(type === 'local') {
-       return new LocalStorageWalletProvider(walletIndex)
-     }
-
-     if(type === 'ledger') {
-       return new LedgerWalletProvider(walletIndex);
-     }
-   }
- }
+import { WalletProviderFactory } from './walletProvider/factory';
+import { getAccountFromSeed } from './walletProvider/localStorage';
 
 export class Wallet {
   constructor(connection, walletIndex = 0, type) {
@@ -185,7 +119,7 @@ export function WalletProvider({ children }) {
 
   useEffect(() => {
     (async () => {
-      if(walletType) {
+      if (walletType) {
         try {
           const instance = await Wallet.create(connection, walletIndex, walletType);
           setWallet(instance);
@@ -218,7 +152,7 @@ export function WalletProvider({ children }) {
 
   const logout = async () => {
     lock();
-    setWalletType('');    
+    setWalletType('');
   };
 
   return (
@@ -275,8 +209,8 @@ export function useWalletAddressForMint(mint) {
     () =>
       mint
         ? walletAccounts
-            ?.find((account) => account.parsed?.mint?.equals(mint))
-            ?.publicKey.toBase58()
+          ?.find((account) => account.parsed?.mint?.equals(mint))
+          ?.publicKey.toBase58()
         : null,
     [walletAccounts, mint],
   );
@@ -349,7 +283,7 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   // TODO: read accounts from ledger as well ....
   const { walletIndex, setWalletIndex, seed } = useContext(WalletContext);
-  const [ walletCount, setWalletCount ] = useLocalStorageState('walletCount', 1);
+  const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
   function selectWallet(walletIndex) {
     if (walletIndex >= walletCount) {
       setWalletCount(walletIndex + 1);

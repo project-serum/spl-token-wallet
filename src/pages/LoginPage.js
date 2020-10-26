@@ -60,7 +60,7 @@ function CreateWalletForm() {
       progressMessage: 'Creating wallet...',
       successMessage: 'Wallet created',
       onSuccess: () => {
-        login('local');
+        login('local', password);
       }
     });
   }
@@ -234,14 +234,22 @@ function RestoreWalletForm({ goBack }) {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const callAsync = useCallAsync();
+  const { login } = useWalletAuth();
 
   function submit() {
     callAsync(
       mnemonicToSeed(mnemonic).then((seed) =>
         storeMnemonicAndSeed(mnemonic, seed, password),
       ),
+      {
+        onSuccess: () => {
+          login('local', password);
+        }
+      },
     );
   }
+
+
 
   return (
     <Card>
