@@ -17,6 +17,13 @@ export class LocalStorageWalletProvider {
     const { seed } = getUnlockedMnemonicAndSeed();
     this.walletIndex = walletIndex;
     this.account = getAccountFromSeed(Buffer.from(seed, 'hex'), this.walletIndex)
+    this.listAddresses = async (walletCount) => {
+      const seedBuffer = Buffer.from(seed, 'hex');
+      return [...Array(walletCount).keys()].map(
+        (walletIndex) =>
+          getAccountFromSeed(seedBuffer, walletIndex).publicKey,
+      );
+    }
   }
 
   init = async () => {

@@ -27,7 +27,6 @@ import { walletSeedChanged, loadMnemonicAndSeed, lock } from './wallet-seed';
 import { useSnackbar } from 'notistack';
 import { useCallAsync } from './notifications';
 import { WalletProviderFactory } from './walletProvider/factory';
-import { getAccountFromSeed } from './walletProvider/localStorage';
 
 export class Wallet {
   constructor(connection, walletIndex = 0, type) {
@@ -44,6 +43,10 @@ export class Wallet {
 
   get publicKey() {
     return this.provider.publicKey;
+  }
+
+  listAddresses = async (walletCount) => {
+    return this.provider.listAddresses(walletCount);
   }
 
   getTokenAccountInfo = async () => {
@@ -116,15 +119,28 @@ export function WalletProvider({ children }) {
   const [walletIndex, setWalletIndex] = useLocalStorageState('walletIndex', 0);
   const [wallet, setWallet] = useState();
   const { enqueueSnackbar } = useSnackbar();
+  const [allowNewAccounts, setAllowNewAccounts] = useState(true);
+  const [addresses, setAddresses] = useState();
+  const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
+
+  function selectWallet(walletIndex) {
+    if (walletIndex >= walletCount) {
+      setWalletCount(walletIndex + 1);
+    }
+    setWalletIndex(walletIndex);
+  }
 
   useEffect(() => {
     (async () => {
       if (walletType) {
         try {
           const instance = await Wallet.create(connection, walletIndex, walletType);
+
+          setAddresses(await instance.listAddresses(walletCount));
           setWallet(instance);
         } catch (er) {
           setWalletType('')
+          setAllowNewAccounts(false);
           enqueueSnackbar(`${er.message}`, {
             variant: 'error',
             autoHideDuration: 2500,
@@ -134,16 +150,18 @@ export function WalletProvider({ children }) {
         setWallet(undefined);
       }
     })();
-  }, [enqueueSnackbar, walletType, connection, walletIndex]);
+  }, [enqueueSnackbar, walletType, connection, walletIndex, walletCount]);
 
   const login = async (method, password, stayLoggedIn) => {
     if (method === 'ledger') {
       setWalletType(method);
+      setAllowNewAccounts(false);
     } else {
       callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
         progressMessage: 'Unlocking wallet...',
         successMessage: 'Wallet unlocked',
         onSuccess: async () => {
+          setAllowNewAccounts(true);
           setWalletType(method);
         }
       });
@@ -153,11 +171,20 @@ export function WalletProvider({ children }) {
   const logout = async () => {
     lock();
     setWalletType('');
+    setAllowNewAccounts(false);
   };
 
   return (
     <WalletContext.Provider
-      value={{ wallet, walletIndex, setWalletIndex, login, logout }}
+      value={{
+        wallet,
+        walletIndex,
+        selectWallet,
+        login,
+        logout,
+        allowNewAccounts,
+        addresses
+      }}
     >
       {children}
     </WalletContext.Provider>
@@ -169,8 +196,8 @@ export function useWallet() {
 }
 
 export function useWalletAuth() {
-  const { login, logout } = useContext(WalletContext);
-  return { login, logout };
+  const { login, logout, allowNewAccounts } = useContext(WalletContext);
+  return { login, logout, allowNewAccounts };
 }
 
 export function useWalletPublicKeys() {
@@ -281,26 +308,9 @@ export function useBalanceInfo(publicKey) {
 }
 
 export function useWalletSelector() {
-  // TODO: read accounts from ledger as well ....
-  const { walletIndex, setWalletIndex, seed } = useContext(WalletContext);
-  const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
-  function selectWallet(walletIndex) {
-    if (walletIndex >= walletCount) {
-      setWalletCount(walletIndex + 1);
-    }
-    setWalletIndex(walletIndex);
-  }
-  const addresses = useMemo(() => {
-    if (!seed) {
-      return [];
-    }
-    const seedBuffer = Buffer.from(seed, 'hex');
-    return [...Array(walletCount).keys()].map(
-      (walletIndex) =>
-        getAccountFromSeed(seedBuffer, walletIndex).publicKey,
-    );
-  }, [seed, walletCount]);
-  return { addresses, walletIndex, setWalletIndex: selectWallet };
+  const { walletIndex, selectWallet, addresses } = useContext(WalletContext);
+
+  return { addresses, walletIndex, selectWallet };
 }
 
 export async function mnemonicToSecretKey(mnemonic) {

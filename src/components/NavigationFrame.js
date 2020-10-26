@@ -125,8 +125,8 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { addresses, walletIndex, setWalletIndex } = useWalletSelector();
-  const { logout } = useWalletAuth();
+  const { addresses, walletIndex, selectWallet } = useWalletSelector();
+  const { logout, allowNewAccounts } = useWalletAuth();
   const wallet = useWallet();
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
@@ -168,7 +168,7 @@ function WalletSelector() {
             key={address.toBase58()}
             onClick={() => {
               setAnchorEl(null);
-              setWalletIndex(index);
+              selectWallet(index);
             }}
             selected={index === walletIndex}
           >
@@ -179,17 +179,17 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
-        <MenuItem
+        {allowNewAccounts && <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            setWalletIndex(addresses.length);
+            selectWallet(addresses.length);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Create Account
-        </MenuItem>
+        </MenuItem>}
 
         <MenuItem
           onClick={() => {

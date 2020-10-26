@@ -9,6 +9,10 @@ export class LedgerWalletProvider {
   init = async () => {
     this.transport = await TransportWebUsb.create();
     this.pubKey = await getPublicKey(this.transport);
+    this.listAddresses = async (walletCount) => {
+      // TODO: read accounts from ledger 
+      return [this.pubKey];
+    }
     return this;
   }
 
