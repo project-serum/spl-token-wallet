@@ -14,7 +14,7 @@ import {
 } from '../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
 import { useAsyncData } from '../utils/fetch-loop';
-import { TOKEN_PROGRAM_ID } from '../utils/tokens/instructions';
+import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
 import TokenIcon from './TokenIcon';
 
@@ -114,7 +114,9 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 }
 
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
-  const defaultAddressHelperText = 'Enter SPL token or Solana address';
+  const defaultAddressHelperText = !balanceInfo.mint || balanceInfo.mint.equals(WRAPPED_SOL_MINT) ?
+    'Enter Solana Address' :
+    'Enter SPL token or Solana address';
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [addressHelperText, setAddressHelperText] = useState(
