@@ -62,6 +62,7 @@ export function solana_derivation_path(account, change) {
   }
 
   var derivation_path = Buffer.alloc(1 + (length * 4));
+  // eslint-disable-next-line
   var offset = 0;
   offset = derivation_path.writeUInt8(length, offset);
   offset = derivation_path.writeUInt32BE(_harden(44), offset);  // Using BIP44
