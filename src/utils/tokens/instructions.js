@@ -4,6 +4,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
+import {publicKeyLayout} from "@project-serum/serum/lib/layout";
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -152,11 +153,12 @@ export function memoInstruction(memo) {
 }
 
 export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
-  // todo: fill this in
-  ''
+  '4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5'
 );
 
-export const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([BufferLayout.blob(32, 'account')])
+export const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([
+  publicKeyLayout('account')
+])
 
 export function encodeOwnerValidationInstruction(instruction) {
   const b = Buffer.alloc(OWNER_VALIDATION_LAYOUT.span);
@@ -166,10 +168,11 @@ export function encodeOwnerValidationInstruction(instruction) {
 
 export function assertOwner({ account, owner }) {
   const keys = [
-    { pubkey: account, isSigner: false, isWriteable: false }
+    { pubkey: account, isSigner: false, isWritable: false }
   ]
   return new TransactionInstruction({
     keys,
-    data: encodeOwnerValidationInstruction({account: owner})
+    data: encodeOwnerValidationInstruction({account: owner}),
+    programId: OWNER_VALIDATION_PROGRAM_ID
   });
 }
