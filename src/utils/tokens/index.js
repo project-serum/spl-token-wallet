@@ -173,7 +173,7 @@ export async function transferTokens({
   const destinationAccountInfo = await connection.getAccountInfo(
     destinationPublicKey,
   );
-  if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
+  if (!!destinationAccountInfo && destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
@@ -182,6 +182,9 @@ export async function transferTokens({
       amount,
       memo,
     });
+  }
+  if (!destinationAccountInfo || destinationAccountInfo.lamports === 0) {
+    throw new Error('Cannot send to address with zero SOL balances');
   }
   const destinationSplTokenAccount = (
     await getOwnedTokenAccounts(connection, destinationPublicKey)
