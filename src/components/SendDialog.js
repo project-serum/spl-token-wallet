@@ -14,10 +14,12 @@ import {
 } from '../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
 import { useAsyncData } from '../utils/fetch-loop';
+import { TOKEN_PROGRAM_ID } from '../utils/tokens/instructions';
+import { parseTokenAccountData } from '../utils/tokens/data';
 import TokenIcon from './TokenIcon';
 
 const { TabPane } = Tabs;
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 const { Step } = Steps;
 
 const WUSDC_MINT = new PublicKey(
@@ -112,15 +114,56 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 }
 
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
+  const defaultAddressHelperText = 'Enter SPL token or Solana address';
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
+  const [addressHelperText, setAddressHelperText] = useState(
+    defaultAddressHelperText,
+  );
+  const [passValidation, setPassValidation] = useState();
   const {
     fields,
     destinationAddress,
     transferAmountString,
     validAmount,
-  } = useForm(balanceInfo);
-  const { decimals } = balanceInfo;
+  } = useForm(balanceInfo, addressHelperText, passValidation);
+  const { decimals, mint } = balanceInfo;
+  const mintString = mint && mint.toBase58();
+
+  useEffect(() => {
+    (async () => {
+      if (!destinationAddress) {
+        setAddressHelperText(defaultAddressHelperText);
+        setPassValidation(undefined);
+        return;
+      }
+      try {
+        const destinationAccountInfo = await wallet.connection.getAccountInfo(
+          new PublicKey(destinationAddress),
+        );
+
+        if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
+          const accountInfo = parseTokenAccountData(
+            destinationAccountInfo.data,
+          );
+          if (accountInfo.mint.toBase58() === mintString) {
+            setPassValidation(true);
+            setAddressHelperText('Address is a valid SPL token address');
+          } else {
+            setPassValidation(false);
+            setAddressHelperText('Destination address mint does not match');
+          }
+        } else {
+          setPassValidation(true);
+          setAddressHelperText('Destination is a Solana address');
+        }
+      } catch (e) {
+        console.log(`Received error validating address ${e}`);
+        setAddressHelperText(defaultAddressHelperText);
+        setPassValidation(undefined);
+      }
+    })();
+  }, [destinationAddress, wallet, mintString]);
 
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
@@ -131,6 +174,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       publicKey,
       new PublicKey(destinationAddress),
       amount,
+      balanceInfo.mint,
     );
   }
 
@@ -224,6 +268,7 @@ function SendSwapDialog({
       publicKey,
       new PublicKey(swapInfo.address),
       amount,
+      balanceInfo.mint,
       swapInfo.memo,
     );
   }
@@ -355,7 +400,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
 }
 
-function useForm(balanceInfo) {
+function useForm(balanceInfo, addressHelperText, passAddressValidation) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
@@ -366,10 +411,26 @@ function useForm(balanceInfo) {
   const fields = (
     <Space direction="vertical" style={{ display: 'flex' }}>
       <Input
+        style={
+          !passAddressValidation && passAddressValidation !== undefined
+            ? { border: '1px solid #ff4d4f' }
+            : null
+        }
         placeholder="Recipient Address"
         value={destinationAddress}
         onChange={(e) => setDestinationAddress(e.target.value.trim())}
       />
+      {addressHelperText && (
+        <Text
+          type={
+            !passAddressValidation && passAddressValidation !== undefined
+              ? 'danger'
+              : 'secondary'
+          }
+        >
+          {addressHelperText}
+        </Text>
+      )}
       <Input
         placeholder="Amount"
         type="number"
