@@ -171,7 +171,7 @@ export async function transferTokens({
       memo
     });
   }
-  const destinationSplTokenAccount = await getOwnedTokenAccounts(connection, destinationPublicKey)
+  const destinationSplTokenAccount = (await getOwnedTokenAccounts(connection, destinationPublicKey))
     .map(({ publicKey, accountInfo }) => {
       return {publicKey, parsed: parseTokenAccountData(accountInfo.data) };
     })
