@@ -1,31 +1,35 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DialogForm from './DialogForm';
-import {useWallet, useWalletAddressForMint} from '../utils/wallet';
-import {PublicKey} from '@solana/web3.js';
-import {abbreviateAddress} from '../utils/utils';
+import { useWallet, useWalletAddressForMint } from '../utils/wallet';
+import { PublicKey } from '@solana/web3.js';
+import { abbreviateAddress } from '../utils/utils';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {useCallAsync, useSendTransaction} from '../utils/notifications';
-import {swapApiRequest, useSwapApiGet} from '../utils/swap/api';
-import {showSwapAddress} from '../utils/config';
+import { useCallAsync, useSendTransaction } from '../utils/notifications';
+import { swapApiRequest, useSwapApiGet } from '../utils/swap/api';
+import { showSwapAddress } from '../utils/config';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import {ConnectToMetamaskButton, useEthAccount, withdrawEth,} from '../utils/swap/eth';
-import {useConnection, useIsProdNetwork} from '../utils/connection';
+import {
+  ConnectToMetamaskButton,
+  useEthAccount,
+  withdrawEth,
+} from '../utils/swap/eth';
+import { useConnection, useIsProdNetwork } from '../utils/connection';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import {useAsyncData} from '../utils/fetch-loop';
+import { useAsyncData } from '../utils/fetch-loop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {TOKEN_PROGRAM_ID} from "../utils/tokens/instructions";
-import {parseTokenAccountData} from "../utils/tokens/data";
+import { TOKEN_PROGRAM_ID } from '../utils/tokens/instructions';
+import { parseTokenAccountData } from '../utils/tokens/data';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -133,7 +137,9 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   const defaultAddressHelperText = 'Enter SPL token or Solana address';
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
-  const [addressHelperText, setAddressHelperText] = useState(defaultAddressHelperText);
+  const [addressHelperText, setAddressHelperText] = useState(
+    defaultAddressHelperText,
+  );
   const [passValidation, setPassValidation] = useState();
   const {
     fields,
@@ -152,10 +158,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         return;
       }
       try {
-        const destinationAccountInfo = await wallet.connection.getAccountInfo(new PublicKey(destinationAddress));
+        const destinationAccountInfo = await wallet.connection.getAccountInfo(
+          new PublicKey(destinationAddress),
+        );
 
         if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
-          const accountInfo = parseTokenAccountData(destinationAccountInfo.data);
+          const accountInfo = parseTokenAccountData(
+            destinationAccountInfo.data,
+          );
           if (accountInfo.mint.toBase58() === mintString) {
             setPassValidation(true);
             setAddressHelperText('Address is a valid SPL token address');
@@ -173,7 +183,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         setPassValidation(undefined);
       }
     })();
-  }, [destinationAddress, wallet, mintString])
+  }, [destinationAddress, wallet, mintString]);
 
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
@@ -433,7 +443,11 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
         value={destinationAddress}
         onChange={(e) => setDestinationAddress(e.target.value.trim())}
         helperText={addressHelperText}
-        id={!passAddressValidation && passAddressValidation !== undefined ? 'outlined-error-helper-text' : undefined}
+        id={
+          !passAddressValidation && passAddressValidation !== undefined
+            ? 'outlined-error-helper-text'
+            : undefined
+        }
         error={!passAddressValidation && passAddressValidation !== undefined}
       />
       <TextField
