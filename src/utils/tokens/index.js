@@ -1,5 +1,6 @@
 import { PublicKey, SystemProgram, Transaction, Account } from '@solana/web3.js';
 import {
+  assertOwner,
   closeAccount,
   initializeAccount,
   initializeMint,
@@ -250,7 +251,10 @@ async function createAndTransferToAccount({
 }) {
   const newAccount = new Account();
   let transaction = new Transaction();
-  // todo: assert that owner of destinationPublicKey is SystemProgram on-chain
+  transaction.add(assertOwner({
+    account: destinationPublicKey,
+    owner: SystemProgram.programId,
+  }))
   transaction.add(
     SystemProgram.createAccount({
       fromPubkey: owner.publicKey,

@@ -150,3 +150,26 @@ export function memoInstruction(memo) {
     programId: MEMO_PROGRAM_ID,
   });
 }
+
+export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
+  // todo: fill this in
+  ''
+);
+
+export const OWNER_VALIDATION_LAYOUT = BufferLayout.struct([BufferLayout.blob(32, 'account')])
+
+export function encodeOwnerValidationInstruction(instruction) {
+  const b = Buffer.alloc(OWNER_VALIDATION_LAYOUT.span);
+  const span = OWNER_VALIDATION_LAYOUT.encode(instruction, b);
+  return b.slice(0, span);
+}
+
+export function assertOwner({ account, owner }) {
+  const keys = [
+    { pubkey: account, isSigner: false, isWriteable: false }
+  ]
+  return new TransactionInstruction({
+    keys,
+    data: encodeOwnerValidationInstruction({account: owner})
+  });
+}
