@@ -19,6 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
+import AddAccountDialog from './AddAccountDialog';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -125,16 +126,21 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { addresses, walletIndex, setWalletIndex } = useWalletSelector();
+  const { accounts, walletIndex, setWalletIndex } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [addAccountOpen, setAddAccountOpen] = useState(false);
   const classes = useStyles();
 
-  if (addresses.length === 0) {
+  if (accounts.length === 0) {
     return null;
   }
 
   return (
     <>
+      <AddAccountDialog
+        open={addAccountOpen}
+        onClose={() => setAddAccountOpen(false)}
+      />
       <Hidden xsDown>
         <Button
           color="inherit"
@@ -161,7 +167,7 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {addresses.map((address, index) => (
+        {accounts.map(({ index, address, name }) => (
           <MenuItem
             key={address.toBase58()}
             onClick={() => {
@@ -169,18 +175,26 @@ function WalletSelector() {
               setWalletIndex(index);
             }}
             selected={index === walletIndex}
+            component="div"
           >
             <ListItemIcon className={classes.menuItemIcon}>
               {index === walletIndex ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
-            {address.toBase58()}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography>
+                {index === 0 ? 'Main account' : name || `Account ${index}`}
+              </Typography>
+              <Typography color="textSecondary">
+                {address.toBase58()}
+              </Typography>
+            </div>
           </MenuItem>
         ))}
         <Divider />
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            setWalletIndex(addresses.length);
+            setAddAccountOpen(true);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>

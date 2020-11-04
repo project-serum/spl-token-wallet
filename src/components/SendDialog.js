@@ -185,6 +185,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         setPassValidation(undefined);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationAddress, wallet, mintString]);
 
   async function makeTransaction() {
