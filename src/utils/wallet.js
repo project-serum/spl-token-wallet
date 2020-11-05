@@ -246,8 +246,9 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const { walletIndex, setWalletIndex, seed } = useContext(WalletContext);
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
-  function selectWallet(walletIndex) {
+  function selectWallet(walletIndex, name) {
     if (walletIndex >= walletCount) {
+      name && localStorage.setItem(`name${walletIndex}`, name);
       setWalletCount(walletIndex + 1);
     }
     setWalletIndex(walletIndex);
@@ -260,8 +261,7 @@ export function useWalletSelector() {
     return [...Array(walletCount).keys()].map((walletIndex) => {
       let address = Wallet.getAccountFromSeed(seedBuffer, walletIndex)
         .publicKey;
-      let nameKey = `${address}Name`;
-      let name = localStorage.getItem(nameKey);
+      let name = localStorage.getItem(`name${walletIndex}`);
       return { index: walletIndex, address, name };
     });
   }, [seed, walletCount]);

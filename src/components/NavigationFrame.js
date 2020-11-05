@@ -140,6 +140,10 @@ function WalletSelector() {
       <AddAccountDialog
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
+        onAdd={(name) => {
+          setWalletIndex(accounts.length, name);
+          setAddAccountOpen(false);
+        }}
       />
       <Hidden xsDown>
         <Button
