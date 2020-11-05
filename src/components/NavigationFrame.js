@@ -126,7 +126,7 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { accounts, walletIndex, setWalletIndex } = useWalletSelector();
+  const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const classes = useStyles();
@@ -140,8 +140,14 @@ function WalletSelector() {
       <AddAccountDialog
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
-        onAdd={(name) => {
-          setWalletIndex(accounts.length, name);
+        onAdd={({ name, importedAccount }) => {
+          addAccount({ name, importedAccount });
+          setWalletSelector({
+            walletIndex: importedAccount ? undefined : accounts.length,
+            importedPubkey: importedAccount
+              ? importedAccount.publicKey.toString()
+              : undefined,
+          });
           setAddAccountOpen(false);
         }}
       />
@@ -171,23 +177,21 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {accounts.map(({ index, address, name }) => (
+        {accounts.map(({ isSelected, selector, address, name, label }) => (
           <MenuItem
             key={address.toBase58()}
             onClick={() => {
               setAnchorEl(null);
-              setWalletIndex(index);
+              setWalletSelector(selector);
             }}
-            selected={index === walletIndex}
+            selected={isSelected}
             component="div"
           >
             <ListItemIcon className={classes.menuItemIcon}>
-              {index === walletIndex ? <CheckIcon fontSize="small" /> : null}
+              {isSelected ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography>
-                {index === 0 ? 'Main account' : name || `Account ${index}`}
-              </Typography>
+              <Typography>{name}</Typography>
               <Typography color="textSecondary">
                 {address.toBase58()}
               </Typography>
@@ -204,7 +208,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Create Account
+          Add Account
         </MenuItem>
       </Menu>
     </>
