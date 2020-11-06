@@ -208,7 +208,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Create Account
+          Add Account
         </MenuItem>
       </Menu>
     </>
