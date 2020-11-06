@@ -30,6 +30,11 @@ import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 
+const DEFAULT_WALLET_SELECTOR = {
+  walletIndex: 0,
+  importedPubkey: undefined,
+};
+
 export class Wallet {
   constructor(connection, account) {
     this.connection = connection;
@@ -117,7 +122,7 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const { mnemonic, seed } = getUnlockedMnemonicAndSeed();
+  const { mnemonic, seed, importsPrivateKey } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
 
   // `privateKeyImports` are accounts imported *in addition* to HD wallets
@@ -142,13 +147,19 @@ export function WalletProvider({ children }) {
             walletSelector.walletIndex,
           )
         : new Account(
-            bs58.decode(
-              privateKeyImports[walletSelector.importedPubkey].privateKey,
-            ),
+            (() => {
+              const { nonce, ciphertext } = privateKeyImports[
+                walletSelector.importedPubkey
+              ];
+              return nacl.secretbox.open(
+                bs58.decode(ciphertext),
+                bs58.decode(nonce),
+                importsPrivateKey,
+              );
+            })(),
           );
-
     return new Wallet(connection, account);
-  }, [connection, seed, walletSelector, privateKeyImports]);
+  }, [connection, seed, walletSelector, privateKeyImports, importsPrivateKey]);
 
   return (
     <WalletContext.Provider
@@ -156,6 +167,7 @@ export function WalletProvider({ children }) {
         wallet,
         seed,
         mnemonic,
+        importsPrivateKey,
         walletSelector,
         setWalletSelector,
         privateKeyImports,
@@ -281,6 +293,7 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const {
     seed,
+    importsPrivateKey,
     walletSelector,
     setWalletSelector,
     privateKeyImports,
@@ -295,11 +308,15 @@ export function useWalletSelector() {
       name && localStorage.setItem(`name${walletCount + 1}`, name);
       setWalletCount(walletCount + 1);
     } else {
-      // `useLocalStorageState` requires a cloned object.
+      const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+      const plaintext = importedAccount.secretKey;
+      const ciphertext = nacl.secretbox(plaintext, nonce, importsPrivateKey);
+      // `useLocalStorageState` requires a new object.
       let newPrivateKeyImports = JSON.parse(JSON.stringify(privateKeyImports));
       newPrivateKeyImports[importedAccount.publicKey.toString()] = {
         name,
-        privateKey: bs58.encode(importedAccount.secretKey),
+        ciphertext: bs58.encode(ciphertext),
+        nonce: bs58.encode(nonce),
       };
       setPrivateKeyImports(newPrivateKeyImports);
     }
@@ -309,6 +326,7 @@ export function useWalletSelector() {
     if (!seed) {
       return [];
     }
+
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
       let address = Wallet.getAccountFromSeed(seedBuffer, idx).publicKey;
@@ -336,8 +354,3 @@ export function useWalletSelector() {
 
   return { accounts, setWalletSelector, addAccount };
 }
-
-const DEFAULT_WALLET_SELECTOR = {
-  walletIndex: 0,
-  importedPubkey: undefined,
-};
