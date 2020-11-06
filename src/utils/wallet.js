@@ -311,7 +311,7 @@ export function useWalletSelector() {
 
   function addAccount({ name, importedAccount }) {
     if (importedAccount === undefined) {
-      name && localStorage.setItem(`name${walletCount + 1}`, name);
+      name && localStorage.setItem(`name${walletCount}`, name);
       setWalletCount(walletCount + 1);
     } else {
       const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
