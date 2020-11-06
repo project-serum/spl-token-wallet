@@ -20,11 +20,20 @@ export async function mnemonicToSeed(mnemonic) {
   return Buffer.from(seed).toString('hex');
 }
 
-let unlockedMnemonicAndSeed = JSON.parse(
-  sessionStorage.getItem('unlocked') ||
-    localStorage.getItem('unlocked') ||
-    'null',
-) || { mnemonic: null, seed: null, importsPrivateKey: null };
+let unlockedMnemonicAndSeed = (() => {
+  const stored = JSON.parse(
+    sessionStorage.getItem('unlocked') ||
+      localStorage.getItem('unlocked') ||
+      'null',
+  );
+  if (stored === null) {
+    return { mnemonic: null, seed: null, importsEncryptionKey: null };
+  }
+  return {
+    importsEncryptionKey: deriveImportsEncryptionKey(stored.seed),
+    ...stored,
+  };
+})();
 export const walletSeedChanged = new EventEmitter();
 
 export function getUnlockedMnemonicAndSeed() {
@@ -35,8 +44,8 @@ export function hasLockedMnemonicAndSeed() {
   return !!localStorage.getItem('locked');
 }
 
-function setUnlockedMnemonicAndSeed(mnemonic, seed, importsPrivateKey) {
-  unlockedMnemonicAndSeed = { mnemonic, seed, importsPrivateKey };
+function setUnlockedMnemonicAndSeed(mnemonic, seed, importsEncryptionKey) {
+  unlockedMnemonicAndSeed = { mnemonic, seed, importsEncryptionKey };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
 }
 
@@ -68,7 +77,7 @@ export async function storeMnemonicAndSeed(mnemonic, seed, password) {
     localStorage.removeItem('locked');
     sessionStorage.removeItem('unlocked');
   }
-  const privateKey = await deriveImportsPrivateKey(mnemonic);
+  const privateKey = await deriveImportsEncryptionKey(seed);
   setUnlockedMnemonicAndSeed(mnemonic, seed, privateKey);
 }
 
@@ -93,7 +102,7 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   if (stayLoggedIn) {
     sessionStorage.setItem('unlocked', decodedPlaintext);
   }
-  const privateKey = await deriveImportsPrivateKey(mnemonic);
+  const privateKey = await deriveImportsEncryptionKey(seed);
   setUnlockedMnemonicAndSeed(mnemonic, seed, privateKey);
   return { mnemonic, seed };
 }
@@ -116,8 +125,8 @@ export function lockWallet() {
 }
 
 // Returns the 32 byte key used to encrypt imported private keys.
-async function deriveImportsPrivateKey(mnemonic) {
-  const { mnemonicToSeed } = await import('bip39');
-  const rootSeed = Buffer.from(await mnemonicToSeed(mnemonic), 'hex');
-  return bip32.fromSeed(rootSeed).derivePath("m/501'/0'/0/0").privateKey;
+async function deriveImportsEncryptionKey(seed) {
+  // SLIP16 derivation path.
+  return bip32.fromSeed(Buffer.from(seed, 'hex')).derivePath("m/10016'/0")
+    .privateKey;
 }

@@ -122,7 +122,7 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const { mnemonic, seed, importsPrivateKey } = getUnlockedMnemonicAndSeed();
+  const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
 
   // `privateKeyImports` are accounts imported *in addition* to HD wallets
@@ -154,12 +154,18 @@ export function WalletProvider({ children }) {
               return nacl.secretbox.open(
                 bs58.decode(ciphertext),
                 bs58.decode(nonce),
-                importsPrivateKey,
+                importsEncryptionKey,
               );
             })(),
           );
     return new Wallet(connection, account);
-  }, [connection, seed, walletSelector, privateKeyImports, importsPrivateKey]);
+  }, [
+    connection,
+    seed,
+    walletSelector,
+    privateKeyImports,
+    importsEncryptionKey,
+  ]);
 
   return (
     <WalletContext.Provider
@@ -167,7 +173,7 @@ export function WalletProvider({ children }) {
         wallet,
         seed,
         mnemonic,
-        importsPrivateKey,
+        importsEncryptionKey,
         walletSelector,
         setWalletSelector,
         privateKeyImports,
@@ -293,7 +299,7 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const {
     seed,
-    importsPrivateKey,
+    importsEncryptionKey,
     walletSelector,
     setWalletSelector,
     privateKeyImports,
@@ -310,9 +316,9 @@ export function useWalletSelector() {
     } else {
       const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
       const plaintext = importedAccount.secretKey;
-      const ciphertext = nacl.secretbox(plaintext, nonce, importsPrivateKey);
+      const ciphertext = nacl.secretbox(plaintext, nonce, importsEncryptionKey);
       // `useLocalStorageState` requires a new object.
-      let newPrivateKeyImports = JSON.parse(JSON.stringify(privateKeyImports));
+      let newPrivateKeyImports = { ...privateKeyImports };
       newPrivateKeyImports[importedAccount.publicKey.toString()] = {
         name,
         ciphertext: bs58.encode(ciphertext),
