@@ -111,3 +111,13 @@ async function deriveEncryptionKey(password, salt, iterations, digest) {
 export function lockWallet() {
   setUnlockedMnemonicAndSeed(null, null);
 }
+
+export function forgetWallet() {
+  localStorage.removeItem('walletIndex');
+  localStorage.removeItem('walletCount');
+  localStorage.removeItem('locked');
+  localStorage.removeItem('unlocked');
+  sessionStorage.removeItem('unlocked');
+  unlockedMnemonicAndSeed = { mnemonic: null, seed: null };
+  walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
+}
