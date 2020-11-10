@@ -246,23 +246,26 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const { walletIndex, setWalletIndex, seed } = useContext(WalletContext);
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
-  function selectWallet(walletIndex) {
+  function selectWallet(walletIndex, name) {
     if (walletIndex >= walletCount) {
+      name && localStorage.setItem(`name${walletIndex}`, name);
       setWalletCount(walletIndex + 1);
     }
     setWalletIndex(walletIndex);
   }
-  const addresses = useMemo(() => {
+  const accounts = useMemo(() => {
     if (!seed) {
       return [];
     }
     const seedBuffer = Buffer.from(seed, 'hex');
-    return [...Array(walletCount).keys()].map(
-      (walletIndex) =>
-        Wallet.getAccountFromSeed(seedBuffer, walletIndex).publicKey,
-    );
+    return [...Array(walletCount).keys()].map((walletIndex) => {
+      let address = Wallet.getAccountFromSeed(seedBuffer, walletIndex)
+        .publicKey;
+      let name = localStorage.getItem(`name${walletIndex}`);
+      return { index: walletIndex, address, name };
+    });
   }, [seed, walletCount]);
-  return { addresses, walletIndex, setWalletIndex: selectWallet };
+  return { accounts, walletIndex, setWalletIndex: selectWallet };
 }
 
 export async function mnemonicToSecretKey(mnemonic) {
