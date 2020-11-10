@@ -397,11 +397,10 @@ function ApproveSignatureForm({
   // changed to object to ensure other hooks are called when safe is not changed
   const validator = useMemo(() => {
     return {
-      safe: (
+      safe:
         publicKeys &&
         instructions &&
-        isSafeInstruction(publicKeys, wallet.publicKey, instructions)
-      )
+        isSafeInstruction(publicKeys, wallet.publicKey, instructions),
     };
   }, [publicKeys, instructions, wallet]);
 
@@ -496,53 +495,53 @@ function ApproveSignatureForm({
             </Typography>
           </>
         ) : (
-            <>
-              <Typography variant="h6" gutterBottom>
-                {instructions
-                  ? `${origin} wants to:`
-                  : `Unknown transaction data`}
-              </Typography>
-              {instructions ? (
-                instructions.map((instruction, i) => (
-                  <Box style={{ marginTop: 20 }} key={i}>
-                    {getContent(instruction)}
-                    <Divider style={{ marginTop: 20 }} />
-                  </Box>
-                ))
-              ) : (
-                  <>
-                    <Typography
-                      variant="subtitle1"
-                      style={{ fontWeight: 'bold' }}
-                      gutterBottom
-                    >
-                      Unknown transaction:
+          <>
+            <Typography variant="h6" gutterBottom>
+              {instructions
+                ? `${origin} wants to:`
+                : `Unknown transaction data`}
+            </Typography>
+            {instructions ? (
+              instructions.map((instruction, i) => (
+                <Box style={{ marginTop: 20 }} key={i}>
+                  {getContent(instruction)}
+                  <Divider style={{ marginTop: 20 }} />
+                </Box>
+              ))
+            ) : (
+              <>
+                <Typography
+                  variant="subtitle1"
+                  style={{ fontWeight: 'bold' }}
+                  gutterBottom
+                >
+                  Unknown transaction:
                 </Typography>
-                    <Typography style={{ wordBreak: 'break-all' }}>
-                      {bs58.encode(message)}
-                    </Typography>
-                  </>
-                )}
-              {!validator.safe && (
-                <SnackbarContent
-                  className={classes.warningContainer}
-                  message={
-                    <div>
-                      <span className={classes.warningTitle}>
-                        <WarningIcon className={classes.warningIcon} />
+                <Typography style={{ wordBreak: 'break-all' }}>
+                  {bs58.encode(message)}
+                </Typography>
+              </>
+            )}
+            {!validator.safe && (
+              <SnackbarContent
+                className={classes.warningContainer}
+                message={
+                  <div>
+                    <span className={classes.warningTitle}>
+                      <WarningIcon className={classes.warningIcon} />
                       Nonstandard DEX transaction
                     </span>
-                      <Typography className={classes.warningMessage}>
-                        Sollet does not recognize this transaction as a standard
-                        Serum DEX transaction
+                    <Typography className={classes.warningMessage}>
+                      Sollet does not recognize this transaction as a standard
+                      Serum DEX transaction
                     </Typography>
-                    </div>
-                  }
-                  classes={{ root: classes.snackbarRoot }}
-                />
-              )}
-            </>
-          )}
+                  </div>
+                }
+                classes={{ root: classes.snackbarRoot }}
+              />
+            )}
+          </>
+        )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
