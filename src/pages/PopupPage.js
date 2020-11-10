@@ -86,12 +86,7 @@ export default function PopupPage({ opener }) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
 
-        if (!autoApprove) {
-          // brigs window to front when we recive new instructions
-          // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
-          window.focus();
-          setRequests((requests) => [...requests, e.data]);
-        }
+        setRequests((requests) => [...requests, e.data]);
       }
     }
     window.addEventListener('message', messageHandler);
@@ -415,6 +410,10 @@ function ApproveSignatureForm({
       console.log('Auto approving safe transaction');
       onApprove();
     } else {
+      // brigs window to front when we recive new instructions
+      // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
+      window.focus();
+
       if (buttonRef.current) {
         buttonRef.current.scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => buttonRef.current.focus(), 50);
