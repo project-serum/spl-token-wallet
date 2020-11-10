@@ -91,7 +91,7 @@ export default function PopupPage({ opener }) {
     }
     window.addEventListener('message', messageHandler);
     return () => window.removeEventListener('message', messageHandler);
-  }, [origin, postMessage, autoApprove]);
+  }, [origin, postMessage]);
 
   if (
     !connectedAccount ||
@@ -392,7 +392,7 @@ function ApproveSignatureForm({
       setInstructions(instructions);
       setParsing(false);
     });
-  }, [message, connection, wallet, buttonRef]);
+  }, [message, connection, wallet]);
 
   // changed to object to ensure other hooks are called when safe is not changed
   const validator = useMemo(() => {
@@ -414,13 +414,14 @@ function ApproveSignatureForm({
       // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
       window.focus();
 
+      // scroll to approve button and focus it to enable approve with enter
       if (buttonRef.current) {
         buttonRef.current.scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => buttonRef.current.focus(), 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validator, autoApprove]);
+  }, [validator, autoApprove, buttonRef]);
 
   const onOpenAddress = (address) => {
     address &&
