@@ -170,18 +170,20 @@ export default function AddTokenDialog({ open, onClose }) {
           </React.Fragment>
         ) : tab === 'popular' ? (
           <List disablePadding>
-            {popularTokens.map((token) => (
-              <TokenListItem
-                key={token.mintAddress}
-                {...token}
-                existingAccount={(walletAccounts || []).find(
-                  (account) =>
-                    account.parsed.mint.toBase58() === token.mintAddress,
-                )}
-                onSubmit={onSubmit}
-                disalbed={sending}
-              />
-            ))}
+            {popularTokens
+              .filter((token) => !token.deprecated)
+              .map((token) => (
+                <TokenListItem
+                  key={token.mintAddress}
+                  {...token}
+                  existingAccount={(walletAccounts || []).find(
+                    (account) =>
+                      account.parsed.mint.toBase58() === token.mintAddress,
+                  )}
+                  onSubmit={onSubmit}
+                  disalbed={sending}
+                />
+              ))}
           </List>
         ) : tab === 'erc20' ? (
           <>

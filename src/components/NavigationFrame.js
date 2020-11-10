@@ -19,6 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
+import AddAccountDialog from './AddAccountDialog';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -125,16 +126,31 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { addresses, walletIndex, setWalletIndex } = useWalletSelector();
+  const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [addAccountOpen, setAddAccountOpen] = useState(false);
   const classes = useStyles();
 
-  if (addresses.length === 0) {
+  if (accounts.length === 0) {
     return null;
   }
 
   return (
     <>
+      <AddAccountDialog
+        open={addAccountOpen}
+        onClose={() => setAddAccountOpen(false)}
+        onAdd={({ name, importedAccount }) => {
+          addAccount({ name, importedAccount });
+          setWalletSelector({
+            walletIndex: importedAccount ? undefined : accounts.length,
+            importedPubkey: importedAccount
+              ? importedAccount.publicKey.toString()
+              : undefined,
+          });
+          setAddAccountOpen(false);
+        }}
+      />
       <Hidden xsDown>
         <Button
           color="inherit"
@@ -161,32 +177,38 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {addresses.map((address, index) => (
+        {accounts.map(({ isSelected, selector, address, name, label }) => (
           <MenuItem
             key={address.toBase58()}
             onClick={() => {
               setAnchorEl(null);
-              setWalletIndex(index);
+              setWalletSelector(selector);
             }}
-            selected={index === walletIndex}
+            selected={isSelected}
+            component="div"
           >
             <ListItemIcon className={classes.menuItemIcon}>
-              {index === walletIndex ? <CheckIcon fontSize="small" /> : null}
+              {isSelected ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
-            {address.toBase58()}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography>{name}</Typography>
+              <Typography color="textSecondary">
+                {address.toBase58()}
+              </Typography>
+            </div>
           </MenuItem>
         ))}
         <Divider />
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            setWalletIndex(addresses.length);
+            setAddAccountOpen(true);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Create Account
+          Add Account
         </MenuItem>
       </Menu>
     </>

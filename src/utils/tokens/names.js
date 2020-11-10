@@ -70,10 +70,18 @@ export const TOKENS = {
     },
     {
       tokenSymbol: 'USDC',
+      mintAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+      tokenName: 'USD Coin',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    },
+    {
+      tokenSymbol: 'WUSDC',
       mintAddress: 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
       tokenName: 'Wrapped USDC',
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+      deprecated: true,
     },
     {
       tokenSymbol: 'SUSHI',
@@ -145,9 +153,21 @@ export const TOKENS = {
         'https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
     },
     {
-      tokenSymbol: 'ALEPH',
-      mintAddress: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
-      tokenName: 'Wrapped ALEPH',
+      tokenSymbol: 'MATH',
+      mintAddress: 'GeDS162t9yGJuLEHPWXXGrb1zwkzinCgRwnT8vHYjKza',
+      tokenName: 'Wrapped MATH',
+    },
+    {
+      tokenSymbol: 'TOMO',
+      mintAddress: 'GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd',
+      tokenName: 'Wrapped TOMO',
+      icon: "https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/tomochain/info/logo.png"
+    },
+    {
+      tokenSymbol: 'LUA',
+      mintAddress: 'EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX',
+      tokenName: 'Wrapped LUA',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
     },
   ],
 };
@@ -168,13 +188,11 @@ export function useTokenName(mint) {
   }
 
   let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];
-  if (!info) {
-    let match = TOKENS?.[endpoint]?.find(
-      (token) => token.mintAddress === mint.toBase58(),
-    );
-    if (match) {
-      info = { name: match.tokenName, symbol: match.tokenSymbol };
-    }
+  let match = TOKENS?.[endpoint]?.find(
+    (token) => token.mintAddress === mint.toBase58(),
+  );
+  if (match && (!info || match.deprecated)) {
+    info = { name: match.tokenName, symbol: match.tokenSymbol };
   }
   return { name: info?.name, symbol: info?.symbol };
 }

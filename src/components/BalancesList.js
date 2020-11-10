@@ -30,6 +30,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddTokenDialog from './AddTokenDialog';
+import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import {
@@ -157,6 +158,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
+  const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   const [
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
@@ -168,8 +170,16 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
 
   let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
 
+  // Only show the export UI for the native SOL coin.
+  const exportNeedsDisplay =
+    mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
+
   return (
     <>
+      <ExportAccountDialog
+        onClose={() => setExportAccDialogOpen(false)}
+        open={exportAccDialogOpen}
+      />
       <div className={classes.itemDetails}>
         <div className={classes.buttonContainer}>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (
@@ -224,18 +234,31 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             Token Address: {mint.toBase58()}
           </Typography>
         ) : null}
-        <Typography variant="body2">
-          <Link
-            href={
-              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-              urlSuffix
-            }
-            target="_blank"
-            rel="noopener"
-          >
-            View on Solana Explorer
-          </Link>
-        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <Typography variant="body2">
+              <Link
+                href={
+                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                  urlSuffix
+                }
+                target="_blank"
+                rel="noopener"
+              >
+                View on Solana Explorer
+              </Link>
+            </Typography>
+          </div>
+          {exportNeedsDisplay && (
+            <div>
+              <Typography variant="body2">
+                <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
+                  Export
+                </Link>
+              </Typography>
+            </div>
+          )}
+        </div>
       </div>
       <SendDialog
         open={sendDialogOpen}
