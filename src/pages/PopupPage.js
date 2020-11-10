@@ -86,15 +86,17 @@ export default function PopupPage({ opener }) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
 
-        // brigs window to front when we recive new instructions
-        // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
-        window.focus();
-        setRequests((requests) => [...requests, e.data]);
+        if (!autoApprove) {
+          // brigs window to front when we recive new instructions
+          // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
+          window.focus();
+          setRequests((requests) => [...requests, e.data]);
+        }
       }
     }
     window.addEventListener('message', messageHandler);
     return () => window.removeEventListener('message', messageHandler);
-  }, [origin, postMessage]);
+  }, [origin, postMessage, autoApprove]);
 
   if (
     !connectedAccount ||
@@ -394,29 +396,32 @@ function ApproveSignatureForm({
     decodeMessage(connection, wallet, message).then((instructions) => {
       setInstructions(instructions);
       setParsing(false);
+    });
+  }, [message, connection, wallet, buttonRef]);
 
+  // changed to object to ensure other hooks are called when safe is not changed
+  const validator = useMemo(() => {
+    return {
+      safe: (
+        publicKeys &&
+        instructions &&
+        isSafeInstruction(publicKeys, wallet.publicKey, instructions)
+      )
+    };
+  }, [publicKeys, instructions, wallet]);
+
+  useEffect(() => {
+    if (validator.safe && autoApprove) {
+      console.log('Auto approving safe transaction');
+      onApprove();
+    } else {
       if (buttonRef.current) {
         buttonRef.current.scrollIntoView({ behavior: 'smooth' });
         setTimeout(() => buttonRef.current.focus(), 50);
       }
-    });
-  }, [message, connection, wallet, buttonRef]);
-
-  const safe = useMemo(() => {
-    return (
-      publicKeys &&
-      instructions &&
-      isSafeInstruction(publicKeys, wallet.publicKey, instructions)
-    );
-  }, [publicKeys, instructions, wallet]);
-
-  useEffect(() => {
-    if (safe && autoApprove) {
-      console.log('Auto approving safe transaction');
-      onApprove();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [safe, autoApprove]);
+  }, [validator, autoApprove]);
 
   const onOpenAddress = (address) => {
     address &&
@@ -491,53 +496,53 @@ function ApproveSignatureForm({
             </Typography>
           </>
         ) : (
-          <>
-            <Typography variant="h6" gutterBottom>
-              {instructions
-                ? `${origin} wants to:`
-                : `Unknown transaction data`}
-            </Typography>
-            {instructions ? (
-              instructions.map((instruction, i) => (
-                <Box style={{ marginTop: 20 }} key={i}>
-                  {getContent(instruction)}
-                  <Divider style={{ marginTop: 20 }} />
-                </Box>
-              ))
-            ) : (
-              <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
-                  gutterBottom
-                >
-                  Unknown transaction:
+            <>
+              <Typography variant="h6" gutterBottom>
+                {instructions
+                  ? `${origin} wants to:`
+                  : `Unknown transaction data`}
+              </Typography>
+              {instructions ? (
+                instructions.map((instruction, i) => (
+                  <Box style={{ marginTop: 20 }} key={i}>
+                    {getContent(instruction)}
+                    <Divider style={{ marginTop: 20 }} />
+                  </Box>
+                ))
+              ) : (
+                  <>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: 'bold' }}
+                      gutterBottom
+                    >
+                      Unknown transaction:
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>
-                  {bs58.encode(message)}
-                </Typography>
-              </>
-            )}
-            {!safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
+                    <Typography style={{ wordBreak: 'break-all' }}>
+                      {bs58.encode(message)}
+                    </Typography>
+                  </>
+                )}
+              {!validator.safe && (
+                <SnackbarContent
+                  className={classes.warningContainer}
+                  message={
+                    <div>
+                      <span className={classes.warningTitle}>
+                        <WarningIcon className={classes.warningIcon} />
                       Nonstandard DEX transaction
                     </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
+                      <Typography className={classes.warningMessage}>
+                        Sollet does not recognize this transaction as a standard
+                        Serum DEX transaction
                     </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
-              />
-            )}
-          </>
-        )}
+                    </div>
+                  }
+                  classes={{ root: classes.snackbarRoot }}
+                />
+              )}
+            </>
+          )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
