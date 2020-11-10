@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
@@ -79,6 +85,10 @@ export default function PopupPage({ opener }) {
         if (e.data.method !== 'signTransaction') {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
+
+        // brigs window to front when we recive new instructions
+        // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
+        window.focus();
         setRequests((requests) => [...requests, e.data]);
       }
     }
@@ -168,6 +178,10 @@ const useStyles = makeStyles((theme) => ({
   },
   transaction: {
     wordBreak: 'break-all',
+  },
+  approveButton: {
+    backgroundColor: '#43a047',
+    color: 'white',
   },
   actions: {
     justifyContent: 'space-between',
@@ -374,13 +388,19 @@ function ApproveSignatureForm({
 
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
+  const buttonRef = useRef();
 
   useEffect(() => {
     decodeMessage(connection, wallet, message).then((instructions) => {
       setInstructions(instructions);
       setParsing(false);
+
+      if (buttonRef.current) {
+        buttonRef.current.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => buttonRef.current.focus(), 50);
+      }
     });
-  }, [message, connection, wallet]);
+  }, [message, connection, wallet, buttonRef]);
 
   const safe = useMemo(() => {
     return (
@@ -521,7 +541,13 @@ function ApproveSignatureForm({
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
-        <Button color="primary" onClick={onApprove}>
+        <Button
+          ref={buttonRef}
+          className={classes.approveButton}
+          variant="contained"
+          color="primary"
+          onClick={onApprove}
+        >
           Approve
         </Button>
       </CardActions>
