@@ -394,7 +394,6 @@ function ApproveSignatureForm({
     });
   }, [message, connection, wallet]);
 
-  // changed to object to ensure other hooks are called when safe is not changed
   const validator = useMemo(() => {
     return {
       safe:
@@ -409,8 +408,9 @@ function ApproveSignatureForm({
       console.log('Auto approving safe transaction');
       onApprove();
     } else {
-      // brigs window to front when we recive new instructions
-      // this needs to be executed from wallet instead of adapter to ensure chrome brings window to front
+      // brings window to front when we receive new instructions
+      // this needs to be executed from wallet instead of adapter
+      // to ensure chrome brings window to front
       window.focus();
 
       // scroll to approve button and focus it to enable approve with enter
