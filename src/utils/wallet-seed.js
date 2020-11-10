@@ -115,9 +115,10 @@ export function lockWallet() {
 export function forgetWallet() {
   localStorage.removeItem('walletIndex');
   localStorage.removeItem('walletCount');
+  localStorage.removeItem('walletPrivateKeyImports');
   localStorage.removeItem('locked');
   localStorage.removeItem('unlocked');
   sessionStorage.removeItem('unlocked');
-  unlockedMnemonicAndSeed = { mnemonic: null, seed: null };
+  unlockedMnemonicAndSeed = { mnemonic: null, seed: null, importsEncryptionKey: null };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
 }
