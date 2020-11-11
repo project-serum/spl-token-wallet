@@ -23,11 +23,13 @@ export default function DeleteAccountDialog({open, onClose, isDeleteAccountEnabl
               flexDirection: 'column',
             }}
           >
-            You will not be able to recover this account without either the seed phrase, or
-            the account private key.<br/><br/>
+            You will not be able to recover the current accounts without the seed phrase, and
+            the account private key. This action will delete all current accounts from
+            your browser.<br/><br/>
 
             <strong style={{textAlign: 'center'}}>
-              Please ensure you have either the seed phrase or the private key to prevent loss of funds.
+              To prevent loss of funds, please ensure you have the seed phrase and the private key
+              for all current accounts.
             </strong>
           </div>
         </DialogContentText>
