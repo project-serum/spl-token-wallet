@@ -22,6 +22,7 @@ import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddAccountDialog from './AddAccountDialog';
+import DeleteAccountDialog from "./DeleteAccountDialog";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -131,6 +132,8 @@ function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
+  const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
 
   if (accounts.length === 0) {
@@ -152,6 +155,11 @@ function WalletSelector() {
           });
           setAddAccountOpen(false);
         }}
+      />
+      <DeleteAccountDialog
+        open={deleteAccountOpen}
+        onClose={() => setDeleteAccountOpen(false)}
+        isDeleteAccountEnabled={isDeleteAccountEnabled}
       />
       <Hidden xsDown>
         <Button
@@ -212,11 +220,16 @@ function WalletSelector() {
           </ListItemIcon>
           Add Account
         </MenuItem>
-        <MenuItem onClick={forgetWallet}>
+        <MenuItem onClick={() => {
+          setAnchorEl(null);
+          setIsDeleteAccountEnabled(false);
+          setDeleteAccountOpen(true)
+          setTimeout(() => {setIsDeleteAccountEnabled(true)}, 3000)
+        }}>
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Logout
+          Delete Account
         </MenuItem>
       </Menu>
     </>
