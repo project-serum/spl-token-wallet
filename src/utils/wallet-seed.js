@@ -130,3 +130,14 @@ function deriveImportsEncryptionKey(seed) {
   return bip32.fromSeed(Buffer.from(seed, 'hex')).derivePath("m/10016'/0")
     .privateKey;
 }
+
+export function forgetWallet() {
+  localStorage.removeItem('walletIndex');
+  localStorage.removeItem('walletCount');
+  localStorage.removeItem('walletPrivateKeyImports');
+  localStorage.removeItem('locked');
+  localStorage.removeItem('unlocked');
+  sessionStorage.removeItem('unlocked');
+  unlockedMnemonicAndSeed = { mnemonic: null, seed: null, importsEncryptionKey: null };
+  walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
+}

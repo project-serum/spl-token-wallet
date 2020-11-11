@@ -9,9 +9,11 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useWalletSelector } from '../utils/wallet';
+import { forgetWallet } from '../utils/wallet-seed';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
+import ExitToApp from '@material-ui/icons/ExitToApp';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
@@ -209,6 +211,12 @@ function WalletSelector() {
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Add Account
+        </MenuItem>
+        <MenuItem onClick={forgetWallet}>
+          <ListItemIcon className={classes.menuItemIcon}>
+            <ExitToApp fontSize="small" />
+          </ListItemIcon>
+          Logout
         </MenuItem>
       </Menu>
     </>
