@@ -6,8 +6,11 @@ import {
   mnemonicToSeed,
   storeMnemonicAndSeed,
 } from '../utils/wallet-seed';
+import { DERIVATION_PATH, Wallet } from '../utils/wallet';
+import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import Container from '@material-ui/core/Container';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { BalanceListItem } from '../components/BalancesList.js';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { Typography } from '@material-ui/core';
@@ -16,8 +19,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
+import Switch from '@material-ui/core/Switch';
 import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
+import { validateMnemonic } from 'bip39';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
@@ -48,10 +53,13 @@ function CreateWalletForm() {
 
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
-    callAsync(storeMnemonicAndSeed(mnemonic, seed, password), {
-      progressMessage: 'Creating wallet...',
-      successMessage: 'Wallet created',
-    });
+    callAsync(
+      storeMnemonicAndSeed(mnemonic, seed, password, DERIVATION_PATH.bip44),
+      {
+        progressMessage: 'Creating wallet...',
+        successMessage: 'Wallet created',
+      },
+    );
   }
 
   if (!savedWords) {
@@ -227,66 +235,149 @@ function LoginForm() {
 
 function RestoreWalletForm({ goBack }) {
   const [mnemonic, setMnemonic] = useState('');
+  const [seed, setSeed] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [next, setNext] = useState(false);
+  const isNextBtnEnabled =
+    password === passwordConfirm && validateMnemonic(mnemonic);
+
+  return (
+    <>
+      {next ? (
+        <DerivedAccounts
+          goBack={() => setNext(false)}
+          mnemonic={mnemonic}
+          password={password}
+          seed={seed}
+        />
+      ) : (
+        <Card>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Restore Existing Wallet
+            </Typography>
+            <Typography>
+              Restore your wallet using your twelve seed words. Note that this
+              will delete any existing wallet on this device.
+            </Typography>
+            <TextField
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={3}
+              margin="normal"
+              label="Seed Words"
+              value={mnemonic}
+              onChange={(e) => setMnemonic(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              label="New Password (Optional)"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+          </CardContent>
+          <CardActions style={{ justifyContent: 'space-between' }}>
+            <Button onClick={goBack}>Cancel</Button>
+            <Button
+              color="primary"
+              disabled={!isNextBtnEnabled}
+              onClick={() => {
+                mnemonicToSeed(mnemonic).then((seed) => {
+                  setSeed(seed);
+                  setNext(true);
+                });
+              }}
+            >
+              Next
+            </Button>
+          </CardActions>
+        </Card>
+      )}
+    </>
+  );
+}
+
+function DerivedAccounts({ goBack, mnemonic, seed, password }) {
+  const [useBip44, setUseBip44] = useState(true);
   const callAsync = useCallAsync();
+  const urlSuffix = useSolanaExplorerUrlSuffix();
+  const derivationPath = useBip44
+    ? DERIVATION_PATH.bip44
+    : DERIVATION_PATH.deprecated;
+
+  const accounts = [...Array(10)].map((_, idx) => {
+    return Wallet.getAccountFromSeed(
+      Buffer.from(seed, 'hex'),
+      idx,
+      derivationPath,
+    );
+  });
 
   function submit() {
-    callAsync(
-      mnemonicToSeed(mnemonic).then((seed) =>
-        storeMnemonicAndSeed(mnemonic, seed, password),
-      ),
-    );
+    callAsync(storeMnemonicAndSeed(mnemonic, seed, password, derivationPath));
   }
 
   return (
     <Card>
       <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Restore Existing Wallet
-        </Typography>
-        <Typography>
-          Restore your wallet using your twelve seed words. Note that this will
-          delete any existing wallet on this device.
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={3}
-          margin="normal"
-          label="Seed Words"
-          value={mnemonic}
-          onChange={(e) => setMnemonic(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="New Password (Optional)"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Confirm Password"
-          type="password"
-          autoComplete="new-password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            Derivable Accounts
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useBip44}
+                onChange={() => setUseBip44(!useBip44)}
+              />
+            }
+            labelPlacement={'start'}
+            label={useBip44 ? 'BIP 44' : 'Deprecated'}
+          />
+        </div>
+        {accounts.map((acc) => {
+          return (
+            <Link
+              href={
+                `https://explorer.solana.com/account/${acc.publicKey.toBase58()}` +
+                urlSuffix
+              }
+              target="_blank"
+              rel="noopener"
+            >
+              <BalanceListItem
+                publicKey={acc.publicKey}
+                walletAccount={acc}
+                expandable={false}
+              />
+            </Link>
+          );
+        })}
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Cancel</Button>
-        <Button
-          color="primary"
-          disabled={password !== passwordConfirm}
-          onClick={submit}
-        >
+        <Button onClick={goBack}>Back</Button>
+        <Button color="primary" onClick={submit}>
           Restore
         </Button>
       </CardActions>

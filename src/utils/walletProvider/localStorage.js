@@ -4,11 +4,26 @@ import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 
+export const DERIVATION_PATH = {
+  deprecated: undefined,
+  bip44: 'bip44',
+};
+
 export function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
-  const derivedSeed = bip32
-    .fromSeed(seed)
-    .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
+  const path = derivationPath(walletIndex, derivationPath, accountIndex);
+  const derivedSeed = bip32.fromSeed(seed).derivePath(path).privateKey;
   return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
+}
+
+function derivationPath(walletIndex, derivationPath, accountIndex) {
+  switch (derivationPath) {
+    case DERIVATION_PATH.deprecated:
+      return `m/501'/${walletIndex}'/0/${accountIndex}`;
+    case DERIVATION_PATH.bip44:
+      return `m/44'/501'/${walletIndex}'/${accountIndex}`;
+    default:
+      throw new Error(`invalid derivation path: ${derivationPath}`);
+  }
 }
 
 export class LocalStorageWalletProvider {
