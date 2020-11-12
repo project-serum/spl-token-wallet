@@ -138,10 +138,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function BalanceListItem({ publicKey }) {
+export function BalanceListItem({ publicKey, expandable }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  expandable = expandable === undefined ? true : expandable;
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -151,7 +152,7 @@ function BalanceListItem({ publicKey }) {
 
   return (
     <>
-      <ListItem button onClick={() => setOpen((open) => !open)}>
+      <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
           <TokenIcon mint={mint} tokenName={tokenName} size={28} />
         </ListItemIcon>
@@ -166,7 +167,7 @@ function BalanceListItem({ publicKey }) {
           secondary={publicKey.toBase58()}
           secondaryTypographyProps={{ className: classes.address }}
         />
-        {open ? <ExpandLess /> : <ExpandMore />}
+        {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <BalanceListItemDetails
