@@ -12,7 +12,10 @@ export default function DeleteAccountDialog({open, onClose, isDeleteAccountEnabl
       <DialogForm
         open={open}
         onClose={onClose}
-        onSubmit={forgetWallet}
+        onSubmit={() => {
+          forgetWallet();
+          onClose();
+        }}
         fullWidth
       >
         <DialogTitle>Delete Account</DialogTitle>
