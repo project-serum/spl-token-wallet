@@ -328,10 +328,18 @@ export function useWalletSelector() {
     }
   }
 
+  const setAccountName = (storageIndex, newName) => {
+    // do it
+  }
+
+  console.log(`Wallet count outside of memo ${walletCount} ${localStorage.getItem('walletCount')}`)
+  // const accountNames = JSON.stringify([...Array(walletCount).keys()]
+  //   .map(idx => localStorage.getItem(`name${idx + 1}`)));
   const accounts = useMemo(() => {
     if (!seed) {
       return [];
     }
+    console.log(`Wallet count inside of memo ${walletCount}`)
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
