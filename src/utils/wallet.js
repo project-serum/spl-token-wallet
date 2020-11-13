@@ -199,7 +199,7 @@ export function WalletProvider({ children }) {
   function setAccountName(selector, newName) {
     if (selector.importedPubkey) {
       let newPrivateKeyImports = { ...privateKeyImports };
-      newPrivateKeyImports[selector.publicKey].name = newName;
+      newPrivateKeyImports[selector.importedPubkey.toString()].name = newName;
       setPrivateKeyImports(newPrivateKeyImports);
     } else {
       localStorage.setItem(`name${selector.walletIndex}`, newName);

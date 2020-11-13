@@ -57,7 +57,6 @@ export default function BalancesList() {
   const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(false);
   const { accounts, setAccountName } = useWalletSelector();
   const selectedAccount = accounts.find(a => a.isSelected)
-  console.log(accounts);
 
   return (
     <Paper>
