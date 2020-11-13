@@ -140,4 +140,5 @@ export function forgetWallet() {
   sessionStorage.removeItem('unlocked');
   unlockedMnemonicAndSeed = { mnemonic: null, seed: null, importsEncryptionKey: null };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
+  window.location.reload();
 }
