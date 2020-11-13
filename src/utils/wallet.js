@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
 import {
@@ -189,6 +189,24 @@ export function WalletProvider({ children }) {
     }
   }
 
+  const getWalletNames = () => {
+    return JSON.stringify(
+      [...Array(walletCount).keys()]
+        .map(idx => localStorage.getItem(`name${idx}`))
+    );
+  }
+  const [walletNames, setWalletNames] = useState(getWalletNames())
+  function setAccountName(selector, newName) {
+    if (selector.importedPubkey) {
+      let newPrivateKeyImports = { ...privateKeyImports };
+      newPrivateKeyImports[selector.importedPubkey.toString()].name = newName;
+      setPrivateKeyImports(newPrivateKeyImports);
+    } else {
+      localStorage.setItem(`name${selector.walletIndex}`, newName);
+      setWalletNames(getWalletNames());
+    }
+  }
+
   const accounts = useMemo(() => {
     if (!seed) {
       return [];
@@ -217,7 +235,8 @@ export function WalletProvider({ children }) {
     });
 
     return derivedAccounts.concat(importedAccounts);
-  }, [seed, walletCount, walletSelector, privateKeyImports]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
 
   return (
     <WalletContext.Provider
@@ -231,7 +250,8 @@ export function WalletProvider({ children }) {
         privateKeyImports,
         setPrivateKeyImports,
         accounts,
-        addAccount
+        addAccount,
+        setAccountName
       }}
     >
       {children}
@@ -355,7 +375,8 @@ export function useWalletSelector() {
     accounts,
     addAccount,
     setWalletSelector,
+    setAccountName,
   } = useContext(WalletContext);
 
-  return { accounts, setWalletSelector, addAccount };
+  return { accounts, setWalletSelector, addAccount, setAccountName };
 }

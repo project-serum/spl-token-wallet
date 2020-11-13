@@ -3,6 +3,8 @@ import { randomBytes, secretbox } from 'tweetnacl';
 import * as bip32 from 'bip32';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
+import {useContext} from "react";
+import {useWalletPrivateKeyImports} from "./wallet";
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -132,11 +134,7 @@ function deriveImportsEncryptionKey(seed) {
 }
 
 export function forgetWallet() {
-  localStorage.removeItem('walletIndex');
-  localStorage.removeItem('walletCount');
-  localStorage.removeItem('walletPrivateKeyImports');
-  localStorage.removeItem('locked');
-  localStorage.removeItem('unlocked');
+  localStorage.clear()
   sessionStorage.removeItem('unlocked');
   unlockedMnemonicAndSeed = { mnemonic: null, seed: null, importsEncryptionKey: null };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);

@@ -7,7 +7,7 @@ import {
   refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
-  useWalletPublicKeys,
+  useWalletPublicKeys, useWalletSelector,
 } from '../utils/wallet';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
@@ -29,6 +29,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
+import EditIcon from '@material-ui/icons/Edit';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -41,6 +42,7 @@ import { showTokenInfoDialog } from '../utils/config';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
+import EditAccountNameDialog from "./EditAccountNameDialog";
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -52,14 +54,24 @@ export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(false);
+  const { accounts, setAccountName } = useWalletSelector();
+  const selectedAccount = accounts.find(a => a.isSelected)
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            Balances
+            {selectedAccount && selectedAccount.name} Balances
           </Typography>
+          {selectedAccount && selectedAccount.name !== "Main account" &&
+            <Tooltip title="Edit Account Name" arrow>
+              <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
           <Tooltip title="Add Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
@@ -89,6 +101,15 @@ export default function BalancesList() {
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
+      />
+      <EditAccountNameDialog
+        open={showEditAccountNameDialog}
+        onClose={() => setShowEditAccountNameDialog(false)}
+        oldName={selectedAccount ? selectedAccount.name : ''}
+        onEdit={(name) => {
+          setAccountName(selectedAccount.selector, name);
+          setShowEditAccountNameDialog(false)
+        }}
       />
     </Paper>
   );
