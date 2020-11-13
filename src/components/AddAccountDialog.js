@@ -22,6 +22,11 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
   return (
     <DialogForm
       open={open}
+      onEnter={() => {
+        setName('');
+        setIsImport(false);
+        setPrivateKey('');
+      }}
       onClose={onClose}
       onSubmit={() => onAdd({ name, importedAccount })}
       fullWidth
