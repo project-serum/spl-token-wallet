@@ -42,6 +42,7 @@ import { showTokenInfoDialog } from '../utils/config';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
+import EditAccountNameDialog from "./EditAccountNameDialog";
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -54,7 +55,7 @@ export default function BalancesList() {
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
   const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(false);
-  const { accounts } = useWalletSelector();
+  const { accounts, setAccountName } = useWalletSelector();
   const selectedAccount = accounts.find(a => a.isSelected)
   console.log(accounts);
 
@@ -101,6 +102,15 @@ export default function BalancesList() {
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
+      />
+      <EditAccountNameDialog
+        open={showEditAccountNameDialog}
+        onClose={() => setShowEditAccountNameDialog(false)}
+        oldName={selectedAccount ? selectedAccount.name : ''}
+        onEdit={(name) => {
+          setAccountName(selectedAccount.selector, name);
+          setShowEditAccountNameDialog(false)
+        }}
       />
     </Paper>
   );

@@ -132,11 +132,7 @@ function deriveImportsEncryptionKey(seed) {
 }
 
 export function forgetWallet() {
-  localStorage.removeItem('walletIndex');
-  localStorage.removeItem('walletCount');
-  localStorage.removeItem('walletPrivateKeyImports');
-  localStorage.removeItem('locked');
-  localStorage.removeItem('unlocked');
+  localStorage.clear()
   sessionStorage.removeItem('unlocked');
   unlockedMnemonicAndSeed = { mnemonic: null, seed: null, importsEncryptionKey: null };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
