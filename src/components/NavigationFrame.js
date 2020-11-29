@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { clusterApiUrl } from '@solana/web3.js';
-import { useWalletSelector, useWalletAuth, useWallet } from '../utils/wallet';
+import { useWalletSelector } from '../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -135,7 +135,7 @@ function WalletSelector() {
   const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
 
-  if (!wallet) {
+  if (accounts.length === 0) {
     return null;
   }
 
@@ -208,7 +208,7 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
-        {<MenuItem
+        <MenuItem
           onClick={() => {
             setAnchorEl(null);
             setAddAccountOpen(true);
@@ -218,7 +218,7 @@ function WalletSelector() {
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Add Account
-        </MenuItem>}
+        </MenuItem>
         <MenuItem onClick={() => {
           setAnchorEl(null);
           setIsDeleteAccountEnabled(false);

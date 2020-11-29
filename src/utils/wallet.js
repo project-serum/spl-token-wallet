@@ -1,22 +1,34 @@
 import React, {useContext, useMemo, useState} from 'react';
+import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
-import {Account, PublicKey,} from '@solana/web3.js';
+import {
+  Account,
+  SystemProgram,
+  Transaction,
+  PublicKey,
+} from '@solana/web3.js';
 import nacl from 'tweetnacl';
-import {setInitialAccountInfo, useAccountInfo, useConnection,} from './connection';
+import {
+  setInitialAccountInfo,
+  useAccountInfo,
+  useConnection,
+} from './connection';
 import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
   getOwnedTokenAccounts,
-  nativeTransfer,
   transferTokens,
 } from './tokens';
-import {TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT} from './tokens/instructions';
-import {ACCOUNT_LAYOUT, parseMintData, parseTokenAccountData,} from './tokens/data';
-import {useListener, useLocalStorageState} from './utils';
-import {useTokenName} from './tokens/names';
-import {refreshCache, useAsyncData} from './fetch-loop';
-import {getUnlockedMnemonicAndSeed, walletSeedChanged} from './wallet-seed';
-
+import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
+import {
+  ACCOUNT_LAYOUT,
+  parseMintData,
+  parseTokenAccountData,
+} from './tokens/data';
+import { useListener, useLocalStorageState } from './utils';
+import { useTokenName } from './tokens/names';
+import { refreshCache, useAsyncData } from './fetch-loop';
+import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 
 const DEFAULT_WALLET_SELECTOR = {
   walletIndex: 0,
@@ -29,24 +41,21 @@ export class Wallet {
     this.account = account;
   }
 
-  static create = async (connection, walletIndex = 0, type) => {
-    const instance = new Wallet(connection, walletIndex, type);
-    await instance.provider.init();
-    return instance;
+  static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
+    const derivedSeed = bip32
+      .fromSeed(seed)
+      .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
+    return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
   }
 
   get publicKey() {
-    return this.provider.publicKey;
-  }
-
-  listAddresses = async (walletCount) => {
-    return this.provider.listAddresses(walletCount);
+    return this.account.publicKey;
   }
 
   getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(
       this.connection,
-      this.publicKey,
+      this.account.publicKey,
     );
     return accounts.map(({ publicKey, accountInfo }) => {
       setInitialAccountInfo(this.connection, publicKey, accountInfo);
@@ -57,7 +66,7 @@ export class Wallet {
   createTokenAccount = async (tokenAddress) => {
     return await createAndInitializeTokenAccount({
       connection: this.connection,
-      payer: this,
+      payer: this.account,
       mintPublicKey: tokenAddress,
       newAccount: new Account(),
     });
@@ -78,7 +87,7 @@ export class Wallet {
     }
     return await transferTokens({
       connection: this.connection,
-      owner: this,
+      owner: this.account,
       sourcePublicKey: source,
       destinationPublicKey: destination,
       amount,
@@ -87,18 +96,23 @@ export class Wallet {
     });
   };
 
-  signTransaction = async (transaction) => {
-    return this.provider.signTransaction(transaction);
-  }
-
   transferSol = async (destination, amount) => {
-    return nativeTransfer(this.connection, this, destination, amount);
+    const tx = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: this.publicKey,
+        toPubkey: destination,
+        lamports: amount,
+      }),
+    );
+    return await this.connection.sendTransaction(tx, [this.account], {
+      preflightCommitment: 'single',
+    });
   };
 
   closeTokenAccount = async (publicKey) => {
     return await closeTokenAccount({
       connection: this.connection,
-      owner: this,
+      owner: this.account,
       sourcePublicKey: publicKey,
     });
   };
@@ -237,7 +251,7 @@ export function WalletProvider({ children }) {
         setPrivateKeyImports,
         accounts,
         addAccount,
-        setAccountName,
+        setAccountName
       }}
     >
       {children}
@@ -249,11 +263,6 @@ export function useWallet() {
   return useContext(WalletContext).wallet;
 }
 
-export function useWalletAuth() {
-  const { login, logout, allowNewAccounts } = useContext(WalletContext);
-  return { login, logout, allowNewAccounts };
-}
-
 export function useWalletPublicKeys() {
   let wallet = useWallet();
   let [tokenAccountInfo, loaded] = useAsyncData(
@@ -261,7 +270,7 @@ export function useWalletPublicKeys() {
     wallet.getTokenAccountInfo,
   );
   const getPublicKeys = () => [
-    wallet.publicKey,
+    wallet.account.publicKey,
     ...(tokenAccountInfo
       ? tokenAccountInfo.map(({ publicKey }) => publicKey)
       : []),
@@ -290,8 +299,8 @@ export function useWalletAddressForMint(mint) {
     () =>
       mint
         ? walletAccounts
-          ?.find((account) => account.parsed?.mint?.equals(mint))
-          ?.publicKey.toBase58()
+            ?.find((account) => account.parsed?.mint?.equals(mint))
+            ?.publicKey.toBase58()
         : null,
     [walletAccounts, mint],
   );
