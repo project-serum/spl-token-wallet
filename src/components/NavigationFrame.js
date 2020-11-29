@@ -12,6 +12,7 @@ import { useWalletSelector, useWalletAuth, useWallet } from '../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
+import ExitToApp from '@material-ui/icons/ExitToApp';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
@@ -20,6 +21,7 @@ import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddAccountDialog from './AddAccountDialog';
+import DeleteAccountDialog from "./DeleteAccountDialog";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -126,11 +128,11 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { accounts, walletIndex, selectWallet } = useWalletSelector();
-  const { logout, allowNewAccounts } = useWalletAuth();
-  const wallet = useWallet();
+  const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
+  const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
 
   if (!wallet) {
@@ -142,10 +144,21 @@ function WalletSelector() {
       <AddAccountDialog
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
-        onAdd={(name) => {
-          selectWallet(accounts.length, name);
+        onAdd={({ name, importedAccount }) => {
+          addAccount({ name, importedAccount });
+          setWalletSelector({
+            walletIndex: importedAccount ? undefined : accounts.length,
+            importedPubkey: importedAccount
+              ? importedAccount.publicKey.toString()
+              : undefined,
+          });
           setAddAccountOpen(false);
         }}
+      />
+      <DeleteAccountDialog
+        open={deleteAccountOpen}
+        onClose={() => setDeleteAccountOpen(false)}
+        isDeleteAccountEnabled={isDeleteAccountEnabled}
       />
       <Hidden xsDown>
         <Button
@@ -173,23 +186,21 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {accounts.map(({ index, address, name }) => (
+        {accounts.map(({ isSelected, selector, address, name, label }) => (
           <MenuItem
             key={address.toBase58()}
             onClick={() => {
               setAnchorEl(null);
-              selectWallet(index);
+              setWalletSelector(selector);
             }}
-            selected={index === walletIndex}
+            selected={isSelected}
             component="div"
           >
             <ListItemIcon className={classes.menuItemIcon}>
-              {index === walletIndex ? <CheckIcon fontSize="small" /> : null}
+              {isSelected ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography>
-                {index === 0 ? 'Main account' : name || `Account ${index}`}
-              </Typography>
+              <Typography>{name}</Typography>
               <Typography color="textSecondary">
                 {address.toBase58()}
               </Typography>
@@ -197,7 +208,7 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
-        {allowNewAccounts && <MenuItem
+        {<MenuItem
           onClick={() => {
             setAnchorEl(null);
             setAddAccountOpen(true);
@@ -206,15 +217,18 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Create Account
+          Add Account
         </MenuItem>}
-
-        <MenuItem
-          onClick={() => {
-            logout(null);
-          }}
-        >
-          Logout
+        <MenuItem onClick={() => {
+          setAnchorEl(null);
+          setIsDeleteAccountEnabled(false);
+          setDeleteAccountOpen(true)
+          setTimeout(() => {setIsDeleteAccountEnabled(true)}, 3000)
+        }}>
+          <ListItemIcon className={classes.menuItemIcon}>
+            <ExitToApp fontSize="small" />
+          </ListItemIcon>
+          Delete Account
         </MenuItem>
       </Menu>
     </>

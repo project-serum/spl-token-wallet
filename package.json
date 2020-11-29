@@ -29,6 +29,8 @@
   "scripts": {
     "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
+    "fix": "run-s fix:*",
+    "fix:prettier": "prettier \"src/**/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

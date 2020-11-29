@@ -7,7 +7,7 @@ import {
   refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
-  useWalletPublicKeys,
+  useWalletPublicKeys, useWalletSelector,
 } from '../utils/wallet';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
@@ -29,7 +29,9 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
+import EditIcon from '@material-ui/icons/Edit';
 import AddTokenDialog from './AddTokenDialog';
+import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import {
@@ -40,6 +42,7 @@ import { showTokenInfoDialog } from '../utils/config';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
+import EditAccountNameDialog from "./EditAccountNameDialog";
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -51,14 +54,24 @@ export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(false);
+  const { accounts, setAccountName } = useWalletSelector();
+  const selectedAccount = accounts.find(a => a.isSelected)
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            Balances
+            {selectedAccount && selectedAccount.name} Balances
           </Typography>
+          {selectedAccount && selectedAccount.name !== "Main account" &&
+            <Tooltip title="Edit Account Name" arrow>
+              <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
           <Tooltip title="Add Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
@@ -88,6 +101,15 @@ export default function BalancesList() {
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
+      />
+      <EditAccountNameDialog
+        open={showEditAccountNameDialog}
+        onClose={() => setShowEditAccountNameDialog(false)}
+        oldName={selectedAccount ? selectedAccount.name : ''}
+        onEdit={(name) => {
+          setAccountName(selectedAccount.selector, name);
+          setShowEditAccountNameDialog(false)
+        }}
       />
     </Paper>
   );
@@ -157,6 +179,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
+  const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   const [
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
@@ -168,8 +191,16 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
 
   let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
 
+  // Only show the export UI for the native SOL coin.
+  const exportNeedsDisplay =
+    mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
+
   return (
     <>
+      <ExportAccountDialog
+        onClose={() => setExportAccDialogOpen(false)}
+        open={exportAccDialogOpen}
+      />
       <div className={classes.itemDetails}>
         <div className={classes.buttonContainer}>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (
@@ -224,18 +255,31 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             Token Address: {mint.toBase58()}
           </Typography>
         ) : null}
-        <Typography variant="body2">
-          <Link
-            href={
-              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-              urlSuffix
-            }
-            target="_blank"
-            rel="noopener"
-          >
-            View on Solana Explorer
-          </Link>
-        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <Typography variant="body2">
+              <Link
+                href={
+                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                  urlSuffix
+                }
+                target="_blank"
+                rel="noopener"
+              >
+                View on Solana Explorer
+              </Link>
+            </Typography>
+          </div>
+          {exportNeedsDisplay && (
+            <div>
+              <Typography variant="body2">
+                <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
+                  Export
+                </Link>
+              </Typography>
+            </div>
+          )}
+        </div>
       </div>
       <SendDialog
         open={sendDialogOpen}

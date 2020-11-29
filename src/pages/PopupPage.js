@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
@@ -79,6 +85,7 @@ export default function PopupPage({ opener }) {
         if (e.data.method !== 'signTransaction') {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
+
         setRequests((requests) => [...requests, e.data]);
       }
     }
@@ -168,6 +175,10 @@ const useStyles = makeStyles((theme) => ({
   },
   transaction: {
     wordBreak: 'break-all',
+  },
+  approveButton: {
+    backgroundColor: '#43a047',
+    color: 'white',
   },
   actions: {
     justifyContent: 'space-between',
@@ -374,6 +385,7 @@ function ApproveSignatureForm({
 
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
+  const buttonRef = useRef();
 
   useEffect(() => {
     decodeMessage(connection, wallet, message).then((instructions) => {
@@ -382,21 +394,33 @@ function ApproveSignatureForm({
     });
   }, [message, connection, wallet]);
 
-  const safe = useMemo(() => {
-    return (
-      publicKeys &&
-      instructions &&
-      isSafeInstruction(publicKeys, wallet.publicKey, instructions)
-    );
+  const validator = useMemo(() => {
+    return {
+      safe:
+        publicKeys &&
+        instructions &&
+        isSafeInstruction(publicKeys, wallet.publicKey, instructions),
+    };
   }, [publicKeys, instructions, wallet]);
 
   useEffect(() => {
-    if (safe && autoApprove) {
+    if (validator.safe && autoApprove) {
       console.log('Auto approving safe transaction');
       onApprove();
+    } else {
+      // brings window to front when we receive new instructions
+      // this needs to be executed from wallet instead of adapter
+      // to ensure chrome brings window to front
+      window.focus();
+
+      // scroll to approve button and focus it to enable approve with enter
+      if (buttonRef.current) {
+        buttonRef.current.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => buttonRef.current.focus(), 50);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [safe, autoApprove]);
+  }, [validator, autoApprove, buttonRef]);
 
   const onOpenAddress = (address) => {
     address &&
@@ -498,7 +522,7 @@ function ApproveSignatureForm({
                 </Typography>
               </>
             )}
-            {!safe && (
+            {!validator.safe && (
               <SnackbarContent
                 className={classes.warningContainer}
                 message={
@@ -521,7 +545,13 @@ function ApproveSignatureForm({
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>
-        <Button color="primary" onClick={onApprove}>
+        <Button
+          ref={buttonRef}
+          className={classes.approveButton}
+          variant="contained"
+          color="primary"
+          onClick={onApprove}
+        >
           Approve
         </Button>
       </CardActions>
