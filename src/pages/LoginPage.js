@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   generateMnemonicAndSeed,
   hasLockedMnemonicAndSeed,
+  loadMnemonicAndSeed,
   mnemonicToSeed,
   storeMnemonicAndSeed,
 } from '../utils/wallet-seed';
@@ -16,11 +17,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import { useCallAsync } from '../utils/notifications';
-import { useWalletAuth } from '../utils/wallet';
+import Link from '@material-ui/core/Link';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
-  const { login } = useWalletAuth();
   return (
     <Container maxWidth="sm">
       {restore ? (
@@ -28,17 +28,10 @@ export default function LoginPage() {
       ) : (
         <>
           {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button color="primary" 
-                    onClick={() => login('ledger')}>
-              Use Ledger
-            </Button>
-
-            <Button type="secondary" style={{ cursor: 'pointer', marginLeft: 'auto', marginRight: 0, textTransform: 'none', fontWeight: 'normal' }} 
-                    onClick={() => setRestore(true)}>
-              Restore existing wallet
-            </Button>
-          </div>
+          <br />
+          <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
+            Restore existing wallet
+          </Link>
         </>
       )}
     </Container>
@@ -52,16 +45,12 @@ function CreateWalletForm() {
   }, []);
   const [savedWords, setSavedWords] = useState(false);
   const callAsync = useCallAsync();
-  const { login } = useWalletAuth();
 
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
     callAsync(storeMnemonicAndSeed(mnemonic, seed, password), {
       progressMessage: 'Creating wallet...',
       successMessage: 'Wallet created',
-      onSuccess: () => {
-        login('local', password);
-      }
     });
   }
 
@@ -192,7 +181,14 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
 function LoginForm() {
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
-  const { login } = useWalletAuth();
+  const callAsync = useCallAsync();
+
+  function submit() {
+    callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
+      progressMessage: 'Unlocking wallet...',
+      successMessage: 'Wallet unlocked',
+    });
+  }
 
   return (
     <Card>
@@ -221,7 +217,7 @@ function LoginForm() {
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" onClick={() => login('local', password, stayLoggedIn)}>
+        <Button color="primary" onClick={submit}>
           Unlock
         </Button>
       </CardActions>
@@ -234,22 +230,14 @@ function RestoreWalletForm({ goBack }) {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const callAsync = useCallAsync();
-  const { login } = useWalletAuth();
 
   function submit() {
     callAsync(
       mnemonicToSeed(mnemonic).then((seed) =>
         storeMnemonicAndSeed(mnemonic, seed, password),
       ),
-      {
-        onSuccess: () => {
-          login('local', password);
-        }
-      },
     );
   }
-
-
 
   return (
     <Card>
