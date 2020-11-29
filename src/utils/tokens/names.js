@@ -157,6 +157,18 @@ export const TOKENS = {
       mintAddress: 'GeDS162t9yGJuLEHPWXXGrb1zwkzinCgRwnT8vHYjKza',
       tokenName: 'Wrapped MATH',
     },
+    {
+      tokenSymbol: 'TOMO',
+      mintAddress: 'GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd',
+      tokenName: 'Wrapped TOMO',
+      icon: "https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/tomochain/info/logo.png"
+    },
+    {
+      tokenSymbol: 'LUA',
+      mintAddress: 'EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX',
+      tokenName: 'Wrapped LUA',
+      icon: 'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
+    },
   ],
 };
 
