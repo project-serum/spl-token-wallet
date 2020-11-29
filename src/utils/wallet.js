@@ -121,11 +121,12 @@ export function WalletProvider({ children }) {
   const [wallet, setWallet] = useState();
   const { enqueueSnackbar } = useSnackbar();
   const [allowNewAccounts, setAllowNewAccounts] = useState(true);
-  const [addresses, setAddresses] = useState();
+  const [accounts, setAccounts] = useState();
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
 
-  function selectWallet(walletIndex) {
+  function selectWallet(walletIndex, name) {
     if (walletIndex >= walletCount) {
+      name && localStorage.setItem(`name${walletIndex}`, name);
       setWalletCount(walletIndex + 1);
     }
     setWalletIndex(walletIndex);
@@ -137,7 +138,7 @@ export function WalletProvider({ children }) {
         try {
           const instance = await Wallet.create(connection, walletIndex, walletType);
 
-          setAddresses(await instance.listAddresses(walletCount));
+          setAccounts(await instance.listAddresses(walletCount));
           setWallet(instance);
         } catch (er) {
           setWalletType('')
@@ -184,7 +185,7 @@ export function WalletProvider({ children }) {
         login,
         logout,
         allowNewAccounts,
-        addresses
+        accounts
       }}
     >
       {children}
@@ -309,9 +310,9 @@ export function useBalanceInfo(publicKey) {
 }
 
 export function useWalletSelector() {
-  const { walletIndex, selectWallet, addresses } = useContext(WalletContext);
+  const { walletIndex, selectWallet, accounts } = useContext(WalletContext);
 
-  return { addresses, walletIndex, selectWallet };
+  return { accounts, walletIndex, selectWallet };
 }
 
 export async function mnemonicToSecretKey(mnemonic) {

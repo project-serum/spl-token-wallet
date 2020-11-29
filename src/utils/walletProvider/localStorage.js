@@ -20,8 +20,11 @@ export class LocalStorageWalletProvider {
     this.listAddresses = async (walletCount) => {
       const seedBuffer = Buffer.from(seed, 'hex');
       return [...Array(walletCount).keys()].map(
-        (walletIndex) =>
-          getAccountFromSeed(seedBuffer, walletIndex).publicKey,
+        (walletIndex) => {
+          let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
+          let name = localStorage.getItem(`name${walletIndex}`);
+          return { index: walletIndex, address, name };
+        }
       );
     }
   }

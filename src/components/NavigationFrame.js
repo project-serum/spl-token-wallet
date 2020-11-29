@@ -125,7 +125,7 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { addresses, walletIndex, selectWallet } = useWalletSelector();
+  const { accounts, walletIndex, selectWallet } = useWalletSelector();
   const { logout, allowNewAccounts } = useWalletAuth();
   const wallet = useWallet();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -163,7 +163,7 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {addresses.map((address, index) => (
+        {accounts.map((address, index) => (
           <MenuItem
             key={address.toBase58()}
             onClick={() => {
@@ -182,7 +182,7 @@ function WalletSelector() {
         {allowNewAccounts && <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            selectWallet(addresses.length);
+            selectWallet(accounts.length);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>
