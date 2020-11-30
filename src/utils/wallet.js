@@ -1,4 +1,4 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
 import {
@@ -29,16 +29,26 @@ import { useListener, useLocalStorageState } from './utils';
 import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
+import {WalletProviderFactory} from "./walletProvider/factory";
+import {getAccountFromSeed} from "./walletProvider/localStorage";
 
 const DEFAULT_WALLET_SELECTOR = {
   walletIndex: 0,
   importedPubkey: undefined,
+  ledger: false,
 };
 
 export class Wallet {
-  constructor(connection, account) {
+  constructor(connection, type, args) {
     this.connection = connection;
-    this.account = account;
+    this.type = type;
+    this.provider = WalletProviderFactory.getProvider(type, args);
+  }
+
+  static create = async (connection, type, args) => {
+    const instance = new Wallet(connection, type, args);
+    await instance.provider.init();
+    return instance;
   }
 
   static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
@@ -49,13 +59,17 @@ export class Wallet {
   }
 
   get publicKey() {
-    return this.account.publicKey;
+    return this.provider.publicKey;
+  }
+
+  get allowsExport() {
+    return this.type === 'local';
   }
 
   getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(
       this.connection,
-      this.account.publicKey,
+      this.provider.publicKey,
     );
     return accounts.map(({ publicKey, accountInfo }) => {
       setInitialAccountInfo(this.connection, publicKey, accountInfo);
@@ -124,6 +138,8 @@ export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
   const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
+  const [ledgerConnected, setLedgerConnected] = useState(false);
+  const [wallet, setWallet] = useState();
 
   // `privateKeyImports` are accounts imported *in addition* to HD wallets
   const [privateKeyImports, setPrivateKeyImports] = useLocalStorageState(
@@ -139,30 +155,37 @@ export function WalletProvider({ children }) {
   // `walletCount` is the number of HD wallets.
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
 
-  const wallet = useMemo(() => {
+  useEffect(() => { (async () => {
     if (!seed) {
       return null;
     }
-    const account =
-      walletSelector.walletIndex !== undefined
-        ? Wallet.getAccountFromSeed(
-            Buffer.from(seed, 'hex'),
-            walletSelector.walletIndex,
+    let account;
+    if (walletSelector.ledger) {
+      account = undefined
+    }
+    else {
+      account =
+        walletSelector.walletIndex !== undefined
+          ? getAccountFromSeed(
+          Buffer.from(seed, 'hex'),
+          walletSelector.walletIndex,
           )
-        : new Account(
-            (() => {
-              const { nonce, ciphertext } = privateKeyImports[
-                walletSelector.importedPubkey
+          : new Account(
+          (() => {
+            const { nonce, ciphertext } = privateKeyImports[
+              walletSelector.importedPubkey
               ];
-              return nacl.secretbox.open(
-                bs58.decode(ciphertext),
-                bs58.decode(nonce),
-                importsEncryptionKey,
-              );
-            })(),
+            return nacl.secretbox.open(
+              bs58.decode(ciphertext),
+              bs58.decode(nonce),
+              importsEncryptionKey,
+            );
+          })(),
           );
-    return new Wallet(connection, account);
-  }, [
+    }
+    const wallet = await Wallet.create(connection, walletSelector.ledger ? 'ledger' : 'local', {account});
+    setWallet(wallet);
+  })();}, [
     connection,
     seed,
     walletSelector,
@@ -170,8 +193,10 @@ export function WalletProvider({ children }) {
     importsEncryptionKey,
   ]);
 
-  function addAccount({ name, importedAccount }) {
-    if (importedAccount === undefined) {
+  function addAccount({ name, importedAccount, ledger }) {
+    if (ledger) {
+      setLedgerConnected(true);
+    } else if (importedAccount === undefined) {
       name && localStorage.setItem(`name${walletCount}`, name);
       setWalletCount(walletCount + 1);
     } else {
@@ -214,10 +239,10 @@ export function WalletProvider({ children }) {
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = Wallet.getAccountFromSeed(seedBuffer, idx).publicKey;
+      let address = getAccountFromSeed(seedBuffer, idx).publicKey;
       let name = localStorage.getItem(`name${idx}`);
       return {
-        selector: { walletIndex: idx, importedPubkey: undefined },
+        selector: { walletIndex: idx, importedPubkey: undefined, ledger: false },
         isSelected: walletSelector.walletIndex === idx,
         address,
         name: idx === 0 ? 'Main account' : name || `Account ${idx}`,
@@ -227,16 +252,25 @@ export function WalletProvider({ children }) {
     const importedAccounts = Object.keys(privateKeyImports).map((pubkey) => {
       const { name } = privateKeyImports[pubkey];
       return {
-        selector: { walletIndex: undefined, importedPubkey: pubkey },
+        selector: { walletIndex: undefined, importedPubkey: pubkey, ledger: false },
         address: new PublicKey(bs58.decode(pubkey)),
         name: `${name} (imported)`, // TODO: do this in the Component with styling.
         isSelected: walletSelector.importedPubkey === pubkey,
       };
     });
 
+    if (ledgerConnected) {
+      derivedAccounts.push({
+        selector: {walletIndex: undefined, importedPubkey: undefined, ledger: true},
+        address: '',// todo: get the ledger address
+        name: 'Hardware wallet',
+        isSelected: walletSelector.ledger,
+      })
+    }
+
     return derivedAccounts.concat(importedAccounts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
+  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames, ledgerConnected]);
 
   return (
     <WalletContext.Provider
@@ -270,7 +304,7 @@ export function useWalletPublicKeys() {
     wallet.getTokenAccountInfo,
   );
   const getPublicKeys = () => [
-    wallet.account.publicKey,
+    wallet.publicKey,
     ...(tokenAccountInfo
       ? tokenAccountInfo.map(({ publicKey }) => publicKey)
       : []),

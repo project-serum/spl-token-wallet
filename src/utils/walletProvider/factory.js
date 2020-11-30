@@ -2,13 +2,13 @@ import { LocalStorageWalletProvider } from './localStorage';
 import { LedgerWalletProvider } from './ledger';
 
 export class WalletProviderFactory {
-  static getProvider(type, walletIndex) {
+  static getProvider(type, args) {
     if (type === 'local') {
-      return new LocalStorageWalletProvider(walletIndex)
+      return new LocalStorageWalletProvider(args)
     }
 
     if (type === 'ledger') {
-      return new LedgerWalletProvider(walletIndex);
+      return new LedgerWalletProvider(args);
     }
   }
 }

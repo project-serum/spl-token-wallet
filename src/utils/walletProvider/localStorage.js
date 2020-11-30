@@ -4,7 +4,6 @@ import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 
 export function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
-
   const derivedSeed = bip32
     .fromSeed(seed)
     .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
@@ -13,10 +12,9 @@ export function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
 
 
 export class LocalStorageWalletProvider {
-  constructor(walletIndex) {
+  constructor(args) {
     const { seed } = getUnlockedMnemonicAndSeed();
-    this.walletIndex = walletIndex;
-    this.account = getAccountFromSeed(Buffer.from(seed, 'hex'), this.walletIndex)
+    this.account = args.account
     this.listAddresses = async (walletCount) => {
       const seedBuffer = Buffer.from(seed, 'hex');
       return [...Array(walletCount).keys()].map(

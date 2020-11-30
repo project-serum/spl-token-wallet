@@ -99,6 +99,7 @@ export default function PopupPage({ opener }) {
   ) {
     // Approve the parent page to connect to this wallet.
     function connect(autoApprove) {
+      // todo: fix this use of wallet.account
       setConnectedAccount(wallet.account);
       postMessage({
         method: 'connected',
