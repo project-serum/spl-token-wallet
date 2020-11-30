@@ -32,7 +32,11 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
         setPubKey(undefined);
         onClose();
       }}
-      onSubmit={() => onAdd()}
+      onSubmit={() => {
+        setPubKey(undefined);
+        onAdd(pubKey);
+        onClose();
+      }}
       fullWidth
     >
       <DialogTitle>Add hardware wallet</DialogTitle>

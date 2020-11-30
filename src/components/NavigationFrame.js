@@ -147,7 +147,14 @@ function WalletSelector() {
       <AddHardwareWalletDialog
         open={addHardwareWalletDialogOpen}
         onClose={() => setAddHardwareWalletDialogOpen(false)}
-        onAdd={() => {}}
+        onAdd={(pubKey) => {
+          addAccount({ name: 'Hardware wallet', importedAccount: pubKey.toString(), ledger: true });
+          setWalletSelector({
+            walletIndex: undefined,
+            importedPubkey: pubKey.toString(),
+            ledger: true
+          });
+        }}
       />
       <AddAccountDialog
         open={addAccountOpen}

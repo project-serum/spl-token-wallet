@@ -16,7 +16,7 @@ import {
 import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
-  getOwnedTokenAccounts,
+  getOwnedTokenAccounts, nativeTransfer,
   transferTokens,
 } from './tokens';
 import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
@@ -51,13 +51,6 @@ export class Wallet {
     return instance;
   }
 
-  static getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
-    const derivedSeed = bip32
-      .fromSeed(seed)
-      .derivePath(`m/501'/${walletIndex}'/0/${accountIndex}`).privateKey;
-    return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
-  }
-
   get publicKey() {
     return this.provider.publicKey;
   }
@@ -69,7 +62,7 @@ export class Wallet {
   getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(
       this.connection,
-      this.provider.publicKey,
+      this.publicKey,
     );
     return accounts.map(({ publicKey, accountInfo }) => {
       setInitialAccountInfo(this.connection, publicKey, accountInfo);
@@ -80,7 +73,7 @@ export class Wallet {
   createTokenAccount = async (tokenAddress) => {
     return await createAndInitializeTokenAccount({
       connection: this.connection,
-      payer: this.account,
+      payer: this,
       mintPublicKey: tokenAddress,
       newAccount: new Account(),
     });
@@ -101,7 +94,7 @@ export class Wallet {
     }
     return await transferTokens({
       connection: this.connection,
-      owner: this.account,
+      owner: this,
       sourcePublicKey: source,
       destinationPublicKey: destination,
       amount,
@@ -111,25 +104,20 @@ export class Wallet {
   };
 
   transferSol = async (destination, amount) => {
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: this.publicKey,
-        toPubkey: destination,
-        lamports: amount,
-      }),
-    );
-    return await this.connection.sendTransaction(tx, [this.account], {
-      preflightCommitment: 'single',
-    });
+    return nativeTransfer(this.connection, this, destination, amount);
   };
 
   closeTokenAccount = async (publicKey) => {
     return await closeTokenAccount({
       connection: this.connection,
-      owner: this.account,
+      owner: this,
       sourcePublicKey: publicKey,
     });
   };
+
+  signTransaction = async (transaction) => {
+    return this.provider.signTransaction(transaction);
+  }
 }
 
 const WalletContext = React.createContext(null);
@@ -138,7 +126,7 @@ export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
   const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
-  const [ledgerConnected, setLedgerConnected] = useState(false);
+  const [ledgerPubKey, setLedgerPubKey] = useState(undefined);
   const [wallet, setWallet] = useState();
 
   // `privateKeyImports` are accounts imported *in addition* to HD wallets
@@ -159,12 +147,18 @@ export function WalletProvider({ children }) {
     if (!seed) {
       return null;
     }
-    let account;
+    let wallet;
     if (walletSelector.ledger) {
-      account = undefined
+      try {
+        wallet = await Wallet.create(connection, 'ledger');
+      } catch (e) {
+        console.log(`received error using ledger wallet: ${e}`);
+        setWalletSelector(DEFAULT_WALLET_SELECTOR);
+        return;
+      }
     }
-    else {
-      account =
+    if (!wallet) {
+      const account =
         walletSelector.walletIndex !== undefined
           ? getAccountFromSeed(
           Buffer.from(seed, 'hex'),
@@ -180,10 +174,9 @@ export function WalletProvider({ children }) {
               bs58.decode(nonce),
               importsEncryptionKey,
             );
-          })(),
-          );
+          })());
+      wallet = await Wallet.create(connection, 'local', {account})
     }
-    const wallet = await Wallet.create(connection, walletSelector.ledger ? 'ledger' : 'local', {account});
     setWallet(wallet);
   })();}, [
     connection,
@@ -191,11 +184,12 @@ export function WalletProvider({ children }) {
     walletSelector,
     privateKeyImports,
     importsEncryptionKey,
+    setWalletSelector,
   ]);
 
   function addAccount({ name, importedAccount, ledger }) {
     if (ledger) {
-      setLedgerConnected(true);
+      setLedgerPubKey(importedAccount);
     } else if (importedAccount === undefined) {
       name && localStorage.setItem(`name${walletCount}`, name);
       setWalletCount(walletCount + 1);
@@ -222,7 +216,7 @@ export function WalletProvider({ children }) {
   }
   const [walletNames, setWalletNames] = useState(getWalletNames())
   function setAccountName(selector, newName) {
-    if (selector.importedPubkey) {
+    if (selector.importedPubkey && !selector.ledger) {
       let newPrivateKeyImports = { ...privateKeyImports };
       newPrivateKeyImports[selector.importedPubkey.toString()].name = newName;
       setPrivateKeyImports(newPrivateKeyImports);
@@ -259,10 +253,11 @@ export function WalletProvider({ children }) {
       };
     });
 
-    if (ledgerConnected) {
+    console.log(ledgerPubKey);
+    if (ledgerPubKey) {
       derivedAccounts.push({
-        selector: {walletIndex: undefined, importedPubkey: undefined, ledger: true},
-        address: '',// todo: get the ledger address
+        selector: {walletIndex: undefined, importedPubkey: ledgerPubKey, ledger: true},
+        address: new PublicKey(ledgerPubKey),// todo: get the ledger address
         name: 'Hardware wallet',
         isSelected: walletSelector.ledger,
       })
@@ -270,7 +265,7 @@ export function WalletProvider({ children }) {
 
     return derivedAccounts.concat(importedAccounts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames, ledgerConnected]);
+  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames, ledgerPubKey]);
 
   return (
     <WalletContext.Provider
