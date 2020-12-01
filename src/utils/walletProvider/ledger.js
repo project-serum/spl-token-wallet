@@ -2,15 +2,16 @@ import TransportWebUsb from "@ledgerhq/hw-transport-webusb";
 import { getPublicKey, solana_derivation_path, solana_ledger_sign_transaction } from './ledger-core';
 
 export class LedgerWalletProvider {
-  constructor(walletIndex) {
-    this.walletIndex = walletIndex;
+  constructor(args) {
+    this.onDisconnect = (args && args.onDisconnect) || (() => {});
   }
 
   init = async () => {
     this.transport = await TransportWebUsb.create();
     this.pubKey = await getPublicKey(this.transport);
+    this.transport.on('disconnect', this.onDisconnect);
     this.listAddresses = async (walletCount) => {
-      // TODO: read accounts from ledger 
+      // TODO: read accounts from ledger
       return [this.pubKey];
     }
     return this;
@@ -24,7 +25,6 @@ export class LedgerWalletProvider {
     const from_derivation_path = solana_derivation_path();
     const sig_bytes = await solana_ledger_sign_transaction(this.transport, from_derivation_path, transaction);
     transaction.addSignature(this.publicKey, sig_bytes);
-
     return transaction;
   }
 }

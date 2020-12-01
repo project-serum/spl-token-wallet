@@ -6,9 +6,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import {LedgerWalletProvider} from "../utils/walletProvider/ledger";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {useSnackbar} from "notistack";
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
   const [pubKey, setPubKey] = useState();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {( async () => {
     if (open) {
@@ -18,6 +20,9 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
         setPubKey(provider.publicKey);
       } catch (err) {
         console.log(`received error when attempting to connect ledger: ${err}`);
+        if (err.statusCode === 0x6804) {
+          enqueueSnackbar('Unlock ledger device', { variant: 'error' })
+        }
         setPubKey(undefined)
         onClose();
       }

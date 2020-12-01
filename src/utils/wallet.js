@@ -1,34 +1,21 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
-import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
-import {
-  Account,
-  SystemProgram,
-  Transaction,
-  PublicKey,
-} from '@solana/web3.js';
+import {Account, PublicKey,} from '@solana/web3.js';
 import nacl from 'tweetnacl';
-import {
-  setInitialAccountInfo,
-  useAccountInfo,
-  useConnection,
-} from './connection';
+import {setInitialAccountInfo, useAccountInfo, useConnection,} from './connection';
 import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
-  getOwnedTokenAccounts, nativeTransfer,
+  getOwnedTokenAccounts,
+  nativeTransfer,
   transferTokens,
 } from './tokens';
-import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
-import {
-  ACCOUNT_LAYOUT,
-  parseMintData,
-  parseTokenAccountData,
-} from './tokens/data';
-import { useListener, useLocalStorageState } from './utils';
-import { useTokenName } from './tokens/names';
-import { refreshCache, useAsyncData } from './fetch-loop';
-import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
+import {TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT} from './tokens/instructions';
+import {ACCOUNT_LAYOUT, parseMintData, parseTokenAccountData,} from './tokens/data';
+import {useListener, useLocalStorageState} from './utils';
+import {useTokenName} from './tokens/names';
+import {refreshCache, useAsyncData} from './fetch-loop';
+import {getUnlockedMnemonicAndSeed, walletSeedChanged} from './wallet-seed';
 import {WalletProviderFactory} from "./walletProvider/factory";
 import {getAccountFromSeed} from "./walletProvider/localStorage";
 
@@ -126,7 +113,6 @@ export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
   const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
   const connection = useConnection();
-  const [ledgerPubKey, setLedgerPubKey] = useState(undefined);
   const [wallet, setWallet] = useState();
 
   // `privateKeyImports` are accounts imported *in addition* to HD wallets
@@ -139,6 +125,7 @@ export function WalletProvider({ children }) {
     'walletSelector',
     DEFAULT_WALLET_SELECTOR,
   );
+  const [ledgerPubKey, setLedgerPubKey] = useState(walletSelector.ledger ? walletSelector.importedPubkey : undefined);
 
   // `walletCount` is the number of HD wallets.
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
@@ -150,7 +137,11 @@ export function WalletProvider({ children }) {
     let wallet;
     if (walletSelector.ledger) {
       try {
-        wallet = await Wallet.create(connection, 'ledger');
+        const onDisconnect = () => {
+          setWalletSelector(DEFAULT_WALLET_SELECTOR);
+          setLedgerPubKey(undefined);
+        };
+        wallet = await Wallet.create(connection, 'ledger', {onDisconnect});
       } catch (e) {
         console.log(`received error using ledger wallet: ${e}`);
         setWalletSelector(DEFAULT_WALLET_SELECTOR);
@@ -253,7 +244,6 @@ export function WalletProvider({ children }) {
       };
     });
 
-    console.log(ledgerPubKey);
     if (ledgerPubKey) {
       derivedAccounts.push({
         selector: {walletIndex: undefined, importedPubkey: ledgerPubKey, ledger: true},
