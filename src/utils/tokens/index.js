@@ -246,7 +246,7 @@ export async function transferTokens({
 }
 
 function createTransferBetweenSplTokenAccountsInstruction({
-  owner,
+  ownerPublicKey,
   sourcePublicKey,
   destinationPublicKey,
   amount,
@@ -256,7 +256,7 @@ function createTransferBetweenSplTokenAccountsInstruction({
     transfer({
       source: sourcePublicKey,
       destination: destinationPublicKey,
-      owner: owner.publicKey,
+      owner: ownerPublicKey,
       amount,
     }),
   );
@@ -275,16 +275,14 @@ async function transferBetweenSplTokenAccounts({
   memo,
 }) {
   const transaction = createTransferBetweenSplTokenAccountsInstruction({
-    owner,
+    ownerPublicKey: owner.publicKey,
     sourcePublicKey,
     destinationPublicKey,
     amount,
     memo,
   });
-  let signers = [owner];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+  let signers = [];
+  return await signAndSendTransaction(connection, transaction, owner, signers)
 }
 
 async function createAndTransferToAccount({
@@ -324,7 +322,7 @@ async function createAndTransferToAccount({
   );
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
     {
-      owner,
+      ownerPublicKey: owner.publicKey,
       sourcePublicKey,
       destinationPublicKey: newAccount.publicKey,
       amount,
@@ -332,10 +330,8 @@ async function createAndTransferToAccount({
     },
   );
   transaction.add(transferBetweenAccountsTxn);
-  let signers = [owner, newAccount];
-  return await connection.sendTransaction(transaction, signers, {
-    preflightCommitment: 'single',
-  });
+  let signers = [newAccount];
+  return await signAndSendTransaction(connection, transaction, owner, signers)
 }
 
 export async function closeTokenAccount({

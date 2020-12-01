@@ -225,7 +225,7 @@ function WalletSelector() {
         ))}
         <Divider />
         <MenuItem
-          onClick={setAddHardwareWalletDialogOpen}
+          onClick={() => setAddHardwareWalletDialogOpen(true)}
         >
           <ListItemIcon className={classes.menuItemIcon}>
             <UsbIcon fontSize="small" />
