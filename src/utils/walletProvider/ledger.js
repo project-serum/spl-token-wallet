@@ -6,7 +6,6 @@ import {
   solana_ledger_sign_transaction
 } from './ledger-core';
 import bs58 from "bs58";
-import nacl from "tweetnacl";
 
 export class LedgerWalletProvider {
   constructor(args) {

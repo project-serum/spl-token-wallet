@@ -50,16 +50,9 @@ function _harden(n) {
 }
 
 export function solana_derivation_path(account, change) {
-  var length;
-  if (typeof (account) === 'number') {
-    if (typeof (change) === 'number') {
-      length = 4;
-    } else {
-      length = 3;
-    }
-  } else {
-    length = 2;
-  }
+  const length = 4;
+  let useAccount = account ? account : 0;
+  let useChange = change ? change : 0;
 
   var derivation_path = Buffer.alloc(1 + (length * 4));
   // eslint-disable-next-line
@@ -67,13 +60,8 @@ export function solana_derivation_path(account, change) {
   offset = derivation_path.writeUInt8(length, offset);
   offset = derivation_path.writeUInt32BE(_harden(44), offset);  // Using BIP44
   offset = derivation_path.writeUInt32BE(_harden(501), offset); // Solana's BIP44 path
-
-  if (length > 2) {
-    offset = derivation_path.writeUInt32BE(_harden(account), offset);
-    if (length === 4) {
-      offset = derivation_path.writeUInt32BE(_harden(change), offset);
-    }
-  }
+  offset = derivation_path.writeUInt32BE(_harden(useAccount), offset);
+  derivation_path.writeUInt32BE(_harden(useChange), offset);
 
   return derivation_path;
 }
@@ -96,8 +84,13 @@ export async function solana_ledger_sign_bytes(transport, derivation_path, msg_b
   return solana_send(transport, INS_SIGN_MESSAGE, P1_CONFIRM, payload);
 }
 
-export async function getPublicKey(transport) {
-  const from_derivation_path = solana_derivation_path();
+export async function getPublicKey(transport, path) {
+  let from_derivation_path;
+  if (path) {
+    from_derivation_path = path;
+  } else {
+    from_derivation_path = solana_derivation_path();
+  }
   const from_pubkey_bytes = await solana_ledger_get_pubkey(transport, from_derivation_path);
   const from_pubkey_string = bs58.encode(from_pubkey_bytes);
 

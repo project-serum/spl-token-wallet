@@ -27,7 +27,7 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
         onClose();
       }
     }
-  })();}, [open, onClose])
+  })();}, [open, onClose, enqueueSnackbar])
 
   return (
     <DialogForm
