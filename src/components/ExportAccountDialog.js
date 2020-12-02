@@ -24,7 +24,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           type={isHidden && 'password'}
           variant="outlined"
           margin="normal"
-          value={bs58.encode(wallet.account.secretKey)}
+          value={bs58.encode(wallet.provider.account.secretKey)}
         />
         <FormControlLabel
           control={

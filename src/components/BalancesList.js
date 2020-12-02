@@ -184,6 +184,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
+  const wallet = useWallet()
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -197,10 +198,12 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
 
   return (
     <>
-      <ExportAccountDialog
-        onClose={() => setExportAccDialogOpen(false)}
-        open={exportAccDialogOpen}
-      />
+      {wallet.allowsExport &&
+        <ExportAccountDialog
+          onClose={() => setExportAccDialogOpen(false)}
+          open={exportAccDialogOpen}
+        />
+      }
       <div className={classes.itemDetails}>
         <div className={classes.buttonContainer}>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (
@@ -270,7 +273,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               </Link>
             </Typography>
           </div>
-          {exportNeedsDisplay && (
+          {exportNeedsDisplay && wallet.allowsExport && (
             <div>
               <Typography variant="body2">
                 <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>

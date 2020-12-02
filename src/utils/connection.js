@@ -39,7 +39,8 @@ export function useIsProdNetwork() {
 }
 
 export function useSolanaExplorerUrlSuffix() {
-  const endpoint = useContext(ConnectionContext).endpoint;
+  const context = useContext(ConnectionContext);
+  const endpoint = context.endpoint;
   if (endpoint === clusterApiUrl('devnet')) {
     return '?cluster=devnet';
   } else if (endpoint === clusterApiUrl('testnet')) {

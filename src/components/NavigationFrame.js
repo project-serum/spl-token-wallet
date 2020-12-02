@@ -14,6 +14,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import AccountIcon from '@material-ui/icons/AccountCircle';
+import UsbIcon from '@material-ui/icons/Usb';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -22,6 +23,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddAccountDialog from './AddAccountDialog';
 import DeleteAccountDialog from "./DeleteAccountDialog";
+import AddHardwareWalletDialog from "./AddHarwareWalletDialog";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -131,6 +133,7 @@ function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
+  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] = useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
@@ -141,6 +144,18 @@ function WalletSelector() {
 
   return (
     <>
+      <AddHardwareWalletDialog
+        open={addHardwareWalletDialogOpen}
+        onClose={() => setAddHardwareWalletDialogOpen(false)}
+        onAdd={(pubKey) => {
+          addAccount({ name: 'Hardware wallet', importedAccount: pubKey.toString(), ledger: true });
+          setWalletSelector({
+            walletIndex: undefined,
+            importedPubkey: pubKey.toString(),
+            ledger: true
+          });
+        }}
+      />
       <AddAccountDialog
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
@@ -151,6 +166,7 @@ function WalletSelector() {
             importedPubkey: importedAccount
               ? importedAccount.publicKey.toString()
               : undefined,
+            ledger: false,
           });
           setAddAccountOpen(false);
         }}
@@ -208,6 +224,14 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
+        <MenuItem
+          onClick={() => setAddHardwareWalletDialogOpen(true)}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+            <UsbIcon fontSize="small" />
+          </ListItemIcon>
+          Import Hardware Wallet
+        </MenuItem>
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
