@@ -1,8 +1,20 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState,} from 'react';
-import {useWallet, useWalletPublicKeys} from '../utils/wallet';
-import {decodeMessage} from '../utils/transactions';
-import {useConnection, useSolanaExplorerUrlSuffix} from '../utils/connection';
-import {Divider, FormControlLabel, SnackbarContent, Switch, Typography,} from '@material-ui/core';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useWallet, useWalletPublicKeys } from '../utils/wallet';
+import { decodeMessage } from '../utils/transactions';
+import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
+import {
+  Divider,
+  FormControlLabel,
+  SnackbarContent,
+  Switch,
+  Typography,
+} from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -10,7 +22,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import NewOrder from '../components/instructions/NewOrder';
@@ -19,7 +31,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
-import {useLocalStorageState} from '../utils/utils';
+import { useLocalStorageState } from '../utils/utils';
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -57,10 +69,7 @@ export default function PopupPage({ opener }) {
 
   // Disconnect if the user switches to a different wallet.
   useEffect(() => {
-    if (
-      connectedAccount &&
-      !connectedAccount.equals(wallet.publicKey)
-    ) {
+    if (connectedAccount && !connectedAccount.equals(wallet.publicKey)) {
       setConnectedAccount(null);
     }
   }, [connectedAccount, wallet]);
@@ -80,10 +89,7 @@ export default function PopupPage({ opener }) {
     return () => window.removeEventListener('message', messageHandler);
   }, [origin, postMessage]);
 
-  if (
-    !connectedAccount ||
-    !connectedAccount.equals(wallet.publicKey)
-  ) {
+  if (!connectedAccount || !connectedAccount.equals(wallet.publicKey)) {
     // Approve the parent page to connect to this wallet.
     function connect(autoApprove) {
       setConnectedAccount(wallet.publicKey);

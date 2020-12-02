@@ -34,9 +34,9 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
   if (resp.error) {
     throw new Error(
       'failed to get token accounts owned by ' +
-      publicKey.toBase58() +
-      ': ' +
-      resp.error.message,
+        publicKey.toBase58() +
+        ': ' +
+        resp.error.message,
     );
   }
   return resp.result
@@ -68,12 +68,19 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
     });
 }
 
-export async function signAndSendTransaction(connection, transaction, wallet, signers) {
-  transaction.recentBlockhash = (await connection.getRecentBlockhash('max')).blockhash;
+export async function signAndSendTransaction(
+  connection,
+  transaction,
+  wallet,
+  signers,
+) {
+  transaction.recentBlockhash = (
+    await connection.getRecentBlockhash('max')
+  ).blockhash;
   transaction.setSigners(
     // fee payed by the wallet owner
     wallet.publicKey,
-    ...signers.map(s => s.publicKey)
+    ...signers.map((s) => s.publicKey),
   );
 
   if (signers.length > 0) {
@@ -201,7 +208,10 @@ export async function transferTokens({
   const destinationAccountInfo = await connection.getAccountInfo(
     destinationPublicKey,
   );
-  if (!!destinationAccountInfo && destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
+  if (
+    !!destinationAccountInfo &&
+    destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)
+  ) {
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
@@ -282,7 +292,7 @@ async function transferBetweenSplTokenAccounts({
     memo,
   });
   let signers = [];
-  return await signAndSendTransaction(connection, transaction, owner, signers)
+  return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
 async function createAndTransferToAccount({
@@ -331,7 +341,7 @@ async function createAndTransferToAccount({
   );
   transaction.add(transferBetweenAccountsTxn);
   let signers = [newAccount];
-  return await signAndSendTransaction(connection, transaction, owner, signers)
+  return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
 export async function closeTokenAccount({

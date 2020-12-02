@@ -7,7 +7,8 @@ import {
   refreshWalletPublicKeys,
   useBalanceInfo,
   useWallet,
-  useWalletPublicKeys, useWalletSelector,
+  useWalletPublicKeys,
+  useWalletSelector,
 } from '../utils/wallet';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
@@ -42,7 +43,7 @@ import { showTokenInfoDialog } from '../utils/config';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
-import EditAccountNameDialog from "./EditAccountNameDialog";
+import EditAccountNameDialog from './EditAccountNameDialog';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -54,9 +55,11 @@ export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
-  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(false);
+  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
+    false,
+  );
   const { accounts, setAccountName } = useWalletSelector();
-  const selectedAccount = accounts.find(a => a.isSelected)
+  const selectedAccount = accounts.find((a) => a.isSelected);
 
   return (
     <Paper>
@@ -65,13 +68,15 @@ export default function BalancesList() {
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
             {selectedAccount && selectedAccount.name} Balances
           </Typography>
-          {selectedAccount && selectedAccount.name !== "Main account" && selectedAccount.name !== 'Hardware wallet' &&
-            <Tooltip title="Edit Account Name" arrow>
-              <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          }
+          {selectedAccount &&
+            selectedAccount.name !== 'Main account' &&
+            selectedAccount.name !== 'Hardware wallet' && (
+              <Tooltip title="Edit Account Name" arrow>
+                <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           <Tooltip title="Add Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
@@ -108,7 +113,7 @@ export default function BalancesList() {
         oldName={selectedAccount ? selectedAccount.name : ''}
         onEdit={(name) => {
           setAccountName(selectedAccount.selector, name);
-          setShowEditAccountNameDialog(false)
+          setShowEditAccountNameDialog(false);
         }}
       />
     </Paper>
@@ -184,7 +189,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
-  const wallet = useWallet()
+  const wallet = useWallet();
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -198,12 +203,12 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
 
   return (
     <>
-      {wallet.allowsExport &&
+      {wallet.allowsExport && (
         <ExportAccountDialog
           onClose={() => setExportAccDialogOpen(false)}
           open={exportAccDialogOpen}
         />
-      }
+      )}
       <div className={classes.itemDetails}>
         <div className={classes.buttonContainer}>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (

@@ -22,8 +22,8 @@ import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddAccountDialog from './AddAccountDialog';
-import DeleteAccountDialog from "./DeleteAccountDialog";
-import AddHardwareWalletDialog from "./AddHarwareWalletDialog";
+import DeleteAccountDialog from './DeleteAccountDialog';
+import AddHardwareWalletDialog from './AddHarwareWalletDialog';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -133,7 +133,10 @@ function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] = useState(false);
+  const [
+    addHardwareWalletDialogOpen,
+    setAddHardwareWalletDialogOpen,
+  ] = useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
@@ -148,11 +151,15 @@ function WalletSelector() {
         open={addHardwareWalletDialogOpen}
         onClose={() => setAddHardwareWalletDialogOpen(false)}
         onAdd={(pubKey) => {
-          addAccount({ name: 'Hardware wallet', importedAccount: pubKey.toString(), ledger: true });
+          addAccount({
+            name: 'Hardware wallet',
+            importedAccount: pubKey.toString(),
+            ledger: true,
+          });
           setWalletSelector({
             walletIndex: undefined,
             importedPubkey: pubKey.toString(),
-            ledger: true
+            ledger: true,
           });
         }}
       />
@@ -224,9 +231,7 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
-        <MenuItem
-          onClick={() => setAddHardwareWalletDialogOpen(true)}
-        >
+        <MenuItem onClick={() => setAddHardwareWalletDialogOpen(true)}>
           <ListItemIcon className={classes.menuItemIcon}>
             <UsbIcon fontSize="small" />
           </ListItemIcon>
@@ -243,12 +248,16 @@ function WalletSelector() {
           </ListItemIcon>
           Add Account
         </MenuItem>
-        <MenuItem onClick={() => {
-          setAnchorEl(null);
-          setIsDeleteAccountEnabled(false);
-          setDeleteAccountOpen(true)
-          setTimeout(() => {setIsDeleteAccountEnabled(true)}, 3000)
-        }}>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            setIsDeleteAccountEnabled(false);
+            setDeleteAccountOpen(true);
+            setTimeout(() => {
+              setIsDeleteAccountEnabled(true);
+            }, 3000);
+          }}
+        >
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
