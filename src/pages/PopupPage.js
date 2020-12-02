@@ -384,7 +384,6 @@ function ApproveSignatureForm({
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
   const buttonRef = useRef();
-  const [approving, setApproving] = useState(false);
 
   useEffect(() => {
     decodeMessage(connection, wallet, message).then((instructions) => {
@@ -549,17 +548,9 @@ function ApproveSignatureForm({
           className={classes.approveButton}
           variant="contained"
           color="primary"
-          onClick={() => {
-            setApproving(true);
-            onApprove().then(() => setApproving(false)).catch(() => setApproving(false));
-          }}
-
+          onClick={onApprove}
         >
-          {approving
-            ?
-              <CircularProgress/>
-            : "Approve"
-          }
+          Approve
         </Button>
       </CardActions>
     </Card>
