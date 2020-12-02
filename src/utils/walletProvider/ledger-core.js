@@ -84,7 +84,10 @@ async function solana_ledger_get_pubkey(transport, derivation_path) {
 
 export async function solana_ledger_sign_transaction(transport, derivation_path, transaction) {
   const msg_bytes = transaction.serializeMessage();
+  return solana_ledger_sign_bytes(transport, derivation_path, msg_bytes);
+}
 
+export async function solana_ledger_sign_bytes(transport, derivation_path, msg_bytes) {
   var num_paths = Buffer.alloc(1);
   num_paths.writeUInt8(1);
 

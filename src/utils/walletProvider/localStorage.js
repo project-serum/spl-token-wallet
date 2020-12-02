@@ -2,6 +2,7 @@ import { getUnlockedMnemonicAndSeed } from './../wallet-seed';
 import * as bip32 from 'bip32';
 import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
+import bs58 from 'bs58';
 
 export function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
   const derivedSeed = bip32
@@ -38,5 +39,9 @@ export class LocalStorageWalletProvider {
   signTransaction = async (transaction) => {
     transaction.partialSign(this.account);
     return transaction;
+  }
+
+  createSignature = (message) => {
+    return bs58.encode(nacl.sign.detached(message, this.account.secretKey))
   }
 }

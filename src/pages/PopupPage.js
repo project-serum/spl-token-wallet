@@ -72,7 +72,7 @@ export default function PopupPage({ opener }) {
   useEffect(() => {
     if (
       connectedAccount &&
-      !connectedAccount.publicKey.equals(wallet.publicKey)
+      !connectedAccount.equals(wallet.publicKey)
     ) {
       setConnectedAccount(null);
     }
@@ -95,12 +95,11 @@ export default function PopupPage({ opener }) {
 
   if (
     !connectedAccount ||
-    !connectedAccount.publicKey.equals(wallet.publicKey)
+    !connectedAccount.equals(wallet.publicKey)
   ) {
     // Approve the parent page to connect to this wallet.
     function connect(autoApprove) {
-      // todo: fix this use of wallet.account
-      setConnectedAccount(wallet.account);
+      setConnectedAccount(wallet.publicKey);
       postMessage({
         method: 'connected',
         params: { publicKey: wallet.publicKey.toBase58(), autoApprove },
@@ -117,13 +116,11 @@ export default function PopupPage({ opener }) {
     assert(request.method === 'signTransaction');
     const message = bs58.decode(request.params.message);
 
-    function sendSignature() {
+    async function sendSignature() {
       setRequests((requests) => requests.slice(1));
       postMessage({
         result: {
-          signature: bs58.encode(
-            nacl.sign.detached(message, wallet.secretKey),
-          ),
+          signature: await wallet.createSignature(message),
           publicKey: wallet.publicKey.toBase58(),
         },
         id: request.id,
@@ -387,6 +384,7 @@ function ApproveSignatureForm({
   const [parsing, setParsing] = useState(true);
   const [instructions, setInstructions] = useState(null);
   const buttonRef = useRef();
+  const [approving, setApproving] = useState(false);
 
   useEffect(() => {
     decodeMessage(connection, wallet, message).then((instructions) => {
@@ -551,9 +549,17 @@ function ApproveSignatureForm({
           className={classes.approveButton}
           variant="contained"
           color="primary"
-          onClick={onApprove}
+          onClick={() => {
+            setApproving(true);
+            onApprove().then(() => setApproving(false)).catch(() => setApproving(false));
+          }}
+
         >
-          Approve
+          {approving
+            ?
+              <CircularProgress/>
+            : "Approve"
+          }
         </Button>
       </CardActions>
     </Card>

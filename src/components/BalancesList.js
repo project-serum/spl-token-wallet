@@ -273,7 +273,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               </Link>
             </Typography>
           </div>
-          {exportNeedsDisplay && (
+          {exportNeedsDisplay && wallet.allowsExport && (
             <div>
               <Typography variant="body2">
                 <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>

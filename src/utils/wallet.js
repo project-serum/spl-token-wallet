@@ -105,6 +105,10 @@ export class Wallet {
   signTransaction = async (transaction) => {
     return this.provider.signTransaction(transaction);
   }
+
+  createSignature = async (message) => {
+    return this.provider.createSignature(message);
+  }
 }
 
 const WalletContext = React.createContext(null);
