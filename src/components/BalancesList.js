@@ -65,7 +65,7 @@ export default function BalancesList() {
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
             {selectedAccount && selectedAccount.name} Balances
           </Typography>
-          {selectedAccount && selectedAccount.name !== "Main account" &&
+          {selectedAccount && selectedAccount.name !== "Main account" && selectedAccount.name !== 'Hardware wallet' &&
             <Tooltip title="Edit Account Name" arrow>
               <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
                 <EditIcon />
