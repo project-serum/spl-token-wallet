@@ -164,6 +164,7 @@ export function WalletProvider({ children }) {
           }
           enqueueSnackbar(message, { variant: 'error' });
           setWalletSelector(DEFAULT_WALLET_SELECTOR);
+          setLedgerPubKey(undefined);
           return;
         }
       }
