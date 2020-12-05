@@ -198,6 +198,7 @@ export function WalletProvider({ children }) {
     privateKeyImports,
     importsEncryptionKey,
     setWalletSelector,
+    enqueueSnackbar,
   ]);
 
   function addAccount({ name, importedAccount, ledger }) {
