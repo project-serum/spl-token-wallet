@@ -16,7 +16,9 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
   const [isImport, setIsImport] = useState(false);
   const [importedPrivateKey, setPrivateKey] = useState('');
 
-  const importedAccount = isImport ? decodeAccount(importedPrivateKey) : undefined;
+  const importedAccount = isImport
+    ? decodeAccount(importedPrivateKey)
+    : undefined;
   const isAddEnabled = isImport ? name && importedAccount !== undefined : name;
 
   return (

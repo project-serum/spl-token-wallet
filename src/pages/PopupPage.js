@@ -2,18 +2,18 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
   useRef,
+  useState,
 } from 'react';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import {
-  Typography,
   Divider,
-  Switch,
   FormControlLabel,
   SnackbarContent,
+  Switch,
+  Typography,
 } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
@@ -25,7 +25,6 @@ import ImportExportIcon from '@material-ui/icons/ImportExport';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
-import nacl from 'tweetnacl';
 import NewOrder from '../components/instructions/NewOrder';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -70,10 +69,7 @@ export default function PopupPage({ opener }) {
 
   // Disconnect if the user switches to a different wallet.
   useEffect(() => {
-    if (
-      connectedAccount &&
-      !connectedAccount.equals(wallet.publicKey)
-    ) {
+    if (connectedAccount && !connectedAccount.equals(wallet.publicKey)) {
       setConnectedAccount(null);
     }
   }, [connectedAccount, wallet]);
@@ -93,10 +89,7 @@ export default function PopupPage({ opener }) {
     return () => window.removeEventListener('message', messageHandler);
   }, [origin, postMessage]);
 
-  if (
-    !connectedAccount ||
-    !connectedAccount.equals(wallet.publicKey)
-  ) {
+  if (!connectedAccount || !connectedAccount.equals(wallet.publicKey)) {
     // Approve the parent page to connect to this wallet.
     function connect(autoApprove) {
       setConnectedAccount(wallet.publicKey);

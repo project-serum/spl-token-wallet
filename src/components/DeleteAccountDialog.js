@@ -1,12 +1,16 @@
-import React from "react";
-import DialogForm from "./DialogForm";
-import {forgetWallet} from "../utils/wallet-seed";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import {DialogContentText} from "@material-ui/core";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import React from 'react';
+import DialogForm from './DialogForm';
+import { forgetWallet } from '../utils/wallet-seed';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { DialogContentText } from '@material-ui/core';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
-export default function DeleteAccountDialog({open, onClose, isDeleteAccountEnabled}) {
+export default function DeleteAccountDialog({
+  open,
+  onClose,
+  isDeleteAccountEnabled,
+}) {
   return (
     <>
       <DialogForm
@@ -26,19 +30,24 @@ export default function DeleteAccountDialog({open, onClose, isDeleteAccountEnabl
               flexDirection: 'column',
             }}
           >
-            You will not be able to recover the current accounts without the seed phrase, and
-            the account private key. This action will delete all current accounts from
-            your browser.<br/><br/>
-
-            <strong style={{textAlign: 'center'}}>
-              To prevent loss of funds, please ensure you have the seed phrase and the private key
-              for all current accounts.
+            You will not be able to recover the current accounts without the
+            seed phrase, and the account private key. This action will delete
+            all current accounts from your browser.
+            <br />
+            <br />
+            <strong style={{ textAlign: 'center' }}>
+              To prevent loss of funds, please ensure you have the seed phrase
+              and the private key for all current accounts.
             </strong>
           </div>
         </DialogContentText>
         <DialogActions>
           <Button onClick={onClose}>Close</Button>
-          <Button type="submit" color="secondary" disabled={!isDeleteAccountEnabled}>
+          <Button
+            type="submit"
+            color="secondary"
+            disabled={!isDeleteAccountEnabled}
+          >
             Delete Account
           </Button>
         </DialogActions>

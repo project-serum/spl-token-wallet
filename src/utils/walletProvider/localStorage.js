@@ -11,26 +11,23 @@ export function getAccountFromSeed(seed, walletIndex, accountIndex = 0) {
   return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
 }
 
-
 export class LocalStorageWalletProvider {
   constructor(args) {
     const { seed } = getUnlockedMnemonicAndSeed();
-    this.account = args.account
+    this.account = args.account;
     this.listAddresses = async (walletCount) => {
       const seedBuffer = Buffer.from(seed, 'hex');
-      return [...Array(walletCount).keys()].map(
-        (walletIndex) => {
-          let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
-          let name = localStorage.getItem(`name${walletIndex}`);
-          return { index: walletIndex, address, name };
-        }
-      );
-    }
+      return [...Array(walletCount).keys()].map((walletIndex) => {
+        let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
+        let name = localStorage.getItem(`name${walletIndex}`);
+        return { index: walletIndex, address, name };
+      });
+    };
   }
 
   init = async () => {
     return this;
-  }
+  };
 
   get publicKey() {
     return this.account.publicKey;
@@ -39,9 +36,9 @@ export class LocalStorageWalletProvider {
   signTransaction = async (transaction) => {
     transaction.partialSign(this.account);
     return transaction;
-  }
+  };
 
   createSignature = (message) => {
-    return bs58.encode(nacl.sign.detached(message, this.account.secretKey))
-  }
+    return bs58.encode(nacl.sign.detached(message, this.account.secretKey));
+  };
 }

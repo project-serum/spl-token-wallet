@@ -28,10 +28,7 @@ export default function DebugButtons() {
 
   function requestAirdrop() {
     callAsync(
-      wallet.connection.requestAirdrop(
-        wallet.publicKey,
-        LAMPORTS_PER_SOL,
-      ),
+      wallet.connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL),
       {
         onSuccess: async () => {
           await sleep(5000);
