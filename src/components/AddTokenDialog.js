@@ -114,16 +114,16 @@ export default function AddTokenDialog({ open, onClose }) {
 
   return (
     <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>Add Token</DialogTitle>
+      <DialogTitle>Adicionar um Token</DialogTitle>
       <DialogContent>
         {tokenAccountCost ? (
           <DialogContentText>
-            Add a token to your wallet. This will cost{' '}
+            Adicionar um token a sua carteira. A operação irá custar{' '}
             {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
           </DialogContentText>
         ) : (
-          <LoadingIndicator />
-        )}
+            <LoadingIndicator />
+          )}
         {!!popularTokens && (
           <Tabs
             value={tab}
@@ -132,15 +132,15 @@ export default function AddTokenDialog({ open, onClose }) {
             className={classes.tabs}
             onChange={(e, value) => setTab(value)}
           >
-            <Tab label="Popular Tokens" value="popular" />
+            <Tab label="Tokens Populares" value="popular" />
             {showSwapAddress ? <Tab label="ERC20 Token" value="erc20" /> : null}
-            <Tab label="Manual Input" value="manual" />
+            <Tab label="Avançado" value="manual" />
           </Tabs>
         )}
         {tab === 'manual' || !popularTokens ? (
           <React.Fragment>
             <TextField
-              label="Token Mint Address"
+              label="Endereço do Emissor"
               fullWidth
               variant="outlined"
               margin="normal"
@@ -150,7 +150,7 @@ export default function AddTokenDialog({ open, onClose }) {
               disabled={sending}
             />
             <TextField
-              label="Token Name"
+              label="Nome do Token"
               fullWidth
               variant="outlined"
               margin="normal"
@@ -159,7 +159,7 @@ export default function AddTokenDialog({ open, onClose }) {
               disabled={sending}
             />
             <TextField
-              label="Token Symbol"
+              label="Símbolo do Token"
               fullWidth
               variant="outlined"
               margin="normal"
@@ -203,14 +203,14 @@ export default function AddTokenDialog({ open, onClose }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Etherscan
+                Visualizar no Etherscan
               </Link>
             ) : null}
           </>
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>Fechar</Button>
         {tab !== 'popular' && (
           <Button
             type="submit"
@@ -218,7 +218,7 @@ export default function AddTokenDialog({ open, onClose }) {
             disabled={sending || !valid}
             onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
           >
-            Add
+            Adicionar
           </Button>
         )}
       </DialogActions>

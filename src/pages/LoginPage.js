@@ -163,7 +163,7 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
         </Typography>
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Back</Button>
+        <Button onClick={goBack}>Voltar</Button>
         <Button
           color="primary"
           disabled={password !== passwordConfirm}
@@ -216,7 +216,7 @@ function LoginForm() {
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
         <Button color="primary" onClick={submit}>
-          Unlock
+          Desbloquear
         </Button>
       </CardActions>
     </Card>
@@ -278,7 +278,7 @@ function RestoreWalletForm({ goBack }) {
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Cancel</Button>
+        <Button onClick={goBack}>Fechar</Button>
         <Button
           color="primary"
           disabled={password !== passwordConfirm}

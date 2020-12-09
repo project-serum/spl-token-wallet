@@ -14,7 +14,7 @@ import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
 import LoginPage from './pages/LoginPage';
-import { blueGrey } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -25,7 +25,7 @@ export default function App() {
         palette: {
           // type: prefersDarkMode ? 'dark' : 'light',
           type: 'dark',
-          primary: blueGrey,
+          primary: grey,
         },
       }),
     [prefersDarkMode],

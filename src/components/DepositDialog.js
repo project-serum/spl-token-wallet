@@ -71,9 +71,8 @@ export default function DepositDialog({
     if (!mint) {
       firstTab = 'SOL';
     } else {
-      secondTab = `${
-        swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
-      } ${secondTab}`;
+      secondTab = `${swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
+        } ${secondTab}`;
     }
     tabs = (
       <Tabs
@@ -92,7 +91,7 @@ export default function DepositDialog({
   return (
     <DialogForm open={open} onClose={onClose}>
       <DialogTitle>
-        Deposit {tokenName ?? mint.toBase58()}
+        Receber {tokenName ?? mint.toBase58()}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
       {tabs}
@@ -101,19 +100,18 @@ export default function DepositDialog({
           <>
             {publicKey.equals(owner) ? (
               <DialogContentText>
-                This address can only be used to receive SOL. Do not send other
-                tokens to this address.
+                Esse endereço só pode ser usado para receber SOL.
+                Não envie outros tokens para esse endereço.
               </DialogContentText>
             ) : (
-              <DialogContentText>
-                This address can only be used to receive{' '}
-                {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
-                this address.
-              </DialogContentText>
-            )}
+                <DialogContentText>
+                  Esse endereço só pode ser usado para receber{' '}.
+                  Não envie SOL para esse endereço.
+                </DialogContentText>
+              )}
             <CopyableDisplay
               value={publicKey.toBase58()}
-              label={'Deposit Address'}
+              label={'Endereço de recebimento'}
               autoFocus
               qrCode
             />
@@ -126,19 +124,19 @@ export default function DepositDialog({
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                Visualizar no Solana Explorer
               </Link>
             </DialogContentText>
           </>
         ) : (
-          <SolletSwapDepositAddress
-            balanceInfo={balanceInfo}
-            swapInfo={swapInfo}
-          />
-        )}
+            <SolletSwapDepositAddress
+              balanceInfo={balanceInfo}
+              swapInfo={swapInfo}
+            />
+          )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Fechar</Button>
       </DialogActions>
     </DialogForm>
   );
@@ -156,12 +154,11 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
     return (
       <>
         <DialogContentText>
-          Native BTC can be converted to SPL {tokenName} by sending it to the
-          following address:
+          BTC nativos podem ser convertidos em SPL {tokenName} através do envio para o seguinte Endereço:
         </DialogContentText>
         <CopyableDisplay
           value={address}
-          label="Native BTC Deposit Address"
+          label="Endereço nativo de BTC para depósito"
           autoFocus
           qrCode={`bitcoin:${address}`}
         />
@@ -219,7 +216,7 @@ function MetamaskDeposit({ swapInfo }) {
         let parsedAmount = parseFloat(amount);
 
         if (!parsedAmount || parsedAmount > maxAmount || parsedAmount <= 0) {
-          throw new Error('Invalid amount');
+          throw new Error('Quantidade inválida.');
         }
         await swapErc20ToSpl({
           ethAccount,
@@ -238,7 +235,7 @@ function MetamaskDeposit({ swapInfo }) {
     return (
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <TextField
-          label="Amount"
+          label="Quantidade"
           fullWidth
           variant="outlined"
           margin="normal"
@@ -262,7 +259,7 @@ function MetamaskDeposit({ swapInfo }) {
           }
         />
         <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
-          Convert
+          Converter
         </Button>
       </div>
     );
@@ -272,13 +269,13 @@ function MetamaskDeposit({ swapInfo }) {
     <>
       <Stepper activeStep={status.step}>
         <Step>
-          <StepLabel>Approve Conversion</StepLabel>
+          <StepLabel>Aprovar Conversão</StepLabel>
         </Step>
         <Step>
-          <StepLabel>Send Funds</StepLabel>
+          <StepLabel>Enviar fundos</StepLabel>
         </Step>
         <Step>
-          <StepLabel>Wait for Confirmations</StepLabel>
+          <StepLabel>Aguardando confirmação</StepLabel>
         </Step>
       </Stepper>
       {status.step === 2 ? (
@@ -295,17 +292,17 @@ function MetamaskDeposit({ swapInfo }) {
             </div>
             <div>
               {status.confirms ? (
-                <Typography>{status.confirms} / 12 Confirmations</Typography>
+                <Typography>{status.confirms} / 12 confirmações</Typography>
               ) : (
-                <Typography>Transaction Pending</Typography>
-              )}
+                  <Typography>Transação Pendente</Typography>
+                )}
               <Typography variant="body2">
                 <Link
                   href={`https://etherscan.io/tx/${status.txid}`}
                   target="_blank"
                   rel="noopener"
                 >
-                  View on Etherscan
+                  Visualizar no Etherscan
                 </Link>
               </Typography>
             </div>

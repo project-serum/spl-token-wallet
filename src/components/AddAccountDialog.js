@@ -74,7 +74,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Fechar</Button>
         <Button type="submit" color="primary" disabled={!isAddEnabled}>
           Add
         </Button>

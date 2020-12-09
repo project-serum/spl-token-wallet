@@ -37,7 +37,7 @@ export default function ExportAccountDialog({ open, onClose }) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Fechar</Button>
       </DialogActions>
     </DialogForm>
   );

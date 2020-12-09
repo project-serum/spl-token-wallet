@@ -51,7 +51,7 @@ export default function NavigationFrame({ children }) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            Carteira Digital Solana
+            MeuSol - Carteira Digital para o Solana
           </Typography>
           <WalletSelector />
           <NetworkSelector />
