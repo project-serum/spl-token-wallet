@@ -27,6 +27,13 @@ export const TOKENS = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png',
     },
     {
+      tokenSymbol: 'BRZ',
+      mintAddress: '0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B',
+      tokenName: 'Brazilian Digital Token',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B/logo.png',
+    },
+    {
       tokenSymbol: 'ETH',
       mintAddress: '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
       tokenName: 'Wrapped Ethereum',
