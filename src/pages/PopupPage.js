@@ -213,14 +213,14 @@ function ApproveConnectionForm({ origin, onApprove }) {
     <Card>
       <CardContent>
         <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
+          Permitir o seguinte site acessar sua carteira digital?
         </Typography>
         <div className={classes.connection}>
           <Typography>{origin}</Typography>
           <ImportExportIcon fontSize="large" />
           <Typography>{wallet.publicKey.toBase58()}</Typography>
         </div>
-        <Typography>Only connect with sites you trust.</Typography>
+        <Typography>Apenas se conecte com sites que você confia.</Typography>
         <Divider className={classes.divider} />
         <FormControlLabel
           control={
@@ -239,24 +239,22 @@ function ApproveConnectionForm({ origin, onApprove }) {
               <div>
                 <span className={classes.warningTitle}>
                   <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
+                  Use levando em consideração que é totalmente sua responsabilidade.
                 </span>
                 <Typography className={classes.warningMessage}>
-                  This setting allows sending some transactions on your behalf
-                  without requesting your permission for the remainder of this
-                  session.
+                  Essa opção permite envio de transação em seu nome sem solicitar sua permissão até o final dessa sessão.
                 </Typography>
               </div>
             }
             action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
+              <Button onClick={() => setDismissed('1')}>Eu concordo, o risco é todo meu</Button>,
             ]}
             classes={{ root: classes.snackbarRoot }}
           />
         )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
+        <Button onClick={window.close}>Fechar</Button>
         <Button
           color="primary"
           onClick={() => onApprove(autoApprove)}
@@ -506,7 +504,7 @@ function ApproveSignatureForm({
                       style={{ fontWeight: 'bold' }}
                       gutterBottom
                     >
-                      Unknown transaction:
+                      Transação desconhecida:
                 </Typography>
                     <Typography style={{ wordBreak: 'break-all' }}>
                       {bs58.encode(message)}
@@ -520,11 +518,10 @@ function ApproveSignatureForm({
                     <div>
                       <span className={classes.warningTitle}>
                         <WarningIcon className={classes.warningIcon} />
-                      Nonstandard DEX transaction
+                      Transação DEX não padrão
                     </span>
                       <Typography className={classes.warningMessage}>
-                        Sollet does not recognize this transaction as a standard
-                        Serum DEX transaction
+                        Essa transação não tem um formato semelhante aos conhecidos da Serum DEX
                     </Typography>
                     </div>
                   }
@@ -535,7 +532,7 @@ function ApproveSignatureForm({
           )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
+        <Button onClick={onReject}>Fechar</Button>
         <Button
           ref={buttonRef}
           className={classes.approveButton}
@@ -543,7 +540,7 @@ function ApproveSignatureForm({
           color="primary"
           onClick={onApprove}
         >
-          Approve
+          Aprovar
         </Button>
       </CardActions>
     </Card>
