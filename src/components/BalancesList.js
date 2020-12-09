@@ -66,23 +66,23 @@ export default function BalancesList() {
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances
+            Saldos da {selectedAccount && selectedAccount.name}
           </Typography>
           {selectedAccount &&
-            selectedAccount.name !== 'Main account' &&
-            selectedAccount.name !== 'Hardware wallet' && (
-              <Tooltip title="Edit Account Name" arrow>
+            selectedAccount.name !== 'Conta Principal' &&
+            selectedAccount.name !== 'Carteira Física' && (
+              <Tooltip title="Editar Nome da Conta" arrow>
                 <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
                   <EditIcon />
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Add Token" arrow>
+          <Tooltip title="Adicionar Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Refresh" arrow>
+          <Tooltip title="Atualizar" arrow>
             <IconButton
               onClick={() => {
                 refreshWalletPublicKeys(wallet);
@@ -218,7 +218,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               startIcon={<InfoIcon />}
               onClick={() => setTokenInfoDialogOpen(true)}
             >
-              Token Info
+              Informações do Token
             </Button>
           ) : null}
           <Button
@@ -227,7 +227,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             startIcon={<ReceiveIcon />}
             onClick={() => setDepositDialogOpen(true)}
           >
-            Receive
+            Receber
           </Button>
           <Button
             variant="outlined"
@@ -235,7 +235,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             startIcon={<SendIcon />}
             onClick={() => setSendDialogOpen(true)}
           >
-            Send
+            Enviar
           </Button>
           {mint && amount === 0 ? (
             <Button
@@ -245,22 +245,22 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               startIcon={<DeleteIcon />}
               onClick={() => setCloseTokenAccountDialogOpen(true)}
             >
-              Delete
+              Excluir
             </Button>
           ) : null}
         </div>
         <Typography variant="body2" className={classes.address}>
-          Deposit Address: {publicKey.toBase58()}
+          Endereço de Depósito: {publicKey.toBase58()}
         </Typography>
         <Typography variant="body2">
-          Token Name: {tokenName ?? 'Unknown'}
+          Nome do Token: {tokenName ?? 'Unknown'}
         </Typography>
         <Typography variant="body2">
-          Token Symbol: {tokenSymbol ?? 'Unknown'}
+          Símbolo do Token: {tokenSymbol ?? 'Unknown'}
         </Typography>
         {mint ? (
           <Typography variant="body2" className={classes.address}>
-            Token Address: {mint.toBase58()}
+            Endereço do Token: {mint.toBase58()}
           </Typography>
         ) : null}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -274,7 +274,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                Visualizar no Solana Explorer
               </Link>
             </Typography>
           </div>
@@ -282,7 +282,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             <div>
               <Typography variant="body2">
                 <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
-                  Export
+                  Exportar
                 </Link>
               </Typography>
             </div>

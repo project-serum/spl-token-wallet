@@ -172,21 +172,21 @@ export function WalletProvider({ children }) {
         const account =
           walletSelector.walletIndex !== undefined
             ? getAccountFromSeed(
-                Buffer.from(seed, 'hex'),
-                walletSelector.walletIndex,
-              )
+              Buffer.from(seed, 'hex'),
+              walletSelector.walletIndex,
+            )
             : new Account(
-                (() => {
-                  const { nonce, ciphertext } = privateKeyImports[
-                    walletSelector.importedPubkey
-                  ];
-                  return nacl.secretbox.open(
-                    bs58.decode(ciphertext),
-                    bs58.decode(nonce),
-                    importsEncryptionKey,
-                  );
-                })(),
-              );
+              (() => {
+                const { nonce, ciphertext } = privateKeyImports[
+                  walletSelector.importedPubkey
+                ];
+                return nacl.secretbox.open(
+                  bs58.decode(ciphertext),
+                  bs58.decode(nonce),
+                  importsEncryptionKey,
+                );
+              })(),
+            );
         wallet = await Wallet.create(connection, 'local', { account });
       }
       setWallet(wallet);
@@ -258,7 +258,7 @@ export function WalletProvider({ children }) {
         },
         isSelected: walletSelector.walletIndex === idx,
         address,
-        name: idx === 0 ? 'Main account' : name || `Account ${idx}`,
+        name: idx === 0 ? 'Conta Principal' : name || `Conta ${idx}`,
       };
     });
 
@@ -361,8 +361,8 @@ export function useWalletAddressForMint(mint) {
     () =>
       mint
         ? walletAccounts
-            ?.find((account) => account.parsed?.mint?.equals(mint))
-            ?.publicKey.toBase58()
+          ?.find((account) => account.parsed?.mint?.equals(mint))
+          ?.publicKey.toBase58()
         : null,
     [walletAccounts, mint],
   );

@@ -79,7 +79,7 @@ export default function PopupPage({ opener }) {
     function messageHandler(e) {
       if (e.origin === origin && e.source === window.opener) {
         if (e.data.method !== 'signTransaction') {
-          postMessage({ error: 'Unsupported method', id: e.data.id });
+          postMessage({ error: 'Método não suportado.', id: e.data.id });
         }
 
         setRequests((requests) => [...requests, e.data]);
@@ -126,7 +126,7 @@ export default function PopupPage({ opener }) {
     function sendReject() {
       setRequests((requests) => requests.slice(1));
       postMessage({
-        error: 'Transaction cancelled',
+        error: 'Transação cancelada.',
         id: request.id,
       });
       if (requests.length === 1) {
@@ -230,7 +230,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
               color="primary"
             />
           }
-          label={`Automatically approve transactions from ${origin}`}
+          label={`Aprovar transações automaticamente de ${origin}`}
         />
         {!dismissed && autoApprove && (
           <SnackbarContent
@@ -486,53 +486,53 @@ function ApproveSignatureForm({
             </Typography>
           </>
         ) : (
-          <>
-            <Typography variant="h6" gutterBottom>
-              {instructions
-                ? `${origin} wants to:`
-                : `Unknown transaction data`}
-            </Typography>
-            {instructions ? (
-              instructions.map((instruction, i) => (
-                <Box style={{ marginTop: 20 }} key={i}>
-                  {getContent(instruction)}
-                  <Divider style={{ marginTop: 20 }} />
-                </Box>
-              ))
-            ) : (
-              <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
-                  gutterBottom
-                >
-                  Unknown transaction:
+            <>
+              <Typography variant="h6" gutterBottom>
+                {instructions
+                  ? `${origin} wants to:`
+                  : `Dados da transação desconhecidos`}
+              </Typography>
+              {instructions ? (
+                instructions.map((instruction, i) => (
+                  <Box style={{ marginTop: 20 }} key={i}>
+                    {getContent(instruction)}
+                    <Divider style={{ marginTop: 20 }} />
+                  </Box>
+                ))
+              ) : (
+                  <>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: 'bold' }}
+                      gutterBottom
+                    >
+                      Unknown transaction:
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>
-                  {bs58.encode(message)}
-                </Typography>
-              </>
-            )}
-            {!validator.safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
+                    <Typography style={{ wordBreak: 'break-all' }}>
+                      {bs58.encode(message)}
+                    </Typography>
+                  </>
+                )}
+              {!validator.safe && (
+                <SnackbarContent
+                  className={classes.warningContainer}
+                  message={
+                    <div>
+                      <span className={classes.warningTitle}>
+                        <WarningIcon className={classes.warningIcon} />
                       Nonstandard DEX transaction
                     </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
+                      <Typography className={classes.warningMessage}>
+                        Sollet does not recognize this transaction as a standard
+                        Serum DEX transaction
                     </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
-              />
-            )}
-          </>
-        )}
+                    </div>
+                  }
+                  classes={{ root: classes.snackbarRoot }}
+                />
+              )}
+            </>
+          )}
       </CardContent>
       <CardActions className={classes.actions}>
         <Button onClick={onReject}>Cancel</Button>

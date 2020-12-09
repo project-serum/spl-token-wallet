@@ -6,6 +6,6 @@ import { sleep } from './utils/utils';
 test('renders learn react link', async () => {
   const { getByText } = render(<App />);
   await act(() => sleep(1000));
-  const linkElement = getByText(/Create New Wallet/i);
+  const linkElement = getByText(/Criar uma nova carteira/i);
   expect(linkElement).toBeInTheDocument();
 });

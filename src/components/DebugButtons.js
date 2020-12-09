@@ -35,7 +35,7 @@ export default function DebugButtons() {
           refreshAccountInfo(wallet.connection, wallet.publicKey);
         },
         successMessage:
-          'Success! Please wait up to 30 seconds for the SOL tokens to appear in your wallet.',
+          'Feito! Por favor, aguarde ao menos 30 segundos para que os tokens aparecem em sua carteira.',
       },
     );
   }
@@ -44,8 +44,8 @@ export default function DebugButtons() {
     let mint = new Account();
     updateTokenName(
       mint.publicKey,
-      `Test Token ${abbreviateAddress(mint.publicKey)}`,
-      `TEST${mint.publicKey.toBase58().slice(0, 2)}`,
+      `Meu Token ${abbreviateAddress(mint.publicKey)}`,
+      `MEU${mint.publicKey.toBase58().slice(0, 2)}`,
     );
     sendTransaction(
       createAndInitializeMint({
@@ -67,8 +67,8 @@ export default function DebugButtons() {
       <Tooltip
         title={
           requestAirdropDisabled
-            ? 'Receive some devnet SOL for free. Only enabled on the devnet'
-            : 'Receive some devnet SOL for free'
+            ? 'Receba um pouco de SOL da devnet de graça. Apenas disponível em devnet'
+            : 'Receba um pouco de SOL da devnet de graça'
         }
       >
         <span>
@@ -78,7 +78,7 @@ export default function DebugButtons() {
             onClick={requestAirdrop}
             disabled={requestAirdropDisabled}
           >
-            Request Airdrop
+            Solicitar um Airdrop
           </Button>
         </span>
       </Tooltip>
@@ -97,7 +97,7 @@ export default function DebugButtons() {
             disabled={sending || noSol}
             style={{ marginLeft: 24 }}
           >
-            Mint Test Token
+            Emitir um Token de teste
           </Button>
         </span>
       </Tooltip>

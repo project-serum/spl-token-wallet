@@ -19,7 +19,7 @@ export default function ExportAccountDialog({ open, onClose }) {
       <DialogTitle>Export account</DialogTitle>
       <DialogContent>
         <TextField
-          label="Private key"
+          label="Chave Privada"
           fullWidth
           type={isHidden && 'password'}
           variant="outlined"
