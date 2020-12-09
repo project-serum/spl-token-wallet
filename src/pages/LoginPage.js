@@ -26,14 +26,14 @@ export default function LoginPage() {
       {restore ? (
         <RestoreWalletForm goBack={() => setRestore(false)} />
       ) : (
-        <>
-          {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
-          <br />
-          <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
-            Restore existing wallet
+          <>
+            {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
+            <br />
+            <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
+              Restaurar uma carteira existente
           </Link>
-        </>
-      )}
+          </>
+        )}
     </Container>
   );
 }
@@ -49,8 +49,8 @@ function CreateWalletForm() {
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
     callAsync(storeMnemonicAndSeed(mnemonic, seed, password), {
-      progressMessage: 'Creating wallet...',
-      successMessage: 'Wallet created',
+      progressMessage: 'Criando sua carteira...',
+      successMessage: 'Carteira Criada',
     });
   }
 
@@ -79,14 +79,13 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
     <Card>
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Create New Wallet
+          Criar uma Nova Carteira
         </Typography>
         <Typography paragraph>
-          Create a new wallet to hold Solana and SPL tokens.
+          Criar uma Nova Carteira para armazenar Solana e SPL Tokens
         </Typography>
         <Typography>
-          Please write down the following twelve words and keep them in a safe
-          place:
+          Por favor escreva e guarde em um local seguro as 12 (doze) palavras apresentadas a seguir:
         </Typography>
         {mnemonicAndSeed ? (
           <TextField
@@ -95,16 +94,16 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             multiline
             margin="normal"
             value={mnemonicAndSeed.mnemonic}
-            label="Seed Words"
+            label="Palavras Secretas (seed words)"
             onFocus={(e) => e.currentTarget.select()}
           />
         ) : (
-          <LoadingIndicator />
-        )}
+            <LoadingIndicator />
+          )}
         <Typography paragraph>
-          Your private keys are only stored on your current computer or device.
-          You will need these words to restore your wallet if your browser's
-          storage is cleared or your device is damaged or lost.
+          Sua chave privada é armazenada somente no SEU computador or dispositivo de acesso.
+          Você precisara dessas palavras secretas (seed words) para restaurar a sua wallet em
+          outro dispositivo se o histórico do browser foi limpo.
         </Typography>
         <FormControlLabel
           control={
@@ -114,12 +113,12 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
               onChange={(e) => setConfirmed(e.target.checked)}
             />
           }
-          label="I have saved these words in a safe place."
+          label="Eu salvei as palavras em um lugar seguro."
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
         <Button color="primary" disabled={!confirmed} onClick={goForward}>
-          Continue
+          Continuar
         </Button>
       </CardActions>
     </Card>
@@ -134,16 +133,16 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
     <Card>
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Choose a Password (Optional)
+          Escolher uma senha (Opcional)
         </Typography>
         <Typography>
-          Optionally pick a password to protect your wallet.
+          Escolha uma senha para proteger a sua wallet.
         </Typography>
         <TextField
           variant="outlined"
           fullWidth
           margin="normal"
-          label="New Password"
+          label="Nova Senha"
           type="password"
           autoComplete="new-password"
           value={password}
@@ -153,25 +152,24 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
           variant="outlined"
           fullWidth
           margin="normal"
-          label="Confirm Password"
+          label="Confirmar Senha"
           type="password"
           autoComplete="new-password"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
         />
         <Typography>
-          If you forget your password you will need to restore your wallet using
-          your seed words.
+          Se você esquecer a senha você precisara restaurar as sua wallet usando as palavras secretas.
         </Typography>
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Back</Button>
+        <Button onClick={goBack}>Voltar</Button>
         <Button
           color="primary"
           disabled={password !== passwordConfirm}
           onClick={() => onSubmit(password)}
         >
-          Create Wallet
+          Criar uma Carteira
         </Button>
       </CardActions>
     </Card>
@@ -185,8 +183,8 @@ function LoginForm() {
 
   function submit() {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
+      progressMessage: 'Desbloqueando a carteira...',
+      successMessage: 'Cartiera desbloqueada',
     });
   }
 
@@ -194,7 +192,7 @@ function LoginForm() {
     <Card>
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Unlock Wallet
+          Desbloquear Carteira
         </Typography>
         <TextField
           variant="outlined"
@@ -213,12 +211,12 @@ function LoginForm() {
               onChange={(e) => setStayLoggedIn(e.target.checked)}
             />
           }
-          label="Keep wallet unlocked"
+          label="Manter minha carteira desbloqueada"
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
         <Button color="primary" onClick={submit}>
-          Unlock
+          Desbloquear
         </Button>
       </CardActions>
     </Card>
@@ -243,11 +241,10 @@ function RestoreWalletForm({ goBack }) {
     <Card>
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Restore Existing Wallet
+          Restaurar Carteira Existente
         </Typography>
         <Typography>
-          Restore your wallet using your twelve seed words. Note that this will
-          delete any existing wallet on this device.
+          Restaure sua carteira usando as 12 (doze) palavras secretas. Atenção isso irá eliminar todos os dados atuais.
         </Typography>
         <TextField
           variant="outlined"
@@ -255,7 +252,7 @@ function RestoreWalletForm({ goBack }) {
           multiline
           rows={3}
           margin="normal"
-          label="Seed Words"
+          label="Palavras Secretas"
           value={mnemonic}
           onChange={(e) => setMnemonic(e.target.value)}
         />
@@ -263,7 +260,7 @@ function RestoreWalletForm({ goBack }) {
           variant="outlined"
           fullWidth
           margin="normal"
-          label="New Password (Optional)"
+          label="Nova Senha (Opcional)"
           type="password"
           autoComplete="new-password"
           value={password}
@@ -273,7 +270,7 @@ function RestoreWalletForm({ goBack }) {
           variant="outlined"
           fullWidth
           margin="normal"
-          label="Confirm Password"
+          label="Confirmar Senha"
           type="password"
           autoComplete="new-password"
           value={passwordConfirm}
@@ -281,13 +278,13 @@ function RestoreWalletForm({ goBack }) {
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Cancel</Button>
+        <Button onClick={goBack}>Fechar</Button>
         <Button
           color="primary"
           disabled={password !== passwordConfirm}
           onClick={submit}
         >
-          Restore
+          Restaurar
         </Button>
       </CardActions>
     </Card>

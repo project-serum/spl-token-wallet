@@ -51,7 +51,7 @@ export default function NavigationFrame({ children }) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            Solana SPL Token Wallet
+            MeuSol - Carteira Digital para o Solana
           </Typography>
           <WalletSelector />
           <NetworkSelector />
@@ -89,11 +89,11 @@ function NetworkSelector() {
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          {networkLabels[endpoint] ?? 'Network'}
+          {networkLabels[endpoint] ?? 'Rede'}
         </Button>
       </Hidden>
       <Hidden smUp>
-        <Tooltip title="Select Network" arrow>
+        <Tooltip title="Escolha a rede" arrow>
           <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
             <SolanaIcon />
           </IconButton>
@@ -152,7 +152,7 @@ function WalletSelector() {
         onClose={() => setAddHardwareWalletDialogOpen(false)}
         onAdd={(pubKey) => {
           addAccount({
-            name: 'Hardware wallet',
+            name: 'Carteiras Físicas',
             importedAccount: pubKey.toString(),
             ledger: true,
           });
@@ -193,7 +193,7 @@ function WalletSelector() {
         </Button>
       </Hidden>
       <Hidden smUp>
-        <Tooltip title="Select Account" arrow>
+        <Tooltip title="Selecione a conta" arrow>
           <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
             <AccountIcon />
           </IconButton>
@@ -231,12 +231,12 @@ function WalletSelector() {
           </MenuItem>
         ))}
         <Divider />
-        <MenuItem onClick={() => setAddHardwareWalletDialogOpen(true)}>
+        {/* <MenuItem onClick={() => setAddHardwareWalletDialogOpen(true)}>
           <ListItemIcon className={classes.menuItemIcon}>
             <UsbIcon fontSize="small" />
           </ListItemIcon>
           Import Hardware Wallet
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
@@ -246,7 +246,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Add Account
+          Adicionar Conta
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -261,7 +261,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Delete Account
+          Excluir Contar
         </MenuItem>
       </Menu>
     </>
@@ -280,17 +280,17 @@ function Footer() {
   const classes = useFooterStyles();
   return (
     <footer className={classes.footer}>
-      <Button
+      {/* <Button
         variant="outlined"
         color="primary"
         component="a"
         target="_blank"
         rel="noopener"
-        href="https://github.com/serum-foundation/spl-token-wallet"
+        href="https://github.com/mileschet/spl-token-wallet"
         startIcon={<CodeIcon />}
       >
         View Source
-      </Button>
+      </Button> */}
     </footer>
   );
 }

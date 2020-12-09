@@ -62,7 +62,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         fullWidth
       >
         <DialogTitle>
-          Send {tokenName ?? abbreviateAddress(mint)}
+          Enviar {tokenName ?? abbreviateAddress(mint)}
           {tokenSymbol ? ` (${tokenSymbol})` : null}
         </DialogTitle>
         {swapCoinInfo ? (
@@ -75,28 +75,27 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
           >
             {mint?.equals(WUSDC_MINT)
               ? [
-                  <Tab label="SPL WUSDC" key="spl" value="spl" />,
-                  <Tab
-                    label="SPL USDC"
-                    key="wusdcToSplUsdc"
-                    value="wusdcToSplUsdc"
-                  />,
-                  <Tab label="ERC20 USDC" key="swap" value="swap" />,
-                ]
+                <Tab label="SPL WUSDC" key="spl" value="spl" />,
+                <Tab
+                  label="SPL USDC"
+                  key="wusdcToSplUsdc"
+                  value="wusdcToSplUsdc"
+                />,
+                <Tab label="ERC20 USDC" key="swap" value="swap" />,
+              ]
               : [
-                  <Tab
-                    label={`SPL ${swapCoinInfo.ticker}`}
-                    key="spl"
-                    value="spl"
-                  />,
-                  <Tab
-                    label={`${
-                      swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
+                <Tab
+                  label={`SPL ${swapCoinInfo.ticker}`}
+                  key="spl"
+                  value="spl"
+                />,
+                <Tab
+                  label={`${swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
                     } ${swapCoinInfo.ticker}`}
-                    key="swap"
-                    value="swap"
-                  />,
-                ]}
+                  key="swap"
+                  value="swap"
+                />,
+              ]}
           </Tabs>
         ) : null}
         {tab === 'spl' ? (
@@ -117,21 +116,21 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             wusdcToSplUsdc
           />
         ) : (
-          <SendSwapDialog
-            key={tab}
-            onClose={onClose}
-            publicKey={publicKey}
-            balanceInfo={balanceInfo}
-            swapCoinInfo={swapCoinInfo}
-            ethAccount={ethAccount}
-            onSubmitRef={onSubmitRef}
-          />
-        )}
+              <SendSwapDialog
+                key={tab}
+                onClose={onClose}
+                publicKey={publicKey}
+                balanceInfo={balanceInfo}
+                swapCoinInfo={swapCoinInfo}
+                ethAccount={ethAccount}
+                onSubmitRef={onSubmitRef}
+              />
+            )}
       </DialogForm>
       {ethAccount &&
-      (swapCoinInfo?.blockchain === 'eth' || swapCoinInfo?.erc20Contract) ? (
-        <EthWithdrawalCompleter ethAccount={ethAccount} publicKey={publicKey} />
-      ) : null}
+        (swapCoinInfo?.blockchain === 'eth' || swapCoinInfo?.erc20Contract) ? (
+          <EthWithdrawalCompleter ethAccount={ethAccount} publicKey={publicKey} />
+        ) : null}
     </>
   );
 }
@@ -139,8 +138,8 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   const defaultAddressHelperText =
     !balanceInfo.mint || balanceInfo.mint.equals(WRAPPED_SOL_MINT)
-      ? 'Enter Solana Address'
-      : 'Enter SPL token or Solana address';
+      ? 'Informe o endereço da carteira Solana'
+      : 'Informe o endereço da carteira Solana ou SPL token';
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [addressHelperText, setAddressHelperText] = useState(
@@ -174,14 +173,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
           );
           if (accountInfo.mint.toBase58() === mintString) {
             setPassValidation(true);
-            setAddressHelperText('Address is a valid SPL token address');
+            setAddressHelperText('O Endereço é um SPL token válido.');
           } else {
             setPassValidation(false);
-            setAddressHelperText('Destination address mint does not match');
+            setAddressHelperText('O Endereço de destino do emissor não é valido.');
           }
         } else {
           setPassValidation(true);
-          setAddressHelperText('Destination is a Solana address');
+          setAddressHelperText('O destino é um endereço Solana válido.');
         }
       } catch (e) {
         console.log(`Received error validating address ${e}`);
@@ -213,13 +212,13 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>Fechar</Button>
         <Button
           type="submit"
           color="primary"
           disabled={sending || !validAmount}
         >
-          Send
+          Enviar
         </Button>
       </DialogActions>
     </>
@@ -250,8 +249,8 @@ function SendSwapDialog({
   const blockchain = wusdcToSplUsdc
     ? 'sol'
     : swapCoinInfo.blockchain === 'sol'
-    ? 'eth'
-    : swapCoinInfo.blockchain;
+      ? 'eth'
+      : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
 
   useEffect(() => {
@@ -287,6 +286,7 @@ function SendSwapDialog({
     if (mint?.equals(WUSDC_MINT)) {
       params.wusdcToUsdc = true;
     }
+    // check for brz
     const swapInfo = await swapApiRequest('POST', 'swap_to', params);
     if (swapInfo.blockchain !== 'sol') {
       throw new Error('Unexpected blockchain');
@@ -325,21 +325,21 @@ function SendSwapDialog({
           {blockchain === 'eth' && swapCoinInfo.erc20Contract
             ? 'ERC20'
             : blockchain === 'sol' && swapCoinInfo.splMint
-            ? 'SPL'
-            : 'native'}{' '}
+              ? 'SPL'
+              : 'native'}{' '}
           {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </DialogContentText>
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>Fechar</Button>
         <Button
           type="submit"
           color="primary"
           disabled={sending || (needMetamask && !ethAccount) || !validAmount}
         >
-          Send
+          Enviar
         </Button>
       </DialogActions>
     </>
@@ -414,8 +414,8 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
             {confirms ? (
               <Typography>{confirms} / 35 Confirmations</Typography>
             ) : (
-              <Typography>Transaction Pending</Typography>
-            )}
+                <Typography>Transaction Pending</Typography>
+              )}
           </div>
         ) : null}
         {!ethTxid && blockchain === 'eth' ? (
@@ -426,7 +426,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Fechar</Button>
       </DialogActions>
     </>
   );
@@ -443,7 +443,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
   const fields = (
     <>
       <TextField
-        label="Recipient Address"
+        label="Endereço de Destino"
         fullWidth
         variant="outlined"
         margin="normal"
@@ -458,7 +458,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
         error={!passAddressValidation && passAddressValidation !== undefined}
       />
       <TextField
-        label="Amount"
+        label="Quantidade"
         fullWidth
         variant="outlined"
         margin="normal"

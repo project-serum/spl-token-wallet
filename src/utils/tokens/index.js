@@ -34,9 +34,9 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
   if (resp.error) {
     throw new Error(
       'failed to get token accounts owned by ' +
-        publicKey.toBase58() +
-        ': ' +
-        resp.error.message,
+      publicKey.toBase58() +
+      ': ' +
+      resp.error.message,
     );
   }
   return resp.result
@@ -222,7 +222,7 @@ export async function transferTokens({
     });
   }
   if (!destinationAccountInfo || destinationAccountInfo.lamports === 0) {
-    throw new Error('Cannot send to address with zero SOL balances');
+    throw new Error('Não é possivel enviar para um endereço sem saldo de SOL');
   }
   const destinationSplTokenAccount = (
     await getOwnedTokenAccounts(connection, destinationPublicKey)

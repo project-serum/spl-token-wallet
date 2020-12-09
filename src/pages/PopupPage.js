@@ -79,7 +79,7 @@ export default function PopupPage({ opener }) {
     function messageHandler(e) {
       if (e.origin === origin && e.source === window.opener) {
         if (e.data.method !== 'signTransaction') {
-          postMessage({ error: 'Unsupported method', id: e.data.id });
+          postMessage({ error: 'Método não suportado.', id: e.data.id });
         }
 
         setRequests((requests) => [...requests, e.data]);
@@ -126,7 +126,7 @@ export default function PopupPage({ opener }) {
     function sendReject() {
       setRequests((requests) => requests.slice(1));
       postMessage({
-        error: 'Transaction cancelled',
+        error: 'Transação cancelada.',
         id: request.id,
       });
       if (requests.length === 1) {
@@ -213,14 +213,14 @@ function ApproveConnectionForm({ origin, onApprove }) {
     <Card>
       <CardContent>
         <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
+          Permitir o seguinte site acessar sua carteira digital?
         </Typography>
         <div className={classes.connection}>
           <Typography>{origin}</Typography>
           <ImportExportIcon fontSize="large" />
           <Typography>{wallet.publicKey.toBase58()}</Typography>
         </div>
-        <Typography>Only connect with sites you trust.</Typography>
+        <Typography>Apenas se conecte com sites que você confia.</Typography>
         <Divider className={classes.divider} />
         <FormControlLabel
           control={
@@ -230,7 +230,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
               color="primary"
             />
           }
-          label={`Automatically approve transactions from ${origin}`}
+          label={`Aprovar transações automaticamente de ${origin}`}
         />
         {!dismissed && autoApprove && (
           <SnackbarContent
@@ -239,24 +239,22 @@ function ApproveConnectionForm({ origin, onApprove }) {
               <div>
                 <span className={classes.warningTitle}>
                   <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
+                  Use levando em consideração que é totalmente sua responsabilidade.
                 </span>
                 <Typography className={classes.warningMessage}>
-                  This setting allows sending some transactions on your behalf
-                  without requesting your permission for the remainder of this
-                  session.
+                  Essa opção permite envio de transação em seu nome sem solicitar sua permissão até o final dessa sessão.
                 </Typography>
               </div>
             }
             action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
+              <Button onClick={() => setDismissed('1')}>Eu concordo, o risco é todo meu</Button>,
             ]}
             classes={{ root: classes.snackbarRoot }}
           />
         )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
+        <Button onClick={window.close}>Fechar</Button>
         <Button
           color="primary"
           onClick={() => onApprove(autoApprove)}
@@ -486,56 +484,55 @@ function ApproveSignatureForm({
             </Typography>
           </>
         ) : (
-          <>
-            <Typography variant="h6" gutterBottom>
-              {instructions
-                ? `${origin} wants to:`
-                : `Unknown transaction data`}
-            </Typography>
-            {instructions ? (
-              instructions.map((instruction, i) => (
-                <Box style={{ marginTop: 20 }} key={i}>
-                  {getContent(instruction)}
-                  <Divider style={{ marginTop: 20 }} />
-                </Box>
-              ))
-            ) : (
-              <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
-                  gutterBottom
-                >
-                  Unknown transaction:
+            <>
+              <Typography variant="h6" gutterBottom>
+                {instructions
+                  ? `${origin} wants to:`
+                  : `Dados da transação desconhecidos`}
+              </Typography>
+              {instructions ? (
+                instructions.map((instruction, i) => (
+                  <Box style={{ marginTop: 20 }} key={i}>
+                    {getContent(instruction)}
+                    <Divider style={{ marginTop: 20 }} />
+                  </Box>
+                ))
+              ) : (
+                  <>
+                    <Typography
+                      variant="subtitle1"
+                      style={{ fontWeight: 'bold' }}
+                      gutterBottom
+                    >
+                      Transação desconhecida:
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>
-                  {bs58.encode(message)}
-                </Typography>
-              </>
-            )}
-            {!validator.safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
-                      Nonstandard DEX transaction
-                    </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
+                    <Typography style={{ wordBreak: 'break-all' }}>
+                      {bs58.encode(message)}
                     </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
-              />
-            )}
-          </>
-        )}
+                  </>
+                )}
+              {!validator.safe && (
+                <SnackbarContent
+                  className={classes.warningContainer}
+                  message={
+                    <div>
+                      <span className={classes.warningTitle}>
+                        <WarningIcon className={classes.warningIcon} />
+                      Transação DEX não padrão
+                    </span>
+                      <Typography className={classes.warningMessage}>
+                        Essa transação não tem um formato semelhante aos conhecidos da Serum DEX
+                    </Typography>
+                    </div>
+                  }
+                  classes={{ root: classes.snackbarRoot }}
+                />
+              )}
+            </>
+          )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
+        <Button onClick={onReject}>Fechar</Button>
         <Button
           ref={buttonRef}
           className={classes.approveButton}
@@ -543,7 +540,7 @@ function ApproveSignatureForm({
           color="primary"
           onClick={onApprove}
         >
-          Approve
+          Aprovar
         </Button>
       </CardActions>
     </Card>

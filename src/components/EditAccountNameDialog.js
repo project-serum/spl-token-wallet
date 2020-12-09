@@ -21,7 +21,7 @@ export default function EditAccountNameDialog({
       onSubmit={() => onEdit(name.trim())}
       fullWidth
     >
-      <DialogTitle>Edit Account</DialogTitle>
+      <DialogTitle>Editar Conta</DialogTitle>
       <DialogContent>
         <div
           style={{
@@ -40,9 +40,9 @@ export default function EditAccountNameDialog({
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>Fechar</Button>
         <Button type="submit" color="primary">
-          Save
+          Salvar
         </Button>
       </DialogActions>
     </DialogForm>

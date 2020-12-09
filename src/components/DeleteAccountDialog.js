@@ -22,7 +22,7 @@ export default function DeleteAccountDialog({
         }}
         fullWidth
       >
-        <DialogTitle>Delete Account</DialogTitle>
+        <DialogTitle>Excluir Conta</DialogTitle>
         <DialogContentText style={{ margin: 20 }}>
           <div
             style={{
@@ -30,25 +30,25 @@ export default function DeleteAccountDialog({
               flexDirection: 'column',
             }}
           >
-            You will not be able to recover the current accounts without the
-            seed phrase, and the account private key. This action will delete
-            all current accounts from your browser.
+            Voce não podera recuperar os dados da conta atual sem ter as
+            palavras secretas e a chave privada atual. Essa ação pode deletar
+            todas as suas contas atuais do navegador.
             <br />
             <br />
             <strong style={{ textAlign: 'center' }}>
-              To prevent loss of funds, please ensure you have the seed phrase
-              and the private key for all current accounts.
+              Para prevenir a perda de fundos, por favor confira as suas
+              palavras chaves e chave privada para todas as suas contas atuais.
             </strong>
           </div>
         </DialogContentText>
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>Fechar</Button>
           <Button
             type="submit"
             color="secondary"
             disabled={!isDeleteAccountEnabled}
           >
-            Delete Account
+            Excluir Conta
           </Button>
         </DialogActions>
       </DialogForm>
