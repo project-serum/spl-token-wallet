@@ -28,7 +28,7 @@ export const TOKENS = {
     },
     {
       tokenSymbol: 'BRZ',
-      mintAddress: '0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B',
+      mintAddress: 'FtgGSFADXBtroxq8VCausXRr2of47QBf5AS1NtZCu4GD',
       tokenName: 'Brazilian Digital Token',
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x420412E765BFa6d85aaaC94b4f7b708C89be2e2B/logo.png',
