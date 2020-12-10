@@ -78,7 +78,10 @@ export default function PopupPage({ opener }) {
   useEffect(() => {
     function messageHandler(e) {
       if (e.origin === origin && e.source === window.opener) {
-        if (e.data.method !== 'signTransaction') {
+        if (
+          e.data.method !== 'signTransaction' ||
+          e.data.method !== 'signAllTransactions'
+        ) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
 
@@ -106,11 +109,29 @@ export default function PopupPage({ opener }) {
 
   if (requests.length > 0) {
     const request = requests[0];
-    assert(request.method === 'signTransaction');
-    const message = bs58.decode(request.params.message);
+    assert(
+      request.method === 'signTransaction' ||
+        request.method === 'signAllTransactions',
+    );
 
-    async function sendSignature() {
+    let messages =
+      request.method === 'signTransaction'
+        ? [bs58.decode(request.params.message)]
+        : request.params.messages.map((m) => bs58.decode(m));
+
+    async function onApprove() {
       setRequests((requests) => requests.slice(1));
+      if (request.method === 'signTransaction') {
+        sendSignature(messages.pop());
+      } else {
+        sendAllSignatures(messages);
+      }
+      if (requests.length === 1) {
+        focusParent();
+      }
+    }
+
+    async function sendSignature(message) {
       postMessage({
         result: {
           signature: await wallet.createSignature(message),
@@ -118,9 +139,19 @@ export default function PopupPage({ opener }) {
         },
         id: request.id,
       });
-      if (requests.length === 1) {
-        focusParent();
-      }
+    }
+
+    async function sendAllSignatures(messages) {
+      const signatures = await Promise.all(
+        messages.map((m) => wallet.createSignature(m)),
+      );
+      postMessage({
+        result: {
+          signatures,
+          publicKey: wallet.publicKey.toBase58(),
+        },
+        id: request.id,
+      });
     }
 
     function sendReject() {
@@ -138,8 +169,8 @@ export default function PopupPage({ opener }) {
         key={request.id}
         autoApprove={autoApprove}
         origin={origin}
-        message={message}
-        onApprove={sendSignature}
+        messages={messages}
+        onApprove={onApprove}
         onReject={sendReject}
       />
     );
@@ -363,7 +394,7 @@ function isSafeInstruction(publicKeys, owner, instructions) {
 
 function ApproveSignatureForm({
   origin,
-  message,
+  messages,
   onApprove,
   onReject,
   autoApprove,
@@ -379,11 +410,13 @@ function ApproveSignatureForm({
   const buttonRef = useRef();
 
   useEffect(() => {
-    decodeMessage(connection, wallet, message).then((instructions) => {
-      setInstructions(instructions);
-      setParsing(false);
-    });
-  }, [message, connection, wallet]);
+    Promise.all(messages.map((m) => decodeMessage(connection, wallet, m))).map(
+      (instructions) => {
+        setInstructions(instructions);
+        setParsing(false);
+      },
+    );
+  }, [messages, connection, wallet]);
 
   const validator = useMemo(() => {
     return {
@@ -478,12 +511,14 @@ function ApproveSignatureForm({
                 style={{ fontWeight: 'bold' }}
                 gutterBottom
               >
-                Parsing transaction:
+                Parsing transaction{messages.length > 0 ? 's' : ''}:
               </Typography>
             </div>
-            <Typography style={{ wordBreak: 'break-all' }}>
-              {bs58.encode(message)}
-            </Typography>
+            {messages.map((message) => (
+              <Typography style={{ wordBreak: 'break-all' }}>
+                {bs58.encode(message)}
+              </Typography>
+            ))}
           </>
         ) : (
           <>
@@ -506,11 +541,13 @@ function ApproveSignatureForm({
                   style={{ fontWeight: 'bold' }}
                   gutterBottom
                 >
-                  Unknown transaction:
+                  Unknown transaction{messages.length > 0 ? 's' : ''}:
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>
-                  {bs58.encode(message)}
-                </Typography>
+                {messages.map((message) => (
+                  <Typography style={{ wordBreak: 'break-all' }}>
+                    {bs58.encode(message)}
+                  </Typography>
+                ))}
               </>
             )}
             {!validator.safe && (
