@@ -110,7 +110,7 @@ export default function PopupPage({ opener }) {
   if (requests.length > 0) {
     const request = requests[0];
     assert(
-      request.method === 'signTransaction' &&
+      request.method === 'signTransaction' ||
         request.method === 'signAllTransactions',
     );
 
@@ -300,7 +300,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
   );
 }
 
-function isSafeInstruction(publicKeys, owner, instructions) {
+function isSafeInstruction(publicKeys, owner, txInstructions) {
   let unsafe = false;
   const states = {
     CREATED: 0,
@@ -323,60 +323,62 @@ function isSafeInstruction(publicKeys, owner, instructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
-  instructions.forEach((instruction) => {
-    if (!instruction) {
-      unsafe = true;
-    } else {
-      if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
-        // It is always considered safe to cancel orders, match orders
-      } else if (instruction.type === 'systemCreate') {
-        let { newAccountPubkey } = instruction.data;
-        if (!newAccountPubkey) {
-          unsafe = true;
-        } else {
-          accountStates[newAccountPubkey.toBase58()] = states.CREATED;
-        }
-      } else if (instruction.type === 'newOrder') {
-        // New order instructions are safe if the owner is this wallet
-        let { openOrdersPubkey, ownerPubkey } = instruction.data;
-        if (ownerPubkey && owner.equals(ownerPubkey)) {
-          accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
-        } else {
-          unsafe = true;
-        }
-      } else if (instruction.type === 'initializeAccount') {
-        // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
-        let { ownerPubkey, accountPubkey } = instruction.data;
-        if (
-          owner &&
-          ownerPubkey &&
-          owner.equals(ownerPubkey) &&
-          accountPubkey &&
-          accountStates[accountPubkey.toBase58()] === states.CREATED
-        ) {
-          accountStates[accountPubkey.toBase58()] = states.OWNED;
-        } else {
-          unsafe = true;
-        }
-      } else if (instruction.type === 'settleFunds') {
-        // Settling funds is only safe if the destinations are owned
-        let { basePubkey, quotePubkey } = instruction.data;
-        if (!isOwned(basePubkey) || !isOwned(quotePubkey)) {
-          unsafe = true;
-        }
-      } else if (instruction.type === 'closeAccount') {
-        // Closing is only safe if the destination is owned
-        let { sourcePubkey, destinationPubkey } = instruction.data;
-        if (isOwned(destinationPubkey)) {
-          accountStates[sourcePubkey.toBase58()] =
-            states.CLOSED_TO_OWNED_DESTINATION;
-        } else {
-          unsafe = true;
-        }
-      } else {
+  txInstructions.forEach((instructions) => {
+    instructions.forEach((instruction) => {
+      if (!instruction) {
         unsafe = true;
+      } else {
+        if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+          // It is always considered safe to cancel orders, match orders
+        } else if (instruction.type === 'systemCreate') {
+          let { newAccountPubkey } = instruction.data;
+          if (!newAccountPubkey) {
+            unsafe = true;
+          } else {
+            accountStates[newAccountPubkey.toBase58()] = states.CREATED;
+          }
+        } else if (instruction.type === 'newOrder') {
+          // New order instructions are safe if the owner is this wallet
+          let { openOrdersPubkey, ownerPubkey } = instruction.data;
+          if (ownerPubkey && owner.equals(ownerPubkey)) {
+            accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
+          } else {
+            unsafe = true;
+          }
+        } else if (instruction.type === 'initializeAccount') {
+          // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
+          let { ownerPubkey, accountPubkey } = instruction.data;
+          if (
+            owner &&
+            ownerPubkey &&
+            owner.equals(ownerPubkey) &&
+            accountPubkey &&
+            accountStates[accountPubkey.toBase58()] === states.CREATED
+          ) {
+            accountStates[accountPubkey.toBase58()] = states.OWNED;
+          } else {
+            unsafe = true;
+          }
+        } else if (instruction.type === 'settleFunds') {
+          // Settling funds is only safe if the destinations are owned
+          let { basePubkey, quotePubkey } = instruction.data;
+          if (!isOwned(basePubkey) || !isOwned(quotePubkey)) {
+            unsafe = true;
+          }
+        } else if (instruction.type === 'closeAccount') {
+          // Closing is only safe if the destination is owned
+          let { sourcePubkey, destinationPubkey } = instruction.data;
+          if (isOwned(destinationPubkey)) {
+            accountStates[sourcePubkey.toBase58()] =
+              states.CLOSED_TO_OWNED_DESTINATION;
+          } else {
+            unsafe = true;
+          }
+        } else {
+          unsafe = true;
+        }
       }
-    }
+    });
   });
 
   // Check that all accounts are owned
@@ -406,13 +408,17 @@ function ApproveSignatureForm({
   const [publicKeys] = useWalletPublicKeys();
 
   const [parsing, setParsing] = useState(true);
-  const [instructions, setInstructions] = useState(null);
+  // An array of arrays, where each element is the set of instructions for a
+  // single transaction.
+  const [txInstructions, setTxInstructions] = useState(null);
   const buttonRef = useRef();
+
+  const isMultiTx = messages.length > 1;
 
   useEffect(() => {
     Promise.all(messages.map((m) => decodeMessage(connection, wallet, m))).then(
-      (instructions) => {
-        setInstructions(instructions);
+      (txInstructions) => {
+        setTxInstructions(txInstructions);
         setParsing(false);
       },
     );
@@ -422,10 +428,10 @@ function ApproveSignatureForm({
     return {
       safe:
         publicKeys &&
-        instructions &&
-        isSafeInstruction(publicKeys, wallet.publicKey, instructions),
+        txInstructions &&
+        isSafeInstruction(publicKeys, wallet.publicKey, txInstructions),
     };
-  }, [publicKeys, instructions, wallet]);
+  }, [publicKeys, txInstructions, wallet]);
 
   useEffect(() => {
     if (validator.safe && autoApprove) {
@@ -493,6 +499,37 @@ function ApproveSignatureForm({
     }
   };
 
+  const txLabel = (idx) => {
+    return (
+      <>
+        <Typography variant="h6" gutterBottom>
+          Transaction {idx.toString()}
+        </Typography>
+        <Divider style={{ marginTop: 20 }} />
+      </>
+    );
+  };
+
+  const txListItem = (instructions, txIdx) => {
+    const ixs = instructions.map((instruction, i) => (
+      <Box style={{ marginTop: 20 }} key={i}>
+        {getContent(instruction)}
+        <Divider style={{ marginTop: 20 }} />
+      </Box>
+    ));
+
+    if (!isMultiTx) {
+      return ixs;
+    }
+
+    return (
+      <Box style={{ marginTop: 20 }} key={txIdx}>
+        {txLabel(txIdx)}
+        {ixs}
+      </Box>
+    );
+  };
+
   return (
     <Card>
       <CardContent>
@@ -511,11 +548,11 @@ function ApproveSignatureForm({
                 style={{ fontWeight: 'bold' }}
                 gutterBottom
               >
-                Parsing transaction{messages.length > 0 ? 's' : ''}:
+                Parsing transaction{isMultiTx > 0 ? 's' : ''}:
               </Typography>
             </div>
-            {messages.map((message) => (
-              <Typography style={{ wordBreak: 'break-all' }}>
+            {messages.map((message, idx) => (
+              <Typography key={idx} style={{ wordBreak: 'break-all' }}>
                 {bs58.encode(message)}
               </Typography>
             ))}
@@ -523,17 +560,14 @@ function ApproveSignatureForm({
         ) : (
           <>
             <Typography variant="h6" gutterBottom>
-              {instructions
+              {txInstructions
                 ? `${origin} wants to:`
                 : `Unknown transaction data`}
             </Typography>
-            {instructions ? (
-              instructions.map((instruction, i) => (
-                <Box style={{ marginTop: 20 }} key={i}>
-                  {getContent(instruction)}
-                  <Divider style={{ marginTop: 20 }} />
-                </Box>
-              ))
+            {txInstructions ? (
+              txInstructions.map((instructions, txIdx) =>
+                txListItem(instructions, txIdx),
+              )
             ) : (
               <>
                 <Typography
@@ -541,7 +575,7 @@ function ApproveSignatureForm({
                   style={{ fontWeight: 'bold' }}
                   gutterBottom
                 >
-                  Unknown transaction{messages.length > 0 ? 's' : ''}:
+                  Unknown transaction{isMultiTx > 0 ? 's' : ''}:
                 </Typography>
                 {messages.map((message) => (
                   <Typography style={{ wordBreak: 'break-all' }}>
@@ -580,7 +614,7 @@ function ApproveSignatureForm({
           color="primary"
           onClick={onApprove}
         >
-          Approve
+          Approve{isMultiTx ? ' All' : ''}
         </Button>
       </CardActions>
     </Card>
