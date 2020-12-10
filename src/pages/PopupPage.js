@@ -122,7 +122,7 @@ export default function PopupPage({ opener }) {
     async function onApprove() {
       setRequests((requests) => requests.slice(1));
       if (request.method === 'signTransaction') {
-        sendSignature(messages.pop());
+        sendSignature(messages[0]);
       } else {
         sendAllSignatures(messages);
       }
