@@ -79,7 +79,7 @@ export default function PopupPage({ opener }) {
     function messageHandler(e) {
       if (e.origin === origin && e.source === window.opener) {
         if (
-          e.data.method !== 'signTransaction' ||
+          e.data.method !== 'signTransaction' &&
           e.data.method !== 'signAllTransactions'
         ) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
@@ -110,7 +110,7 @@ export default function PopupPage({ opener }) {
   if (requests.length > 0) {
     const request = requests[0];
     assert(
-      request.method === 'signTransaction' ||
+      request.method === 'signTransaction' &&
         request.method === 'signAllTransactions',
     );
 
@@ -410,7 +410,7 @@ function ApproveSignatureForm({
   const buttonRef = useRef();
 
   useEffect(() => {
-    Promise.all(messages.map((m) => decodeMessage(connection, wallet, m))).map(
+    Promise.all(messages.map((m) => decodeMessage(connection, wallet, m))).then(
       (instructions) => {
         setInstructions(instructions);
         setParsing(false);
