@@ -4,7 +4,7 @@ import tuple from 'immutable-tuple';
 
 const pageLoadTime = new Date();
 
-const globalCache = new Map();
+const globalCache: Map<any, any> = new Map();
 
 class FetchLoops {
   loops = new Map();
@@ -39,8 +39,18 @@ class FetchLoops {
 }
 const globalLoops = new FetchLoops();
 
-class FetchLoopListener {
-  constructor(cacheKey, fn, refreshInterval, callback) {
+class FetchLoopListener<T = any> {
+  cacheKey: any;
+  fn: () => Promise<T>;
+  refreshInterval: number;
+  callback: () => void;
+
+  constructor(
+    cacheKey: any,
+    fn: () => Promise<T>,
+    refreshInterval: number,
+    callback: () => void,
+  ) {
     this.cacheKey = cacheKey;
     this.fn = fn;
     this.refreshInterval = refreshInterval;
@@ -48,8 +58,14 @@ class FetchLoopListener {
   }
 }
 
-class FetchLoopInternal {
-  constructor(cacheKey, fn) {
+class FetchLoopInternal<T = any> {
+  cacheKey: any;
+  fn: () => Promise<T>;
+  timeoutId: null | any;
+  listeners: Set<FetchLoopListener<T>>;
+  errors: number;
+
+  constructor(cacheKey: any, fn: () => Promise<T>) {
     this.cacheKey = cacheKey;
     this.fn = fn;
     this.timeoutId = null;
@@ -57,25 +73,25 @@ class FetchLoopInternal {
     this.errors = 0;
   }
 
-  get refreshInterval() {
+  get refreshInterval(): number {
     return Math.min(
       ...[...this.listeners].map((listener) => listener.refreshInterval),
     );
   }
 
-  get stopped() {
+  get stopped(): boolean {
     return this.listeners.size === 0;
   }
 
-  addListener(listener) {
-    let previousRefreshInterval = this.refreshInterval;
+  addListener(listener: FetchLoopListener<T>): void {
+    const previousRefreshInterval = this.refreshInterval;
     this.listeners.add(listener);
     if (this.refreshInterval < previousRefreshInterval) {
       this.refresh();
     }
   }
 
-  removeListener(listener) {
+  removeListener(listener: FetchLoopListener<T>): void {
     assert(this.listeners.delete(listener));
     if (this.stopped) {
       if (this.timeoutId) {
@@ -85,7 +101,7 @@ class FetchLoopInternal {
     }
   }
 
-  notifyListeners() {
+  notifyListeners(): void {
     this.listeners.forEach((listener) => listener.callback());
   }
 
@@ -99,7 +115,7 @@ class FetchLoopInternal {
     }
 
     try {
-      let data = await this.fn();
+      const data = await this.fn();
       globalCache.set(this.cacheKey, data);
       this.errors = 0;
       this.notifyListeners();
@@ -113,11 +129,11 @@ class FetchLoopInternal {
 
         // Back off on errors.
         if (this.errors > 0) {
-          waitTime = Math.min(1000 * Math.pow(2, this.errors - 1), 60000);
+          waitTime = Math.min(1000 * 2 ** (this.errors - 1), 60000);
         }
 
         // Don't do any refreshing for the first five seconds, to make way for other things to load.
-        let timeSincePageLoad = new Date() - pageLoadTime;
+        const timeSincePageLoad = +new Date() - +pageLoadTime;
         if (timeSincePageLoad < 5000) {
           waitTime += 5000 - timeSincePageLoad / 2;
         }

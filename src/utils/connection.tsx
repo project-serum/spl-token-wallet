@@ -1,10 +1,19 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import { clusterApiUrl, Connection } from '@solana/web3.js';
+import {
+  AccountInfo,
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+} from '@solana/web3.js';
 import { useLocalStorageState } from './utils';
 import { refreshCache, setCache, useAsyncData } from './fetch-loop';
 import tuple from 'immutable-tuple';
 
-const ConnectionContext = React.createContext(null);
+const ConnectionContext = React.createContext<{
+  endpoint: string;
+  setEndpoint: (string) => void;
+  connection: Connection;
+} | null>(null);
 
 export const MAINNET_URL = 'https://solana-api.projectserum.com';
 export function ConnectionProvider({ children }) {
@@ -25,21 +34,34 @@ export function ConnectionProvider({ children }) {
 }
 
 export function useConnection() {
-  return useContext(ConnectionContext).connection;
+  let context = useContext(ConnectionContext);
+  if (!context) {
+    throw new Error('Missing connection context');
+  }
+  return context.connection;
 }
 
 export function useConnectionConfig() {
   let context = useContext(ConnectionContext);
+  if (!context) {
+    throw new Error('Missing connection context');
+  }
   return { endpoint: context.endpoint, setEndpoint: context.setEndpoint };
 }
 
 export function useIsProdNetwork() {
-  const endpoint = useContext(ConnectionContext).endpoint;
-  return endpoint === MAINNET_URL;
+  let context = useContext(ConnectionContext);
+  if (!context) {
+    throw new Error('Missing connection context');
+  }
+  return context.endpoint === MAINNET_URL;
 }
 
 export function useSolanaExplorerUrlSuffix() {
   const context = useContext(ConnectionContext);
+  if (!context) {
+    throw new Error('Missing connection context');
+  }
   const endpoint = context.endpoint;
   if (endpoint === clusterApiUrl('devnet')) {
     return '?cluster=devnet';
@@ -49,7 +71,7 @@ export function useSolanaExplorerUrlSuffix() {
   return '';
 }
 
-export function useAccountInfo(publicKey) {
+export function useAccountInfo(publicKey?: PublicKey) {
   const connection = useConnection();
   const cacheKey = tuple(connection, publicKey?.toBase58());
   const [accountInfo, loaded] = useAsyncData(
@@ -60,7 +82,7 @@ export function useAccountInfo(publicKey) {
     if (!publicKey) {
       return;
     }
-    let previousInfo = null;
+    let previousInfo: AccountInfo<Buffer> | null = null;
     const id = connection.onAccountChange(publicKey, (info) => {
       if (
         !previousInfo ||
@@ -71,7 +93,9 @@ export function useAccountInfo(publicKey) {
         setCache(cacheKey, info);
       }
     });
-    return () => connection.removeAccountChangeListener(id);
+    return () => {
+      connection.removeAccountChangeListener(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connection, publicKey?.toBase58(), cacheKey]);
   return [accountInfo, loaded];

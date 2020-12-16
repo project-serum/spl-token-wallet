@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Connection, PublicKey } from '@solana/web3.js';
 
-export async function sleep(ms) {
+export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function useLocalStorageState(key, defaultState = null) {
+export function useLocalStorageState<T>(
+  key: string,
+  defaultState: T,
+): [T, (T) => void] {
   const [state, setState] = useState(() => {
     let storedState = localStorage.getItem(key);
     if (storedState) {
@@ -32,14 +36,14 @@ export function useLocalStorageState(key, defaultState = null) {
   return [state, setLocalStorageState];
 }
 
-export function useEffectAfterTimeout(effect, timeout) {
+export function useEffectAfterTimeout(effect: () => void, timeout: number) {
   useEffect(() => {
     let handle = setTimeout(effect, timeout);
     return () => clearTimeout(handle);
   });
 }
 
-export function useListener(emitter, eventName) {
+export function useListener(emitter, eventName: string) {
   let [, forceUpdate] = useState(0);
   useEffect(() => {
     let listener = () => forceUpdate((i) => i + 1);
@@ -48,19 +52,25 @@ export function useListener(emitter, eventName) {
   }, [emitter, eventName]);
 }
 
-export function abbreviateAddress(address) {
+export function abbreviateAddress(address: PublicKey) {
   let base58 = address.toBase58();
   return base58.slice(0, 4) + '…' + base58.slice(base58.length - 4);
 }
 
-export async function confirmTransaction(connection, signature) {
+export async function confirmTransaction(
+  connection: Connection,
+  signature: string,
+) {
   let startTime = new Date();
   let result = await connection.confirmTransaction(signature, 'recent');
   if (result.value.err) {
     throw new Error(
-      'Error confirming transaction: ' + JSON.stringify(result.err),
+      'Error confirming transaction: ' + JSON.stringify(result.value.err),
     );
   }
-  console.log('Transaction confirmed after %sms', new Date() - startTime);
+  console.log(
+    'Transaction confirmed after %sms',
+    new Date().getTime() - startTime.getTime(),
+  );
   return result.value;
 }
