@@ -20,7 +20,7 @@ import {
   parseMintData,
   parseTokenAccountData,
 } from './tokens/data';
-import { useListener, useLocalStorageState } from './utils';
+import { useListener, useLocalStorageState, useRefEqual } from './utils';
 import { useTokenName } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
@@ -331,18 +331,19 @@ export function useWalletPublicKeys() {
     wallet.getTokenAccountInfo,
     wallet.getTokenAccountInfo,
   );
-  const getPublicKeys = () => [
+  let publicKeys = [
     wallet.publicKey,
     ...(tokenAccountInfo
       ? tokenAccountInfo.map(({ publicKey }) => publicKey)
       : []),
   ];
-  const serialized = getPublicKeys()
-    .map((pubKey) => pubKey?.toBase58() || '')
-    .toString();
-
   // Prevent users from re-rendering unless the list of public keys actually changes
-  let publicKeys = useMemo(getPublicKeys, [serialized]);
+  publicKeys = useRefEqual(
+    publicKeys,
+    (oldKeys, newKeys) =>
+      oldKeys.length === newKeys.length &&
+      oldKeys.every((key, i) => key.equals(newKeys[i])),
+  );
   return [publicKeys, loaded];
 }
 

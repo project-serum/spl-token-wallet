@@ -5,7 +5,7 @@ import {
   Connection,
   PublicKey,
 } from '@solana/web3.js';
-import { useLocalStorageState } from './utils';
+import { useLocalStorageState, useRefEqual } from './utils';
 import { refreshCache, setCache, useAsyncData } from './fetch-loop';
 import tuple from 'immutable-tuple';
 
@@ -33,7 +33,7 @@ export function ConnectionProvider({ children }) {
   );
 }
 
-export function useConnection() {
+export function useConnection(): Connection {
   let context = useContext(ConnectionContext);
   if (!context) {
     throw new Error('Missing connection context');
@@ -97,8 +97,18 @@ export function useAccountInfo(publicKey?: PublicKey) {
       connection.removeAccountChangeListener(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection, publicKey?.toBase58(), cacheKey]);
-  return [accountInfo, loaded];
+  }, [connection, publicKey?.toBase58() ?? '', cacheKey]);
+  return [
+    useRefEqual(
+      accountInfo,
+      (oldInfo, newInfo) =>
+        !!oldInfo &&
+        !!newInfo &&
+        oldInfo.data.equals(newInfo.data) &&
+        oldInfo.lamports === newInfo.lamports,
+    ),
+    loaded,
+  ];
 }
 
 export function refreshAccountInfo(connection, publicKey, clearCache = false) {

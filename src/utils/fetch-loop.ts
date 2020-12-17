@@ -154,20 +154,19 @@ class FetchLoopInternal<T = any> {
   };
 }
 
-export function useAsyncData(
-  asyncFn,
-  cacheKey,
+export function useAsyncData<T = any>(
+  asyncFn: () => Promise<T>,
+  cacheKey: any,
   { refreshInterval = 60000 } = {},
-) {
-  cacheKey = formatCacheKey(cacheKey);
-
+): [null | undefined | T, boolean] {
   const [, rerender] = useReducer((i) => i + 1, 0);
+  cacheKey = formatCacheKey(cacheKey);
 
   useEffect(() => {
     if (!cacheKey) {
-      return () => {};
+      return;
     }
-    const listener = new FetchLoopListener(
+    const listener = new FetchLoopListener<T>(
       cacheKey,
       asyncFn,
       refreshInterval,
