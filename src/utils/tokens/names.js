@@ -171,6 +171,20 @@ export const TOKENS = {
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
     },
+    {
+      tokenSymbol: 'FIDA',
+      mintAddress: 'EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp',
+      tokenName: 'FIDA',
+      icon:
+        'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/fida.svg',
+    },
+    {
+      tokenSymbol: 'LQID',
+      mintAddress: 'A6aY2ceogBz1VaXBxm1j2eJuNZMRqrWUAnKecrMH85zj',
+      tokenName: 'LQID',
+      icon:
+        'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/lqid.svg',
+    },
   ],
 };
 
