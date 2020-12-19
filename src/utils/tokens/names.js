@@ -174,7 +174,7 @@ export const TOKENS = {
     {
       tokenSymbol: 'FIDA',
       mintAddress: 'EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp',
-      tokenName: 'FIDA',
+      tokenName: 'Bonfida Token',
       icon:
         'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/fida.svg',
     },
@@ -184,6 +184,16 @@ export const TOKENS = {
       tokenName: 'LQID',
       icon:
         'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/lqid.svg',
+    },
+    {
+      tokenSymbol: 'SECO',
+      mintAddress: '7CnFGR9mZWyAtWxPcVuTewpyC3A3MDW4nLsu5NY6PDbd',
+      tokenName: 'Serum Ecosystem Pool Token',
+    },
+    {
+      tokenSymbol: 'HOLY',
+      mintAddress: '3GECTP7H4Tww3w8jEPJCJtXUtXxiZty31S9szs84CcwQ',
+      tokenName: 'Holy Trinity Pool',
     },
   ],
 };
