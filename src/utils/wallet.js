@@ -57,10 +57,16 @@ export class Wallet {
 
   getTokenAccountInfo = async () => {
     let accounts = await getOwnedTokenAccounts(this.connection, this.publicKey);
-    return accounts.map(({ publicKey, accountInfo }) => {
-      setInitialAccountInfo(this.connection, publicKey, accountInfo);
-      return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };
-    });
+    return accounts
+      .map(({ publicKey, accountInfo }) => {
+        setInitialAccountInfo(this.connection, publicKey, accountInfo);
+        return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };
+      })
+      .sort((account1, account2) =>
+        account1.parsed.mint
+          .toBase58()
+          .localeCompare(account2.parsed.mint.toBase58()),
+      );
   };
 
   createTokenAccount = async (tokenAddress) => {
