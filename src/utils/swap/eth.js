@@ -70,7 +70,7 @@ export async function swapErc20ToSpl({
 
   const swapTx = swap.methods
     .swapErc20(erc20Address, destination, encodedAmount)
-    .send({ from: ethAccount, gasLimit: 100000 });
+    .send({ from: ethAccount, gasLimit: 200000 });
   const swapTxid = await waitForTxid(swapTx);
 
   onStatusChange({ step: 2, txid: swapTxid, confirms: 0 });
