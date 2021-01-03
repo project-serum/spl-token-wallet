@@ -157,7 +157,7 @@ export async function withdrawEth(from, withdrawal, callAsync) {
     return;
   }
   pendingNonces.add(nonce);
-  await callAsync(method.send({ from }), {
+  await callAsync(method.send({ from, gasLimit: 200000 }), {
     progressMessage: `Completing ${withdrawal.coin.ticker} transfer...`,
   });
   pendingNonces.delete(nonce);
