@@ -195,6 +195,13 @@ export const TOKENS = {
       mintAddress: '3GECTP7H4Tww3w8jEPJCJtXUtXxiZty31S9szs84CcwQ',
       tokenName: 'Holy Trinity Pool',
     },
+    {
+      tokenSymbol: 'KIN',
+      mintAddress: 'kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6',
+      tokenName: 'KIN',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png',
+    },
   ],
 };
 
