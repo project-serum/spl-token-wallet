@@ -13,6 +13,11 @@ import { useWallet } from '../utils/wallet';
 export default function ExportAccountDialog({ open, onClose }) {
   const wallet = useWallet();
   const [isHidden, setIsHidden] = useState(true);
+  const [isArrayFormat, setArrayFormat] = useState(false);
+
+  const keyOutput = isArrayFormat
+    ? `[${[].slice.call(wallet.provider.account.secretKey)}]`
+    : bs58.encode(wallet.provider.account.secretKey);
 
   return (
     <DialogForm open={open} onClose={onClose} fullWidth>
@@ -24,7 +29,16 @@ export default function ExportAccountDialog({ open, onClose }) {
           type={isHidden && 'password'}
           variant="outlined"
           margin="normal"
-          value={bs58.encode(wallet.provider.account.secretKey)}
+          value={keyOutput}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isArrayFormat}
+              onChange={() => setArrayFormat(!isArrayFormat)}
+            />
+          }
+          label="Array Format"
         />
         <FormControlLabel
           control={
