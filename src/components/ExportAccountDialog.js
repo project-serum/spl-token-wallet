@@ -31,6 +31,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           margin="normal"
           value={keyOutput}
         />
+        {isArrayFormat && <p>Developer feature - array format cannot be imported directly.</p>}
         <FormControlLabel
           control={
             <Switch
