@@ -16,7 +16,7 @@ export default function ExportAccountDialog({ open, onClose }) {
   const [isArrayFormat, setArrayFormat] = useState(false);
 
   const keyOutput = isArrayFormat
-    ? `[${[].slice.call(wallet.provider.account.secretKey)}]`
+    ? `[${Array.from(wallet.provider.account.secretKey)}]`
     : bs58.encode(wallet.provider.account.secretKey);
 
   return (
