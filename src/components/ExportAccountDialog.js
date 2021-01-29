@@ -13,11 +13,7 @@ import { useWallet } from '../utils/wallet';
 export default function ExportAccountDialog({ open, onClose }) {
   const wallet = useWallet();
   const [isHidden, setIsHidden] = useState(true);
-  const [isArrayFormat, setArrayFormat] = useState(false);
-
-  const keyOutput = isArrayFormat
-    ? `[${Array.from(wallet.provider.account.secretKey)}]`
-    : bs58.encode(wallet.provider.account.secretKey);
+  const keyOutput = `[${Array.from(wallet.provider.account.secretKey)}]`;
 
   return (
     <DialogForm open={open} onClose={onClose} fullWidth>
@@ -30,16 +26,6 @@ export default function ExportAccountDialog({ open, onClose }) {
           variant="outlined"
           margin="normal"
           value={keyOutput}
-        />
-        {isArrayFormat && <p>Developer feature - array format cannot be imported directly.</p>}
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isArrayFormat}
-              onChange={() => setArrayFormat(!isArrayFormat)}
-            />
-          }
-          label="Array Format"
         />
         <FormControlLabel
           control={
