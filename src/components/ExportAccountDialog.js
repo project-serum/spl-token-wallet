@@ -6,7 +6,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import * as bs58 from 'bs58';
 import DialogForm from './DialogForm';
 import { useWallet } from '../utils/wallet';
 
