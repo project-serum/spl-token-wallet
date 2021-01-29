@@ -6,13 +6,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import * as bs58 from 'bs58';
 import DialogForm from './DialogForm';
 import { useWallet } from '../utils/wallet';
 
 export default function ExportAccountDialog({ open, onClose }) {
   const wallet = useWallet();
   const [isHidden, setIsHidden] = useState(true);
+  const keyOutput = `[${Array.from(wallet.provider.account.secretKey)}]`;
 
   return (
     <DialogForm open={open} onClose={onClose} fullWidth>
@@ -24,7 +24,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           type={isHidden && 'password'}
           variant="outlined"
           margin="normal"
-          value={bs58.encode(wallet.provider.account.secretKey)}
+          value={keyOutput}
         />
         <FormControlLabel
           control={
