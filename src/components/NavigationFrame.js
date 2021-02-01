@@ -106,7 +106,7 @@ function NetworkSelector() {
         }}
         onRemove={(customEndpoint) => {
           // If user removes the selected endpoint, default back to the mainnet endpoint
-          if (customEndpoint == endpoint) {
+          if (customEndpoint === endpoint) {
             setEndpoint(networks[0]);
           }
           setCustomNetworks(
@@ -174,6 +174,7 @@ function NetworkSelector() {
           onClick={() => {
             setManageCustomEndpointsOpen(true);
           }}
+          style={{ paddingLeft: '48px' }}
         >
           {'Manage custom endpoints...'}
         </MenuItem>

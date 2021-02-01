@@ -4,6 +4,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 export default function CustomEndpointsDialog({
   customEndpoints,
@@ -13,6 +14,7 @@ export default function CustomEndpointsDialog({
   onClose,
 }) {
   const [userInput, setUserInput] = useState('');
+  const [hasError, setHasError] = useState(false);
 
   return (
     <DialogForm
@@ -25,38 +27,71 @@ export default function CustomEndpointsDialog({
     >
       <DialogTitle>Manage Custom Endpoints</DialogTitle>
       <DialogContent>
-        {customEndpoints.map((endpoint) => {
-          return (
-            <div key={endpoint}>
-              {endpoint}{' '}
-              <Button
-                type="submit"
-                color="primary"
-                onClick={() => onRemove(endpoint)}
+        <div
+          style={{
+            width: 'fit-content',
+            marginBottom: '8px',
+            maxWidth: '100%',
+          }}
+        >
+          {customEndpoints.map((endpoint) => {
+            return (
+              <div
+                key={endpoint}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
               >
-                Remove
-              </Button>
-            </div>
-          );
-        })}
+                {endpoint}{' '}
+                <Button
+                  type="submit"
+                  color="primary"
+                  onClick={() => onRemove(endpoint)}
+                  style={{ marginLeft: '8px' }}
+                >
+                  Remove
+                </Button>
+              </div>
+            );
+          })}
+        </div>
         <div style={{ display: 'flex', paddingTop: '16px' }}>
           <TextField
+            error={hasError}
             label="Custom Endpoint"
             fullWidth
             variant="outlined"
             placeholder="e.g. https://solana-api.projectserum.com"
             value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            onChange={(e) => {
+              setUserInput(e.target.value);
+              setHasError(false);
+            }}
             style={{ marginRight: '16px' }}
           />
           <Button
             type="submit"
             color="primary"
-            onClick={() => onAdd(userInput)}
+            onClick={() => {
+              const valid = userInput.match(/^(http|https):\/\//);
+              if (!valid) {
+                setHasError(true);
+              } else {
+                onAdd(userInput);
+                setUserInput('');
+              }
+            }}
           >
             Add
           </Button>
         </div>
+        {hasError && (
+          <FormHelperText error>
+            Endpoint must start with http:// or https://
+          </FormHelperText>
+        )}
 
         <div
           style={{
