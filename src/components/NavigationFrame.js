@@ -143,22 +143,7 @@ function NetworkSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {networks.map((network) => (
-          <MenuItem
-            key={network}
-            onClick={() => {
-              setAnchorEl(null);
-              setEndpoint(network);
-            }}
-            selected={network === endpoint}
-          >
-            <ListItemIcon className={classes.menuItemIcon}>
-              {network === endpoint ? <CheckIcon fontSize="small" /> : null}
-            </ListItemIcon>
-            {network}
-          </MenuItem>
-        ))}
-        {customNetworks.map((network) => (
+        {[...networks, ...customNetworks].map((network) => (
           <MenuItem
             key={network}
             onClick={() => {

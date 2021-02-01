@@ -46,7 +46,6 @@ export default function CustomEndpointsDialog({
               >
                 {endpoint}{' '}
                 <Button
-                  type="submit"
                   color="primary"
                   onClick={() => onRemove(endpoint)}
                   style={{ marginLeft: '8px' }}
