@@ -79,6 +79,7 @@ function NetworkSelector() {
 
   const networks = [
     MAINNET_URL,
+    'https://api.mainnet-beta.solana.com',
     clusterApiUrl('devnet'),
     clusterApiUrl('testnet'),
     'http://localhost:8899',
@@ -86,8 +87,10 @@ function NetworkSelector() {
 
   const networkLabels = {
     [MAINNET_URL]: 'Mainnet Beta',
+    'https://api.mainnet-beta.solana.com': 'Mainnet Beta',
     [clusterApiUrl('devnet')]: 'Devnet',
     [clusterApiUrl('testnet')]: 'Testnet',
+    'http://localhost:8899': 'Local Validator',
   };
 
   return (
@@ -120,7 +123,7 @@ function NetworkSelector() {
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          {networkLabels[endpoint] ?? 'Network'}
+          {networkLabels[endpoint] ?? 'Custom Network'}
         </Button>
       </Hidden>
       <Hidden smUp>
