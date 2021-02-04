@@ -1,4 +1,4 @@
-import { decodeAccount } from '../import';
+import { decodeAccount } from '../utils';
 
 test('decodeAccount works as expected', () => {
   // these two private keys are for the same account
