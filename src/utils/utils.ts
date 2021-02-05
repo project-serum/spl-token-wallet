@@ -89,7 +89,6 @@ export async function confirmTransaction(
 
 /**
  * Returns an account object when given the private key
- *
  */
 export const decodeAccount = (privateKey: string) => {
   try {
