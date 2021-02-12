@@ -403,7 +403,7 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
 }
 
 // Material UI's Select doesn't render properly when using an `undefined` value,
-// so we define this type and the subsequent `toDerivationPath` translaotr as a
+// so we define this type and the subsequent `toDerivationPath` translator as a
 // workaround.
 //
 // DERIVATION_PATH.deprecated is always undefined.
