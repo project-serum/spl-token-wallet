@@ -18,13 +18,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../utils/notifications';
@@ -61,7 +59,7 @@ function CreateWalletForm() {
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
     callAsync(
-      storeMnemonicAndSeed(mnemonic, seed, password, DERIVATION_PATH.bip44),
+      storeMnemonicAndSeed(mnemonic, seed, password, DERIVATION_PATH.bip44Change),
       {
         progressMessage: 'Creating wallet...',
         successMessage: 'Wallet created',
@@ -324,7 +322,7 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
   const callAsync = useCallAsync();
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const [dPathMenuItem, setDPathMenuItem] = useState(
-    DerivationPathMenuItem.Bip44,
+    DerivationPathMenuItem.Bip44Change,
   );
 
   const accounts = [...Array(10)].map((_, idx) => {
@@ -363,11 +361,11 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
               value={dPathMenuItem}
               onChange={(e) => setDPathMenuItem(e.target.value)}
             >
-              <MenuItem value={DerivationPathMenuItem.Bip44}>
-                {`m/44'/501'/0'`}
-              </MenuItem>
               <MenuItem value={DerivationPathMenuItem.Bip44Change}>
                 {`m/44'/501'/0'/0'`}
+              </MenuItem>
+              <MenuItem value={DerivationPathMenuItem.Bip44}>
+                {`m/44'/501'/0'`}
               </MenuItem>
               <MenuItem value={DerivationPathMenuItem.Deprecated}>
                 {`m/501'/0'/0/0 (deprecated)`}
