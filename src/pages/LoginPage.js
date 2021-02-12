@@ -6,18 +6,28 @@ import {
   mnemonicToSeed,
   storeMnemonicAndSeed,
 } from '../utils/wallet-seed';
+import {
+  getAccountFromSeed,
+  DERIVATION_PATH,
+} from '../utils/walletProvider/localStorage.js';
+import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import Container from '@material-ui/core/Container';
 import LoadingIndicator from '../components/LoadingIndicator';
+import { BalanceListItem } from '../components/BalancesList.js';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
+import { validateMnemonic } from 'bip39';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
@@ -48,10 +58,18 @@ function CreateWalletForm() {
 
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
-    callAsync(storeMnemonicAndSeed(mnemonic, seed, password), {
-      progressMessage: 'Creating wallet...',
-      successMessage: 'Wallet created',
-    });
+    callAsync(
+      storeMnemonicAndSeed(
+        mnemonic,
+        seed,
+        password,
+        DERIVATION_PATH.bip44Change,
+      ),
+      {
+        progressMessage: 'Creating wallet...',
+        successMessage: 'Wallet created',
+      },
+    );
   }
 
   if (!savedWords) {
@@ -85,8 +103,8 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           Create a new wallet to hold Solana and SPL tokens.
         </Typography>
         <Typography>
-          Please write down the following twelve words and keep them in a safe
-          place:
+          Please write down the following twenty four words and keep them in a
+          safe place:
         </Typography>
         {mnemonicAndSeed ? (
           <TextField
@@ -105,6 +123,11 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           Your private keys are only stored on your current computer or device.
           You will need these words to restore your wallet if your browser's
           storage is cleared or your device is damaged or lost.
+        </Typography>
+        <Typography paragraph>
+          By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
+          derivation path for the main wallet. To use an alternative path, try
+          restoring an existing wallet.
         </Typography>
         <FormControlLabel
           control={
@@ -227,14 +250,106 @@ function LoginForm() {
 
 function RestoreWalletForm({ goBack }) {
   const [mnemonic, setMnemonic] = useState('');
+  const [seed, setSeed] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [next, setNext] = useState(false);
+  const isNextBtnEnabled =
+    password === passwordConfirm && validateMnemonic(mnemonic);
+
+  return (
+    <>
+      {next ? (
+        <DerivedAccounts
+          goBack={() => setNext(false)}
+          mnemonic={mnemonic}
+          password={password}
+          seed={seed}
+        />
+      ) : (
+        <Card>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Restore Existing Wallet
+            </Typography>
+            <Typography>
+              Restore your wallet using your twelve or twenty-four seed words. Note that this
+              will delete any existing wallet on this device.
+            </Typography>
+            <TextField
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={3}
+              margin="normal"
+              label="Seed Words"
+              value={mnemonic}
+              onChange={(e) => setMnemonic(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              label="New Password (Optional)"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              label="Confirm Password"
+              type="password"
+              autoComplete="new-password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+            />
+          </CardContent>
+          <CardActions style={{ justifyContent: 'space-between' }}>
+            <Button onClick={goBack}>Cancel</Button>
+            <Button
+              color="primary"
+              disabled={!isNextBtnEnabled}
+              onClick={() => {
+                mnemonicToSeed(mnemonic).then((seed) => {
+                  setSeed(seed);
+                  setNext(true);
+                });
+              }}
+            >
+              Next
+            </Button>
+          </CardActions>
+        </Card>
+      )}
+    </>
+  );
+}
+
+function DerivedAccounts({ goBack, mnemonic, seed, password }) {
   const callAsync = useCallAsync();
+  const urlSuffix = useSolanaExplorerUrlSuffix();
+  const [dPathMenuItem, setDPathMenuItem] = useState(
+    DerivationPathMenuItem.Bip44Change,
+  );
+
+  const accounts = [...Array(10)].map((_, idx) => {
+    return getAccountFromSeed(
+      Buffer.from(seed, 'hex'),
+      idx,
+      toDerivationPath(dPathMenuItem),
+    );
+  });
 
   function submit() {
     callAsync(
-      mnemonicToSeed(mnemonic).then((seed) =>
-        storeMnemonicAndSeed(mnemonic, seed, password),
+      storeMnemonicAndSeed(
+        mnemonic,
+        seed,
+        password,
+        toDerivationPath(dPathMenuItem),
       ),
     );
   }
@@ -242,54 +357,81 @@ function RestoreWalletForm({ goBack }) {
   return (
     <Card>
       <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Restore Existing Wallet
-        </Typography>
-        <Typography>
-          Restore your wallet using your twelve seed words. Note that this will
-          delete any existing wallet on this device.
-        </Typography>
-        <TextField
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={3}
-          margin="normal"
-          label="Seed Words"
-          value={mnemonic}
-          onChange={(e) => setMnemonic(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="New Password (Optional)"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <TextField
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          label="Confirm Password"
-          type="password"
-          autoComplete="new-password"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            Derivable Accounts
+          </Typography>
+          <FormControl variant="outlined">
+            <Select
+              value={dPathMenuItem}
+              onChange={(e) => setDPathMenuItem(e.target.value)}
+            >
+              <MenuItem value={DerivationPathMenuItem.Bip44Change}>
+                {`m/44'/501'/0'/0'`}
+              </MenuItem>
+              <MenuItem value={DerivationPathMenuItem.Bip44}>
+                {`m/44'/501'/0'`}
+              </MenuItem>
+              <MenuItem value={DerivationPathMenuItem.Deprecated}>
+                {`m/501'/0'/0/0 (deprecated)`}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+        {accounts.map((acc) => {
+          return (
+            <Link
+              href={
+                `https://explorer.solana.com/account/${acc.publicKey.toBase58()}` +
+                urlSuffix
+              }
+              target="_blank"
+              rel="noopener"
+            >
+              <BalanceListItem
+                publicKey={acc.publicKey}
+                walletAccount={acc}
+                expandable={false}
+              />
+            </Link>
+          );
+        })}
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Cancel</Button>
-        <Button
-          color="primary"
-          disabled={password !== passwordConfirm}
-          onClick={submit}
-        >
+        <Button onClick={goBack}>Back</Button>
+        <Button color="primary" onClick={submit}>
           Restore
         </Button>
       </CardActions>
     </Card>
   );
+}
+
+// Material UI's Select doesn't render properly when using an `undefined` value,
+// so we define this type and the subsequent `toDerivationPath` translator as a
+// workaround.
+//
+// DERIVATION_PATH.deprecated is always undefined.
+const DerivationPathMenuItem = {
+  Deprecated: 0,
+  Bip44: 1,
+  Bip44Change: 2,
+};
+
+function toDerivationPath(dPathMenuItem) {
+  switch (dPathMenuItem) {
+    case DerivationPathMenuItem.Deprecated:
+      return DERIVATION_PATH.deprecated;
+    case DerivationPathMenuItem.Bip44:
+      return DERIVATION_PATH.bip44;
+    case DerivationPathMenuItem.Bip44Change:
+      return DERIVATION_PATH.bip44Change;
+    default:
+      throw new Error(`invalid derivation path: ${dPathMenuItem}`);
+  }
 }

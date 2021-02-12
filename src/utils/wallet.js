@@ -127,7 +127,12 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
+  const {
+    mnemonic,
+    seed,
+    importsEncryptionKey,
+    derivationPath,
+  } = getUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -180,6 +185,7 @@ export function WalletProvider({ children }) {
             ? getAccountFromSeed(
                 Buffer.from(seed, 'hex'),
                 walletSelector.walletIndex,
+                derivationPath,
               )
             : new Account(
                 (() => {
@@ -205,6 +211,7 @@ export function WalletProvider({ children }) {
     importsEncryptionKey,
     setWalletSelector,
     enqueueSnackbar,
+    derivationPath,
   ]);
 
   function addAccount({ name, importedAccount, ledger }) {
@@ -254,7 +261,8 @@ export function WalletProvider({ children }) {
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = getAccountFromSeed(seedBuffer, idx).publicKey;
+      let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
+        .publicKey;
       let name = localStorage.getItem(`name${idx}`);
       return {
         selector: {
@@ -320,6 +328,7 @@ export function WalletProvider({ children }) {
         accounts,
         addAccount,
         setAccountName,
+        derivationPath,
       }}
     >
       {children}
