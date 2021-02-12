@@ -17,7 +17,6 @@ export function getAccountFromSeed(
   dPath = undefined,
   accountIndex = 0,
 ) {
-  console.log('dpath', dPath);
   const derivedSeed = deriveSeed(seed, walletIndex, dPath, accountIndex);
   return new Account(nacl.sign.keyPair.fromSeed(derivedSeed).secretKey);
 }
