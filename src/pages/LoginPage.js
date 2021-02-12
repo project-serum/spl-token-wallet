@@ -59,7 +59,12 @@ function CreateWalletForm() {
   function submit(password) {
     const { mnemonic, seed } = mnemonicAndSeed;
     callAsync(
-      storeMnemonicAndSeed(mnemonic, seed, password, DERIVATION_PATH.bip44Change),
+      storeMnemonicAndSeed(
+        mnemonic,
+        seed,
+        password,
+        DERIVATION_PATH.bip44Change,
+      ),
       {
         progressMessage: 'Creating wallet...',
         successMessage: 'Wallet created',
@@ -98,8 +103,8 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           Create a new wallet to hold Solana and SPL tokens.
         </Typography>
         <Typography>
-          Please write down the following twelve words and keep them in a safe
-          place:
+          Please write down the following twenty four words and keep them in a
+          safe place:
         </Typography>
         {mnemonicAndSeed ? (
           <TextField
@@ -118,6 +123,11 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           Your private keys are only stored on your current computer or device.
           You will need these words to restore your wallet if your browser's
           storage is cleared or your device is damaged or lost.
+        </Typography>
+        <Typography paragraph>
+          By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
+          derivation path for the main wallet. To use an alternative path, try
+          restoring an existing wallet.
         </Typography>
         <FormControlLabel
           control={
