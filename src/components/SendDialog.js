@@ -417,9 +417,9 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
               <CircularProgress />
             </div>
             {confirms ? (
-              <Typography>{t("confirmations", { confirms })}</Typography>
+              <Typography>{t("confirmations", { confirms, total: 35 })}</Typography>
             ) : (
-              <Typography>{t("transactions_pending")}</Typography>
+              <Typography>{t("transaction_pending")}</Typography>
             )}
           </div>
         ) : null}

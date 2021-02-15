@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
@@ -43,6 +44,7 @@ export default function DepositDialog({
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
+  const { t } = useTranslation();
   const [swapInfo] = useAsyncData(async () => {
     if (!showSwapAddress || !isProdNetwork) {
       return null;
@@ -92,7 +94,7 @@ export default function DepositDialog({
   return (
     <DialogForm open={open} onClose={onClose}>
       <DialogTitle>
-        Deposit {tokenName ?? mint.toBase58()}
+        {t("deposit_details", { tokenName: tokenName ?? mint.toBase58() })}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
       {tabs}
@@ -101,19 +103,16 @@ export default function DepositDialog({
           <>
             {publicKey.equals(owner) ? (
               <DialogContentText>
-                This address can only be used to receive SOL. Do not send other
-                tokens to this address.
+                {t("sol_deposit_address")}
               </DialogContentText>
             ) : (
               <DialogContentText>
-                This address can only be used to receive{' '}
-                {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
-                this address.
+                {t("others_deposit_address", { tokenSymbol: tokenSymbol ?? abbreviateAddress(mint) })}
               </DialogContentText>
             )}
             <CopyableDisplay
               value={publicKey.toBase58()}
-              label={'Deposit Address'}
+              label={t("deposit_address")}
               autoFocus
               qrCode
             />
@@ -126,7 +125,7 @@ export default function DepositDialog({
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                {t("view_solana")}
               </Link>
             </DialogContentText>
           </>
@@ -138,13 +137,14 @@ export default function DepositDialog({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t("close")}</Button>
       </DialogActions>
     </DialogForm>
   );
 }
 
 function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
+  const { t } = useTranslation();    
   if (!swapInfo) {
     return null;
   }
@@ -156,12 +156,11 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
     return (
       <>
         <DialogContentText>
-          Native BTC can be converted to SPL {tokenName} by sending it to the
-          following address:
+          {t("native_btc_conversion", { tokenName })}
         </DialogContentText>
         <CopyableDisplay
           value={address}
-          label="Native BTC Deposit Address"
+          label={t("native_btc_deposit_address")}
           autoFocus
           qrCode={`bitcoin:${address}`}
         />
@@ -173,8 +172,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
     return (
       <>
         <DialogContentText>
-          {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
-          converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
+          {t("token_conversion_details"), { type: coin.erc20Contract ? 'ERC20' : 'Native', ticker: coin.ticker, mint: mint ? "SPL" : "native", tokenName }}
         </DialogContentText>
         <MetamaskDeposit swapInfo={swapInfo} />
       </>
@@ -190,6 +188,7 @@ function MetamaskDeposit({ swapInfo }) {
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState(null);
   const callAsync = useCallAsync();
+  const { t } = useTranslation();
 
   const {
     address: swapAddress,
@@ -219,7 +218,7 @@ function MetamaskDeposit({ swapInfo }) {
         let parsedAmount = parseFloat(amount);
 
         if (!parsedAmount || parsedAmount > maxAmount || parsedAmount <= 0) {
-          throw new Error('Invalid amount');
+          throw new Error(t("invalid_amount"));
         }
         await swapErc20ToSpl({
           ethAccount,
@@ -238,7 +237,7 @@ function MetamaskDeposit({ swapInfo }) {
     return (
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <TextField
-          label="Amount"
+          label={t("amnount")}
           fullWidth
           variant="outlined"
           margin="normal"
@@ -262,7 +261,7 @@ function MetamaskDeposit({ swapInfo }) {
           }
         />
         <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
-          Convert
+          {t("convert")}
         </Button>
       </div>
     );
@@ -272,13 +271,13 @@ function MetamaskDeposit({ swapInfo }) {
     <>
       <Stepper activeStep={status.step}>
         <Step>
-          <StepLabel>Approve Conversion</StepLabel>
+          <StepLabel>{t("approve_conversion")}</StepLabel>
         </Step>
         <Step>
-          <StepLabel>Send Funds</StepLabel>
+          <StepLabel>{t("send_funds")}</StepLabel>
         </Step>
         <Step>
-          <StepLabel>Wait for Confirmations</StepLabel>
+          <StepLabel>{t("wait_confirmations")}</StepLabel>
         </Step>
       </Stepper>
       {status.step === 2 ? (
@@ -295,9 +294,9 @@ function MetamaskDeposit({ swapInfo }) {
             </div>
             <div>
               {status.confirms ? (
-                <Typography>{status.confirms} / 12 Confirmations</Typography>
+                <Typography>{t("confirmations", { confirms: status.confirms, total: 12 })}</Typography>
               ) : (
-                <Typography>Transaction Pending</Typography>
+                <Typography>{t("transactions_pending")}</Typography>
               )}
               <Typography variant="body2">
                 <Link
@@ -305,7 +304,7 @@ function MetamaskDeposit({ swapInfo }) {
                   target="_blank"
                   rel="noopener"
                 >
-                  View on Etherscan
+                  {t("view_etherscan")}
                 </Link>
               </Typography>
             </div>

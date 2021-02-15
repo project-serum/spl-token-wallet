@@ -254,7 +254,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
           ) : null}
         </div>
         <Typography variant="body2" className={classes.address}>
-          {t("deposit_address", {address: publicKey.toBase58()})}
+          {t("deposit_address_detail", {address: publicKey.toBase58()})}
         </Typography>
         <Typography variant="body2">
           {t("token_name_detail", {tokenName: tokenName ?? 'Unknown'})}
