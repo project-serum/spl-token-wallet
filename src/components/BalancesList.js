@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -59,6 +60,7 @@ export default function BalancesList() {
     false,
   );
   const { accounts, setAccountName } = useWalletSelector();
+  const { t } = useTranslation();
   const selectedAccount = accounts.find((a) => a.isSelected);
 
   return (
@@ -71,18 +73,18 @@ export default function BalancesList() {
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
             selectedAccount.name !== 'Hardware wallet' && (
-              <Tooltip title="Edit Account Name" arrow>
+              <Tooltip title={t("edit_account_name")} arrow>
                 <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
                   <EditIcon />
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Add Token" arrow>
+          <Tooltip title={t("add_token")} arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Refresh" arrow>
+          <Tooltip title={t("refresh")} arrow>
             <IconButton
               onClick={() => {
                 refreshWalletPublicKeys(wallet);
@@ -186,6 +188,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
   const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
+  const { t } = useTranslation();
   const [
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
@@ -219,7 +222,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               startIcon={<InfoIcon />}
               onClick={() => setTokenInfoDialogOpen(true)}
             >
-              Token Info
+              {t("token_info")}
             </Button>
           ) : null}
           <Button
@@ -228,7 +231,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             startIcon={<ReceiveIcon />}
             onClick={() => setDepositDialogOpen(true)}
           >
-            Receive
+            {t("receive")}
           </Button>
           <Button
             variant="outlined"
@@ -236,7 +239,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             startIcon={<SendIcon />}
             onClick={() => setSendDialogOpen(true)}
           >
-            Send
+            {t("send")}
           </Button>
           {mint && amount === 0 ? (
             <Button
@@ -246,22 +249,22 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
               startIcon={<DeleteIcon />}
               onClick={() => setCloseTokenAccountDialogOpen(true)}
             >
-              Delete
+              {t("delete")}
             </Button>
           ) : null}
         </div>
         <Typography variant="body2" className={classes.address}>
-          Deposit Address: {publicKey.toBase58()}
+          {t("deposit_address", {address: publicKey.toBase58()})}
         </Typography>
         <Typography variant="body2">
-          Token Name: {tokenName ?? 'Unknown'}
+          {t("token_name", {tokenName: tokenName ?? 'Unknown'})}
         </Typography>
         <Typography variant="body2">
-          Token Symbol: {tokenSymbol ?? 'Unknown'}
+          {t("token_symbol", {tokenSymbol: tokenSymbol ?? 'Unknown'})}
         </Typography>
         {mint ? (
           <Typography variant="body2" className={classes.address}>
-            Token Address: {mint.toBase58()}
+            {t("token_address", {tokenAddress: mint.toBase58()})}
           </Typography>
         ) : null}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -275,7 +278,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                {t("view_solana_explorer")}x
               </Link>
             </Typography>
           </div>
@@ -283,7 +286,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             <div>
               <Typography variant="body2">
                 <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
-                  Export
+                  {t("export")}x
                 </Link>
               </Typography>
             </div>

@@ -6,11 +6,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import { LedgerWalletProvider } from '../utils/walletProvider/ledger';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
   const [pubKey, setPubKey] = useState();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -48,7 +50,7 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
       }}
       fullWidth
     >
-      <DialogTitle>Add hardware wallet</DialogTitle>
+      <DialogTitle>{t("add_hardware_wallet")}</DialogTitle>
       <DialogContent style={{ paddingTop: 16 }}>
         <div
           style={{
@@ -58,12 +60,12 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
         >
           {pubKey ? (
             <>
-              <b>Hardware wallet detected:</b>
+              <b>{t("hardware_wallet_detected")}</b>
               <div>{pubKey.toString()}</div>
             </>
           ) : (
             <>
-              <b>Connect your ledger and open the Solana application</b>
+              <b>{t("connect_ledger_solana_app")}</b>
               <CircularProgress />
             </>
           )}
@@ -76,10 +78,10 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
             onClose();
           }}
         >
-          Close
+          {t("close")}
         </Button>
         <Button type="submit" color="primary" disabled={!pubKey}>
-          Add
+          {t("Add")}
         </Button>
       </DialogActions>
     </DialogForm>

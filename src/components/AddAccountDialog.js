@@ -8,12 +8,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Switch from '@material-ui/core/Switch';
 import { Account } from '@solana/web3.js';
+import { useTranslation } from 'react-i18next';
 import DialogForm from './DialogForm';
 
 export default function AddAccountDialog({ open, onAdd, onClose }) {
   const [name, setName] = useState('');
   const [isImport, setIsImport] = useState(false);
   const [importedPrivateKey, setPrivateKey] = useState('');
+  const { t } = useTranslation();
 
   const importedAccount = isImport
     ? decodeAccount(importedPrivateKey)
@@ -32,7 +34,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
       onSubmit={() => onAdd({ name, importedAccount })}
       fullWidth
     >
-      <DialogTitle>Add account</DialogTitle>
+      <DialogTitle>{t("add_account")}</DialogTitle>
       <DialogContent style={{ paddingTop: 16 }}>
         <div
           style={{
@@ -56,12 +58,12 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
                   onChange={() => setIsImport(!isImport)}
                 />
               }
-              label="Import private key"
+              label={t("import_key")}
             />
           </FormGroup>
           {isImport && (
             <TextField
-              label="Paste your private key here"
+              label={t("paste_key")}
               fullWidth
               type="password"
               value={importedPrivateKey}
@@ -73,9 +75,9 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t("close")}</Button>
         <Button type="submit" color="primary" disabled={!isAddEnabled}>
-          Add
+        {t("Add")}
         </Button>
       </DialogActions>
     </DialogForm>
