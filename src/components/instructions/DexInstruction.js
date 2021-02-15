@@ -1,40 +1,42 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 
 const TYPE_LABELS = {
-  cancelOrder: 'Cancel order',
-  newOrder: 'Place order',
-  settleFunds: 'Settle funds',
-  matchOrders: 'Match orders',
+  cancelOrder: 'cancel_order',
+  newOrder: 'place_order',
+  settleFunds: 'settle_funds',
+  matchOrders: 'match_orders',
 };
 
 const DATA_LABELS = {
-  side: { label: 'Side', address: false },
-  orderId: { label: 'Order Id', address: false },
-  limit: { label: 'Limit', address: false },
-  basePubkey: { label: 'Base wallet', address: true },
-  quotePubkey: { label: 'Quote wallet', address: true },
+  side: { label: 'side', address: false },
+  orderId: { label: 'order_id', address: false },
+  limit: { label: 'limit', address: false },
+  basePubkey: { label: 'base_wallet', address: true },
+  quotePubkey: { label: 'quote_wallet', address: true },
 };
 
 export default function DexInstruction({ instruction, onOpenAddress }) {
   const wallet = useWallet();
   const [publicKeys] = useWalletPublicKeys();
+  const { t } = useTranslation();
   const { type, data, market, marketInfo } = instruction;
 
   const marketLabel =
     (marketInfo &&
-      marketInfo?.name + (marketInfo?.deprecated ? ' (deprecated)' : '')) ||
+      marketInfo?.name + (marketInfo?.deprecated ? t("deprecated") : '')) ||
     market?._decoded?.ownAddress?.toBase58() ||
-    'Unknown';
+    t("unknown");
 
   const getAddressValue = (address) => {
     const isOwned = publicKeys.some((ownedKey) => ownedKey.equals(address));
     const isOwner = wallet.publicKey.equals(address);
     return isOwner
-      ? 'This wallet'
-      : (isOwned ? '(Owned) ' : '') + address?.toBase58();
+      ? t("this_wallet")
+      : (isOwned ? t("owned") : '') + address?.toBase58();
   };
 
   return (
@@ -47,7 +49,7 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
         {TYPE_LABELS[type]}
       </Typography>
       <LabelValue
-        label="Market"
+        label={t("market")}
         value={marketLabel}
         link={true}
         onClick={() =>

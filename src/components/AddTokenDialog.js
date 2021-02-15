@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -65,6 +66,7 @@ export default function AddTokenDialog({ open, onClose }) {
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [erc20Address, setErc20Address] = useState('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!popularTokens) {
@@ -114,12 +116,11 @@ export default function AddTokenDialog({ open, onClose }) {
 
   return (
     <DialogForm open={open} onClose={onClose}>
-      <DialogTitle>Add Token</DialogTitle>
+      <DialogTitle>{t("add_token")}</DialogTitle>
       <DialogContent>
         {tokenAccountCost ? (
           <DialogContentText>
-            Add a token to your wallet. This will cost{' '}
-            {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL.
+            {t("add_token_description", { cost: feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) })}
           </DialogContentText>
         ) : (
           <LoadingIndicator />
@@ -132,15 +133,15 @@ export default function AddTokenDialog({ open, onClose }) {
             className={classes.tabs}
             onChange={(e, value) => setTab(value)}
           >
-            <Tab label="Popular Tokens" value="popular" />
-            {showSwapAddress ? <Tab label="ERC20 Token" value="erc20" /> : null}
-            <Tab label="Manual Input" value="manual" />
+            <Tab label={t("popular_tokens")} value="popular" />
+            {showSwapAddress ? <Tab label={t("erc20_token")} value="erc20" /> : null}
+            <Tab label={t("manual_input")} value="manual" />
           </Tabs>
         )}
         {tab === 'manual' || !popularTokens ? (
           <React.Fragment>
             <TextField
-              label="Token Mint Address"
+              label={t("token_mint_address")}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -150,7 +151,7 @@ export default function AddTokenDialog({ open, onClose }) {
               disabled={sending}
             />
             <TextField
-              label="Token Name"
+              label={t("token_name")}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -159,7 +160,7 @@ export default function AddTokenDialog({ open, onClose }) {
               disabled={sending}
             />
             <TextField
-              label="Token Symbol"
+              label={t("token_symbol")}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -188,7 +189,7 @@ export default function AddTokenDialog({ open, onClose }) {
         ) : tab === 'erc20' ? (
           <>
             <TextField
-              label="ERC20 Contract Address"
+              label={t("erc20_contract_address")}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -203,14 +204,14 @@ export default function AddTokenDialog({ open, onClose }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Etherscan
+                {t("view_etherscan")}
               </Link>
             ) : null}
           </>
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         {tab !== 'popular' && (
           <Button
             type="submit"
@@ -218,7 +219,7 @@ export default function AddTokenDialog({ open, onClose }) {
             disabled={sending || !valid}
             onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
           >
-            Add
+            {t("add")}
           </Button>
         )}
       </DialogActions>
@@ -237,6 +238,7 @@ function TokenListItem({
 }) {
   const [open, setOpen] = useState(false);
   const urlSuffix = useSolanaExplorerUrlSuffix();
+  const { t } = useTranslation();
   const alreadyExists = !!existingAccount;
   return (
     <React.Fragment>
@@ -268,7 +270,7 @@ function TokenListItem({
           disabled={disabled || alreadyExists}
           onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
         >
-          {alreadyExists ? 'Added' : 'Add'}
+          {alreadyExists ? t('added') : t('add')}
         </Button>
       </div>
       <Collapse in={open} timeout="auto" unmountOnExit>

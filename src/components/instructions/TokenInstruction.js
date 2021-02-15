@@ -1,30 +1,32 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { TOKEN_MINTS } from '@project-serum/serum';
 
 const TYPE_LABELS = {
-  initializeMint: 'Initialize mint',
-  initializeAccount: 'Initialize account',
-  transfer: 'Transfer',
-  approve: 'Approve',
-  mintTo: 'Mint to',
-  closeAccount: 'Close account',
+  initializeMint: 'initialize_mint',
+  initializeAccount: 'initialize_account',
+  transfer: 'transfer',
+  approve: 'approve',
+  mintTo: 'mint_to',
+  closeAccount: 'close_account',
 };
 
 const DATA_LABELS = {
-  amount: { label: 'Amount', address: false },
-  accountPubkey: { label: 'Account', address: true },
-  mintPubkey: { label: 'Mint', address: true },
-  sourcePubkey: { label: 'Source', address: true },
-  destinationPubkey: { label: 'Destination', address: true },
-  ownerPubkey: { label: 'Owner', address: true },
+  amount: { label: 'amount', address: false },
+  accountPubkey: { label: 'account', address: true },
+  mintPubkey: { label: 'mint', address: true },
+  sourcePubkey: { label: 'source', address: true },
+  destinationPubkey: { label: 'destination', address: true },
+  ownerPubkey: { label: 'owner', address: true },
 };
 
 export default function TokenInstruction({ instruction, onOpenAddress }) {
   const wallet = useWallet();
   const [publicKeys] = useWalletPublicKeys();
+  const { t } = useTranslation();
   const { type, data } = instruction;
 
   const getAddressValue = (address) => {
@@ -36,8 +38,8 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
     return tokenMint
       ? tokenMint.name
       : isOwner
-      ? 'This wallet'
-      : (isOwned ? '(Owned) ' : '') + address?.toBase58();
+      ? t("this_wallet")
+      : (isOwned ? t("owned") : '') + address?.toBase58();
   };
 
   return (

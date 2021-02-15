@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
@@ -51,6 +52,7 @@ export default function PopupPage({ opener }) {
   const hasConnectedAccount = !!connectedAccount;
   const [requests, setRequests] = useState([]);
   const [autoApprove, setAutoApprove] = useState(false);
+  const { t } = useTranslation();
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -82,7 +84,7 @@ export default function PopupPage({ opener }) {
           e.data.method !== 'signTransaction' &&
           e.data.method !== 'signAllTransactions'
         ) {
-          postMessage({ error: 'Unsupported method', id: e.data.id });
+          postMessage({ error: t("unsupported_method"), id: e.data.id });
         }
 
         setRequests((requests) => [...requests, e.data]);
@@ -157,7 +159,7 @@ export default function PopupPage({ opener }) {
     function sendReject() {
       setRequests((requests) => requests.slice(1));
       postMessage({
-        error: 'Transaction cancelled',
+        error: t("transaction_cancelled"),
         id: request.id,
       });
       if (requests.length === 1) {
@@ -177,7 +179,7 @@ export default function PopupPage({ opener }) {
   }
 
   return (
-    <Typography>Please keep this window open in the background.</Typography>
+    <Typography>{t("keep_window_open")}</Typography>
   );
 }
 
@@ -236,6 +238,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
   const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
+  const { t } = useTranslation();
   let [dismissed, setDismissed] = useLocalStorageState(
     'dismissedAutoApproveWarning',
     false,
@@ -244,14 +247,14 @@ function ApproveConnectionForm({ origin, onApprove }) {
     <Card>
       <CardContent>
         <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
+          {t("allow_site")}
         </Typography>
         <div className={classes.connection}>
           <Typography>{origin}</Typography>
           <ImportExportIcon fontSize="large" />
           <Typography>{wallet.publicKey.toBase58()}</Typography>
         </div>
-        <Typography>Only connect with sites you trust.</Typography>
+        <Typography>{t("only_sites_you_trust")}</Typography>
         <Divider className={classes.divider} />
         <FormControlLabel
           control={
@@ -261,7 +264,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
               color="primary"
             />
           }
-          label={`Automatically approve transactions from ${origin}`}
+          label={t("auto_approve_from_origin", { origin })}
         />
         {!dismissed && autoApprove && (
           <SnackbarContent
@@ -270,30 +273,28 @@ function ApproveConnectionForm({ origin, onApprove }) {
               <div>
                 <span className={classes.warningTitle}>
                   <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
+                  {t("use_at_your_own_risk")}
                 </span>
                 <Typography className={classes.warningMessage}>
-                  This setting allows sending some transactions on your behalf
-                  without requesting your permission for the remainder of this
-                  session.
+                  {t("allow_send_transactions")}
                 </Typography>
               </div>
             }
             action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
+              <Button onClick={() => setDismissed('1')}>{t("i_understand")}</Button>,
             ]}
             classes={{ root: classes.snackbarRoot }}
           />
         )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
+        <Button onClick={window.close}>{t("cancel")}</Button>
         <Button
           color="primary"
           onClick={() => onApprove(autoApprove)}
           disabled={!dismissed && autoApprove}
         >
-          Connect
+          {t("connect")}
         </Button>
       </CardActions>
     </Card>
@@ -412,6 +413,7 @@ function ApproveSignatureForm({
   // single transaction.
   const [txInstructions, setTxInstructions] = useState(null);
   const buttonRef = useRef();
+  const { t } = useTranslation();
 
   const isMultiTx = messages.length > 1;
 
@@ -503,7 +505,7 @@ function ApproveSignatureForm({
     return (
       <>
         <Typography variant="h6" gutterBottom>
-          Transaction {idx.toString()}
+          {t("transaction_id", { id: idx.toString() })}
         </Typography>
         <Divider style={{ marginTop: 20 }} />
       </>
@@ -606,7 +608,7 @@ function ApproveSignatureForm({
         )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
+        <Button onClick={onReject}>{t("cancel")}</Button>
         <Button
           ref={buttonRef}
           className={classes.approveButton}

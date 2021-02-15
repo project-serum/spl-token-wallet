@@ -1,27 +1,29 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 
 const TYPE_LABELS = {
-  systemCreate: 'Create account',
-  systemTransfer: 'Transfer SOL',
+  systemCreate: 'create_account',
+  systemTransfer: 'transfer_sol',
 };
 
 const DATA_LABELS = {
-  toPubkey: { label: 'To', address: true },
-  accountPubkey: { label: 'Account', address: true },
-  basePubkey: { label: 'Base', address: true },
-  seed: { label: 'Seed', address: false },
-  noncePubkey: { label: 'Nonce', address: true },
-  authorizedPubkey: { label: 'Authorized', address: true },
-  newAuthorizedPubkey: { label: 'New authorized', address: true },
-  newAccountPubkey: { label: 'New account', address: true },
-  amount: { label: 'Amount', address: false },
-  lamports: { label: 'Lamports', address: false },
+  toPubkey: { label: 'to', address: true },
+  accountPubkey: { label: 'account', address: true },
+  basePubkey: { label: 'base', address: true },
+  seed: { label: 'seed', address: false },
+  noncePubkey: { label: 'nonce', address: true },
+  authorizedPubkey: { label: 'authorized', address: true },
+  newAuthorizedPubkey: { label: 'new_authorized', address: true },
+  newAccountPubkey: { label: 'new_account', address: true },
+  amount: { label: 'amount', address: false },
+  lamports: { label: 'lamports', address: false },
 };
 
 export default function SystemInstruction({ instruction, onOpenAddress }) {
   const { type, data } = instruction;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -30,11 +32,11 @@ export default function SystemInstruction({ instruction, onOpenAddress }) {
         style={{ fontWeight: 'bold' }}
         gutterBottom
       >
-        {TYPE_LABELS[type]}
+        {t(TYPE_LABELS[type])}
       </Typography>
       {data &&
         Object.entries(data).map(([key, value]) => {
-          const dataLabel = DATA_LABELS[key];
+          const dataLabel = t(DATA_LABELS[key]);
           if (!dataLabel) {
             return null;
           }
