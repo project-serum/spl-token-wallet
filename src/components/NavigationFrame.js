@@ -238,7 +238,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <UsbIcon fontSize="small" />
           </ListItemIcon>
-          Import Hardware Wallet
+          {t("import_hardware_wallet")}
         </MenuItem>
         <MenuItem
           onClick={() => {

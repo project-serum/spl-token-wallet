@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import DialogForm from './DialogForm';
 import { forgetWallet } from '../utils/wallet-seed';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -11,6 +12,7 @@ export default function DeleteAccountDialog({
   onClose,
   isDeleteAccountEnabled,
 }) {
+  const { t } = useTranslation();
   return (
     <>
       <DialogForm
@@ -22,7 +24,7 @@ export default function DeleteAccountDialog({
         }}
         fullWidth
       >
-        <DialogTitle>Delete Account</DialogTitle>
+        <DialogTitle>{t("delete_account")}</DialogTitle>
         <DialogContentText style={{ margin: 20 }}>
           <div
             style={{
@@ -30,25 +32,22 @@ export default function DeleteAccountDialog({
               flexDirection: 'column',
             }}
           >
-            You will not be able to recover the current accounts without the
-            seed phrase, and the account private key. This action will delete
-            all current accounts from your browser.
+            {t("delete_message")}
             <br />
             <br />
             <strong style={{ textAlign: 'center' }}>
-              To prevent loss of funds, please ensure you have the seed phrase
-              and the private key for all current accounts.
+              {t("delete_message_strong")}
             </strong>
           </div>
         </DialogContentText>
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>{t("close")}</Button>
           <Button
             type="submit"
             color="secondary"
             disabled={!isDeleteAccountEnabled}
           >
-            Delete Account
+            {t("delete_account")}
           </Button>
         </DialogActions>
       </DialogForm>

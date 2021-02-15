@@ -276,7 +276,7 @@ function TokenListItem({
       <Collapse in={open} timeout="auto" unmountOnExit>
         <CopyableDisplay
           value={mintAddress}
-          label={`${tokenSymbol} Mint Address`}
+          label={t("token_mint_address", { tokenSymbol })}
         />
       </Collapse>
     </React.Fragment>

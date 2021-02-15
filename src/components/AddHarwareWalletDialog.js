@@ -81,7 +81,7 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
           {t("close")}
         </Button>
         <Button type="submit" color="primary" disabled={!pubKey}>
-          {t("Add")}
+          {t("add")}
         </Button>
       </DialogActions>
     </DialogForm>

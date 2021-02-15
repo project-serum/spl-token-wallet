@@ -43,7 +43,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
           }}
         >
           <TextField
-            label="Name"
+            label={t("name")}
             fullWidth
             variant="outlined"
             margin="normal"
@@ -77,7 +77,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
       <DialogActions>
         <Button onClick={onClose}>{t("close")}</Button>
         <Button type="submit" color="primary" disabled={!isAddEnabled}>
-        {t("Add")}
+        {t("add")}
         </Button>
       </DialogActions>
     </DialogForm>
