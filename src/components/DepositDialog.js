@@ -172,7 +172,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
     return (
       <>
         <DialogContentText>
-          {t("token_conversion_details", { type: coin.erc20Contract ? 'ERC20' : 'Native', ticker: coin.ticker, mint: mint ? "SPL" : "native", tokenName })}
+          {t("token_conversion_details", { type: coin.erc20Contract ? 'ERC20' : t("native"), ticker: coin.ticker, mint: mint ? "SPL" : t("native"), tokenName })}
         </DialogContentText>
         <MetamaskDeposit swapInfo={swapInfo} />
       </>
@@ -237,7 +237,7 @@ function MetamaskDeposit({ swapInfo }) {
     return (
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <TextField
-          label={t("amnount")}
+          label={t("amount")}
           fullWidth
           variant="outlined"
           margin="normal"

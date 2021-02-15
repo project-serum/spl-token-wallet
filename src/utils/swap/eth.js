@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Web3 from 'web3';
 import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
@@ -189,6 +190,7 @@ function waitForConfirms(tx, onStatusChange) {
 
 export function ConnectToMetamaskButton() {
   const callAsync = useCallAsync();
+  const { t } = useTranslation();
 
   if (!window.ethereum) {
     return (
@@ -200,7 +202,7 @@ export function ConnectToMetamaskButton() {
         target="_blank"
         rel="noopener"
       >
-        Connect to MetaMask
+        {t("connect_metamask")}
       </Button>
     );
   }
@@ -211,15 +213,15 @@ export function ConnectToMetamaskButton() {
         method: 'eth_requestAccounts',
       }),
       {
-        progressMessage: 'Connecting to MetaMask...',
-        successMessage: 'Connected to MetaMask',
+        progressMessage: t("connecting_metamask"),
+        successMessage: t("connected_metamask"),
       },
     );
   }
 
   return (
     <Button color="primary" variant="outlined" onClick={connect}>
-      Connect to MetaMask
+      {t("connect_metamask")}
     </Button>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
@@ -67,6 +68,7 @@ function NetworkSelector() {
   const { endpoint, setEndpoint } = useConnectionConfig();
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const networks = [
     MAINNET_URL,
@@ -89,11 +91,11 @@ function NetworkSelector() {
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          {networkLabels[endpoint] ?? 'Network'}
+          {networkLabels[endpoint] ?? t("network")}
         </Button>
       </Hidden>
       <Hidden smUp>
-        <Tooltip title="Select Network" arrow>
+        <Tooltip title={t("select_network")} arrow>
           <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
             <SolanaIcon />
           </IconButton>
@@ -140,6 +142,7 @@ function WalletSelector() {
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
   const classes = useStyles();
+  const { t } = useTranslation();
 
   if (accounts.length === 0) {
     return null;
@@ -189,7 +192,7 @@ function WalletSelector() {
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          Account
+          {t("account")}
         </Button>
       </Hidden>
       <Hidden smUp>
@@ -246,7 +249,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
-          Add Account
+          {t("add_account")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -261,7 +264,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Delete Account
+          {t("delete_account")}
         </MenuItem>
       </Menu>
     </>
@@ -277,6 +280,7 @@ const useFooterStyles = makeStyles((theme) => ({
 }));
 
 function Footer() {
+  const { t } = useTranslation();
   const classes = useFooterStyles();
   return (
     <footer className={classes.footer}>
@@ -289,7 +293,7 @@ function Footer() {
         href="https://github.com/serum-foundation/spl-token-wallet"
         startIcon={<CodeIcon />}
       >
-        View Source
+        {t("view_source")}
       </Button>
     </footer>
   );

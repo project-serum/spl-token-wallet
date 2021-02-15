@@ -68,7 +68,7 @@ export default function BalancesList() {
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances
+            {t("account_balances", { account: selectedAccount && selectedAccount.name })}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -278,7 +278,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
                 target="_blank"
                 rel="noopener"
               >
-                {t("view_solana_explorer")}x
+                {t("view_solana")}
               </Link>
             </Typography>
           </div>
@@ -286,7 +286,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
             <div>
               <Typography variant="body2">
                 <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
-                  {t("export")}x
+                  {t("export")}
                 </Link>
               </Typography>
             </div>
