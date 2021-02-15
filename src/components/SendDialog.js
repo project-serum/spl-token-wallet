@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -43,6 +44,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const isProdNetwork = useIsProdNetwork();
   const [tab, setTab] = useState('spl');
   const onSubmitRef = useRef();
+  const { t } = useTranslation();
 
   const [swapCoinInfo] = useSwapApiGet(
     showSwapAddress && balanceInfo.mint && isProdNetwork
@@ -62,7 +64,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         fullWidth
       >
         <DialogTitle>
-          Send {tokenName ?? abbreviateAddress(mint)}
+          {t("send_details", {tokenName: tokenName ?? abbreviateAddress(mint)})}
           {tokenSymbol ? ` (${tokenSymbol})` : null}
         </DialogTitle>
         {swapCoinInfo ? (
@@ -137,10 +139,11 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
 }
 
 function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
+  const { t } = useTranslation();
   const defaultAddressHelperText =
     !balanceInfo.mint || balanceInfo.mint.equals(WRAPPED_SOL_MINT)
-      ? 'Enter Solana Address'
-      : 'Enter SPL token or Solana address';
+      ? t("enter_solana_address")
+      : t("enter_spl_or_solana_address");
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [addressHelperText, setAddressHelperText] = useState(
@@ -174,14 +177,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
           );
           if (accountInfo.mint.toBase58() === mintString) {
             setPassValidation(true);
-            setAddressHelperText('Address is a valid SPL token address');
+            setAddressHelperText(t("valid_spl_token_address"));
           } else {
             setPassValidation(false);
-            setAddressHelperText('Destination address mint does not match');
+            setAddressHelperText(t("destination_address_not_match"));
           }
         } else {
           setPassValidation(true);
-          setAddressHelperText('Destination is a Solana address');
+          setAddressHelperText(t("destination_address_solana"));
         }
       } catch (e) {
         console.log(`Received error validating address ${e}`);
@@ -195,7 +198,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
     if (!amount || amount <= 0) {
-      throw new Error('Invalid amount');
+      throw new Error(t('invalid_amount'));
     }
     return wallet.transferToken(
       publicKey,
@@ -213,13 +216,13 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button
           type="submit"
           color="primary"
           disabled={sending || !validAmount}
         >
-          Send
+          {t("send")}
         </Button>
       </DialogActions>
     </>
@@ -238,6 +241,7 @@ function SendSwapDialog({
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [signature, setSignature] = useState(null);
+  const { t } = useTranslation();
   const {
     fields,
     destinationAddress,
@@ -272,7 +276,7 @@ function SendSwapDialog({
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
     if (!amount || amount <= 0) {
-      throw new Error('Invalid amount');
+      throw new Error(t('invalid_amount'));
     }
     const params = {
       blockchain,
@@ -333,13 +337,13 @@ function SendSwapDialog({
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button
           type="submit"
           color="primary"
           disabled={sending || (needMetamask && !ethAccount) || !validAmount}
         >
-          Send
+          {t("send")}
         </Button>
       </DialogActions>
     </>
@@ -348,6 +352,7 @@ function SendSwapDialog({
 
 function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   const connection = useConnection();
+  const { t } = useTranslation();
   const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
     refreshInterval: 1000,
   });
@@ -381,13 +386,13 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
       <DialogContent>
         <Stepper activeStep={step}>
           <Step>
-            <StepLabel>Send Request</StepLabel>
+            <StepLabel>{t("send_request")}</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Wait for Confirmations</StepLabel>
+            <StepLabel>{t("wait_confirmations")}</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Withdraw Funds</StepLabel>
+            <StepLabel>{t("withdraw_funds")}</StepLabel>
           </Step>
         </Stepper>
         {ethTxid ? (
@@ -397,7 +402,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
               target="_blank"
               rel="noopener"
             >
-              View on Etherscan
+              {t("view_etherscan")}
             </Link>
           </Typography>
         ) : step < 3 ? (
@@ -412,21 +417,20 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
               <CircularProgress />
             </div>
             {confirms ? (
-              <Typography>{confirms} / 35 Confirmations</Typography>
+              <Typography>{t("confirmations", { confirms })}</Typography>
             ) : (
-              <Typography>Transaction Pending</Typography>
+              <Typography>{t("transactions_pending")}</Typography>
             )}
           </div>
         ) : null}
         {!ethTxid && blockchain === 'eth' ? (
           <DialogContentText style={{ marginTop: 16, marginBottom: 0 }}>
-            Please keep this window open. You will need to approve the request
-            on MetaMask to complete the transaction.
+            {t("keep_window_open")}
           </DialogContentText>
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t("close")}</Button>
       </DialogActions>
     </>
   );
@@ -435,6 +439,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
 function useForm(balanceInfo, addressHelperText, passAddressValidation) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
+  const { t } = useTranslation();
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
 
   const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
@@ -443,7 +448,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
   const fields = (
     <>
       <TextField
-        label="Recipient Address"
+        label={t("recipient_address")}
         fullWidth
         variant="outlined"
         margin="normal"
@@ -458,7 +463,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
         error={!passAddressValidation && passAddressValidation !== undefined}
       />
       <TextField
-        label="Amount"
+        label={t("amount")}
         fullWidth
         variant="outlined"
         margin="normal"

@@ -1,6 +1,7 @@
 import { Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -30,6 +31,7 @@ export default function TokenInfoDialog({
   let { mint, tokenName, tokenSymbol } = balanceInfo;
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <DialogForm open={open} onClose={onClose}>
@@ -39,7 +41,7 @@ export default function TokenInfoDialog({
       </DialogTitle>
       <DialogContent className={classes.container}>
         <Typography className={classes.warning}>
-          Information about {tokenName ?? abbreviateAddress(mint)}
+          {t("info_about", {tokenName: tokenName ?? abbreviateAddress(mint)})}
         </Typography>
         <Typography variant="body2" className={classes.explorerLink}>
           <Link
@@ -50,26 +52,26 @@ export default function TokenInfoDialog({
             target="_blank"
             rel="noopener"
           >
-            View on Solana Explorer
+            {t("view_solana")}
           </Link>
         </Typography>
         {!!mint && (
           <CopyableDisplay
             value={mint.toBase58()}
-            label={'Token Mint Address'}
+            label={t("token_mint_address")}
             autoFocus
             helperText={
               <>
-                This is <strong>not</strong> your deposit address
+                {t("not_your_deposit_address")}
               </>
             }
           />
         )}
         {!!tokenName && (
-          <CopyableDisplay value={tokenName} label={'Token Name'} />
+          <CopyableDisplay value={tokenName} label={t("token_name")} />
         )}
         {!!tokenSymbol && (
-          <CopyableDisplay value={tokenSymbol} label={'Token Symbol'} />
+          <CopyableDisplay value={tokenSymbol} label={t("token_symbol")} />
         )}
       </DialogContent>
     </DialogForm>

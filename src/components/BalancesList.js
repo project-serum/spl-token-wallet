@@ -257,14 +257,14 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
           {t("deposit_address", {address: publicKey.toBase58()})}
         </Typography>
         <Typography variant="body2">
-          {t("token_name", {tokenName: tokenName ?? 'Unknown'})}
+          {t("token_name_detail", {tokenName: tokenName ?? 'Unknown'})}
         </Typography>
         <Typography variant="body2">
-          {t("token_symbol", {tokenSymbol: tokenSymbol ?? 'Unknown'})}
+          {t("token_symbol_detail", {tokenSymbol: tokenSymbol ?? 'Unknown'})}
         </Typography>
         {mint ? (
           <Typography variant="body2" className={classes.address}>
-            {t("token_address", {tokenAddress: mint.toBase58()})}
+            {t("token_address_detail", {tokenAddress: mint.toBase58()})}
           </Typography>
         ) : null}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
