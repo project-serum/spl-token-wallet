@@ -128,7 +128,7 @@
 	"token_name": "Token Name",
 	"token_name_detail": "Token Name: {{tokenName}}",
 	"token_symbol": "Token Symbol",
-	"token_symbol_detail": "Token Symbol: {{tokemSymbol}}",
+	"token_symbol_detail": "Token Symbol: {{tokenSymbol}}",
 	"transaction_cancelled": "Transaction cancelled",
 	"transaction_id": "Transaction {{id}}",
 	"transaction_pending": "Transaction Pending",
