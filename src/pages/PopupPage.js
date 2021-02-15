@@ -92,7 +92,7 @@ export default function PopupPage({ opener }) {
     }
     window.addEventListener('message', messageHandler);
     return () => window.removeEventListener('message', messageHandler);
-  }, [origin, postMessage]);
+  }, [origin, postMessage, t]);
 
   if (!connectedAccount || !connectedAccount.equals(wallet.publicKey)) {
     // Approve the parent page to connect to this wallet.
