@@ -34,8 +34,6 @@ import {
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
 import { Switch } from "@material-ui/core";
-import Tooltip from '@material-ui/core/Tooltip'
-import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -151,6 +149,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   );
   const [passValidation, setPassValidation] = useState();
   const [overrideDestinationCheck, setOverrideDestinationCheck] = useState();
+  const [shouldShowOverride, setShouldShowOverride] = useState();
   const {
     fields,
     destinationAddress,
@@ -165,12 +164,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
         setPassValidation(undefined);
+        setShouldShowOverride(undefined);
         return;
       }
       try {
         const destinationAccountInfo = await wallet.connection.getAccountInfo(
           new PublicKey(destinationAddress),
         );
+        setShouldShowOverride(false);
 
         if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
           const accountInfo = parseTokenAccountData(
@@ -190,6 +191,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       } catch (e) {
         console.log(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
+        setShouldShowOverride(true);
         setPassValidation(undefined);
       }
     })();
@@ -219,21 +221,16 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
-        <div style={{'align-items': 'center', 'display': 'flex', 'text-align': 'left'}}>
-          <Tooltip
-            title="Allows for funds to be sent to a destination SOL address with zero funds.
-              This is risky! Use with Caution."
-            placement={'top'}
-          >
-            <HelpOutlineOutlinedIcon fontSize={'small'}/>
-          </Tooltip>{'  '}
-          <b>Override Destination Check</b>
-          <Switch
-            checked={overrideDestinationCheck}
-            onChange={e => setOverrideDestinationCheck(e.target.checked)}
-            color="primary"
-          />
-        </div>
+        { shouldShowOverride && (
+          <div style={{'align-items': 'center', 'display': 'flex', 'text-align': 'left'}}>
+            <b>This address has no funds. Are you sure it's correct?</b>
+            <Switch
+              checked={overrideDestinationCheck}
+              onChange={e => setOverrideDestinationCheck(e.target.checked)}
+              color="primary"
+            />
+          </div>
+        )}
         <Button onClick={onClose}>Cancel</Button>
         <Button
           type="submit"
