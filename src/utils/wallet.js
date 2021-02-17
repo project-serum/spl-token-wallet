@@ -84,7 +84,7 @@ export class Wallet {
     );
   };
 
-  transferToken = async (source, destination, amount, mint, memo = null) => {
+  transferToken = async (source, destination, amount, mint, memo = null, overrideDestinationCheck = false) => {
     if (source.equals(this.publicKey)) {
       if (memo) {
         throw new Error('Memo not implemented');
@@ -99,6 +99,7 @@ export class Wallet {
       amount,
       memo,
       mint,
+      overrideDestinationCheck,
     });
   };
 

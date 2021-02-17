@@ -204,6 +204,7 @@ export async function transferTokens({
   amount,
   memo,
   mint,
+  overrideDestinationCheck,
 }) {
   const destinationAccountInfo = await connection.getAccountInfo(
     destinationPublicKey,
@@ -221,7 +222,8 @@ export async function transferTokens({
       memo,
     });
   }
-  if (!destinationAccountInfo || destinationAccountInfo.lamports === 0) {
+
+  if ((!destinationAccountInfo || destinationAccountInfo.lamports === 0) && !overrideDestinationCheck) {
     throw new Error('Cannot send to address with zero SOL balances');
   }
   const destinationSplTokenAccount = (

@@ -33,6 +33,7 @@ import {
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
+import { Switch } from "@material-ui/core";
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -147,6 +148,8 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
+  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState();
+  const [shouldShowOverride, setShouldShowOverride] = useState();
   const {
     fields,
     destinationAddress,
@@ -161,12 +164,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
         setPassValidation(undefined);
+        setShouldShowOverride(undefined);
         return;
       }
       try {
         const destinationAccountInfo = await wallet.connection.getAccountInfo(
           new PublicKey(destinationAddress),
         );
+        setShouldShowOverride(false);
 
         if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
           const accountInfo = parseTokenAccountData(
@@ -186,6 +191,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       } catch (e) {
         console.log(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
+        setShouldShowOverride(true);
         setPassValidation(undefined);
       }
     })();
@@ -202,6 +208,8 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
+      null,
+      overrideDestinationCheck
     );
   }
 
@@ -213,6 +221,16 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
+        { shouldShowOverride && (
+          <div style={{'align-items': 'center', 'display': 'flex', 'text-align': 'left'}}>
+            <b>This address has no funds. Are you sure it's correct?</b>
+            <Switch
+              checked={overrideDestinationCheck}
+              onChange={e => setOverrideDestinationCheck(e.target.checked)}
+              color="primary"
+            />
+          </div>
+        )}
         <Button onClick={onClose}>Cancel</Button>
         <Button
           type="submit"
@@ -432,7 +450,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
 }
 
-function useForm(balanceInfo, addressHelperText, passAddressValidation) {
+function useForm(balanceInfo, addressHelperText, passAddressValidation, overrideValidation) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
