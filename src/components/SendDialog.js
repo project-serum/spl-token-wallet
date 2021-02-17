@@ -33,6 +33,9 @@ import {
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
+import { Switch } from "@material-ui/core";
+import Tooltip from '@material-ui/core/Tooltip'
+import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -147,6 +150,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
+  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState();
   const {
     fields,
     destinationAddress,
@@ -202,6 +206,8 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
+      null,
+      overrideDestinationCheck
     );
   }
 
@@ -213,6 +219,21 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
+        <div style={{'align-items': 'center', 'display': 'flex', 'text-align': 'left'}}>
+          <Tooltip
+            title="Allows for funds to be sent to a destination SOL address with zero funds.
+              This is risky! Use with Caution."
+            placement={'top'}
+          >
+            <HelpOutlineOutlinedIcon fontSize={'small'}/>
+          </Tooltip>{'  '}
+          <b>Override Destination Check</b>
+          <Switch
+            checked={overrideDestinationCheck}
+            onChange={e => setOverrideDestinationCheck(e.target.checked)}
+            color="primary"
+          />
+        </div>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           type="submit"
@@ -432,7 +453,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
 }
 
-function useForm(balanceInfo, addressHelperText, passAddressValidation) {
+function useForm(balanceInfo, addressHelperText, passAddressValidation, overrideValidation) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
