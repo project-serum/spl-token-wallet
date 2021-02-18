@@ -330,7 +330,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+        } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
@@ -339,7 +339,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
           } else {
             accountStates[newAccountPubkey.toBase58()] = states.CREATED;
           }
-        } else if (instruction.type === 'newOrder') {
+        } else if (['newOrder', 'newOrderV3'].includes(instruction.type)) {
           // New order instructions are safe if the owner is this wallet
           let { openOrdersPubkey, ownerPubkey } = instruction.data;
           if (ownerPubkey && owner.equals(ownerPubkey)) {
