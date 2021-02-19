@@ -65,6 +65,13 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         <DialogTitle>
           Send {tokenName ?? abbreviateAddress(mint)}
           {tokenSymbol ? ` (${tokenSymbol})` : null}
+        {ethAccount && (
+          <div>
+            <Typography color="textSecondary" style={{ fontSize: '14px' }}>
+              Metamask connected: {ethAccount}
+            </Typography>
+          </div>
+        )}
         </DialogTitle>
         {swapCoinInfo ? (
           <Tabs
