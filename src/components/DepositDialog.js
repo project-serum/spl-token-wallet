@@ -175,6 +175,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
         <DialogContentText>
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
           converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
+          To convert, you must already have SOL in your wallet.
         </DialogContentText>
         <MetamaskDeposit swapInfo={swapInfo} />
       </>
