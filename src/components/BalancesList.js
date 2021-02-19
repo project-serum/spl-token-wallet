@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -31,6 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import { MARKETS } from '@project-serum/serum';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -60,7 +61,21 @@ export default function BalancesList() {
   );
   const { accounts, setAccountName } = useWalletSelector();
   const selectedAccount = accounts.find((a) => a.isSelected);
-
+  const markets = useMemo(() => {
+    const m = {};
+    MARKETS.forEach((market) => {
+      const coin = market.name.split('/')[0];
+      if (m[coin]) {
+        // Only override a market if it's not deprecated	.
+        if (!m.deprecated) {
+          m[coin] = market.address;
+        }
+      } else {
+        m[coin] = market.address;
+      }
+    });
+    return m;
+  }, []);
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
@@ -99,7 +114,11 @@ export default function BalancesList() {
       </AppBar>
       <List disablePadding>
         {publicKeys.map((publicKey) => (
-          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
+          <BalanceListItem
+            key={publicKey.toBase58()}
+            publicKey={publicKey}
+            markets={markets}
+          />
         ))}
         {loaded ? null : <LoadingIndicator />}
       </List>
@@ -138,7 +157,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function BalanceListItem({ publicKey, expandable }) {
+export function BalanceListItem({ publicKey, markets, expandable }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -172,6 +191,7 @@ export function BalanceListItem({ publicKey, expandable }) {
       <Collapse in={open} timeout="auto" unmountOnExit>
         <BalanceListItemDetails
           publicKey={publicKey}
+          markets={markets}
           balanceInfo={balanceInfo}
         />
       </Collapse>
@@ -179,7 +199,7 @@ export function BalanceListItem({ publicKey, expandable }) {
   );
 }
 
-function BalanceListItemDetails({ publicKey, balanceInfo }) {
+function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -201,6 +221,8 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
     mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
+
+  const market = markets[tokenSymbol.toUpperCase()];
 
   return (
     <>
@@ -278,6 +300,20 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
                 View on Solana Explorer
               </Link>
             </Typography>
+            {market && (
+              <Typography variant="body2">
+                <Link
+                  href={
+                    `https://dex.projectserum.com/#/market/${market}` +
+                    urlSuffix
+                  }
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Serum
+                </Link>
+              </Typography>
+            )}
           </div>
           {exportNeedsDisplay && wallet.allowsExport && (
             <div>
