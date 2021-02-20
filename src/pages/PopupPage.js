@@ -584,24 +584,6 @@ function ApproveSignatureForm({
                 ))}
               </>
             )}
-            {!validator.safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
-                      Nonstandard DEX transaction
-                    </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
-                    </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
-              />
-            )}
           </>
         )}
       </CardContent>
