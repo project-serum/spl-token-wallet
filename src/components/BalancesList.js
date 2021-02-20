@@ -84,7 +84,7 @@ export default function BalancesList() {
 
     return m;
   }, []);
-  console.log('wallet', wallet.connection._rpcEndpoint);
+
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
@@ -175,7 +175,7 @@ export function BalanceListItem({ publicKey, markets, expandable }) {
   useEffect(() => {
     if (balanceInfo) {
       const coin = balanceInfo.tokenSymbol.toUpperCase();
-      let m = { ...markets[coin] };
+      let m = markets[coin];
       _priceStore.getPrice(connection, m.name).then((price) => {
         setPrice(price);
       });
