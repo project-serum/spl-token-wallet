@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -41,6 +41,7 @@ import {
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
 import { showTokenInfoDialog } from '../utils/config';
+import { useConnection, MAINNET_URL } from '../utils/connection';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
@@ -68,14 +69,22 @@ export default function BalancesList() {
       if (m[coin]) {
         // Only override a market if it's not deprecated	.
         if (!m.deprecated) {
-          m[coin] = market.address;
+          m[coin] = {
+            publicKey: market.address,
+            name: market.name.split('/').join(''),
+          };
         }
       } else {
-        m[coin] = market.address;
+        m[coin] = {
+          publicKey: market.address,
+          name: market.name.split('/').join(''),
+        };
       }
     });
+
     return m;
   }, []);
+  console.log('wallet', wallet.connection._rpcEndpoint);
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
@@ -160,7 +169,19 @@ const useStyles = makeStyles((theme) => ({
 export function BalanceListItem({ publicKey, markets, expandable }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
+  const connection = useConnection();
   const [open, setOpen] = useState(false);
+  const [price, setPrice] = useState(null);
+  useEffect(() => {
+    if (balanceInfo) {
+      const coin = balanceInfo.tokenSymbol.toUpperCase();
+      let m = { ...markets[coin] };
+      _priceStore.getPrice(connection, m.name).then((price) => {
+        setPrice(price);
+      });
+    }
+  }, [markets, price, balanceInfo, connection]);
+
   expandable = expandable === undefined ? true : expandable;
 
   if (!balanceInfo) {
@@ -175,17 +196,32 @@ export function BalanceListItem({ publicKey, markets, expandable }) {
         <ListItemIcon>
           <TokenIcon mint={mint} tokenName={tokenName} size={28} />
         </ListItemIcon>
-        <ListItemText
-          primary={
-            <>
-              {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-              {tokenName ?? abbreviateAddress(mint)}
-              {tokenSymbol ? ` (${tokenSymbol})` : null}
-            </>
-          }
-          secondary={publicKey.toBase58()}
-          secondaryTypographyProps={{ className: classes.address }}
-        />
+        <div style={{ display: 'flex', flex: 1 }}>
+          <ListItemText
+            primary={
+              <>
+                {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
+                {tokenName ?? abbreviateAddress(mint)}
+                {tokenSymbol ? ` (${tokenSymbol})` : null}
+              </>
+            }
+            secondary={publicKey.toBase58()}
+            secondaryTypographyProps={{ className: classes.address }}
+          />
+          {price && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography color="textSecondary">
+                ${((amount / Math.pow(10, decimals)) * price).toFixed(2)}
+              </Typography>
+            </div>
+          )}
+        </div>
         {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
@@ -222,7 +258,7 @@ function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
   const exportNeedsDisplay =
     mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
 
-  const market = markets[tokenSymbol.toUpperCase()];
+  const market = markets[tokenSymbol.toUpperCase()].publicKey;
 
   return (
     <>
@@ -353,3 +389,36 @@ function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
     </>
   );
 }
+
+// Create a cached API wrapper to avoid rate limits.
+class PriceStore {
+  constructor() {
+    this.cache = {};
+  }
+
+  async getPrice(connection, marketName) {
+    return new Promise((resolve, reject) => {
+      if (connection._rpcEndpoint !== MAINNET_URL) {
+        resolve(undefined);
+        return;
+      }
+      if (this.cache[marketName] === undefined) {
+        this.cache[marketName] = null;
+        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
+          (resp) => {
+            resp.json().then((resp) => {
+              const mid =
+                (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
+              this.cache[marketName] = mid;
+              resolve(this.cache[marketName]);
+            });
+          },
+        );
+      } else {
+        return resolve(this.cache[marketName]);
+      }
+    });
+  }
+}
+
+const _priceStore = new PriceStore();
