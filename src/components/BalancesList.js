@@ -37,9 +37,13 @@ import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import {
+  useIsProdNetwork,
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { swapApiRequest } from '../utils/swap/api';
+import { showSwapAddress } from '../utils/config';
+import { useAsyncData } from '../utils/fetch-loop';
 import { showTokenInfoDialog } from '../utils/config';
 import { useConnection, MAINNET_URL } from '../utils/connection';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
@@ -247,6 +251,27 @@ function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
   const wallet = useWallet();
+  const isProdNetwork = useIsProdNetwork();
+  const [swapInfo] = useAsyncData(async () => {
+    if (!showSwapAddress || !isProdNetwork) {
+      return null;
+    }
+    return await swapApiRequest(
+      'POST',
+      'swap_to',
+      {
+        blockchain: 'sol',
+        coin: balanceInfo.mint?.toBase58(),
+        address: publicKey.toBase58(),
+      },
+      { ignoreUserErrors: true },
+    );
+  }, [
+    'swapInfo',
+    isProdNetwork,
+    balanceInfo.mint?.toBase58(),
+    publicKey.toBase58(),
+  ]);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -333,20 +358,31 @@ function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                View on Solana
               </Link>
             </Typography>
             {market && (
               <Typography variant="body2">
                 <Link
+                  href={`https://dex.projectserum.com/#/market/${market}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Serum
+                </Link>
+              </Typography>
+            )}
+            {swapInfo && swapInfo.coin.erc20Contract && (
+              <Typography variant="body2">
+                <Link
                   href={
-                    `https://dex.projectserum.com/#/market/${market}` +
+                    `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
                     urlSuffix
                   }
                   target="_blank"
                   rel="noopener"
                 >
-                  View on Serum
+                  View on Ethereum
                 </Link>
               </Typography>
             )}
