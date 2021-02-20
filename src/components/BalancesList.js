@@ -428,6 +428,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
         onClose={() => setDepositDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
+        swapInfo={swapInfo}
       />
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
