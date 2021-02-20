@@ -66,7 +66,7 @@ export default function BalancesList() {
   );
   const { accounts, setAccountName } = useWalletSelector();
   const selectedAccount = accounts.find((a) => a.isSelected);
-  const markets = useMemo(() => {
+  const serumMarkets = useMemo(() => {
     const m = {};
     MARKETS.forEach((market) => {
       const coin = market.name.split('/')[0];
@@ -130,7 +130,7 @@ export default function BalancesList() {
           <BalanceListItem
             key={publicKey.toBase58()}
             publicKey={publicKey}
-            markets={markets}
+            serumMarkets={serumMarkets}
           />
         ))}
         {loaded ? null : <LoadingIndicator />}
@@ -170,21 +170,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function BalanceListItem({ publicKey, markets, expandable }) {
+export function BalanceListItem({ publicKey, serumMarkets, expandable }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
-  const [price, setPrice] = useState(null);
+  // Valid states:
+  //   * undefined => loading.
+  //   * null => not found.
+  //   * else => price is loaded.
+  const [price, setPrice] = useState(undefined);
   useEffect(() => {
-    if (balanceInfo) {
+    if (balanceInfo && balanceInfo.tokenSymbol) {
       const coin = balanceInfo.tokenSymbol.toUpperCase();
-      let m = markets[coin];
-      _priceStore.getPrice(connection, m.name).then((price) => {
-        setPrice(price);
-      });
+      // Don't fetch USD stable coins. Mark to 1 USD.
+      if (coin === 'USDT' || coin === 'USDC') {
+        setPrice(1);
+      }
+      // A Serum market exists. Fetch the price.
+      else if (serumMarkets[coin]) {
+        let m = serumMarkets[coin];
+        _priceStore.getPrice(connection, m.name).then((price) => {
+          setPrice(price);
+        });
+      }
+      // No Serum market exists.
+      else {
+        setPrice(null);
+      }
     }
-  }, [markets, price, balanceInfo, connection]);
+  }, [serumMarkets, price, balanceInfo, connection]);
 
   expandable = expandable === undefined ? true : expandable;
 
@@ -212,26 +227,30 @@ export function BalanceListItem({ publicKey, markets, expandable }) {
             secondary={publicKey.toBase58()}
             secondaryTypographyProps={{ className: classes.address }}
           />
-          {price && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-              }}
-            >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            {price === undefined ? (
+              <>{/* Loading */}</>
+            ) : price !== null ? (
               <Typography color="textSecondary">
                 ${((amount / Math.pow(10, decimals)) * price).toFixed(2)}
               </Typography>
-            </div>
-          )}
+            ) : (
+              <Typography color="textSecondary">N/A</Typography>
+            )}
+          </div>
         </div>
         {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <BalanceListItemDetails
           publicKey={publicKey}
-          markets={markets}
+          serumMarkets={serumMarkets}
           balanceInfo={balanceInfo}
         />
       </Collapse>
@@ -239,7 +258,7 @@ export function BalanceListItem({ publicKey, markets, expandable }) {
   );
 }
 
-function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
+function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -283,7 +302,11 @@ function BalanceListItemDetails({ publicKey, markets, balanceInfo }) {
   const exportNeedsDisplay =
     mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
 
-  const market = markets[tokenSymbol.toUpperCase()].publicKey;
+  const market = tokenSymbol
+    ? serumMarkets[tokenSymbol.toUpperCase()]
+      ? serumMarkets[tokenSymbol.toUpperCase()].publicKey
+      : undefined
+    : undefined;
 
   return (
     <>
@@ -443,10 +466,18 @@ class PriceStore {
         fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
           (resp) => {
             resp.json().then((resp) => {
-              const mid =
-                (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
-              this.cache[marketName] = mid;
-              resolve(this.cache[marketName]);
+              if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
+                resolve(undefined);
+              } else if (resp.data.asks.length === 0) {
+                resolve(resp.data.bids[0]);
+              } else if (resp.data.bids.length === 0) {
+                resolve(resp.data.asks[0]);
+              } else {
+                const mid =
+                  (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
+                this.cache[marketName] = mid;
+                resolve(this.cache[marketName]);
+              }
             });
           },
         );

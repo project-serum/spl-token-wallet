@@ -6,7 +6,7 @@
     "@ledgerhq/hw-transport-webusb": "^5.34.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
-    "@project-serum/serum": "^0.13.14",
+    "@project-serum/serum": "^0.13.23",
     "@solana/web3.js": "^0.87.2",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
