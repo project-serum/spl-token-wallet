@@ -13,6 +13,7 @@ import {
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
+  transferAndClose,
 } from './tokens';
 import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
 import {
@@ -84,7 +85,14 @@ export class Wallet {
     );
   };
 
-  transferToken = async (source, destination, amount, mint, memo = null, overrideDestinationCheck = false) => {
+  transferToken = async (
+    source,
+    destination,
+    amount,
+    mint,
+    memo = null,
+    overrideDestinationCheck = false,
+  ) => {
     if (source.equals(this.publicKey)) {
       if (memo) {
         throw new Error('Memo not implemented');
@@ -107,11 +115,22 @@ export class Wallet {
     return nativeTransfer(this.connection, this, destination, amount);
   };
 
-  closeTokenAccount = async (publicKey) => {
+  closeTokenAccount = async (publicKey, skipPreflight = false) => {
     return await closeTokenAccount({
       connection: this.connection,
       owner: this,
       sourcePublicKey: publicKey,
+      skipPreflight,
+    });
+  };
+
+  transferAndClose = async (source, destination, amount) => {
+    return await transferAndClose({
+      connection: this.connection,
+      owner: this,
+      sourcePublicKey: source,
+      destinationPublicKey: destination,
+      amount,
     });
   };
 
