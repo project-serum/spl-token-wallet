@@ -202,6 +202,16 @@ export const TOKENS = {
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png',
     },
+    {
+      tokenSymbol: 'MAPS',
+      mintAddress: 'MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb',
+      tokenName: 'Maps.me Token',
+    },
+    {
+      tokenSymbol: 'RAY',
+      mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+      tokenName: 'Raydium',
+    },
   ],
 };
 
