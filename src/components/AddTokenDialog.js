@@ -104,7 +104,8 @@ export default function AddTokenDialog({ open, onClose }) {
 
     let mint = new PublicKey(mintAddress);
     updateTokenName(mint, tokenName, tokenSymbol);
-    return await wallet.createTokenAccount(mint);
+    const resp = await wallet.createAssociatedTokenAccount(mint);
+    return resp[1];
   }
 
   let valid = true;

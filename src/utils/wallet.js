@@ -10,6 +10,7 @@ import {
 import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
+  createAssociatedTokenAccount,
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
@@ -76,6 +77,14 @@ export class Wallet {
       payer: this,
       mintPublicKey: tokenAddress,
       newAccount: new Account(),
+    });
+  };
+
+  createAssociatedTokenAccount = async (splTokenMintAddress) => {
+    return await createAssociatedTokenAccount({
+      connection: this.connection,
+      wallet: this,
+      splTokenMintAddress,
     });
   };
 
