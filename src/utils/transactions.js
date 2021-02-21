@@ -104,7 +104,7 @@ const toInstruction = async (
         decodedInstruction,
       );
     } else if (programId.equals(RAYDIUM_STAKE_PROGRAM_ID)) {
-      console.log('[' + index + '] Handled as raydium instruction');
+      console.log('[' + index + '] Handled as raydium stake instruction');
       const decodedInstruction = decodeStakeInstruction(decoded);
       return await handleRayStakeInstruction(
         connection,
@@ -113,6 +113,7 @@ const toInstruction = async (
         decodedInstruction,
       );
     } else if (programId.equals(RAYDIUM_LP_PROGRAM_ID)) {
+      console.log('[' + index + '] Handled as raydium lp instruction');
       const decodedInstruction = decodeLpInstruction(decoded);
       return await handleRayLpInstruction(
         connection,
