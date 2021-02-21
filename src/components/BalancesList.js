@@ -230,14 +230,10 @@ export function BalanceListItem({ publicKey, expandable }) {
               flexDirection: 'column',
             }}
           >
-            {price === undefined ? (
-              <>{/* Loading */}</>
-            ) : price !== null ? (
+            {price && (
               <Typography color="textSecondary">
                 ${((amount / Math.pow(10, decimals)) * price).toFixed(2)}
               </Typography>
-            ) : (
-              <Typography color="textSecondary">N/A</Typography>
             )}
           </div>
         </div>
