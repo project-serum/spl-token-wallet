@@ -11,7 +11,11 @@ import {
   NEW_ORDER_OPEN_ORDERS_INDEX,
   NEW_ORDER_OWNER_INDEX,
 } from '@project-serum/serum';
+import { PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
+
+const RAYDIUM_STAKE_PROGRAM_ID = new PublicKey('EhhTKczWMGQt46ynNeRX1WfeagwwJd7ufHvCDjRxjo5Q');
+const RAYDIUM_LP_PROGRAM_ID = new PublicKey('RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr');
 
 const marketCache = {};
 let marketCacheConnection = null;
@@ -99,6 +103,24 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
+    } else if (programId.equals(RAYDIUM_STAKE_PROGRAM_ID)) {
+      console.log('[' + index + '] Handled as raydium stake instruction');
+      const decodedInstruction = decodeStakeInstruction(decoded);
+      return await handleRayStakeInstruction(
+        connection,
+        instruction,
+        accountKeys,
+        decodedInstruction,
+      );
+    } else if (programId.equals(RAYDIUM_LP_PROGRAM_ID)) {
+      console.log('[' + index + '] Handled as raydium lp instruction');
+      const decodedInstruction = decodeLpInstruction(decoded);
+      return await handleRayLpInstruction(
+        connection,
+        instruction,
+        accountKeys,
+        decodedInstruction,
+      );
     }
   } catch {}
 
@@ -106,6 +128,40 @@ const toInstruction = async (
   console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
 
   return;
+};
+
+const handleRayStakeInstruction = async (
+  connection,
+  instruction,
+  accountKeys,
+  decodedInstruction,
+) => {
+  // TODO
+  return {
+    type: 'raydium',
+  };
+};
+
+const handleRayLpInstruction = async (
+  connection,
+  instruction,
+  accountKeys,
+  decodedInstruction,
+) => {
+  // TODO
+  return {
+    type: 'raydium',
+  };
+};
+
+const decodeStakeInstruction = () => {
+  // TODO
+  return undefined;
+};
+
+const decodeLpInstruction = () => {
+  // TODO
+  return undefined;
 };
 
 const handleDexInstruction = async (

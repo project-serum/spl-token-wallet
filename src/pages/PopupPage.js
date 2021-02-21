@@ -328,7 +328,9 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       if (!instruction) {
         unsafe = true;
       } else {
-        if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+        if (instruction.type === 'raydium') {
+          // Whitelist raydium for now.
+        } else if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
