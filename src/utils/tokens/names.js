@@ -211,6 +211,7 @@ export const TOKENS = {
       tokenSymbol: 'RAY',
       mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
       tokenName: 'Raydium',
+      icon: 'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
     },
   ],
 };
