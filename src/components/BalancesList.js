@@ -221,7 +221,7 @@ export function BalanceListItem({ publicKey, expandable }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
-  if (wallet.publicKey && mint) {
+  if (wallet && wallet.publicKey && mint) {
     findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
       if (assocTok.equals(publicKey)) {
         setIsAssociatedToken(true);
