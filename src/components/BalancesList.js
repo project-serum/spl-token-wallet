@@ -32,6 +32,7 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
+import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import { MARKETS } from '@project-serum/serum';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -217,6 +218,30 @@ export function BalanceListItem({ publicKey, expandable }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  const subtitle = (
+    <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          marginRight: '5px',
+        }}
+      >
+        <FingerprintIcon style={{ width: '20px' }} />
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        {publicKey.toBase58()}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
@@ -232,7 +257,7 @@ export function BalanceListItem({ publicKey, expandable }) {
                 {tokenSymbol ? ` (${tokenSymbol})` : null}
               </>
             }
-            secondary={publicKey.toBase58()}
+            secondary={subtitle}
             secondaryTypographyProps={{ className: classes.address }}
           />
           <div
