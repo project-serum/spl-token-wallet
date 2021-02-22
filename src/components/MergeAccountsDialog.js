@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import { TokenInstructions } from '@project-serum/serum';
 import { useWalletPublicKeys } from '../utils/wallet';
 import {
@@ -174,8 +175,8 @@ export default function MergeAccountsDialog({ open, onClose }) {
                 rel="noopener"
               >
                 associated token accounts
-              </Link>
-              {', '}
+              </Link>{' '}
+              <FingerprintIcon style={{ marginBottom: '-7px' }} />,{' '}
               deduplicating and closing any accounts that share the same mint.
               If associated token accounts do not exist, then they will be
               created.
@@ -183,7 +184,8 @@ export default function MergeAccountsDialog({ open, onClose }) {
             <DialogContentText>
               If merging fails during a period of high network load, you will
               not have lost your funds. Just recontinue the merge from where you
-              left off.
+              left off. If you have a lot of accounts, merging might take a
+              while.
             </DialogContentText>
             <TextField
               label={`Please type "merge" to confirm`}
