@@ -225,7 +225,10 @@ nameUpdated.setMaxListeners(100);
 export function useTokenName(mint) {
   const { endpoint } = useConnectionConfig();
   useListener(nameUpdated, 'update');
+  return getTokenName(mint, endpoint);
+}
 
+export function getTokenName(mint, endpoint) {
   if (!mint) {
     return { name: null, symbol: null };
   }
