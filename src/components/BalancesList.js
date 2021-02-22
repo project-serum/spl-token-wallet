@@ -10,6 +10,7 @@ import {
   useWalletPublicKeys,
   useWalletSelector,
 } from '../utils/wallet';
+import { findAssociatedTokenAddress } from '../utils/tokens';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
@@ -180,10 +181,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function BalanceListItem({ publicKey, expandable }) {
+  const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
+  const [isAssociatedToken, setIsAssociatedToken] = useState(false);
   // Valid states:
   //   * undefined => loading.
   //   * null => not found.
@@ -218,18 +221,28 @@ export function BalanceListItem({ publicKey, expandable }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  if (wallet.publicKey && mint) {
+    findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+      if (assocTok.equals(publicKey)) {
+        setIsAssociatedToken(true);
+      }
+    });
+  }
+
   const subtitle = (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          marginRight: '5px',
-        }}
-      >
-        <FingerprintIcon style={{ width: '20px' }} />
-      </div>
+      {isAssociatedToken && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            marginRight: '5px',
+          }}
+        >
+          <FingerprintIcon style={{ width: '20px' }} />
+        </div>
+      )}
       <div
         style={{
           display: 'flex',
