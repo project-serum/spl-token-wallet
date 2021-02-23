@@ -64,7 +64,6 @@ export async function swapErc20ToSpl({
   let gasLimit = await erc20.methods
     .approve(swapAddress, encodedAmount)
     .estimateGas({ from: ethAccount });
-
   const approveTx = erc20.methods
     .approve(swapAddress, encodedAmount)
     .send({ from: ethAccount, gasLimit });
@@ -165,7 +164,7 @@ export async function withdrawEth(from, withdrawal, callAsync) {
     return;
   }
   pendingNonces.add(nonce);
-  const gasLimit = await method.send({ from });
+  const gasLimit = await method.estimateGas({ from });
   await callAsync(method.send({ from, gasLimit }), {
     progressMessage: `Completing ${withdrawal.coin.ticker} transfer...`,
   });
