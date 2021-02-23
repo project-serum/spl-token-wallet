@@ -61,16 +61,24 @@ export async function swapErc20ToSpl({
 
   const encodedAmount = addDecimals(amount, decimals);
 
+  let gasLimit = await erc20.methods
+    .approve(swapAddress, encodedAmount)
+    .estimateGas({ from: ethAccount });
+
   const approveTx = erc20.methods
     .approve(swapAddress, encodedAmount)
-    .send({ from: ethAccount });
+    .send({ from: ethAccount, gasLimit });
   await waitForTxid(approveTx);
 
   onStatusChange({ step: 1 });
 
+  gasLimit = swap.methods
+    .swapErc20(erc20Address, destination, encodedAmount)
+    .estimateGas({ from: ethAccount });
+
   const swapTx = swap.methods
     .swapErc20(erc20Address, destination, encodedAmount)
-    .send({ from: ethAccount, gasLimit: 200000 });
+    .send({ from: ethAccount, gasLimit });
   const swapTxid = await waitForTxid(swapTx);
 
   onStatusChange({ step: 2, txid: swapTxid, confirms: 0 });
@@ -157,7 +165,8 @@ export async function withdrawEth(from, withdrawal, callAsync) {
     return;
   }
   pendingNonces.add(nonce);
-  await callAsync(method.send({ from, gasLimit: 200000 }), {
+  const gasLimit = await method.send({ from });
+  await callAsync(method.send({ from, gasLimit }), {
     progressMessage: `Completing ${withdrawal.coin.ticker} transfer...`,
   });
   pendingNonces.delete(nonce);
