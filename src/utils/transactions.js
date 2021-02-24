@@ -10,6 +10,8 @@ import {
   SETTLE_FUNDS_QUOTE_WALLET_INDEX,
   NEW_ORDER_OPEN_ORDERS_INDEX,
   NEW_ORDER_OWNER_INDEX,
+  NEW_ORDER_V3_OPEN_ORDERS_INDEX,
+  NEW_ORDER_V3_OWNER_INDEX,
 } from '@project-serum/serum';
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
@@ -233,6 +235,9 @@ const handleDexInstruction = async (
   } else if (type === 'newOrder') {
     const newOrderData = getNewOrderData(accounts, accountKeys);
     data = { ...data, ...newOrderData };
+  } else if (type === 'newOrderV3') {
+    const newOrderData = getNewOrderV3Data(accounts, accountKeys);
+    data = { ...data, ...newOrderData };
   }
   return {
     type,
@@ -378,6 +383,20 @@ const getNewOrderData = (accounts, accountKeys) => {
   );
   return { openOrdersPubkey, ownerPubkey };
 };
+
+const getNewOrderV3Data = (accounts, accountKeys) => {
+  const openOrdersPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    NEW_ORDER_V3_OPEN_ORDERS_INDEX,
+  );
+  const ownerPubkey = getAccountByIndex(
+    accounts,
+    accountKeys,
+    NEW_ORDER_V3_OWNER_INDEX,
+  );
+  return { openOrdersPubkey, ownerPubkey };
+}
 
 const getSettleFundsData = (accounts, accountKeys) => {
   const basePubkey = getAccountByIndex(

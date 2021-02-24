@@ -465,6 +465,7 @@ function ApproveSignatureForm({
   const getContent = (instruction) => {
     switch (instruction?.type) {
       case 'cancelOrder':
+      case 'cancelOrderV2':
       case 'matchOrders':
       case 'settleFunds':
         return (
@@ -495,6 +496,10 @@ function ApproveSignatureForm({
       case 'newOrder':
         return (
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
+      case 'newOrderV3':
+        return (
+          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} v3={true} />
         );
       default:
         return <UnknownInstruction instruction={instruction} />;
