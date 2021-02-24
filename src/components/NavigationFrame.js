@@ -21,9 +21,11 @@ import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 import AddAccountDialog from './AddAccountDialog';
 import DeleteAccountDialog from './DeleteAccountDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
+import { ExportMnemonicDialog } from './ExportAccountDialog.js';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -139,6 +141,7 @@ function WalletSelector() {
   ] = useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
+  const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
   const classes = useStyles();
 
   if (accounts.length === 0) {
@@ -177,6 +180,10 @@ function WalletSelector() {
           });
           setAddAccountOpen(false);
         }}
+      />
+      <ExportMnemonicDialog
+        open={exportMnemonicOpen}
+        onClose={() => setExportMnemonicOpen(false)}
       />
       <DeleteAccountDialog
         open={deleteAccountOpen}
@@ -247,6 +254,17 @@ function WalletSelector() {
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Add Account
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            setExportMnemonicOpen(true);
+          }}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+            <ImportExportIcon fontSize="small" />
+          </ListItemIcon>
+          Export Mnemonic
         </MenuItem>
         <MenuItem
           onClick={() => {
