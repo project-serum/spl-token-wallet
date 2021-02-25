@@ -239,5 +239,5 @@ export async function estimateEthWithdrawalFee(withdrawal) {
   if (isNaN(gasEstimate) || isNaN(gasPrice)) {
     return null;
   }
-  return (gasEstimate  *  gasPrice) / 1e18;
+  return (gasEstimate * gasPrice) / 1e18;
 }

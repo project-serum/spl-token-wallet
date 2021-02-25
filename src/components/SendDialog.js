@@ -35,7 +35,7 @@ import {
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
-import { Switch } from "@material-ui/core";
+import { Switch } from '@material-ui/core';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -67,13 +67,13 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         <DialogTitle>
           Send {tokenName ?? abbreviateAddress(mint)}
           {tokenSymbol ? ` (${tokenSymbol})` : null}
-        {ethAccount && (
-          <div>
-            <Typography color="textSecondary" style={{ fontSize: '14px' }}>
-              Metamask connected: {ethAccount}
-            </Typography>
-          </div>
-        )}
+          {ethAccount && (
+            <div>
+              <Typography color="textSecondary" style={{ fontSize: '14px' }}>
+                Metamask connected: {ethAccount}
+              </Typography>
+            </div>
+          )}
         </DialogTitle>
         {swapCoinInfo ? (
           <Tabs
@@ -218,7 +218,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       amount,
       balanceInfo.mint,
       null,
-      overrideDestinationCheck
+      overrideDestinationCheck,
     );
   }
 
@@ -230,12 +230,18 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
-        { shouldShowOverride && (
-          <div style={{'align-items': 'center', 'display': 'flex', 'text-align': 'left'}}>
+        {shouldShowOverride && (
+          <div
+            style={{
+              'align-items': 'center',
+              display: 'flex',
+              'text-align': 'left',
+            }}
+          >
             <b>This address has no funds. Are you sure it's correct?</b>
             <Switch
               checked={overrideDestinationCheck}
-              onChange={e => setOverrideDestinationCheck(e.target.checked)}
+              onChange={(e) => setOverrideDestinationCheck(e.target.checked)}
               color="primary"
             />
           </div>
@@ -465,7 +471,12 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
 }
 
-function useForm(balanceInfo, addressHelperText, passAddressValidation, overrideValidation) {
+function useForm(
+  balanceInfo,
+  addressHelperText,
+  passAddressValidation,
+  overrideValidation,
+) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
@@ -497,13 +508,15 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation, override
         margin="normal"
         type="number"
         InputProps={{
-          endAdornment:  (
+          endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={() =>
-                setTransferAmountString(
-                  balanceAmountToUserAmount(balanceAmount, decimals),
-                )
-              }>
+              <Button
+                onClick={() =>
+                  setTransferAmountString(
+                    balanceAmountToUserAmount(balanceAmount, decimals),
+                  )
+                }
+              >
                 MAX
               </Button>
               {tokenSymbol ? tokenSymbol : null}
@@ -540,7 +553,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation, override
 }
 
 function balanceAmountToUserAmount(balanceAmount, decimals) {
-  return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals)
+  return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals);
 }
 
 function EthWithdrawalCompleter({ ethAccount, publicKey }) {
@@ -604,9 +617,7 @@ export function EthWithdrawalFeeEstimate({ publicKey }) {
 
   if (!withdrawal) {
     return (
-      <DialogContentText color="textPrimary">
-        Loading...
-      </DialogContentText>
+      <DialogContentText color="textPrimary">Loading...</DialogContentText>
     );
   } else if (!ethFeeEstimate) {
     return (
@@ -620,7 +631,8 @@ export function EthWithdrawalFeeEstimate({ publicKey }) {
 
   return (
     <DialogContentText color="textPrimary">
-      {ethFeeEstimate.toFixed(4)}{' ETH'}
+      {ethFeeEstimate.toFixed(4)}
+      {' ETH'}
       {usdFeeEstimate && ` (${usdFeeEstimate.toFixed(2)} USD)`}
     </DialogContentText>
   );

@@ -273,8 +273,8 @@ function RestoreWalletForm({ goBack }) {
               Restore Existing Wallet
             </Typography>
             <Typography>
-              Restore your wallet using your twelve or twenty-four seed words. Note that this
-              will delete any existing wallet on this device.
+              Restore your wallet using your twelve or twenty-four seed words.
+              Note that this will delete any existing wallet on this device.
             </Typography>
             <TextField
               variant="outlined"
