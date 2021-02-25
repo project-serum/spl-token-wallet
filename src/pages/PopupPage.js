@@ -119,10 +119,10 @@ export default function PopupPage({ opener }) {
         ? [bs58.decode(request.params.message)]
         : request.params.messages.map((m) => bs58.decode(m));
 
-    async function onApprove() {
+    async function onApprove(didAutoApprove) {
       setRequests((requests) => requests.slice(1));
       if (request.method === 'signTransaction') {
-        sendSignature(messages[0]);
+        sendSignature(messages[0], didAutoApprove);
       } else {
         sendAllSignatures(messages);
       }
@@ -131,17 +131,18 @@ export default function PopupPage({ opener }) {
       }
     }
 
-    async function sendSignature(message) {
+    async function sendSignature(message, didAutoApprove) {
       postMessage({
         result: {
           signature: await wallet.createSignature(message),
           publicKey: wallet.publicKey.toBase58(),
+          didAutoApprove,
         },
         id: request.id,
       });
     }
 
-    async function sendAllSignatures(messages) {
+    async function sendAllSignatures(messages, didAutoApprove) {
       const signatures = await Promise.all(
         messages.map((m) => wallet.createSignature(m)),
       );
@@ -149,6 +150,7 @@ export default function PopupPage({ opener }) {
         result: {
           signatures,
           publicKey: wallet.publicKey.toBase58(),
+          didAutoApprove,
         },
         id: request.id,
       });
@@ -435,8 +437,10 @@ function ApproveSignatureForm({
     };
   }, [publicKeys, txInstructions, wallet]);
 
+  const didAutoApprove = validator.safe && autoApprove;
+
   useEffect(() => {
-    if (validator.safe && autoApprove) {
+    if (didAutoApprove) {
       console.log('Auto approving safe transaction');
       onApprove();
     } else {
@@ -596,7 +600,7 @@ function ApproveSignatureForm({
           className={classes.approveButton}
           variant="contained"
           color="primary"
-          onClick={onApprove}
+          onClick={() => onApprove(didAutoApprove)}
         >
           Approve{isMultiTx ? ' All' : ''}
         </Button>
