@@ -124,7 +124,7 @@ function addDecimals(str, decimals) {
 
 const pendingNonces = new Set();
 
-export async function withdrawEth(from, withdrawal, callAsync) {
+function prepareWithdrawal(withdrawal) {
   const { params, signature } = withdrawal.txData;
   const swap = new web3.eth.Contract(SWAP_ABI, params[1]);
   let method, nonce;
@@ -146,9 +146,14 @@ export async function withdrawEth(from, withdrawal, callAsync) {
     );
     nonce = params[4];
   } else {
-    return;
+    return {};
   }
-  if (pendingNonces.has(nonce)) {
+  return { method, nonce };
+}
+
+export async function withdrawEth(from, withdrawal, callAsync) {
+  const { method, nonce } = prepareWithdrawal(withdrawal);
+  if (!method || pendingNonces.has(nonce)) {
     return;
   }
   try {
@@ -222,4 +227,17 @@ export function ConnectToMetamaskButton() {
       Connect to MetaMask
     </Button>
   );
+}
+
+export async function estimateEthWithdrawalFee(withdrawal) {
+  const { method } = prepareWithdrawal(withdrawal);
+  if (!method) {
+    return null;
+  }
+  const gasEstimate = Number(await method.estimateGas());
+  const gasPrice = Number(await web3.eth.getGasPrice());
+  if (isNaN(gasEstimate) || isNaN(gasPrice)) {
+    return null;
+  }
+  return (gasEstimate  *  gasPrice) / 1e18;
 }

@@ -17,9 +17,11 @@ import Tab from '@material-ui/core/Tab';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
+  estimateEthWithdrawalFee,
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
+import { serumMarkets, priceStore } from '../utils/markets';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -355,6 +357,12 @@ function SendSwapDialog({
           {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </DialogContentText>
+        {blockchain === 'eth' && (
+          <DialogContentText>
+            Estimated Withdrawal Fee:{' '}
+            <EthWithdrawalFeeEstimate publicKey={publicKey} />
+          </DialogContentText>
+        )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
@@ -567,4 +575,53 @@ function EthWithdrawalCompleterItem({ ethAccount, swap }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withdrawal.txid, withdrawal.status]);
   return null;
+}
+
+export function EthWithdrawalFeeEstimate({ publicKey }) {
+  const [ethFeeEstimate, setEthFeeEstimate] = useState(null);
+  const [ethPrice, setEthPrice] = useState(null);
+  const connection = useConnection();
+
+  const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
+    refreshInterval: 2_000,
+  });
+  const withdrawal = swaps?.[0]?.withdrawal;
+
+  useEffect(() => {
+    if (withdrawal) {
+      estimateEthWithdrawalFee(withdrawal).then(setEthFeeEstimate);
+    } else {
+      setEthFeeEstimate(null);
+    }
+  }, [withdrawal]);
+
+  useEffect(() => {
+    if (ethPrice === null) {
+      let m = serumMarkets['ETH'];
+      priceStore.getPrice(connection, m.name).then(setEthPrice);
+    }
+  }, [ethPrice]);
+
+  if (!withdrawal) {
+    return (
+      <DialogContentText color="textPrimary">
+        Loading...
+      </DialogContentText>
+    );
+  } else if (!ethFeeEstimate) {
+    return (
+      <DialogContentText color="textPrimary">
+        Unable to estimate
+      </DialogContentText>
+    );
+  }
+
+  let usdFeeEstimate = ethPrice !== null ? ethPrice * ethFeeEstimate : null;
+
+  return (
+    <DialogContentText color="textPrimary">
+      {ethFeeEstimate.toFixed(4)}{' ETH'}
+      {usdFeeEstimate && ` (${usdFeeEstimate.toFixed(2)} USD)`}
+    </DialogContentText>
+  );
 }
