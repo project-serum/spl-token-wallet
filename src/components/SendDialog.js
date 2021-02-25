@@ -359,7 +359,7 @@ function SendSwapDialog({
         </DialogContentText>
         {blockchain === 'eth' && (
           <DialogContentText>
-            Estimated Withdrawal Fee:{' '}
+            Estimated Withdrawal Fee:
             <EthWithdrawalFeeEstimate publicKey={publicKey} />
           </DialogContentText>
         )}
