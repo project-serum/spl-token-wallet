@@ -613,7 +613,7 @@ export function EthWithdrawalFeeEstimate({ publicKey }) {
       let m = serumMarkets['ETH'];
       priceStore.getPrice(connection, m.name).then(setEthPrice);
     }
-  }, [ethPrice]);
+  }, [ethPrice, connection]);
 
   if (!withdrawal) {
     return (
