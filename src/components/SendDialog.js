@@ -393,7 +393,6 @@ function SendSwapDialog({
         <span>{sendButton}</span>
       </Tooltip>
     );
-    console.log('wrapped');
   }
 
   return (
