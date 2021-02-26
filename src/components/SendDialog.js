@@ -17,7 +17,6 @@ import Tab from '@material-ui/core/Tab';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
-  estimateEthWithdrawalFee,
   getErc20Balance,
   useEthAccount,
   withdrawEth,
