@@ -35,7 +35,7 @@ import {
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
-import { Switch } from '@material-ui/core';
+import { Switch, Tooltip } from '@material-ui/core';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -305,7 +305,6 @@ function SendSwapDialog({
     typeof ethBalance === 'number' &&
     typeof ethFeeEstimate === 'number' &&
     ethBalance < ethFeeEstimate;
-  const [overrideEthBalanceCheck, setOverrideEthBalanceCheck] = useState(false);
 
   useEffect(() => {
     if (blockchain === 'eth' && ethAccount) {
@@ -370,6 +369,33 @@ function SendSwapDialog({
     );
   }
 
+  let sendButton = (
+    <Button
+      type="submit"
+      color="primary"
+      disabled={
+        sending ||
+        (needMetamask && !ethAccount) ||
+        !validAmount ||
+        insufficientEthBalance
+      }
+    >
+      Send
+    </Button>
+  );
+
+  if (insufficientEthBalance) {
+    sendButton = (
+      <Tooltip
+        title="Insufficient ETH for withdrawal transaction fee"
+        placement="top"
+      >
+        <span>{sendButton}</span>
+      </Tooltip>
+    );
+    console.log('wrapped');
+  }
+
   return (
     <>
       <DialogContent style={{ paddingTop: 16 }}>
@@ -385,7 +411,7 @@ function SendSwapDialog({
         </DialogContentText>
         {blockchain === 'eth' && (
           <DialogContentText>
-            Estimated Withdrawal Fee:
+            Estimated withdrawal transaction fee:
             <EthWithdrawalFeeEstimate
               ethFeeData={ethFeeData}
               insufficientEthBalance={insufficientEthBalance}
@@ -395,38 +421,8 @@ function SendSwapDialog({
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
-        {insufficientEthBalance && (
-          <div
-            style={{
-              'align-items': 'center',
-              display: 'flex',
-              'text-align': 'left',
-            }}
-          >
-            <b>
-              Your wallet has insufficient ETH to complete the transaction. Are
-              you sure you want to proceed?
-            </b>
-            <Switch
-              checked={overrideEthBalanceCheck}
-              onChange={(e) => setOverrideEthBalanceCheck(e.target.checked)}
-              color="secondary"
-            />
-          </div>
-        )}
         <Button onClick={onClose}>Cancel</Button>
-        <Button
-          type="submit"
-          color="primary"
-          disabled={
-            sending ||
-            (needMetamask && !ethAccount) ||
-            !validAmount ||
-            (insufficientEthBalance && !overrideEthBalanceCheck)
-          }
-        >
-          Send
-        </Button>
+        {sendButton}
       </DialogActions>
     </>
   );
