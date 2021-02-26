@@ -366,7 +366,10 @@ function SendSwapDialog({
         {blockchain === 'eth' && (
           <DialogContentText>
             Estimated Withdrawal Fee:
-            <EthWithdrawalFeeEstimate publicKey={publicKey} />
+            <EthWithdrawalFeeEstimate
+              ethAccount={ethAccount}
+              erc20Contract={swapCoinInfo.erc20Contract}
+            />
           </DialogContentText>
         )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
@@ -590,24 +593,16 @@ function EthWithdrawalCompleterItem({ ethAccount, swap }) {
   return null;
 }
 
-export function EthWithdrawalFeeEstimate({ publicKey }) {
-  const [ethFeeEstimate, setEthFeeEstimate] = useState(null);
+export function EthWithdrawalFeeEstimate({ ethAccount, erc20Contract }) {
+  let [ethFeeEstimate, loaded, error] = useSwapApiGet(
+    `fees/eth/${ethAccount}` + (erc20Contract ? '/' + erc20Contract : ''),
+    {
+      refreshInterval: 2000,
+    },
+  );
+
   const [ethPrice, setEthPrice] = useState(null);
   const connection = useConnection();
-
-  const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
-    refreshInterval: 2_000,
-  });
-  const withdrawal = swaps?.[0]?.withdrawal;
-
-  useEffect(() => {
-    if (withdrawal) {
-      estimateEthWithdrawalFee(withdrawal).then(setEthFeeEstimate);
-    } else {
-      setEthFeeEstimate(null);
-    }
-  }, [withdrawal]);
-
   useEffect(() => {
     if (ethPrice === null) {
       let m = serumMarkets['ETH'];
@@ -615,11 +610,11 @@ export function EthWithdrawalFeeEstimate({ publicKey }) {
     }
   }, [ethPrice, connection]);
 
-  if (!withdrawal) {
+  if (!loaded && !error) {
     return (
       <DialogContentText color="textPrimary">Loading...</DialogContentText>
     );
-  } else if (!ethFeeEstimate) {
+  } else if (error) {
     return (
       <DialogContentText color="textPrimary">
         Unable to estimate
