@@ -18,6 +18,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
   estimateEthWithdrawalFee,
+  getErc20Balance,
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
@@ -287,6 +288,26 @@ function SendSwapDialog({
     : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
 
+  const [ethBalance] = useAsyncData(
+    () => getErc20Balance(ethAccount),
+    'ethBalance',
+    {
+      refreshInterval: 2000,
+    },
+  );
+  const ethFeeData = useSwapApiGet(
+    blockchain === 'eth' &&
+      `fees/eth/${ethAccount}` +
+        (swapCoinInfo.erc20Contract ? '/' + swapCoinInfo.erc20Contract : ''),
+    { refreshInterval: 2000 },
+  );
+  const [ethFeeEstimate] = ethFeeData;
+  const insufficientEthBalance =
+    typeof ethBalance === 'number' &&
+    typeof ethFeeEstimate === 'number' &&
+    ethBalance < ethFeeEstimate;
+  const [overrideEthBalanceCheck, setOverrideEthBalanceCheck] = useState(false);
+
   useEffect(() => {
     if (blockchain === 'eth' && ethAccount) {
       setDestinationAddress(ethAccount);
@@ -367,19 +388,43 @@ function SendSwapDialog({
           <DialogContentText>
             Estimated Withdrawal Fee:
             <EthWithdrawalFeeEstimate
-              ethAccount={ethAccount}
-              erc20Contract={swapCoinInfo.erc20Contract}
+              ethFeeData={ethFeeData}
+              insufficientEthBalance={insufficientEthBalance}
             />
           </DialogContentText>
         )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
+        {insufficientEthBalance && (
+          <div
+            style={{
+              'align-items': 'center',
+              display: 'flex',
+              'text-align': 'left',
+            }}
+          >
+            <b>
+              Your wallet has insufficient ETH to complete the transaction. Are
+              you sure you want to proceed?
+            </b>
+            <Switch
+              checked={overrideEthBalanceCheck}
+              onChange={(e) => setOverrideEthBalanceCheck(e.target.checked)}
+              color="secondary"
+            />
+          </div>
+        )}
         <Button onClick={onClose}>Cancel</Button>
         <Button
           type="submit"
           color="primary"
-          disabled={sending || (needMetamask && !ethAccount) || !validAmount}
+          disabled={
+            sending ||
+            (needMetamask && !ethAccount) ||
+            !validAmount ||
+            (insufficientEthBalance && !overrideEthBalanceCheck)
+          }
         >
           Send
         </Button>
@@ -593,14 +638,11 @@ function EthWithdrawalCompleterItem({ ethAccount, swap }) {
   return null;
 }
 
-export function EthWithdrawalFeeEstimate({ ethAccount, erc20Contract }) {
-  let [ethFeeEstimate, loaded, error] = useSwapApiGet(
-    `fees/eth/${ethAccount}` + (erc20Contract ? '/' + erc20Contract : ''),
-    {
-      refreshInterval: 2000,
-    },
-  );
-
+export function EthWithdrawalFeeEstimate({
+  ethFeeData,
+  insufficientEthBalance,
+}) {
+  let [ethFeeEstimate, loaded, error] = ethFeeData;
   const [ethPrice, setEthPrice] = useState(null);
   const connection = useConnection();
   useEffect(() => {
@@ -625,7 +667,9 @@ export function EthWithdrawalFeeEstimate({ ethAccount, erc20Contract }) {
   let usdFeeEstimate = ethPrice !== null ? ethPrice * ethFeeEstimate : null;
 
   return (
-    <DialogContentText color="textPrimary">
+    <DialogContentText
+      color={insufficientEthBalance ? 'secondary' : 'textPrimary'}
+    >
       {ethFeeEstimate.toFixed(4)}
       {' ETH'}
       {usdFeeEstimate && ` (${usdFeeEstimate.toFixed(2)} USD)`}
