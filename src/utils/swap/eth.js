@@ -124,33 +124,6 @@ function addDecimals(str, decimals) {
 
 const pendingNonces = new Set();
 
-function prepareWithdrawal(withdrawal) {
-  const { params, signature } = withdrawal.txData;
-  const swap = new web3.eth.Contract(SWAP_ABI, params[1]);
-  let method, nonce;
-  if (params[0] === 'withdrawErc20') {
-    method = swap.methods.withdrawErc20(
-      params[2],
-      params[3],
-      params[4],
-      params[5],
-      signature,
-    );
-    nonce = params[5];
-  } else if (params[0] === 'withdrawEth') {
-    method = swap.methods.withdrawEth(
-      params[2],
-      params[3],
-      params[4],
-      signature,
-    );
-    nonce = params[4];
-  } else {
-    return {};
-  }
-  return { method, nonce };
-}
-
 export async function withdrawEth(from, withdrawal, callAsync) {
   const { params, signature } = withdrawal.txData;
   const swap = new web3.eth.Contract(SWAP_ABI, params[1]);
