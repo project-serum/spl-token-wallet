@@ -3,11 +3,9 @@ import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 import { useWallet } from '../../utils/wallet';
 
-export default function Neworder({ instruction, onOpenAddress }) {
+export default function Neworder({ instruction, onOpenAddress, v3=false }) {
   const wallet = useWallet();
   const { data, market, marketInfo } = instruction;
-  const { side, limitPrice, maxQuantity, orderType, ownerPubkey } = data;
-
   const marketLabel =
     (marketInfo &&
       marketInfo?.name + (marketInfo?.deprecated ? ' (deprecated)' : '')) ||
@@ -19,6 +17,8 @@ export default function Neworder({ instruction, onOpenAddress }) {
     return isOwner ? 'This wallet' : address?.toBase58() || 'Unknown';
   };
 
+  const { side, limitPrice, orderType, ownerPubkey } = data;
+  const maxQuantity = v3 ? data.maxBaseQuantity : data.maxQuantity;
   return (
     <>
       <Typography
