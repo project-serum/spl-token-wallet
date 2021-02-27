@@ -34,7 +34,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
 import FingerprintIcon from '@material-ui/icons/Fingerprint';
-import { MARKETS } from '@project-serum/serum';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -44,11 +43,12 @@ import {
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { serumMarkets, priceStore } from '../utils/markets';
 import { swapApiRequest } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
 import { useAsyncData } from '../utils/fetch-loop';
 import { showTokenInfoDialog } from '../utils/config';
-import { useConnection, MAINNET_URL } from '../utils/connection';
+import { useConnection } from '../utils/connection';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
@@ -60,28 +60,6 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 4,
   useGrouping: true,
 });
-
-const serumMarkets = (() => {
-  const m = {};
-  MARKETS.forEach((market) => {
-    const coin = market.name.split('/')[0];
-    if (m[coin]) {
-      // Only override a market if it's not deprecated	.
-      if (!m.deprecated) {
-        m[coin] = {
-          publicKey: market.address,
-          name: market.name.split('/').join(''),
-        };
-      }
-    } else {
-      m[coin] = {
-        publicKey: market.address,
-        name: market.name.split('/').join(''),
-      };
-    }
-  });
-  return m;
-})();
 
 export default function BalancesList() {
   const wallet = useWallet();
@@ -202,7 +180,7 @@ export function BalanceListItem({ publicKey, expandable }) {
       // A Serum market exists. Fetch the price.
       else if (serumMarkets[coin]) {
         let m = serumMarkets[coin];
-        _priceStore.getPrice(connection, m.name).then((price) => {
+        priceStore.getPrice(connection, m.name).then((price) => {
           setPrice(price);
         });
       }
@@ -491,43 +469,3 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
     </>
   );
 }
-
-// Create a cached API wrapper to avoid rate limits.
-class PriceStore {
-  constructor() {
-    this.cache = {};
-  }
-
-  async getPrice(connection, marketName) {
-    return new Promise((resolve, reject) => {
-      if (connection._rpcEndpoint !== MAINNET_URL) {
-        resolve(undefined);
-        return;
-      }
-      if (this.cache[marketName] === undefined) {
-        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
-          (resp) => {
-            resp.json().then((resp) => {
-              if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
-                resolve(undefined);
-              } else if (resp.data.asks.length === 0) {
-                resolve(resp.data.bids[0]);
-              } else if (resp.data.bids.length === 0) {
-                resolve(resp.data.asks[0]);
-              } else {
-                const mid =
-                  (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
-                this.cache[marketName] = mid;
-                resolve(this.cache[marketName]);
-              }
-            });
-          },
-        );
-      } else {
-        return resolve(this.cache[marketName]);
-      }
-    });
-  }
-}
-
-const _priceStore = new PriceStore();

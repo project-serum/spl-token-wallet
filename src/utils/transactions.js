@@ -14,8 +14,12 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 
-const RAYDIUM_STAKE_PROGRAM_ID = new PublicKey('EhhTKczWMGQt46ynNeRX1WfeagwwJd7ufHvCDjRxjo5Q');
-const RAYDIUM_LP_PROGRAM_ID = new PublicKey('RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr');
+const RAYDIUM_STAKE_PROGRAM_ID = new PublicKey(
+  'EhhTKczWMGQt46ynNeRX1WfeagwwJd7ufHvCDjRxjo5Q',
+);
+const RAYDIUM_LP_PROGRAM_ID = new PublicKey(
+  'RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr',
+);
 
 const marketCache = {};
 let marketCacheConnection = null;
