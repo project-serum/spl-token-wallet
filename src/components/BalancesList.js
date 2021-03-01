@@ -252,7 +252,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const usdValue = price
     ? ((amount / Math.pow(10, decimals)) * price).toFixed(2)
     : undefined;
-  if (usdValue) {
+  if (usdValue && setUsdValue) {
     setUsdValue(parseFloat(usdValue));
   }
 
