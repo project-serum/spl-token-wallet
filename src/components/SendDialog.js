@@ -21,7 +21,6 @@ import {
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
-import { serumMarkets, priceStore } from '../utils/markets';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -36,6 +35,7 @@ import {
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
 import { Switch, Tooltip } from '@material-ui/core';
+import { EthFeeEstimate } from './EthFeeEstimate';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -411,7 +411,7 @@ function SendSwapDialog({
         {blockchain === 'eth' && (
           <DialogContentText>
             Estimated withdrawal transaction fee:
-            <EthWithdrawalFeeEstimate
+            <EthFeeEstimate
               ethFeeData={ethFeeData}
               insufficientEthBalance={insufficientEthBalance}
             />
@@ -630,43 +630,4 @@ function EthWithdrawalCompleterItem({ ethAccount, swap }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withdrawal.txid, withdrawal.status]);
   return null;
-}
-
-export function EthWithdrawalFeeEstimate({
-  ethFeeData,
-  insufficientEthBalance,
-}) {
-  let [ethFeeEstimate, loaded, error] = ethFeeData;
-  const [ethPrice, setEthPrice] = useState(null);
-  const connection = useConnection();
-  useEffect(() => {
-    if (ethPrice === null) {
-      let m = serumMarkets['ETH'];
-      priceStore.getPrice(connection, m.name).then(setEthPrice);
-    }
-  }, [ethPrice, connection]);
-
-  if (!loaded && !error) {
-    return (
-      <DialogContentText color="textPrimary">Loading...</DialogContentText>
-    );
-  } else if (error) {
-    return (
-      <DialogContentText color="textPrimary">
-        Unable to estimate
-      </DialogContentText>
-    );
-  }
-
-  let usdFeeEstimate = ethPrice !== null ? ethPrice * ethFeeEstimate : null;
-
-  return (
-    <DialogContentText
-      color={insufficientEthBalance ? 'secondary' : 'textPrimary'}
-    >
-      {ethFeeEstimate.toFixed(4)}
-      {' ETH'}
-      {usdFeeEstimate && ` (${usdFeeEstimate.toFixed(2)} USD)`}
-    </DialogContentText>
-  );
 }
