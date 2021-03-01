@@ -263,7 +263,12 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance }) {
 
   if (!submitted) {
     let convertButton = (
-      <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
+      <Button
+        color="primary"
+        style={{ marginLeft: 8 }}
+        onClick={submit}
+        disabled={insufficientEthBalance}
+      >
         Convert
       </Button>
     );
