@@ -49,7 +49,6 @@ export async function estimateErc20SwapFees({
   }
 
   const erc20 = new web3.eth.Contract(ERC20_ABI, erc20Address);
-  const swap = new web3.eth.Contract(SWAP_ABI, swapAddress);
   const decimals = parseInt(await erc20.methods.decimals().call(), 10);
 
   const approveAmount = addDecimals('100000000', decimals);
@@ -68,9 +67,7 @@ export async function estimateErc20SwapFees({
   return [approveEstimatedGas * gasPrice, swapEstimatedGas * gasPrice];
 }
 
-export async function estimateEthSwapFees({ swapAddress }) {
-  const swap = new web3.eth.Contract(SWAP_ABI, swapAddress);
-
+export async function estimateEthSwapFees() {
   const estimatedGas = SUGGESTED_GAS_LIMIT;
 
   const gasPrice = (await web3.eth.getGasPrice()) * 1e-18;
