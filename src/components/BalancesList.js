@@ -69,15 +69,22 @@ export default function BalancesList() {
     false,
   );
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
+  const [usdValues, setUsdValues] = useState({});
   const { accounts, setAccountName } = useWalletSelector();
   const selectedAccount = accounts.find((a) => a.isSelected);
+
+  let totalUsdValue = publicKeys
+    .filter((pk) => usdValues[pk.toString()] !== undefined)
+    .map((pk) => usdValues[pk.toString()])
+    .reduce((a, b) => a + b, 0.0);
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances
+            {selectedAccount && selectedAccount.name} Balances ($
+            {totalUsdValue.toFixed(2)})
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -115,7 +122,17 @@ export default function BalancesList() {
       </AppBar>
       <List disablePadding>
         {publicKeys.map((publicKey) => (
-          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
+          <BalanceListItem
+            key={publicKey.toBase58()}
+            publicKey={publicKey}
+            setUsdValue={(usdValue) => {
+              if (usdValues[publicKey.toString()] !== usdValue) {
+                const _usdValues = { ...usdValues };
+                _usdValues[publicKey.toString()] = usdValue;
+                setUsdValues(_usdValues);
+              }
+            }}
+          />
         ))}
         {loaded ? null : <LoadingIndicator />}
       </List>
@@ -158,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function BalanceListItem({ publicKey, expandable }) {
+export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
@@ -232,6 +249,12 @@ export function BalanceListItem({ publicKey, expandable }) {
       </div>
     </div>
   );
+  const usdValue = price
+    ? ((amount / Math.pow(10, decimals)) * price).toFixed(2)
+    : undefined;
+  if (usdValue) {
+    setUsdValue(parseFloat(usdValue));
+  }
 
   return (
     <>
@@ -259,9 +282,7 @@ export function BalanceListItem({ publicKey, expandable }) {
             }}
           >
             {price && (
-              <Typography color="textSecondary">
-                ${((amount / Math.pow(10, decimals)) * price).toFixed(2)}
-              </Typography>
+              <Typography color="textSecondary">${usdValue}</Typography>
             )}
           </div>
         </div>
