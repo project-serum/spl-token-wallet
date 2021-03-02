@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -61,6 +61,24 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
   useGrouping: true,
 });
 
+// Aggregated $USD values of all child BalanceListItems child components.
+//
+// Values:
+// * undefined => loading.
+// * null => no market exists.
+// * float => done.
+//
+// For a given set of publicKeys, we know all the USD values have been loaded when
+// all of their values in this object are not `undefined`.
+const usdValues = {};
+
+function fairsIsLoaded(publicKeys) {
+  return (
+    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
+    publicKeys.length
+  );
+}
+
 export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
@@ -69,22 +87,64 @@ export default function BalancesList() {
     false,
   );
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
-  const [usdValues, setUsdValues] = useState({});
   const { accounts, setAccountName } = useWalletSelector();
+  // Dummy var to force rerenders on demand.
+  const [, setForceUpdate] = useState(false);
   const selectedAccount = accounts.find((a) => a.isSelected);
 
-  let totalUsdValue = publicKeys
-    .filter((pk) => usdValues[pk.toString()] !== undefined)
+  const totalUsdValue = publicKeys
+    .filter((pk) => usdValues[pk.toString()])
     .map((pk) => usdValues[pk.toString()])
     .reduce((a, b) => a + b, 0.0);
+
+  // Memoized callback and component for the `BalanceListItems`.
+  //
+  // The `BalancesList` fetches data, e.g., fairs for tokens using React hooks
+  // in each of the child `BalanceListItem` components. However, we want the
+  // parent component, to aggregate all of this data together, for example,
+  // to show the cumulative USD amount in the wallet.
+  //
+  // To achieve this, we need to pass a callback from the parent to the chlid,
+  // so that the parent can collect the results of all the async network requests.
+  // However, this can cause a render loop, since invoking the callback can cause
+  // the parent to rerender, which causese the child to rerender, which causes
+  // the callback to be invoked.
+  //
+  // To solve this, we memoize all the `BalanceListItem` children components.
+  const setUsdValuesCallback = useCallback(
+    (publicKey, usdValue) => {
+      if (usdValues[publicKey.toString()] !== usdValue) {
+        usdValues[publicKey.toString()] = usdValue;
+        if (fairsIsLoaded(publicKeys)) {
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      }
+    },
+    [publicKeys],
+  );
+  const balanceListItemsMemo = useMemo(() => {
+    return publicKeys.map((pk) => {
+      return React.memo((props) => {
+        return (
+          <BalanceListItem
+            key={pk.toString()}
+            publicKey={pk}
+            setUsdValue={setUsdValuesCallback}
+          />
+        );
+      });
+    });
+  }, [publicKeys, setUsdValuesCallback]);
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances ($
-            {totalUsdValue.toFixed(2)})
+            {selectedAccount && selectedAccount.name} Balances{' '}
+            {loaded && fairsIsLoaded(publicKeys) && (
+              <>(${totalUsdValue.toFixed(2)})</>
+            )}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -121,18 +181,8 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {publicKeys.map((publicKey) => (
-          <BalanceListItem
-            key={publicKey.toBase58()}
-            publicKey={publicKey}
-            setUsdValue={(usdValue) => {
-              if (usdValues[publicKey.toString()] !== usdValue) {
-                const _usdValues = { ...usdValues };
-                _usdValues[publicKey.toString()] = usdValue;
-                setUsdValues(_usdValues);
-              }
-            }}
-          />
+        {balanceListItemsMemo.map((Memoized) => (
+          <Memoized />
         ))}
         {loaded ? null : <LoadingIndicator />}
       </List>
@@ -249,11 +299,18 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
       </div>
     </div>
   );
-  const usdValue = price
-    ? ((amount / Math.pow(10, decimals)) * price).toFixed(2)
-    : undefined;
-  if (usdValue && setUsdValue) {
-    setUsdValue(parseFloat(usdValue));
+
+  console.log('balance', publicKey.toString(), amount, balanceInfo);
+  console.log('price', price);
+  const usdValue =
+    price === undefined // Not yet loaded.
+      ? undefined
+      : price === null // Loaded and empty.
+      ? null
+      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+  if (setUsdValue && usdValue !== undefined) {
+    console.log('sd calc', usdValue, amount, price, decimals);
+    setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
   }
 
   return (

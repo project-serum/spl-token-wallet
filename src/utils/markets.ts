@@ -53,9 +53,9 @@ class PriceStore {
               if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
                 resolve(undefined);
               } else if (resp.data.asks.length === 0) {
-                resolve(resp.data.bids[0]);
+                resolve(resp.data.bids[0].price);
               } else if (resp.data.bids.length === 0) {
-                resolve(resp.data.asks[0]);
+                resolve(resp.data.asks[0].price);
               } else {
                 const mid =
                   (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
