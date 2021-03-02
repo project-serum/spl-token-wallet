@@ -84,6 +84,11 @@ const usdValues = {};
 // flickering for the associated token fingerprint icon.
 const associatedTokensCache = {};
 
+const numberFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 function fairsIsLoaded(publicKeys) {
   return (
     publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
@@ -183,7 +188,9 @@ export default function BalancesList() {
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
             {selectedAccount && selectedAccount.name} Balances{' '}
-            {allTokensLoaded && <>(${totalUsdValue.toFixed(2)})</>}
+            {allTokensLoaded && (
+              <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
+            )}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -298,20 +305,32 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   //   * else => price is loaded.
   const [price, setPrice] = useState(undefined);
   useEffect(() => {
-    if (balanceInfo && balanceInfo.tokenSymbol) {
-      const coin = balanceInfo.tokenSymbol.toUpperCase();
-      // Don't fetch USD stable coins. Mark to 1 USD.
-      if (coin === 'USDT' || coin === 'USDC') {
-        setPrice(1);
+    if (balanceInfo) {
+      if (balanceInfo.tokenSymbol) {
+        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        // Don't fetch USD stable coins. Mark to 1 USD.
+        if (coin === 'USDT' || coin === 'USDC') {
+          setPrice(1);
+        }
+        // A Serum market exists. Fetch the price.
+        else if (serumMarkets[coin]) {
+          let m = serumMarkets[coin];
+          priceStore
+            .getPrice(connection, m.name)
+            .then((price) => {
+              setPrice(price);
+            })
+            .catch((err) => {
+              console.error(err);
+              setPrice(null);
+            });
+        }
+        // No Serum market exists.
+        else {
+          setPrice(null);
+        }
       }
-      // A Serum market exists. Fetch the price.
-      else if (serumMarkets[coin]) {
-        let m = serumMarkets[coin];
-        priceStore.getPrice(connection, m.name).then((price) => {
-          setPrice(price);
-        });
-      }
-      // No Serum market exists.
+      // No token symbol so don't fetch market data.
       else {
         setPrice(null);
       }
@@ -418,7 +437,9 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
             }}
           >
             {price && (
-              <Typography color="textSecondary">${usdValue}</Typography>
+              <Typography color="textSecondary">
+                {numberFormat.format(usdValue)}
+              </Typography>
             )}
           </div>
         </div>
