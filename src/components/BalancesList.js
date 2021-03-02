@@ -79,6 +79,11 @@ const SortAccounts = {
 // all of their values in this object are not `undefined`.
 const usdValues = {};
 
+// Calculating associated token addresses is an asynchronous operation, so we cache
+// the values so that we can quickly render components using them. This prevents
+// flickering for the associated token fingerprint icon.
+const associatedTokensCache = {};
+
 function fairsIsLoaded(publicKeys) {
   return (
     publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
@@ -286,7 +291,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
-  const [isAssociatedToken, setIsAssociatedToken] = useState(false);
+  const [, setForceUpdate] = useState(false);
   // Valid states:
   //   * undefined => loading.
   //   * null => not found.
@@ -321,13 +326,35 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  // Fetch and cache the associated token address.
   if (wallet && wallet.publicKey && mint) {
-    findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
-      if (assocTok.equals(publicKey)) {
-        setIsAssociatedToken(true);
-      }
-    });
+    if (
+      associatedTokensCache[wallet.publicKey.toString()] === undefined ||
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()] ===
+        undefined
+    ) {
+      findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+        let walletAccounts = Object.assign(
+          {},
+          associatedTokensCache[wallet.publicKey.toString()],
+        );
+        walletAccounts[mint.toString()] = assocTok;
+        associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
+        if (assocTok.equals(publicKey)) {
+          // Force a rerender now that we've cached the value.
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      });
+    }
   }
+
+  const isAssociatedToken =
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+      ? associatedTokensCache[wallet.publicKey.toString()][mint.toString()]
+      : false;
 
   const subtitle = (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
