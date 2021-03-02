@@ -33,6 +33,7 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
+import SortIcon from '@material-ui/icons/Sort';
 import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -61,6 +62,12 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
   useGrouping: true,
 });
 
+const SortAccounts = {
+  None: 0,
+  Ascending: 1,
+  Descending: 2,
+};
+
 // Aggregated $USD values of all child BalanceListItems child components.
 //
 // Values:
@@ -87,11 +94,40 @@ export default function BalancesList() {
     false,
   );
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
+  const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
   // Dummy var to force rerenders on demand.
   const [, setForceUpdate] = useState(false);
   const selectedAccount = accounts.find((a) => a.isSelected);
+  const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
+  let sortedPublicKeys = publicKeys;
+  if (allTokensLoaded && sortAccounts !== SortAccounts.None) {
+    sortedPublicKeys = [...publicKeys];
+    sortedPublicKeys.sort((a, b) => {
+      const aVal = usdValues[a.toString()];
+      const bVal = usdValues[b.toString()];
 
+      a = aVal === undefined || aVal === null ? -1 : aVal;
+      b = bVal === undefined || bVal === null ? -1 : bVal;
+      if (sortAccounts === SortAccounts.Descending) {
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else {
+        if (b < a) {
+          return -1;
+        } else if (b > a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }
   const totalUsdValue = publicKeys
     .filter((pk) => usdValues[pk.toString()])
     .map((pk) => usdValues[pk.toString()])
@@ -123,7 +159,7 @@ export default function BalancesList() {
     [publicKeys],
   );
   const balanceListItemsMemo = useMemo(() => {
-    return publicKeys.map((pk) => {
+    return sortedPublicKeys.map((pk) => {
       return React.memo((props) => {
         return (
           <BalanceListItem
@@ -134,7 +170,7 @@ export default function BalancesList() {
         );
       });
     });
-  }, [publicKeys, setUsdValuesCallback]);
+  }, [sortedPublicKeys, setUsdValuesCallback]);
 
   return (
     <Paper>
@@ -142,9 +178,7 @@ export default function BalancesList() {
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
             {selectedAccount && selectedAccount.name} Balances{' '}
-            {loaded && fairsIsLoaded(publicKeys) && (
-              <>(${totalUsdValue.toFixed(2)})</>
-            )}
+            {allTokensLoaded && <>(${totalUsdValue.toFixed(2)})</>}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -163,6 +197,27 @@ export default function BalancesList() {
           <Tooltip title="Add Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sort Accounts" arrow>
+            <IconButton
+              onClick={() => {
+                switch (sortAccounts) {
+                  case SortAccounts.None:
+                    setSortAccounts(SortAccounts.Ascending);
+                    return;
+                  case SortAccounts.Ascending:
+                    setSortAccounts(SortAccounts.Descending);
+                    return;
+                  case SortAccounts.Descending:
+                    setSortAccounts(SortAccounts.None);
+                    return;
+                  default:
+                    console.error('invalid sort type', sortAccounts);
+                }
+              }}
+            >
+              <SortIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Refresh" arrow>
@@ -300,8 +355,6 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     </div>
   );
 
-  console.log('balance', publicKey.toString(), amount, balanceInfo);
-  console.log('price', price);
   const usdValue =
     price === undefined // Not yet loaded.
       ? undefined
@@ -309,7 +362,6 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
   if (setUsdValue && usdValue !== undefined) {
-    console.log('sd calc', usdValue, amount, price, decimals);
     setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
   }
 
