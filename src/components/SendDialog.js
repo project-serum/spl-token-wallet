@@ -157,7 +157,9 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
-  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState();
+  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState(
+    false,
+  );
   const [shouldShowOverride, setShouldShowOverride] = useState();
   const {
     fields,
@@ -207,6 +209,12 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationAddress, wallet, mintString]);
 
+  useEffect(() => {
+    return () => {
+      setOverrideDestinationCheck(false);
+    };
+  }, [setOverrideDestinationCheck]);
+
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
     if (!amount || amount <= 0) {
@@ -221,6 +229,10 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       overrideDestinationCheck,
     );
   }
+
+  const disabled = shouldShowOverride
+    ? !overrideDestinationCheck || sending || !validAmount
+    : sending || !validAmount;
 
   async function onSubmit() {
     return sendTransaction(makeTransaction(), { onSuccess: onClose });
@@ -247,11 +259,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
           </div>
         )}
         <Button onClick={onClose}>Cancel</Button>
-        <Button
-          type="submit"
-          color="primary"
-          disabled={sending || !validAmount}
-        >
+        <Button type="submit" color="primary" disabled={disabled}>
           Send
         </Button>
       </DialogActions>
