@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { useMediaQuery } from '@material-ui/core';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,4 +85,8 @@ export async function confirmTransaction(
     new Date().getTime() - startTime.getTime(),
   );
   return result.value;
+}
+
+export function useIsExtension() {
+  return useMediaQuery('(max-width:500px)');
 }

@@ -26,11 +26,12 @@ import AddAccountDialog from './AddAccountDialog';
 import DeleteAccountDialog from './DeleteAccountDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from './ExportAccountDialog.js';
+import { useIsExtension } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
-    [theme.breakpoints.up('700')]: {
+    [theme.breakpoints.up('500')]: {
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(3),
       paddingLeft: theme.spacing(1),
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavigationFrame({ children }) {
   const classes = useStyles();
+  const isExtension = useIsExtension();
   return (
     <>
       <AppBar position="static">
@@ -62,7 +64,7 @@ export default function NavigationFrame({ children }) {
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
-      <Footer />
+      {!isExtension && <Footer />}
     </>
   );
 }

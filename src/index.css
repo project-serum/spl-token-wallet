@@ -29,6 +29,12 @@ body,
   #root {
     max-width: 450px;
   }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  #root::-webkit-scrollbar { 
+      width: 0;
+      background: transparent;
+  }
 }
 
 #root {

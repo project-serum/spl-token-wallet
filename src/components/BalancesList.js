@@ -13,13 +13,13 @@ import {
 import { findAssociatedTokenAddress } from '../utils/tokens';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
-import { Typography } from '@material-ui/core';
+import { Typography, useMediaQuery } from '@material-ui/core';
 import TokenInfoDialog from './TokenInfoDialog';
 import Link from '@material-ui/core/Link';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
-import { abbreviateAddress } from '../utils/utils';
+import { abbreviateAddress, useIsExtension } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
@@ -187,6 +187,7 @@ export function BalanceListItem({ publicKey, expandable }) {
   const connection = useConnection();
   const [open, setOpen] = useState(false);
   const [isAssociatedToken, setIsAssociatedToken] = useState(false);
+  const isExtension = useIsExtension();
   // Valid states:
   //   * undefined => loading.
   //   * null => not found.
@@ -220,6 +221,13 @@ export function BalanceListItem({ publicKey, expandable }) {
   }
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
+  tokenName = tokenName ?? abbreviateAddress(mint);
+  let displayName;
+  if (isExtension) {
+    displayName = tokenSymbol ?? tokenName;
+  } else {
+    displayName = tokenName + (tokenSymbol ? ` (${tokenSymbol})` : '');
+  }
 
   if (wallet && wallet.publicKey && mint) {
     findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
@@ -229,7 +237,7 @@ export function BalanceListItem({ publicKey, expandable }) {
     });
   }
 
-  const subtitle = (
+  const subtitle = isExtension ? undefined : (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
       {isAssociatedToken && (
         <div
@@ -266,8 +274,7 @@ export function BalanceListItem({ publicKey, expandable }) {
             primary={
               <>
                 {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-                {tokenName ?? abbreviateAddress(mint)}
-                {tokenSymbol ? ` (${tokenSymbol})` : null}
+                {displayName}
               </>
             }
             secondary={subtitle}
@@ -333,6 +340,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
     balanceInfo.mint?.toBase58(),
     publicKey.toBase58(),
   ]);
+  const isExtension = useIsExtension();
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -350,55 +358,9 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
       : undefined
     : undefined;
 
-  return (
+  const additionalInfo = isExtension ? undefined : (
     <>
-      {wallet.allowsExport && (
-        <ExportAccountDialog
-          onClose={() => setExportAccDialogOpen(false)}
-          open={exportAccDialogOpen}
-        />
-      )}
-      <div className={classes.itemDetails}>
-        <div className={classes.buttonContainer}>
-          {!publicKey.equals(owner) && showTokenInfoDialog ? (
-            <Button
-              variant="outlined"
-              color="default"
-              startIcon={<InfoIcon />}
-              onClick={() => setTokenInfoDialogOpen(true)}
-            >
-              Token Info
-            </Button>
-          ) : null}
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<ReceiveIcon />}
-            onClick={() => setDepositDialogOpen(true)}
-          >
-            Receive
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<SendIcon />}
-            onClick={() => setSendDialogOpen(true)}
-          >
-            Send
-          </Button>
-          {mint && amount === 0 ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={() => setCloseTokenAccountDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          ) : null}
-        </div>
-        <Typography variant="body2" className={classes.address}>
+    <Typography variant="body2" className={classes.address}>
           Deposit Address: {publicKey.toBase58()}
         </Typography>
         <Typography variant="body2">
@@ -462,6 +424,58 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
             </div>
           )}
         </div>
+    </>  
+  );
+
+  return (
+    <>
+      {wallet.allowsExport && (
+        <ExportAccountDialog
+          onClose={() => setExportAccDialogOpen(false)}
+          open={exportAccDialogOpen}
+        />
+      )}
+      <div className={classes.itemDetails}>
+        <div className={classes.buttonContainer}>
+          {!publicKey.equals(owner) && showTokenInfoDialog ? (
+            <Button
+              variant="outlined"
+              color="default"
+              startIcon={<InfoIcon />}
+              onClick={() => setTokenInfoDialogOpen(true)}
+            >
+              Token Info
+            </Button>
+          ) : null}
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ReceiveIcon />}
+            onClick={() => setDepositDialogOpen(true)}
+          >
+            Receive
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<SendIcon />}
+            onClick={() => setSendDialogOpen(true)}
+          >
+            Send
+          </Button>
+          {mint && amount === 0 ? (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              startIcon={<DeleteIcon />}
+              onClick={() => setCloseTokenAccountDialogOpen(true)}
+            >
+              Delete
+            </Button>
+          ) : null}
+        </div>
+        {additionalInfo}
       </div>
       <SendDialog
         open={sendDialogOpen}
