@@ -40,6 +40,7 @@
     "fix:prettier": "prettier \"src/**/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:extension": "npm run build && cp -a ./build/. ./extension/src/ && cp ./extension/manifest.json ./extension/src",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

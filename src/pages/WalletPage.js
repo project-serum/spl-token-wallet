@@ -8,17 +8,25 @@ import DebugButtons from '../components/DebugButtons';
 export default function WalletPage() {
   const isProdNetwork = useIsProdNetwork();
   return (
-    <Container fixed maxWidth="md">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+    // <Container fixed maxWidth="md">
+    //   <Grid container spacing={3}>
+    //     <Grid item xs={12}>
+    //       <BalancesList />
+    //     </Grid>
+    //     {isProdNetwork ? null : (
+    //       <Grid item xs={12}>
+    //         <DebugButtons />
+    //       </Grid>
+    //     )}
+    //   </Grid>
+    // </Container>
+    <Grid xs={12}>
           <BalancesList />
         </Grid>
-        {isProdNetwork ? null : (
-          <Grid item xs={12}>
-            <DebugButtons />
-          </Grid>
-        )}
-      </Grid>
-    </Container>
+        // {isProdNetwork ? null : (
+        //   <Grid item xs={12}>
+        //     <DebugButtons />
+        //   </Grid>
+        // )}
   );
 }

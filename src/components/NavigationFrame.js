@@ -30,10 +30,12 @@ import { ExportMnemonicDialog } from './ExportAccountDialog.js';
 const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
+    [theme.breakpoints.up('700')]: {
+      paddingTop: theme.spacing(3),
+      paddingBottom: theme.spacing(3),
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
   },
   title: {
     flexGrow: 1,

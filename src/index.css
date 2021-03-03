@@ -10,7 +10,25 @@ body {
 html,
 body,
 #root {
+  min-width: 450px;
+  min-height: 600px;
   height: 100%;
+}
+
+@media screen and (max-height: 700px) {
+  html,
+  body,
+  #root {
+    max-height: 600px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  html,
+  body,
+  #root {
+    max-width: 450px;
+  }
 }
 
 #root {
