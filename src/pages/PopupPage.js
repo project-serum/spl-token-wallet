@@ -330,7 +330,9 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
+        } else if (instruction.type === 'mango') {
+          // Whitelist mango for now.
+        }  else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
