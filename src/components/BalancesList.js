@@ -178,6 +178,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
+  listItem: {
+    [theme.breakpoints.down(theme.ext)]: {
+      paddingTop: 0,
+      paddingBottom: 0,
+    }
+  }
 }));
 
 export function BalanceListItem({ publicKey, expandable }) {

@@ -1,5 +1,5 @@
 {
-  "name": "Solana Wallet",
+  "name": "Sollet",
   "description": "Solana SPL Token Wallet",
   "version": "0.1",
   "browser_action": {
@@ -12,6 +12,17 @@
     "192": "logo192.png",
     "512": "logo512.png"
   },
+  "content_scripts": [
+    {
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": [
+        "contentscript.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": ["script.js"],
   "content_security_policy": "script-src 'self' 'sha256-ek+jXksbUr00x+EdLLqiv69t8hATh5rPjHVvVVGA9ms='; object-src 'self'"
 }
   

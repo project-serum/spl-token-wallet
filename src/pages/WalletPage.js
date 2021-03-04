@@ -5,13 +5,14 @@ import Grid from '@material-ui/core/Grid';
 import { useIsProdNetwork } from '../utils/connection';
 import DebugButtons from '../components/DebugButtons';
 import { makeStyles } from '@material-ui/core';
+import { useIsExtension } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    [theme.breakpoints.down('500')]: {
+    [theme.breakpoints.down(theme.ext)]: {
       padding: 0,
     },
-    [theme.breakpoints.up('500')]: {
+    [theme.breakpoints.up(theme.ext)]: {
       maxWidth: 'md',
     },
   },
@@ -20,9 +21,10 @@ const useStyles = makeStyles((theme) => ({
 export default function WalletPage() {
   const classes = useStyles();
   const isProdNetwork = useIsProdNetwork();
+  const isExtension = useIsExtension();
   return (
     <Container fixed maxWidth='md' className={classes.container}>
-      <Grid container spacing={3}>
+      <Grid container spacing={isExtension ? 0 : 3}>
         <Grid item xs={12}>
           <BalancesList />
         </Grid>

@@ -26,4 +26,4 @@ yarn-error.log*
 .eslintcache
 
 # generate with `build:extension` script
-extension/src/*
+extension/build/*

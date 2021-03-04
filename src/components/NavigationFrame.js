@@ -31,9 +31,9 @@ import { useIsExtension } from '../utils/utils';
 const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
-    [theme.breakpoints.up('500')]: {
+    paddingBottom: theme.spacing(3),
+    [theme.breakpoints.up(theme.ext)]: {
       paddingTop: theme.spacing(3),
-      paddingBottom: theme.spacing(3),
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
     },
@@ -57,7 +57,7 @@ export default function NavigationFrame({ children }) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            Solana SPL Token Wallet
+            {isExtension  ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>
           <WalletSelector />
           <NetworkSelector />

@@ -32,7 +32,7 @@ body,
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
   #root::-webkit-scrollbar { 
-      width: 0;
+      width: 1px;
       background: transparent;
   }
 }
