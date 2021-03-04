@@ -12,6 +12,10 @@
     "192": "logo192.png",
     "512": "logo512.png"
   },
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],

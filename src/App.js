@@ -25,6 +25,7 @@ export default function App() {
           type: prefersDarkMode ? 'dark' : 'light',
           primary: blue,
         },
+        // TODO consolidate popup dimensions
         ext: '500',
       }),
     [prefersDarkMode],

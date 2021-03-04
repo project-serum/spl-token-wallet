@@ -7,26 +7,13 @@ script.onload = function() {
 
 window.addEventListener('sollet_contentscript_message', (event) => {
     const request = event.detail;
-    handleRequest(request.data, (data) => {
+
+    chrome.runtime.sendMessage({
+        channel: 'sollet_background_message',
+        method: request.data.method,
+        params: request.data.params,
+    }, (data) => {
         const response = {id: request.id, data};
         window.dispatchEvent(new CustomEvent('sollet_injected_script_message', { detail: response }));
     });
 });
-
-function handleRequest({ method, params }, send) {
-    console.log(method, params);
-    if (method === 'connect') {
-        chrome.windows.create({})
-        return { publicKey: 'TEST_KEY', autoApprove: true, network: 'https://solana-api.projectserum.com' };
-    }
-
-    if (method === 'disconnect') {
-        chrome.windows.create({url: "index.html", type: "popup"});
-        return send(true);
-    }
-
-    if (method === 'signTransaction') {
-        console.log('Must sign... ' + params.transaction);
-        return 'Signed tx ' + Math.random();
-    }
-}

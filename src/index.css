@@ -7,6 +7,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* TODO consolidate popup dimensions */
 html,
 body,
 #root {
@@ -15,6 +17,7 @@ body,
   height: 100%;
 }
 
+/* TODO consolidate popup dimensions */
 @media screen and (max-height: 700px) {
   html,
   body,
@@ -23,6 +26,7 @@ body,
   }
 }
 
+/* TODO consolidate popup dimensions */
 @media screen and (max-width: 500px) {
   html,
   body,

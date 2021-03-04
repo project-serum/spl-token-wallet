@@ -4,13 +4,25 @@ const request = (() => {
     return (method, params) => {
         const id = requestId++;
         
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+            let clear;
+
+            const timeout = setTimeout(() => {
+                clear();
+                reject('Sollet timed out');
+            });
+
             const listener = (event) => {
                 if (event.detail.id === id) {
-                    window.removeEventListener('sollet_injected_script_message', listener);
+                    clear();
                     resolve(event.detail.data);
                 }
-            }
+            };
+            
+            clear = () => {
+                window.removeEventListener('sollet_injected_script_message', listener);
+                clearTimeout(timeout);
+            };
 
             window.addEventListener('sollet_injected_script_message', listener);
 
@@ -33,13 +45,13 @@ window.sollet = (() => {
             return !!this.publicKey;
         },
 
-        connect(suggestedNetwork) {
+        connect(options = {}) {
             if (onProcess) {
                 return;
             }
 
             onProcess = true;
-            request('connect', { suggestedNetwork })
+            request('connect', options)
                 .then(({ publicKey, autoApprove, network }) => {
                     this.publicKey = publicKey;
                     this.autoApprove = autoApprove;

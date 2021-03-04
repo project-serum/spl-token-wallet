@@ -87,6 +87,7 @@ export async function confirmTransaction(
   return result.value;
 }
 
+// TODO consolidate popup dimensions
 export function useIsExtension() {
   return useMediaQuery('(max-width:500px)');
 }
