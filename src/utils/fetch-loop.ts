@@ -5,6 +5,7 @@ import tuple from 'immutable-tuple';
 const pageLoadTime = new Date();
 
 const globalCache: Map<any, any> = new Map();
+const errorCache: Map<any, any> = new Map();
 
 class FetchLoops {
   loops = new Map();
@@ -117,13 +118,16 @@ class FetchLoopInternal<T = any> {
     try {
       const data = await this.fn();
       globalCache.set(this.cacheKey, data);
+      errorCache.delete(this.cacheKey);
       this.errors = 0;
-      this.notifyListeners();
       return data;
     } catch (error) {
       ++this.errors;
+      globalCache.delete(this.cacheKey);
+      errorCache.set(this.cacheKey, error);
       console.warn(error);
     } finally {
+      this.notifyListeners();
       if (!this.timeoutId && !this.stopped) {
         let waitTime = this.refreshInterval;
 
@@ -154,11 +158,13 @@ class FetchLoopInternal<T = any> {
   };
 }
 
+// returns [data, loaded, error]
+// loaded is false when error is present for backwards compatibility
 export function useAsyncData<T = any>(
   asyncFn: () => Promise<T>,
   cacheKey: any,
   { refreshInterval = 60000 } = {},
-): [null | undefined | T, boolean] {
+): [null | undefined | T, boolean, any] {
   const [, rerender] = useReducer((i) => i + 1, 0);
   cacheKey = formatCacheKey(cacheKey);
 
@@ -178,12 +184,13 @@ export function useAsyncData<T = any>(
   }, [cacheKey, refreshInterval]);
 
   if (!cacheKey) {
-    return [null, false];
+    return [null, false, undefined];
   }
 
   const loaded = globalCache.has(cacheKey);
+  const error = errorCache.has(cacheKey) ? errorCache.get(cacheKey) : undefined;
   const data = loaded ? globalCache.get(cacheKey) : undefined;
-  return [data, loaded];
+  return [data, loaded, error];
 }
 
 export function refreshCache(cacheKey, clearCache = false) {

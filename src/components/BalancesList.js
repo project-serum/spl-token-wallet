@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -33,8 +33,8 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
+import SortIcon from '@material-ui/icons/Sort';
 import FingerprintIcon from '@material-ui/icons/Fingerprint';
-import { MARKETS } from '@project-serum/serum';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -44,11 +44,12 @@ import {
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { serumMarkets, priceStore } from '../utils/markets';
 import { swapApiRequest } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
 import { useAsyncData } from '../utils/fetch-loop';
 import { showTokenInfoDialog } from '../utils/config';
-import { useConnection, MAINNET_URL } from '../utils/connection';
+import { useConnection } from '../utils/connection';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
@@ -61,27 +62,39 @@ const balanceFormat = new Intl.NumberFormat(undefined, {
   useGrouping: true,
 });
 
-const serumMarkets = (() => {
-  const m = {};
-  MARKETS.forEach((market) => {
-    const coin = market.name.split('/')[0];
-    if (m[coin]) {
-      // Only override a market if it's not deprecated	.
-      if (!m.deprecated) {
-        m[coin] = {
-          publicKey: market.address,
-          name: market.name.split('/').join(''),
-        };
-      }
-    } else {
-      m[coin] = {
-        publicKey: market.address,
-        name: market.name.split('/').join(''),
-      };
-    }
-  });
-  return m;
-})();
+const SortAccounts = {
+  None: 0,
+  Ascending: 1,
+  Descending: 2,
+};
+
+// Aggregated $USD values of all child BalanceListItems child components.
+//
+// Values:
+// * undefined => loading.
+// * null => no market exists.
+// * float => done.
+//
+// For a given set of publicKeys, we know all the USD values have been loaded when
+// all of their values in this object are not `undefined`.
+const usdValues = {};
+
+// Calculating associated token addresses is an asynchronous operation, so we cache
+// the values so that we can quickly render components using them. This prevents
+// flickering for the associated token fingerprint icon.
+const associatedTokensCache = {};
+
+const numberFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+function fairsIsLoaded(publicKeys) {
+  return (
+    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
+    publicKeys.length
+  );
+}
 
 export default function BalancesList() {
   const wallet = useWallet();
@@ -91,15 +104,93 @@ export default function BalancesList() {
     false,
   );
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
+  const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
+  // Dummy var to force rerenders on demand.
+  const [, setForceUpdate] = useState(false);
   const selectedAccount = accounts.find((a) => a.isSelected);
+  const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
+  let sortedPublicKeys = publicKeys;
+  if (allTokensLoaded && sortAccounts !== SortAccounts.None) {
+    sortedPublicKeys = [...publicKeys];
+    sortedPublicKeys.sort((a, b) => {
+      const aVal = usdValues[a.toString()];
+      const bVal = usdValues[b.toString()];
+
+      a = aVal === undefined || aVal === null ? -1 : aVal;
+      b = bVal === undefined || bVal === null ? -1 : bVal;
+      if (sortAccounts === SortAccounts.Descending) {
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else {
+        if (b < a) {
+          return -1;
+        } else if (b > a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }
+  const totalUsdValue = publicKeys
+    .filter((pk) => usdValues[pk.toString()])
+    .map((pk) => usdValues[pk.toString()])
+    .reduce((a, b) => a + b, 0.0);
+
+  // Memoized callback and component for the `BalanceListItems`.
+  //
+  // The `BalancesList` fetches data, e.g., fairs for tokens using React hooks
+  // in each of the child `BalanceListItem` components. However, we want the
+  // parent component, to aggregate all of this data together, for example,
+  // to show the cumulative USD amount in the wallet.
+  //
+  // To achieve this, we need to pass a callback from the parent to the chlid,
+  // so that the parent can collect the results of all the async network requests.
+  // However, this can cause a render loop, since invoking the callback can cause
+  // the parent to rerender, which causese the child to rerender, which causes
+  // the callback to be invoked.
+  //
+  // To solve this, we memoize all the `BalanceListItem` children components.
+  const setUsdValuesCallback = useCallback(
+    (publicKey, usdValue) => {
+      if (usdValues[publicKey.toString()] !== usdValue) {
+        usdValues[publicKey.toString()] = usdValue;
+        if (fairsIsLoaded(publicKeys)) {
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      }
+    },
+    [publicKeys],
+  );
+  const balanceListItemsMemo = useMemo(() => {
+    return sortedPublicKeys.map((pk) => {
+      return React.memo((props) => {
+        return (
+          <BalanceListItem
+            key={pk.toString()}
+            publicKey={pk}
+            setUsdValue={setUsdValuesCallback}
+          />
+        );
+      });
+    });
+  }, [sortedPublicKeys, setUsdValuesCallback]);
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances
+            {selectedAccount && selectedAccount.name} Balances{' '}
+            {allTokensLoaded && (
+              <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
+            )}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -120,6 +211,27 @@ export default function BalancesList() {
               <AddIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Sort Accounts" arrow>
+            <IconButton
+              onClick={() => {
+                switch (sortAccounts) {
+                  case SortAccounts.None:
+                    setSortAccounts(SortAccounts.Ascending);
+                    return;
+                  case SortAccounts.Ascending:
+                    setSortAccounts(SortAccounts.Descending);
+                    return;
+                  case SortAccounts.Descending:
+                    setSortAccounts(SortAccounts.None);
+                    return;
+                  default:
+                    console.error('invalid sort type', sortAccounts);
+                }
+              }}
+            >
+              <SortIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Refresh" arrow>
             <IconButton
               onClick={() => {
@@ -136,8 +248,8 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {publicKeys.map((publicKey) => (
-          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
+        {balanceListItemsMemo.map((Memoized) => (
+          <Memoized />
         ))}
         {loaded ? null : <LoadingIndicator />}
       </List>
@@ -180,33 +292,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function BalanceListItem({ publicKey, expandable }) {
+export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
-  const [isAssociatedToken, setIsAssociatedToken] = useState(false);
+  const [, setForceUpdate] = useState(false);
   // Valid states:
   //   * undefined => loading.
   //   * null => not found.
   //   * else => price is loaded.
   const [price, setPrice] = useState(undefined);
   useEffect(() => {
-    if (balanceInfo && balanceInfo.tokenSymbol) {
-      const coin = balanceInfo.tokenSymbol.toUpperCase();
-      // Don't fetch USD stable coins. Mark to 1 USD.
-      if (coin === 'USDT' || coin === 'USDC') {
-        setPrice(1);
+    if (balanceInfo) {
+      if (balanceInfo.tokenSymbol) {
+        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        // Don't fetch USD stable coins. Mark to 1 USD.
+        if (coin === 'USDT' || coin === 'USDC') {
+          setPrice(1);
+        }
+        // A Serum market exists. Fetch the price.
+        else if (serumMarkets[coin]) {
+          let m = serumMarkets[coin];
+          priceStore
+            .getPrice(connection, m.name)
+            .then((price) => {
+              setPrice(price);
+            })
+            .catch((err) => {
+              console.error(err);
+              setPrice(null);
+            });
+        }
+        // No Serum market exists.
+        else {
+          setPrice(null);
+        }
       }
-      // A Serum market exists. Fetch the price.
-      else if (serumMarkets[coin]) {
-        let m = serumMarkets[coin];
-        _priceStore.getPrice(connection, m.name).then((price) => {
-          setPrice(price);
-        });
-      }
-      // No Serum market exists.
+      // No token symbol so don't fetch market data.
       else {
         setPrice(null);
       }
@@ -221,13 +345,35 @@ export function BalanceListItem({ publicKey, expandable }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  // Fetch and cache the associated token address.
   if (wallet && wallet.publicKey && mint) {
-    findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
-      if (assocTok.equals(publicKey)) {
-        setIsAssociatedToken(true);
-      }
-    });
+    if (
+      associatedTokensCache[wallet.publicKey.toString()] === undefined ||
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()] ===
+        undefined
+    ) {
+      findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+        let walletAccounts = Object.assign(
+          {},
+          associatedTokensCache[wallet.publicKey.toString()],
+        );
+        walletAccounts[mint.toString()] = assocTok;
+        associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
+        if (assocTok.equals(publicKey)) {
+          // Force a rerender now that we've cached the value.
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      });
+    }
   }
+
+  const isAssociatedToken =
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+      ? associatedTokensCache[wallet.publicKey.toString()][mint.toString()]
+      : false;
 
   const subtitle = (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
@@ -254,6 +400,16 @@ export function BalanceListItem({ publicKey, expandable }) {
       </div>
     </div>
   );
+
+  const usdValue =
+    price === undefined // Not yet loaded.
+      ? undefined
+      : price === null // Loaded and empty.
+      ? null
+      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+  if (setUsdValue && usdValue !== undefined) {
+    setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
+  }
 
   return (
     <>
@@ -282,7 +438,7 @@ export function BalanceListItem({ publicKey, expandable }) {
           >
             {price && (
               <Typography color="textSecondary">
-                ${((amount / Math.pow(10, decimals)) * price).toFixed(2)}
+                {numberFormat.format(usdValue)}
               </Typography>
             )}
           </div>
@@ -491,43 +647,3 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
     </>
   );
 }
-
-// Create a cached API wrapper to avoid rate limits.
-class PriceStore {
-  constructor() {
-    this.cache = {};
-  }
-
-  async getPrice(connection, marketName) {
-    return new Promise((resolve, reject) => {
-      if (connection._rpcEndpoint !== MAINNET_URL) {
-        resolve(undefined);
-        return;
-      }
-      if (this.cache[marketName] === undefined) {
-        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
-          (resp) => {
-            resp.json().then((resp) => {
-              if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
-                resolve(undefined);
-              } else if (resp.data.asks.length === 0) {
-                resolve(resp.data.bids[0]);
-              } else if (resp.data.bids.length === 0) {
-                resolve(resp.data.asks[0]);
-              } else {
-                const mid =
-                  (resp.data.asks[0].price + resp.data.bids[0].price) / 2.0;
-                this.cache[marketName] = mid;
-                resolve(this.cache[marketName]);
-              }
-            });
-          },
-        );
-      } else {
-        return resolve(this.cache[marketName]);
-      }
-    });
-  }
-}
-
-const _priceStore = new PriceStore();

@@ -346,15 +346,7 @@ export async function transferTokens({
       memo,
     });
   }
-  return await createAndTransferToAccount({
-    connection,
-    owner,
-    sourcePublicKey,
-    destinationPublicKey,
-    amount,
-    memo,
-    mint,
-  });
+  throw new Error('Destination token account does not exist.');
 }
 
 // SPL tokens only.
