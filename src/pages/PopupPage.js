@@ -11,9 +11,6 @@ import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import {
   Divider,
-  FormControlLabel,
-  SnackbarContent,
-  Switch,
   Checkbox,
   Typography,
 } from '@material-ui/core';
@@ -22,7 +19,6 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
 import ImportExportIcon from '../images/importExportIcon.svg';
 import Logo from '../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,11 +26,9 @@ import assert from 'assert';
 import bs58 from 'bs58';
 import NewOrder from '../components/instructions/NewOrder';
 import UnknownInstruction from '../components/instructions/UnknownInstruction';
-import WarningIcon from '@material-ui/icons/Warning';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
-import { useLocalStorageState } from '../utils/utils';
 import { BtnCustom } from '../components/BtnCustom';
 import { Row, RowContainer } from '../components/Common';
 
@@ -282,7 +276,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
     <StyledCard>
       <CardContent>
         <RowContainer margin={'0 0 2rem 0'} justify={'center'}>
-          <img src={Logo} />
+          <img alt={'logo'} src={Logo} />
         </RowContainer>
         <Typography
           variant="h6"
@@ -298,7 +292,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
           className={classes.connection}
         >
           <Typography className={classes.publicKey}>{origin}</Typography>
-          <img style={{ margin: '2rem 0' }} src={ImportExportIcon} />
+          <img alt={'import export icon'} style={{ margin: '2rem 0' }} src={ImportExportIcon} />
           <Typography className={classes.publicKey}>
             {wallet.publicKey.toBase58()}
           </Typography>

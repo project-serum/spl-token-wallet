@@ -2,13 +2,13 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  Account,
+  // Account,
   TransactionInstruction,
   SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum';
 import {
-  assertOwner,
+  // assertOwner,
   closeAccount,
   initializeAccount,
   initializeMint,
@@ -414,54 +414,54 @@ async function transferBetweenSplTokenAccounts({
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
-async function createAndTransferToAccount({
-  connection,
-  owner,
-  sourcePublicKey,
-  destinationPublicKey,
-  amount,
-  memo,
-  mint,
-}) {
-  const newAccount = new Account();
-  let transaction = new Transaction();
-  transaction.add(
-    assertOwner({
-      account: destinationPublicKey,
-      owner: SystemProgram.programId,
-    }),
-  );
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: owner.publicKey,
-      newAccountPubkey: newAccount.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        ACCOUNT_LAYOUT.span,
-      ),
-      space: ACCOUNT_LAYOUT.span,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-  );
-  transaction.add(
-    initializeAccount({
-      account: newAccount.publicKey,
-      mint,
-      owner: destinationPublicKey,
-    }),
-  );
-  const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
-    {
-      ownerPublicKey: owner.publicKey,
-      sourcePublicKey,
-      destinationPublicKey: newAccount.publicKey,
-      amount,
-      memo,
-    },
-  );
-  transaction.add(transferBetweenAccountsTxn);
-  let signers = [newAccount];
-  return await signAndSendTransaction(connection, transaction, owner, signers);
-}
+// async function createAndTransferToAccount({
+//   connection,
+//   owner,
+//   sourcePublicKey,
+//   destinationPublicKey,
+//   amount,
+//   memo,
+//   mint,
+// }) {
+//   const newAccount = new Account();
+//   let transaction = new Transaction();
+//   transaction.add(
+//     assertOwner({
+//       account: destinationPublicKey,
+//       owner: SystemProgram.programId,
+//     }),
+//   );
+//   transaction.add(
+//     SystemProgram.createAccount({
+//       fromPubkey: owner.publicKey,
+//       newAccountPubkey: newAccount.publicKey,
+//       lamports: await connection.getMinimumBalanceForRentExemption(
+//         ACCOUNT_LAYOUT.span,
+//       ),
+//       space: ACCOUNT_LAYOUT.span,
+//       programId: TOKEN_PROGRAM_ID,
+//     }),
+//   );
+//   transaction.add(
+//     initializeAccount({
+//       account: newAccount.publicKey,
+//       mint,
+//       owner: destinationPublicKey,
+//     }),
+//   );
+//   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
+//     {
+//       ownerPublicKey: owner.publicKey,
+//       sourcePublicKey,
+//       destinationPublicKey: newAccount.publicKey,
+//       amount,
+//       memo,
+//     },
+//   );
+//   transaction.add(transferBetweenAccountsTxn);
+//   let signers = [newAccount];
+//   return await signAndSendTransaction(connection, transaction, owner, signers);
+// }
 
 export async function closeTokenAccount({
   connection,
