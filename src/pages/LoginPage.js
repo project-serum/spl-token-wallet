@@ -29,6 +29,8 @@ import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
 
+import { BtnCustom } from '../components/BtnCustom'
+
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
   return (
@@ -141,9 +143,9 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" disabled={!confirmed} onClick={goForward}>
+        <BtnCustom color="primary" disabled={!confirmed} onClick={goForward}>
           Continue
-        </Button>
+        </BtnCustom>
       </CardActions>
     </Card>
   );
@@ -188,14 +190,14 @@ function ChoosePasswordForm({ goBack, onSubmit }) {
         </Typography>
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Back</Button>
-        <Button
+        <BtnCustom onClick={goBack}>Back</BtnCustom>
+        <BtnCustom
           color="primary"
           disabled={password !== passwordConfirm}
           onClick={() => onSubmit(password)}
         >
           Create Wallet
-        </Button>
+        </BtnCustom>
       </CardActions>
     </Card>
   );
@@ -240,9 +242,9 @@ function LoginForm() {
         />
       </CardContent>
       <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" onClick={submit}>
+        <BtnCustom color="primary" onClick={submit}>
           Unlock
-        </Button>
+        </BtnCustom>
       </CardActions>
     </Card>
   );
@@ -403,10 +405,10 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
         })}
       </CardContent>
       <CardActions style={{ justifyContent: 'space-between' }}>
-        <Button onClick={goBack}>Back</Button>
-        <Button color="primary" onClick={submit}>
+        <BtnCustom onClick={goBack}>Back</BtnCustom>
+        <BtnCustom color="primary" onClick={submit}>
           Restore
-        </Button>
+        </BtnCustom>
       </CardActions>
     </Card>
   );

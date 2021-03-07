@@ -48,8 +48,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavigationFrame({ children }) {
   const classes = useStyles();
+  const isConnectPopup = window.opener || true
   return (
-    <>
+    isConnectPopup ? <><main className={classes.content}>{children}</main><Footer /></> : <>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
@@ -298,7 +299,7 @@ function Footer() {
         component="a"
         target="_blank"
         rel="noopener"
-        href="https://github.com/serum-foundation/spl-token-wallet"
+        href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
         startIcon={<CodeIcon />}
       >
         View Source

@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import styled from 'styled-components';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
@@ -13,6 +14,7 @@ import {
   FormControlLabel,
   SnackbarContent,
   Switch,
+  Checkbox,
   Typography,
 } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -21,7 +23,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
+import ImportExportIcon from '../images/importExportIcon.svg';
+import Logo from '../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
@@ -32,6 +35,31 @@ import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
 import { useLocalStorageState } from '../utils/utils';
+import { BtnCustom } from '../components/BtnCustom';
+import { Row, RowContainer } from '../components/Common';
+
+const StyledCard = styled(Card)`
+  background: #17181a;
+  color: #ecf0f3;
+  text-align: center;
+  width: 34rem;
+  padding: 0 3rem;
+  margin: 0 auto;
+  box-shadow: none;
+`;
+
+const StyledLabel = styled.label`
+  font-family: Avenir Next;
+  color: #93a0b2;
+`;
+
+const ExclamationMark = styled.span`
+  font-family: Avenir Next Demi;
+  font-size: 5rem;
+  line-height: 6rem;
+  color: #f29c38;
+  margin-right: 2rem;
+`;
 
 export default function PopupPage({ opener }) {
   const wallet = useWallet();
@@ -225,10 +253,23 @@ const useStyles = makeStyles((theme) => ({
   },
   warningContainer: {
     marginTop: theme.spacing(1),
+    background: '#F29C38',
   },
   divider: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+  },
+  allowTitle: {
+    color: '#ECF0F3',
+    fontFamily: 'Avenir Next Demi',
+    marginBottom: '3rem',
+  },
+  publicKey: {
+    color: '#ECF0F3',
+    fontFamily: 'Avenir Next',
+  },
+  checkbox: {
+    color: '#96999C',
   },
 }));
 
@@ -236,67 +277,89 @@ function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
   const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
-  let [dismissed, setDismissed] = useLocalStorageState(
-    'dismissedAutoApproveWarning',
-    false,
-  );
+
   return (
-    <Card>
+    <StyledCard>
       <CardContent>
-        <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
+        <RowContainer margin={'0 0 2rem 0'} justify={'center'}>
+          <img src={Logo} />
+        </RowContainer>
+        <Typography
+          variant="h6"
+          component="h1"
+          gutterBottom
+          className={classes.allowTitle}
+        >
+          Allow this site to access your Wallet™?
         </Typography>
-        <div className={classes.connection}>
-          <Typography>{origin}</Typography>
-          <ImportExportIcon fontSize="large" />
-          <Typography>{wallet.publicKey.toBase58()}</Typography>
-        </div>
-        <Typography>Only connect with sites you trust.</Typography>
-        <Divider className={classes.divider} />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={autoApprove}
-              onChange={() => setAutoApprove(!autoApprove)}
-              color="primary"
-            />
-          }
-          label={`Automatically approve transactions from ${origin}`}
-        />
-        {!dismissed && autoApprove && (
-          <SnackbarContent
-            className={classes.warningContainer}
-            message={
-              <div>
-                <span className={classes.warningTitle}>
-                  <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
-                </span>
-                <Typography className={classes.warningMessage}>
-                  This setting allows sending some transactions on your behalf
-                  without requesting your permission for the remainder of this
-                  session.
-                </Typography>
-              </div>
-            }
-            action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
-            ]}
-            classes={{ root: classes.snackbarRoot }}
+        <RowContainer
+          margin={'0 0 4rem 0'}
+          direction={'column'}
+          className={classes.connection}
+        >
+          <Typography className={classes.publicKey}>{origin}</Typography>
+          <img style={{ margin: '2rem 0' }} src={ImportExportIcon} />
+          <Typography className={classes.publicKey}>
+            {wallet.publicKey.toBase58()}
+          </Typography>
+        </RowContainer>
+
+        <RowContainer direction={'row'}>
+          <Checkbox
+            id="autoApprove"
+            checked={autoApprove}
+            onChange={() => setAutoApprove(!autoApprove)}
+            color="primary"
+            classes={{ root: classes.checkbox }}
           />
-        )}
+          <Row style={{ textAlign: 'left' }}>
+            <StyledLabel htmlFor="autoApprove">
+              Automatically approve transactions from{' '}
+              <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
+              This will allow you to use the auto-settle function.
+            </StyledLabel>
+          </Row>
+        </RowContainer>
+        <RowContainer
+          justify={'flex-start'}
+          margin={'4rem 0 3rem 0'}
+          padding={'0rem 3rem'}
+          style={{ position: 'relative', borderRadius: '.6rem' }}
+        >
+          <RowContainer
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              height: '100%',
+              background: '#f29c38',
+              opacity: '.5',
+              borderRadius: '.6rem',
+            }}
+          />
+          <ExclamationMark>!</ExclamationMark>
+          <Typography>Only connect with sites you trust.</Typography>
+        </RowContainer>
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
-        <Button
-          color="primary"
+        <BtnCustom
+          textTransform={'capitalize'}
+          btnColor={'#ECF0F3'}
+          onClick={window.close}
+        >
+          Cancel
+        </BtnCustom>
+        <BtnCustom
+          textTransform={'capitalize'}
+          btnColor={'#ECF0F3'}
+          backgroundColor={'#7380EB'}
+          borderColor={'#7380EB'}
           onClick={() => onApprove(autoApprove)}
-          disabled={!dismissed && autoApprove}
         >
           Connect
-        </Button>
+        </BtnCustom>
       </CardActions>
-    </Card>
+    </StyledCard>
   );
 }
 
@@ -330,7 +393,11 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
+        } else if (
+          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+            instruction.type,
+          )
+        ) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
@@ -499,7 +566,11 @@ function ApproveSignatureForm({
         );
       case 'newOrderV3':
         return (
-          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} v3={true} />
+          <NewOrder
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+            v3={true}
+          />
         );
       default:
         return <UnknownInstruction instruction={instruction} />;
@@ -595,8 +666,10 @@ function ApproveSignatureForm({
         )}
       </CardContent>
       <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
-        <Button
+        <BtnCustom btnColor={'#ECF0F3'} onClick={onReject}>
+          Cancel
+        </BtnCustom>
+        <BtnCustom
           ref={buttonRef}
           className={classes.approveButton}
           variant="contained"
@@ -604,7 +677,7 @@ function ApproveSignatureForm({
           onClick={onApprove}
         >
           Approve{isMultiTx ? ' All' : ''}
-        </Button>
+        </BtnCustom>
       </CardActions>
     </Card>
   );
