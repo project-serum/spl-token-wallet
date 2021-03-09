@@ -31,7 +31,7 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
         onClick={() => onOpenAddress(instruction.programId?.toBase58())}
       />
       <Typography style={{ wordBreak: 'break-all' }}>
-        data: {instruction.data}
+        data: {instruction.rawData}
       </Typography>
     </>
   );

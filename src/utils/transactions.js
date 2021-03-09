@@ -50,7 +50,7 @@ export const decodeMessage = async (connection, wallet, message) => {
     );
     instructions.push({
       ...instruction,
-      data: transactionInstruction?.data,
+      rawData: transactionInstruction?.data,
     });
   }
   return instructions;
