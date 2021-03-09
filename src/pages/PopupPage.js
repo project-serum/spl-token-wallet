@@ -502,7 +502,7 @@ function ApproveSignatureForm({
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} v3={true} />
         );
       default:
-        return <UnknownInstruction instruction={instruction} />;
+        return <UnknownInstruction instruction={instruction} onOpenAddress={onOpenAddress} />;
     }
   };
 

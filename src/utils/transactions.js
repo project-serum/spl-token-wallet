@@ -50,7 +50,7 @@ export const decodeMessage = async (connection, wallet, message) => {
     );
     instructions.push({
       ...instruction,
-      rawData: transactionInstruction?.data,
+      data: transactionInstruction?.data,
     });
   }
   return instructions;
@@ -127,6 +127,12 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
+    } else {
+      return {
+        type: 'Unknown',
+        accounts: instruction.accounts.map(index => accountKeys[index]),
+        programId
+      }
     }
   } catch {}
 
