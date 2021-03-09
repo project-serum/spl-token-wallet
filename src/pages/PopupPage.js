@@ -9,11 +9,7 @@ import styled from 'styled-components';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
-import {
-  Divider,
-  Checkbox,
-  Typography,
-} from '@material-ui/core';
+import { Divider, Checkbox, Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -292,7 +288,11 @@ function ApproveConnectionForm({ origin, onApprove }) {
           className={classes.connection}
         >
           <Typography className={classes.publicKey}>{origin}</Typography>
-          <img alt={'import export icon'} style={{ margin: '2rem 0' }} src={ImportExportIcon} />
+          <img
+            alt={'import export icon'}
+            style={{ margin: '2rem 0' }}
+            src={ImportExportIcon}
+          />
           <Typography className={classes.publicKey}>
             {wallet.publicKey.toBase58()}
           </Typography>
@@ -332,7 +332,11 @@ function ApproveConnectionForm({ origin, onApprove }) {
             }}
           />
           <ExclamationMark>!</ExclamationMark>
-          <Typography>Only connect with sites you trust.</Typography>
+          <Typography>
+            Only connect with sites you trust.{' '}
+            {autoApprove &&
+              'This setting allows sending some transactions on your behalf without requesting your permission for the remainder of this session.'}
+          </Typography>
         </RowContainer>
       </CardContent>
       <CardActions className={classes.actions}>
