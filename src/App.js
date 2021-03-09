@@ -20,12 +20,21 @@ export default function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = React.useMemo(
     () =>
-      createMuiTheme({
-        palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
-          primary: blue,
-        },
-      }),
+      createMuiTheme(
+        prefersDarkMode
+          ? {
+              palette: {
+                type: 'dark',
+                primary: blue,
+              },
+            }
+          : {
+              palette: {
+                type: 'light',
+                primary: blue,
+              },
+            },
+      ),
     [prefersDarkMode],
   );
 
@@ -38,7 +47,6 @@ export default function App() {
     <Suspense fallback={<LoadingIndicator />}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-
         <ConnectionProvider>
           <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
             <WalletProvider>

@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Grid } from '@material-ui/core'
 
 export type RowProps = {
   wrap?: string
@@ -25,4 +26,19 @@ export const Row = styled.div`
 `
 export const RowContainer = styled((props) => <Row {...props} />)`
   width: 100%;
+`
+
+export const GridContainer = styled(({ ...rest }) => (
+  <Grid {...rest} />
+))`
+  display: flex;
+  flex: auto;
+  align-items: center;
+  width: calc(100%);
+  height: 6rem;
+  position: relative;
+  padding: 0rem 3rem;
+  border-bottom: ${(props) => props.theme.palette.border.new};
+  margin: 0rem;
+  background: ${(props) => props.theme.palette.grey.additional};
 `
