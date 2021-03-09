@@ -23,10 +23,10 @@ import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import AddAccountDialog from './AddAccountDialog';
-import DeleteAccountDialog from './DeleteAccountDialog';
+import DeleteMnemonicDialog from './DeleteMnemonicDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from './ExportAccountDialog.js';
-import { useIsExtension } from '../utils/utils';
+import { isExtensionPopup, useIsExtensionWidth } from '../utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -51,20 +51,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NavigationFrame({ children }) {
   const classes = useStyles();
-  const isExtension = useIsExtension();
+  const isExtensionWidth = useIsExtensionWidth();
   return (
     <>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            {isExtension  ? 'Sollet' : 'Solana SPL Token Wallet'}
+            {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>
-          <WalletSelector />
-          <NetworkSelector />
+          {!isExtensionPopup && (
+            <>
+              <WalletSelector />
+              <NetworkSelector />
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
-      {!isExtension && <Footer />}
+      {!isExtensionWidth && <Footer />}
     </>
   );
 }
@@ -143,8 +147,7 @@ function WalletSelector() {
     addHardwareWalletDialogOpen,
     setAddHardwareWalletDialogOpen,
   ] = useState(false);
-  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
-  const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
+  const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
   const classes = useStyles();
 
@@ -189,10 +192,9 @@ function WalletSelector() {
         open={exportMnemonicOpen}
         onClose={() => setExportMnemonicOpen(false)}
       />
-      <DeleteAccountDialog
-        open={deleteAccountOpen}
-        onClose={() => setDeleteAccountOpen(false)}
-        isDeleteAccountEnabled={isDeleteAccountEnabled}
+      <DeleteMnemonicDialog
+        open={deleteMnemonicOpen}
+        onClose={() => setDeleteMnemonicOpen(false)}
       />
       <Hidden xsDown>
         <Button
@@ -273,17 +275,13 @@ function WalletSelector() {
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            setIsDeleteAccountEnabled(false);
-            setDeleteAccountOpen(true);
-            setTimeout(() => {
-              setIsDeleteAccountEnabled(true);
-            }, 3000);
+            setDeleteMnemonicOpen(true);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Delete Account
+          Delete Mnemonic
         </MenuItem>
       </Menu>
     </>

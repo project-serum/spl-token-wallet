@@ -5,7 +5,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useWallet, useWalletPublicKeys } from '../utils/wallet';
+import {
+  useWallet,
+  useWalletPublicKeys,
+  useWalletSelector,
+} from '../utils/wallet';
+import { PublicKey } from '@solana/web3.js';
 import { decodeMessage } from '../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import {
@@ -31,31 +36,76 @@ import WarningIcon from '@material-ui/icons/Warning';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
-import { useLocalStorageState } from '../utils/utils';
+import { useLocalStorageState, isExtension } from '../utils/utils';
+
+function getInitialRequests() {
+  if (!isExtension) {
+    return [];
+  }
+
+  // TODO CHECK OPENER?
+
+  const urlParams = new URLSearchParams(window.location.hash.slice(1));
+  return [JSON.parse(urlParams.get('request'))];
+}
 
 export default function PopupPage({ opener }) {
-  const wallet = useWallet();
-
   const origin = useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
     return params.get('origin');
   }, []);
+  const selectedWallet = useWallet();
+  const { accounts, setWalletSelector } = useWalletSelector();
+  const [wallet, setWallet] = useState(isExtension ? null : selectedWallet);
+
+  const [connectedAccount, setConnectedAccount] = useState(null);
+  const hasConnectedAccount = !!connectedAccount;
+
+  const [requests, setRequests] = useState(getInitialRequests);
+  const [autoApprove, setAutoApprove] = useState(false);
   const postMessage = useCallback(
     (message) => {
-      opener.postMessage({ jsonrpc: '2.0', ...message }, origin);
+      if (isExtension) {
+        // eslint-disable-next-line no-undef
+        chrome.runtime.sendMessage({
+          channel: 'sollet_extension_background_channel',
+          data: message,
+        });
+      } else {
+        opener.postMessage({ jsonrpc: '2.0', ...message }, origin);
+      }
     },
     [opener, origin],
   );
 
-  const [connectedAccount, setConnectedAccount] = useState(null);
-  const hasConnectedAccount = !!connectedAccount;
-  const [requests, setRequests] = useState([]);
-  const [autoApprove, setAutoApprove] = useState(false);
+  // (Extension only) Fetch connected wallet for site from local storage.
+  useEffect(() => {
+    if (isExtension) {
+      // eslint-disable-next-line no-undef
+      chrome.storage.local.get('connectedWallets', (result) => {
+        const connectedWallet = (result.connectedWallets || {})[origin];
+        if (connectedWallet) {
+          setWalletSelector(connectedWallet.selector);
+          setConnectedAccount(new PublicKey(connectedWallet.publicKey));
+          setAutoApprove(connectedWallet.autoApprove);
+        } else {
+          setConnectedAccount(selectedWallet.publicKey);
+        }
+      });
+    }
+  }, [origin, setWalletSelector, selectedWallet]);
+
+  // (Extension only) Set wallet once connectedWallet is retrieved.
+  useEffect(() => {
+    if (isExtension && connectedAccount) {
+      setWallet(selectedWallet);
+    }
+  }, [connectedAccount]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
   useEffect(() => {
-    if (hasConnectedAccount) {
+    if (hasConnectedAccount && !isExtension) {
       function unloadHandler() {
         postMessage({ method: 'disconnected' });
       }
@@ -65,11 +115,15 @@ export default function PopupPage({ opener }) {
         window.removeEventListener('beforeunload', unloadHandler);
       };
     }
-  }, [hasConnectedAccount, postMessage]);
+  }, [hasConnectedAccount, postMessage, origin]);
 
   // Disconnect if the user switches to a different wallet.
   useEffect(() => {
-    if (connectedAccount && !connectedAccount.equals(wallet.publicKey)) {
+    if (
+      wallet &&
+      connectedAccount &&
+      !connectedAccount.equals(wallet.publicKey)
+    ) {
       setConnectedAccount(null);
     }
   }, [connectedAccount, wallet]);
@@ -92,92 +146,136 @@ export default function PopupPage({ opener }) {
     return () => window.removeEventListener('message', messageHandler);
   }, [origin, postMessage]);
 
-  if (!connectedAccount || !connectedAccount.equals(wallet.publicKey)) {
+  const request = requests[0];
+  const popRequest = () => setRequests((requests) => requests.slice(1));
+
+  if (requests.length === 0) {
+    if (isExtension) {
+      window.close();
+    } else {
+      focusParent();
+    }
+
+    return (
+      <Typography>
+        {isExtension
+          ? 'Submitting...'
+          : 'Please keep this window open in the background.'}
+      </Typography>
+    );
+  }
+
+  if (!wallet) {
+    return <Typography>Loading wallet...</Typography>;
+  }
+
+  const mustConnect =
+    !connectedAccount || !connectedAccount.equals(wallet.publicKey);
+  // We must detect when to show the connection form on the website as it is not sent as a request.
+  if (
+    (isExtension && request.method === 'connect') ||
+    (!isExtension && mustConnect)
+  ) {
     // Approve the parent page to connect to this wallet.
     function connect(autoApprove) {
       setConnectedAccount(wallet.publicKey);
+      if (isExtension) {
+        // eslint-disable-next-line no-undef
+        chrome.storage.local.get('connectedWallets', (result) => {
+          // TODO better way to do this
+          const account = accounts.find((account) =>
+            account.address.equals(wallet.publicKey),
+          );
+          const connectedWallets = {
+            ...(result.connectedWallets || {}),
+            // TODO ADD SELECTOR
+            [origin]: {
+              publicKey: wallet.publicKey.toBase58(),
+              selector: account.selector,
+              autoApprove,
+            },
+          };
+          // eslint-disable-next-line no-undef
+          chrome.storage.local.set({ connectedWallets });
+        });
+      }
       postMessage({
         method: 'connected',
         params: { publicKey: wallet.publicKey.toBase58(), autoApprove },
+        id: isExtension ? request.id : undefined,
       });
       setAutoApprove(autoApprove);
-      focusParent();
+      if (!isExtension) {
+        focusParent();
+      } else {
+        popRequest();
+      }
     }
 
     return <ApproveConnectionForm origin={origin} onApprove={connect} />;
   }
 
-  if (requests.length > 0) {
-    const request = requests[0];
-    assert(
-      request.method === 'signTransaction' ||
-        request.method === 'signAllTransactions',
+  assert(
+    (request.method === 'signTransaction' ||
+      request.method === 'signAllTransactions') &&
+      wallet,
+  );
+
+  let messages =
+    request.method === 'signTransaction'
+      ? [bs58.decode(request.params.message)]
+      : request.params.messages.map((m) => bs58.decode(m));
+
+  async function onApprove() {
+    popRequest();
+    if (request.method === 'signTransaction') {
+      sendSignature(messages[0]);
+    } else {
+      sendAllSignatures(messages);
+    }
+  }
+
+  async function sendSignature(message) {
+    postMessage({
+      result: {
+        signature: await wallet.createSignature(message),
+        publicKey: wallet.publicKey.toBase58(),
+      },
+      id: request.id,
+    });
+  }
+
+  async function sendAllSignatures(messages) {
+    const signatures = await Promise.all(
+      messages.map((m) => wallet.createSignature(m)),
     );
+    postMessage({
+      result: {
+        signatures,
+        publicKey: wallet.publicKey.toBase58(),
+      },
+      id: request.id,
+    });
+  }
 
-    let messages =
-      request.method === 'signTransaction'
-        ? [bs58.decode(request.params.message)]
-        : request.params.messages.map((m) => bs58.decode(m));
-
-    async function onApprove() {
-      setRequests((requests) => requests.slice(1));
-      if (request.method === 'signTransaction') {
-        sendSignature(messages[0]);
-      } else {
-        sendAllSignatures(messages);
-      }
-      if (requests.length === 1) {
-        focusParent();
-      }
-    }
-
-    async function sendSignature(message) {
-      postMessage({
-        result: {
-          signature: await wallet.createSignature(message),
-          publicKey: wallet.publicKey.toBase58(),
-        },
-        id: request.id,
-      });
-    }
-
-    async function sendAllSignatures(messages) {
-      const signatures = await Promise.all(
-        messages.map((m) => wallet.createSignature(m)),
-      );
-      postMessage({
-        result: {
-          signatures,
-          publicKey: wallet.publicKey.toBase58(),
-        },
-        id: request.id,
-      });
-    }
-
-    function sendReject() {
-      setRequests((requests) => requests.slice(1));
-      postMessage({
-        error: 'Transaction cancelled',
-        id: request.id,
-      });
-      if (requests.length === 1) {
-        focusParent();
-      }
-    }
-    return (
-      <ApproveSignatureForm
-        key={request.id}
-        autoApprove={autoApprove}
-        origin={origin}
-        messages={messages}
-        onApprove={onApprove}
-        onReject={sendReject}
-      />
-    );
+  // TODO handle this case
+  function sendReject() {
+    popRequest();
+    postMessage({
+      error: 'Transaction cancelled',
+      id: request.id,
+    });
   }
 
   return (
-    <Typography>Please keep this window open in the background.</Typography>
+    <ApproveSignatureForm
+      key={request.id}
+      autoApprove={autoApprove}
+      origin={origin}
+      messages={messages}
+      onApprove={onApprove}
+      onReject={sendReject}
+    />
   );
 }
 
@@ -234,6 +332,11 @@ const useStyles = makeStyles((theme) => ({
 
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
+  const { accounts } = useWalletSelector();
+  // TODO better way to do this
+  const account = accounts.find((account) =>
+    account.address.equals(wallet.publicKey),
+  );
   const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
   let [dismissed, setDismissed] = useLocalStorageState(
@@ -249,7 +352,10 @@ function ApproveConnectionForm({ origin, onApprove }) {
         <div className={classes.connection}>
           <Typography>{origin}</Typography>
           <ImportExportIcon fontSize="large" />
-          <Typography>{wallet.publicKey.toBase58()}</Typography>
+          <Typography>{account.name}</Typography>
+          <Typography variant="caption">
+            ({wallet.publicKey.toBase58()})
+          </Typography>
         </div>
         <Typography>Only connect with sites you trust.</Typography>
         <Divider className={classes.divider} />
@@ -330,7 +436,11 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+        } else if (
+          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+            instruction.type,
+          )
+        ) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
@@ -339,7 +449,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
           } else {
             accountStates[newAccountPubkey.toBase58()] = states.CREATED;
           }
-        } else if (instruction.type === 'newOrder') {
+        } else if (['newOrder', 'newOrderV3'].includes(instruction.type)) {
           // New order instructions are safe if the owner is this wallet
           let { openOrdersPubkey, ownerPubkey } = instruction.data;
           if (ownerPubkey && owner.equals(ownerPubkey)) {
@@ -465,6 +575,7 @@ function ApproveSignatureForm({
   const getContent = (instruction) => {
     switch (instruction?.type) {
       case 'cancelOrder':
+      case 'cancelOrderV2':
       case 'matchOrders':
       case 'settleFunds':
         return (
@@ -495,6 +606,14 @@ function ApproveSignatureForm({
       case 'newOrder':
         return (
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
+      case 'newOrderV3':
+        return (
+          <NewOrder
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+            v3={true}
+          />
         );
       default:
         return <UnknownInstruction instruction={instruction} />;

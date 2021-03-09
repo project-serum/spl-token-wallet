@@ -26,7 +26,7 @@ export default function App() {
           primary: blue,
         },
         // TODO consolidate popup dimensions
-        ext: '500',
+        ext: '450',
       }),
     [prefersDarkMode],
   );

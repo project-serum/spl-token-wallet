@@ -88,6 +88,10 @@ export async function confirmTransaction(
 }
 
 // TODO consolidate popup dimensions
-export function useIsExtension() {
-  return useMediaQuery('(max-width:500px)');
+export function useIsExtensionWidth() {
+  return useMediaQuery('(max-width:450px)');
 }
+
+export const isExtension = window.location.protocol === 'chrome-extension:';
+
+export const isExtensionPopup = isExtension && window.opener;

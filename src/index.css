@@ -12,7 +12,7 @@ body {
 html,
 body,
 #root {
-  min-width: 450px;
+  min-width: 375px;
   min-height: 600px;
   height: 100%;
 }
@@ -27,11 +27,11 @@ body,
 }
 
 /* TODO consolidate popup dimensions */
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 450px) {
   html,
   body,
   #root {
-    max-width: 450px;
+    max-width: 375px;
   }
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,

@@ -4,7 +4,6 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
-import { publicKeyLayout } from '@project-serum/serum/lib/layout';
 
 export const TOKEN_PROGRAM_ID = new PublicKey(
   'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
@@ -150,6 +149,24 @@ export function memoInstruction(memo) {
     data: Buffer.from(memo, 'utf-8'),
     programId: MEMO_PROGRAM_ID,
   });
+}
+
+class PublicKeyLayout extends BufferLayout.Blob {
+  constructor(property) {
+    super(32, property);
+  }
+
+  decode(b, offset) {
+    return new PublicKey(super.decode(b, offset));
+  }
+
+  encode(src, b, offset) {
+    return super.encode(src.toBuffer(), b, offset);
+  }
+}
+
+function publicKeyLayout(property) {
+  return new PublicKeyLayout(property);
 }
 
 export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
