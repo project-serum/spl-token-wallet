@@ -4,11 +4,10 @@ import { GridContainer, RowContainer, Row } from '../components/Common'
 
 export const CardsPanel = ({ theme, setMarketAddress }) => {
   const location = useLocation()
-
   const isDarkTheme = theme.palette.type === 'dark'
 
   return (
-    <ChartGridContainer isChartPage={false} theme={theme}>
+    <GridContainer isChartPage={false} theme={theme}>
       <RowContainer justify={'space-between'} height={'100%'}>
         <Row
           theme={theme}
@@ -102,6 +101,6 @@ export const CardsPanel = ({ theme, setMarketAddress }) => {
           </div>
         </Row>
       </RowContainer>
-    </ChartGridContainer>
+    </GridContainer>
   )
 }

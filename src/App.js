@@ -1,4 +1,5 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
@@ -14,6 +15,13 @@ import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
 import LoginPage from './pages/LoginPage';
+
+const Login = lazy(() => import('./routes/LoginRouter'));
+const ConnectingWallet = lazy(() => import('./routes/ConnectingWalletRouter'));
+const Wallet = lazy(() => import('./routes/WalletRouter'));
+const RestorePage = lazy(() => import('./routes/Onboarding'));
+const WelcomePage = lazy(() => import('./routes/WelcomeRouter'));
+const CreateWalletPage = lazy(() => import('./routes/CreateWalletRouter'));
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -65,11 +73,24 @@ export default function App() {
 
 function PageContents() {
   const wallet = useWallet();
-  if (!wallet) {
-    return <LoginPage />;
-  }
-  if (window.opener) {
-    return <PopupPage opener={window.opener} />;
-  }
-  return <WalletPage />;
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/connecting_wallet" component={ConnectingWallet} />
+        <Route path="/wallet" component={Wallet} />
+        <Route path="/restore_wallet" component={RestorePage} />
+        <Route path="/welcome" component={WelcomePage} />
+        <Route path="/create_wallet" component={CreateWalletPage} />
+      </Switch>
+    </BrowserRouter>
+  );
+
+  // if (!wallet) {
+  //   return <LoginPage />;
+  // }
+  // if (window.opener) {
+  //   return <PopupPage opener={window.opener} />;
+  // }
+  // return <WalletPage />;
 }
