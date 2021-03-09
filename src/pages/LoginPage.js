@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components'
 import {
   generateMnemonicAndSeed,
   hasLockedMnemonicAndSeed,
@@ -30,6 +31,10 @@ import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
 
 import { BtnCustom } from '../components/BtnCustom'
+
+const StyledCard = styled(Card)`
+  background: #222429;
+`
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
@@ -96,7 +101,7 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
 
   return (
-    <Card>
+    <StyledCard>
       <CardContent>
         <Typography variant="h5" gutterBottom>
           Create New Wallet
@@ -147,7 +152,7 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           Continue
         </BtnCustom>
       </CardActions>
-    </Card>
+    </StyledCard>
   );
 }
 
