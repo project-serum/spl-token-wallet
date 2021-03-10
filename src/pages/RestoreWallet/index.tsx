@@ -12,19 +12,15 @@ import {
   RowContainer,
 } from '../commonStyles';
 
+import Logo from '../../components/Logo'
 import Eye from '../../images/Eye.svg';
-import Logo from '../../images/logo.svg';
 
 export const RestorePage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Body>
-      {' '}
-      <Img>
-        {' '}
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
+      <Logo />
       <Card>
         <RowContainer
           direction={'column'}

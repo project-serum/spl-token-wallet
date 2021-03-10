@@ -13,18 +13,14 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Logo from '../../images/logo.svg';
+import Logo from '../../components/Logo'
 
 export const ImportPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Body>
-      {' '}
-      <Img>
-        {' '}
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
+      <Logo />
       <Card>
         <RowContainer
           direction={'column'}
@@ -47,7 +43,6 @@ export const ImportPage = () => {
             justify={'space-evenly'}
             style={{ position: 'relative' }}
           >
-            {' '}
             <Input type="text" placeholder="Paste your private key"></Input>
             <TextButton
               style={{
