@@ -36,6 +36,10 @@ const StyledCard = styled(Card)`
   background: #222429;
 `
 
+// has wallet - wallet page - add redirect coz redirect from / to login
+// 
+
+
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
   return (
