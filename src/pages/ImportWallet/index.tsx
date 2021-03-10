@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import Eye from '../../images/Eye.svg';
+import { Link } from 'react-router-dom'
 
 import {
   Card,
-  Input,
   Body,
   TextButton,
   Row,
-  Img,
   Title,
   VioletButton,
+  WhiteButton,
   RowContainer,
 } from '../commonStyles';
 
 import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
+import { BtnCustom } from '../../components/BtnCustom';
+import { useTheme } from '@material-ui/core';
 
 export const ImportPage = () => {
   const [password, setPassword] = useState('');
   const [privateKey, setPrivateKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const theme = useTheme()
 
   return (
     <Body>
@@ -51,20 +54,12 @@ export const ImportPage = () => {
               placeholder="Paste your private key"
               value={privateKey}
               onChange={(e) => setPrivateKey(e.target.value)}
-              onPasteClick={() => setPrivateKey('ararra')}
+              onPasteClick={() =>
+                navigator.clipboard
+                  .readText()
+                  .then((clipText) => setPrivateKey(clipText))
+              }
             />
-            {/* <TextButton
-              style={{
-                position: 'absolute',
-                right: '4rem',
-                top: '3.4rem',
-                cursor: 'pointer',
-              }}
-              color={'#406EDC'}
-              width={'5rem'}
-            >
-              Paste
-            </TextButton> */}
             <InputWithEye
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -75,10 +70,10 @@ export const ImportPage = () => {
             />
           </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
-            <a style={{ width: '50%', textAlign: 'center' }} href="/welcome">
-              <TextButton>Cancel</TextButton>
-            </a>
-            <VioletButton width={'50%'}>Import</VioletButton>
+            <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+              <WhiteButton width={'100%'} theme={theme}>Cancel</WhiteButton>
+            </Link>
+            <VioletButton width={'calc(50% - .5rem)'}>Import</VioletButton>
           </Row>
         </RowContainer>
       </Card>

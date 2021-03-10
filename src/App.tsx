@@ -69,6 +69,9 @@ export default function App() {
                   main: '#fff',
                   background: '#1B2028',
                 },
+                red: {
+                  main: '#F69894'
+                },
               },
             }
           : {
@@ -101,6 +104,9 @@ export default function App() {
                 white: {
                   main: '#fff',
                   background: '#1B2028',
+                },
+                red: {
+                  main: '#F69894'
                 },
               },
             },
@@ -145,6 +151,7 @@ const Pages = () => {
       <Route path="/create_wallet" component={CreateWalletPage} />
       <Route path="/import_wallet" component={ImportWalletPage} />
       <Route path="/welcome_back" component={WelcomeBackPage} />
+      {/*  */}
       {!!wallet && <Redirect to="/wallet" />}
       {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
   </Switch>

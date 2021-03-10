@@ -19,6 +19,7 @@ import {
 
 import Logo from '../../components/Logo'
 import { InputWithEye } from '../../components/Input'
+import BottomLink from '../../components/BottomLink'
 
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
@@ -95,20 +96,7 @@ const WelcomeBack = () => {
           </RowContainer>
         </RowContainer>
       </Card>
-      <RowContainer margin={'1rem 0 0 0'}>
-        <Title color={theme.customPalette.grey.dark} fontSize={'1.4rem'}>
-          Or
-          <Link
-            to={'/restore_wallet'}
-            style={{
-              color: theme.customPalette.blue.new,
-              textDecoration: 'none',
-            }}
-          >
-            Restore Existing Wallet
-          </Link>
-        </Title>
-      </RowContainer>
+      <BottomLink />
     </Body>
   );
 };

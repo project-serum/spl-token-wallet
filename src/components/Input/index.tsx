@@ -31,7 +31,7 @@ const InputWithComponent = ({
           position: 'absolute',
           right: '2rem',
           top: '50%',
-          transform: 'translateY(-40%)',
+          transform: 'translateY(-50%)',
         }}
       >
         {ComponentToShow}
@@ -56,7 +56,7 @@ const InputWithEye = ({
     <InputWithComponent
       ComponentToShow={
         <img
-          style={{ padding: '.5rem', cursor: 'pointer' }}
+          style={{ padding: '1.6rem 2rem 1.4rem 2rem', cursor: 'pointer', height: '2rem' }}
           onClick={onEyeClick}
           src={showPassword ? ClosedEye : Eye}
         />
@@ -77,11 +77,12 @@ const InputWithPaste = ({
   onPasteClick: () => void;
 }) => {
   const theme= useTheme()
-  
+
   return (
     <InputWithComponent
       ComponentToShow={
         <TextButton
+          style={{ padding: '1.2rem' }}
           color={theme.customPalette.blue.new}
           onClick={onPasteClick}
         >Paste</TextButton>
