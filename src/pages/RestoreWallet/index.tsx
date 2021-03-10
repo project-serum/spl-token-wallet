@@ -9,6 +9,7 @@ import {
   Img,
   Title,
   VioletButton,
+  RowContainer,
 } from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
@@ -25,16 +26,25 @@ export const RestorePage = () => {
         <img src={Logo} width="100%" height="100%" />
       </Img>
       <Card>
-        <Row direction={'column'} justify={'space-between'} height={'75%'}>
-          <Row direction={'column'} justify={'space-around'} height={'20%'}>
+        <RowContainer
+          direction={'column'}
+          justify={'space-between'}
+          height={'75%'}
+        >
+          <RowContainer
+            direction={'column'}
+            justify={'space-around'}
+            height={'20%'}
+          >
             <Title>Restore your wallet using your 12 seed words.</Title>
             <Title>
               Note that this will delete any existing wallet on this device.
             </Title>
-          </Row>
-          <Row
+          </RowContainer>
+          <RowContainer
             direction={'column'}
             height={'50%'}
+            justify={'space-evenly'}
             style={{ position: 'relative' }}
           >
             {' '}
@@ -43,7 +53,7 @@ export const RestorePage = () => {
               style={{
                 position: 'absolute',
                 right: '4rem',
-                top: '2rem',
+                top: '3.4rem',
                 cursor: 'pointer',
               }}
               color={'#406EDC'}
@@ -62,7 +72,7 @@ export const RestorePage = () => {
               style={{
                 position: 'absolute',
                 right: '5rem',
-                top: '9rem',
+                top: '9.6rem',
                 cursor: 'pointer',
               }}
               width={'2rem'}
@@ -70,14 +80,14 @@ export const RestorePage = () => {
             >
               <img width="100%" height="100%" src={Eye} />
             </Img>
-          </Row>
+          </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
-            <a style={{ width: '100%' }} href="/welcome">
+            <a style={{ width: '50%', textAlign: 'center' }} href="/welcome">
               <TextButton>Cancel</TextButton>
             </a>
-            <VioletButton>Restore</VioletButton>
+            <VioletButton width={'50%'}>Restore</VioletButton>
           </Row>
-        </Row>
+        </RowContainer>
       </Card>
     </Body>
   );
