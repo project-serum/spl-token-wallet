@@ -7,10 +7,11 @@ import {
   Img,
   Title,
   VioletButton,
-} from '../RestoreWallet/styles';
+  CardButton,
+  BoldTitle,
+} from '../commonStyles';
 
 import { Row } from '../../components/Common';
-import { CardButton, BoldTitle } from './styles';
 
 import Plus from '../../images/AddButton.svg';
 import Import from '../../images/ImportButton.svg';

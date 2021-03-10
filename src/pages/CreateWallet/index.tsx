@@ -8,8 +8,8 @@ import {
   Img,
   Title,
   VioletButton,
-} from '../RestoreWallet/styles';
-import {
+  BoldTitle,
+  CardButton,
   Percent,
   ProgressBar,
   ProgressBarContainer,
@@ -18,8 +18,7 @@ import {
   ColorText,
   ContainerForIcon,
   Textarea,
-} from './styles';
-import { BoldTitle, CardButton } from '../WelcomePage/styles';
+} from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
 import Attention from '../../images/attention.svg';
@@ -29,6 +28,7 @@ import Logo from '../../images/logo.svg';
 export const CreateWalletPage = () => {
   const [currentStep, setCurrentStep] = useState('1');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
 
   return (
     <Body>
@@ -160,7 +160,7 @@ export const CreateWalletPage = () => {
               </VioletButton>
             </Row>
           </Card>
-        ) : currentStep === '2' ? (
+        ) : currentStep === '2' && !isSpeedPhase ? (
           <Card>
             <Row>
               <BoldTitle>
@@ -179,7 +179,6 @@ export const CreateWalletPage = () => {
                 placeholder={
                   'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream'
                 }
-                type={'textarea'}
               ></Textarea>
               <ContainerForIcon>
                 <Img width="auto" height="auto">
@@ -209,11 +208,60 @@ export const CreateWalletPage = () => {
               </Row>
               <VioletButton
                 onClick={() => {
-                  setCurrentStep('3');
+                  setSpeedPhaseOn(true);
                 }}
                 background={'#406EDC'}
               >
                 Go to confirm seed phrase
+              </VioletButton>
+            </Row>
+          </Card>
+        ) : currentStep === '2' && isSpeedPhase ? (
+          <Card justify={'space-around'}>
+            <Row height={'auto'}>
+              <BoldTitle>Confirm the seed phrase</BoldTitle>
+            </Row>
+            <Row height={'auto'}>
+              <ColorText
+                background={'rgba(164, 231, 151, 0.5)'}
+                height={'6rem'}
+              >
+                <Title width={'75%'}>
+                  {' '}
+                  Please manually enter the 12 seed phrase words you saved in
+                  the previous step in the order in which they were presented to
+                  you.
+                </Title>
+              </ColorText>
+            </Row>
+            <Row height={'auto'}>
+              <Textarea
+                height={'8rem'}
+                placeholder={
+                  'Enter your 12 words in the correct order, separated by spaces here'
+                }
+                padding={'1rem 2rem 1rem 2rem'}
+              ></Textarea>
+            </Row>
+            <Row height={'auto'} width={'90%'} justify={'space-between'}>
+              <VioletButton
+                onClick={() => {
+                  setCurrentStep('3');
+                }}
+                background={'#222429'}
+                border={'0.1rem solid #fff'}
+                width={'48%'}
+              >
+                Create wallet
+              </VioletButton>
+              <VioletButton
+                onClick={() => {
+                  setCurrentStep('3');
+                }}
+                background={'#406EDC'}
+                width={'48%'}
+              >
+                Create wallet
               </VioletButton>
             </Row>
           </Card>

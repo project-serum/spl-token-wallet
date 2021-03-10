@@ -10,7 +10,7 @@ import {
   Img,
   Title,
   VioletButton,
-} from './styles';
+} from '../commonStyles';
 
 import Logo from '../../images/logo.svg';
 

@@ -10,7 +10,7 @@ import {
   Img,
   Title,
   VioletButton,
-} from '../RestoreWallet/styles';
+} from '../commonStyles';
 
 import Logo from '../../images/logo.svg';
 
