@@ -5,7 +5,6 @@ import { loadMnemonicAndSeed } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 
 import {
-  Input,
   Body,
   Card,
   TextButton,
@@ -18,8 +17,8 @@ import {
   StyledCheckbox,
 } from '../commonStyles';
 
-import Eye from '../../images/Eye.svg';
 import Logo from '../../components/Logo'
+import { InputWithEye } from '../../components/Input'
 
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
@@ -69,10 +68,13 @@ const WelcomeBack = () => {
             height={'5rem'}
             style={{ position: 'relative' }}
           >
-            <Input
+            <InputWithEye
+              value={password}
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               onChange={e => setPassword(e.target.value)}
+              showPassword={showPassword}
+              onEyeClick={() => setShowPassword(!showPassword)}
             />
           </RowContainer>
           <RowContainer direction={'column'} height={'calc(50% - 2.5rem)'}>
@@ -95,7 +97,7 @@ const WelcomeBack = () => {
       </Card>
       <RowContainer margin={'1rem 0 0 0'}>
         <Title color={theme.customPalette.grey.dark} fontSize={'1.4rem'}>
-          Or{' '}
+          Or
           <Link
             to={'/restore_wallet'}
             style={{

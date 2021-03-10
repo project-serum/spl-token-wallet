@@ -175,7 +175,7 @@ export const Card = styled.div`
 `;
 
 export const Input = styled.input`
-  width: ${(props) => props.width || '90%'};
+  width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
   color: #fff;
   font-family: Avenir Next Medium;
@@ -186,7 +186,9 @@ export const Input = styled.input`
   background: #222429;
   outline: none;
   padding-left: 2rem;
+  padding-right: 4rem;
 `;
+
 export const Body = styled.div`
   width: 100%;
   height: 100%;
