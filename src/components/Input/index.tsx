@@ -29,7 +29,7 @@ const InputWithComponent = ({
       <div
         style={{
           position: 'absolute',
-          right: '2rem',
+          right: '0',
           top: '50%',
           transform: 'translateY(-50%)',
         }}
@@ -82,7 +82,7 @@ const InputWithPaste = ({
     <InputWithComponent
       ComponentToShow={
         <TextButton
-          style={{ padding: '1.2rem' }}
+          style={{ padding: '1.2rem 2rem' }}
           color={theme.customPalette.blue.new}
           onClick={onPasteClick}
         >Paste</TextButton>

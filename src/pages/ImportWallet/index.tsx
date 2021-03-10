@@ -14,7 +14,7 @@ import {
 
 import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
-import { BtnCustom } from '../../components/BtnCustom';
+import BottomLink from '../../components/BottomLink'
 import { useTheme } from '@material-ui/core';
 
 export const ImportPage = () => {
@@ -77,6 +77,7 @@ export const ImportPage = () => {
           </Row>
         </RowContainer>
       </Card>
+      <BottomLink to={'/create_wallet'} toText={'Create Wallet'} />
     </Body>
   );
 };

@@ -27,6 +27,8 @@ import Eye from '../../images/Eye.svg';
 import Attention from '../../images/attention.svg';
 import Copy from '../../images/copy.svg';
 import Logo from '../../components/Logo';
+import BottomLink from '../../components/BottomLink'
+
 import { useTheme } from '@material-ui/core';
 
 export const CreateWalletPage = () => {
@@ -125,6 +127,7 @@ export const CreateWalletPage = () => {
           </ProgressBarContainer>
         </RowContainer>
         {currentStep === '1' ? (
+          <>
           <Card justify={'space-evenly'}>
             <RowContainer direction={'column'}>
               <BoldTitle style={{ marginBottom: '1.5rem' }}>
@@ -165,7 +168,10 @@ export const CreateWalletPage = () => {
               </VioletButton>
             </RowContainer>
           </Card>
+          <BottomLink />
+          </>
         ) : currentStep === '2' && !isSpeedPhase ? (
+          <>
           <Card justify={'space-evenly'}>
             <RowContainer>
               <BoldTitle>
@@ -221,7 +227,10 @@ export const CreateWalletPage = () => {
               </VioletButton>
             </Row>
           </Card>
+          <BottomLink />
+          </>
         ) : currentStep === '2' && isSpeedPhase ? (
+          <>
           <Card justify={'space-around'}>
             <RowContainer height={'auto'}>
               <BoldTitle>Confirm the seed phrase</BoldTitle>
@@ -271,6 +280,8 @@ export const CreateWalletPage = () => {
               </VioletButton>
             </Row>
           </Card>
+          <BottomLink />
+          </>
         ) : (
           <Card width={'100rem'}>
             <RowContainer height={'100%'}>

@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'
 
 import {
   Card,
-  Input,
   Body,
   TextButton,
   Row,
-  Img,
   Title,
   VioletButton,
+  WhiteButton,
   RowContainer,
 } from '../commonStyles';
 
 import Logo from '../../components/Logo'
-import Eye from '../../images/Eye.svg';
+import { InputWithEye, InputWithPaste } from '../../components/Input';
+import BottomLink from '../../components/BottomLink'
+import { useTheme } from '@material-ui/core';
 
 export const RestorePage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [seedPhrase, setSeedPhrase] = useState('');
+
+  const theme = useTheme()
 
   return (
     <Body>
@@ -43,48 +49,35 @@ export const RestorePage = () => {
             justify={'space-evenly'}
             style={{ position: 'relative' }}
           >
-            {' '}
-            <Input type="text" placeholder="Paste your private key"></Input>
-            <TextButton
-              style={{
-                position: 'absolute',
-                right: '4rem',
-                top: '3.4rem',
-                cursor: 'pointer',
-              }}
-              color={'#406EDC'}
-              width={'5rem'}
-            >
-              Paste
-            </TextButton>
-            <Input
+            <InputWithPaste
+              type="text"
+              placeholder="Paste your seed phrase"
+              value={seedPhrase}
+              onChange={(e) => setSeedPhrase(e.target.value)}
+              onPasteClick={() =>
+                navigator.clipboard
+                  .readText()
+                  .then((clipText) => setSeedPhrase(clipText))
+              }
+            />
+            <InputWithEye
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              showPassword={showPassword}
+              onEyeClick={() => setShowPassword(!showPassword)}
               type={showPassword ? 'text' : 'password'}
               placeholder="Create Password"
-            ></Input>
-            <Img
-              onClick={() => {
-                setShowPassword(!showPassword);
-              }}
-              style={{
-                position: 'absolute',
-                right: '5rem',
-                top: '9.6rem',
-                cursor: 'pointer',
-              }}
-              width={'2rem'}
-              height={'2rem'}
-            >
-              <img width="100%" height="100%" src={Eye} />
-            </Img>
+            />
           </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
-            <a style={{ width: '50%', textAlign: 'center' }} href="/welcome">
-              <TextButton>Cancel</TextButton>
-            </a>
-            <VioletButton width={'50%'}>Restore</VioletButton>
+          <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+              <WhiteButton width={'100%'} theme={theme}>Cancel</WhiteButton>
+            </Link>
+            <VioletButton width={'calc(50% - .5rem)'}>Restore</VioletButton>
           </Row>
         </RowContainer>
       </Card>
+      <BottomLink to={'/create_wallet'} toText={'Create Wallet'} />
     </Body>
   );
 };
