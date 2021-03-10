@@ -158,7 +158,7 @@ export const ContainerForIcon = styled.div`
 export const Img = styled.div`
   width: ${(props) => props.width || '30rem'};
   height: ${(props) => props.width || '10rem'};
-  margin-bottom: ${props => props.margin || '8rem'};
+  margin-bottom: ${(props) => props.margin || '0rem'};
 `;
 
 export const Card = styled.div`
@@ -252,10 +252,11 @@ export const CardButton = styled.div`
   flex-direction: column;
   align-items: center;
   background: ${(props) => props.background || '#383b45'};
-  border-radius:${(props) => props.radius || '1rem'};
+  border-radius: ${(props) => props.radius || '1rem'};
   transition: 0.2s;
   outline: none;
-  opacity:${(props) => props.opacity || '1'}
+  opacity: ${(props) => props.opacity || '1'};
+  text-decoration: none;
   &: hover {
     box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
   }
@@ -287,9 +288,9 @@ export const StyledLabel = styled.label`
 
 export const StyledCheckbox = styled(Checkbox)`
   &&& {
-    color: ${props => props.color || props.theme.customPalette.blue.new};
+    color: ${(props) => props.color || props.theme.customPalette.blue.new};
     &:hover {
-      background-color: rgba(54, 108, 229, .1);
+      background-color: rgba(54, 108, 229, 0.1);
     }
   }
 
@@ -297,4 +298,4 @@ export const StyledCheckbox = styled(Checkbox)`
     width: 2rem;
     height: 2rem;
   }
-`
+`;
