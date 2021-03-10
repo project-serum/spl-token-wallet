@@ -20,6 +20,7 @@ const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
+const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -143,7 +144,7 @@ export default function App() {
 }
 
 const Pages = () => {
-  const wallet = useWallet();
+  const wallet = useWallet()
   return (
     <Switch>
       <Route path="/connecting_wallet" component={ConnectingWallet} />
@@ -153,13 +154,14 @@ const Pages = () => {
       <Route path="/create_wallet" component={CreateWalletPage} />
       <Route path="/import_wallet" component={ImportWalletPage} />
       <Route path="/welcome_back" component={WelcomeBackPage} />
-      {/*  */}
+      <Route path="/connect_popup" component={ConnectPopup} />
+
+      {/* popup if connecting from dex UI */}
+      {window.opener && <Redirect to="/connect_popup" />}
+      {/* if wallet exists - for case when we'll have unlocked wallet */}
       {!!wallet && <Redirect to="/wallet" />}
-      {hasLockedMnemonicAndSeed() ? (
-        <Redirect to="/welcome_back" />
-      ) : (
-        <Redirect to="/welcome" />
-      )}
-    </Switch>
-  );
-};
+      {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
+      {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
+  </Switch>
+  )
+}

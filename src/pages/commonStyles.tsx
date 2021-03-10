@@ -228,7 +228,7 @@ export const Title = styled.span`
 
 export const VioletButton = styled((props) => (
   <BtnCustom
-    width={props.width || '50%'}
+    btnWidth={props.width || '50%'}
     fontSize={'1.4rem'}
     height={'4.5rem'}
     textTransform={'capitalize'}
