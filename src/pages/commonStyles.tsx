@@ -138,6 +138,7 @@ export const Textarea = styled.textarea`
   outline: none;
   padding: ${(props) => props.padding || '1rem 8rem 1rem 2rem'};
   position: relative;
+  line-height: 3rem;
 `;
 
 export const ContainerForIcon = styled.div`

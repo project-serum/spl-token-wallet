@@ -19,3 +19,7 @@ body,
 a {
   text-decoration: none;
 }
+
+input, textarea {
+  resize: none;
+}

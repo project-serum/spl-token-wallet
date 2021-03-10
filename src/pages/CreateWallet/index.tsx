@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import copy from 'clipboard-copy'
 import {
   Card,
   Input,
@@ -26,10 +27,9 @@ import {
   Stroke,
 } from '../commonStyles';
 
-import { InputWithSearch } from '../../components/Input';
+import { InputWithSearch, InputWithEye } from '../../components/Input';
 
 import SRM from '../../images/srm.svg';
-import Eye from '../../images/Eye.svg';
 import Attention from '../../images/attention.svg';
 import Copy from '../../images/copy.svg';
 import Logo from '../../components/Logo';
@@ -42,6 +42,7 @@ export const CreateWalletPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [password, setPassword] = useState('');
   const theme = useTheme();
 
   return (
@@ -143,28 +144,18 @@ export const CreateWalletPage = () => {
                 </BoldTitle>
                 <BoldTitle>password if you have created it already:</BoldTitle>
               </RowContainer>
-              <RowContainer width={'90%'} style={{ position: 'relative' }}>
-                <Input
-                  style={{ position: 'relative' }}
+              <Row width={'90%'} style={{ position: 'relative' }}>
+                <InputWithEye
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  placeholder={'Password'}
+                  showPassword={showPassword}
+                  onEyeClick={() => setShowPassword(!showPassword)}
                 />
-                <Img
-                  onClick={() => {
-                    setShowPassword(!showPassword);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    right: '5rem',
-                    top: '1.3rem',
-                    cursor: 'pointer',
-                  }}
-                  width={'2rem'}
-                  height={'2rem'}
-                >
-                  <img width="100%" height="100%" src={Eye} />
-                </Img>
-              </RowContainer>
+              </Row>
               <RowContainer>
                 <VioletButton
                   onClick={() => {
@@ -192,17 +183,15 @@ export const CreateWalletPage = () => {
                   safe place:
                 </ColorText>
               </RowContainer>
-              <RowContainer>
+              <RowContainer style={{ position: 'relative' }}>
                 <Textarea
                   height={'8rem'}
-                  placeholder={
+                  value={
                     'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream'
                   }
-                ></Textarea>
-                <ContainerForIcon>
-                  <Img width="auto" height="auto">
-                    <img src={Copy} />
-                  </Img>
+                />
+                <ContainerForIcon onClick={() => copy('spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream')}>
+                  <img src={Copy} />
                 </ContainerForIcon>
               </RowContainer>
               <RowContainer>
@@ -264,7 +253,7 @@ export const CreateWalletPage = () => {
                     'Enter your 12 words in the correct order, separated by spaces here'
                   }
                   padding={'1rem 2rem 1rem 2rem'}
-                ></Textarea>
+                />
               </RowContainer>
               <Row height={'auto'} width={'90%'} justify={'space-between'}>
                 <VioletButton
