@@ -19,9 +19,10 @@ import LoginPage from './pages/LoginPage';
 const Login = lazy(() => import('./routes/LoginRouter'));
 const ConnectingWallet = lazy(() => import('./routes/ConnectingWalletRouter'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
-const RestorePage = lazy(() => import('./routes/Onboarding'));
+const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/WelcomeRouter'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWalletRouter'));
+const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -74,6 +75,7 @@ function PageContents() {
         <Route path="/restore_wallet" component={RestorePage} />
         <Route path="/welcome" component={WelcomePage} />
         <Route path="/create_wallet" component={CreateWalletPage} />
+        <Route path="/import_wallet" component={ImportWalletPage} />
       </Switch>
     </BrowserRouter>
   );

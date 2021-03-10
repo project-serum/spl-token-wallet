@@ -68,25 +68,27 @@ export const WelcomePage = () => {
               </Row>
             </CardButton>
           </a>
-          <CardButton width="35rem" height="16.5rem">
-            <Row width={'80%'} justify={'space-between'}>
-              {' '}
-              <Img width="9rem" height="9rem">
+          <a href={'/import_wallet'}>
+            <CardButton width="35rem" height="16.5rem">
+              <Row width={'80%'} justify={'space-between'}>
                 {' '}
-                <img src={Import} width="100%" height="100%" />
-              </Img>
-              <Row
-                direction={'column'}
-                justify={'center'}
-                align={'end'}
-                width={'60%'}
-              >
-                {' '}
-                <BoldTitle>Import Wallet</BoldTitle>
-                <Title>using private key</Title>{' '}
+                <Img width="9rem" height="9rem">
+                  {' '}
+                  <img src={Import} width="100%" height="100%" />
+                </Img>
+                <Row
+                  direction={'column'}
+                  justify={'center'}
+                  align={'end'}
+                  width={'60%'}
+                >
+                  {' '}
+                  <BoldTitle>Import Wallet</BoldTitle>
+                  <Title>using private key</Title>{' '}
+                </Row>
               </Row>
-            </Row>
-          </CardButton>
+            </CardButton>
+          </a>
         </Row>
       </Row>
     </Body>

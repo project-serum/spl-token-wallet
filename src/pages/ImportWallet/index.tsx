@@ -10,11 +10,11 @@ import {
   Img,
   Title,
   VioletButton,
-} from './styles';
+} from '../RestoreWallet/styles';
 
 import Logo from '../../images/logo.svg';
 
-export const RestorePage = () => {
+export const ImportPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -27,7 +27,7 @@ export const RestorePage = () => {
       <Card>
         <Row direction={'column'} justify={'space-between'} height={'75%'}>
           <Row direction={'column'} justify={'space-around'} height={'20%'}>
-            <Title>Restore your wallet using your 12 seed words.</Title>
+            <Title>Import your wallet using your 12 seed words.</Title>
             <Title>
               Note that this will delete any existing wallet on this device.
             </Title>
@@ -75,7 +75,7 @@ export const RestorePage = () => {
             <a style={{ width: '100%' }} href="/welcome">
               <TextButton>Cancel</TextButton>
             </a>
-            <VioletButton>Restore</VioletButton>
+            <VioletButton>Import</VioletButton>
           </Row>
         </Row>
       </Card>
