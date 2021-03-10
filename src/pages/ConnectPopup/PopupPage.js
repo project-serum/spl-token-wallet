@@ -6,34 +6,34 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { useWallet, useWalletPublicKeys } from '../utils/wallet';
-import { decodeMessage } from '../utils/transactions';
-import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
-import { Divider, Checkbox, Typography } from '@material-ui/core';
+import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
+import { decodeMessage } from '../../utils/transactions';
+import { useConnection, useSolanaExplorerUrlSuffix } from '../../utils/connection';
+import { Divider, Checkbox, Typography, useTheme } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import ImportExportIcon from '../images/importExportIcon.svg';
-import Logo from '../images/logo.svg';
+import ImportExportIcon from '../../images/importExportIcon.svg';
+import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
-import NewOrder from '../components/instructions/NewOrder';
-import UnknownInstruction from '../components/instructions/UnknownInstruction';
-import SystemInstruction from '../components/instructions/SystemInstruction';
-import DexInstruction from '../components/instructions/DexInstruction';
-import TokenInstruction from '../components/instructions/TokenInstruction';
-import { BtnCustom } from '../components/BtnCustom';
-import { Row, RowContainer, StyledLabel } from './commonStyles';
+import NewOrder from '../../components/instructions/NewOrder';
+import UnknownInstruction from '../../components/instructions/UnknownInstruction';
+import SystemInstruction from '../../components/instructions/SystemInstruction';
+import DexInstruction from '../../components/instructions/DexInstruction';
+import TokenInstruction from '../../components/instructions/TokenInstruction';
+import { BtnCustom } from '../../components/BtnCustom';
+import { Row, RowContainer, StyledLabel, VioletButton, WhiteButton } from '../commonStyles';
 
 const StyledCard = styled(Card)`
   background: #17181a;
   color: #ecf0f3;
   text-align: center;
-  width: 34rem;
-  padding: 0 3rem;
+  width: 39rem;
+  padding: 3rem;
   margin: 0 auto;
   box-shadow: none;
 `;
@@ -248,6 +248,7 @@ const useStyles = makeStyles((theme) => ({
     color: '#ECF0F3',
     fontFamily: 'Avenir Next Demi',
     marginBottom: '3rem',
+    fontSize: '1.8rem',
   },
   publicKey: {
     color: '#ECF0F3',
@@ -263,9 +264,11 @@ function ApproveConnectionForm({ origin, onApprove }) {
   const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
 
+  const theme = useTheme()
+
   return (
     <StyledCard>
-      <CardContent>
+      <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'center'}>
           <img alt={'logo'} src={Logo} />
         </RowContainer>
@@ -327,31 +330,29 @@ function ApproveConnectionForm({ origin, onApprove }) {
             }}
           />
           <ExclamationMark>!</ExclamationMark>
-          <Typography>
+          <Typography style={{ padding: '1rem 0', textAlign: 'left' }}>
             Only connect with sites you trust.{' '}
             {autoApprove &&
               'This setting allows sending some transactions on your behalf without requesting your permission for the remainder of this session.'}
           </Typography>
         </RowContainer>
       </CardContent>
-      <CardActions className={classes.actions}>
-        <BtnCustom
-          textTransform={'capitalize'}
-          btnColor={'#ECF0F3'}
+      <RowContainer justify={'space-between'}>
+        <WhiteButton
+          width={"calc(50% - .5rem)"}
+          theme={theme}
+          color={'#ECF0F3'}
           onClick={window.close}
         >
           Cancel
-        </BtnCustom>
-        <BtnCustom
-          textTransform={'capitalize'}
-          btnColor={'#ECF0F3'}
-          backgroundColor={'#7380EB'}
-          borderColor={'#7380EB'}
+        </WhiteButton>
+        <VioletButton
+          width={"calc(50% - .5rem)"}
           onClick={() => onApprove(autoApprove)}
         >
           Connect
-        </BtnCustom>
-      </CardActions>
+        </VioletButton>
+      </RowContainer>
     </StyledCard>
   );
 }
