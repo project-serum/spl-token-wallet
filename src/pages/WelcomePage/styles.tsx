@@ -9,9 +9,11 @@ export const CardButton = styled.div`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  background: #383b45;
-  border-radius: 1rem;
+  background: ${(props) => props.background || '#383b45'};
+  border-radius:${(props) => props.radius || '1rem'};
   transition: 0.2s;
+  outline: none;
+  opacity:${(props) => props.opacity || '1'}
   &: hover {
     box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
   }

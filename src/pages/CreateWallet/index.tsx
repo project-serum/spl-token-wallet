@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Input,
@@ -9,24 +9,218 @@ import {
   Title,
   VioletButton,
 } from '../RestoreWallet/styles';
-import { ProgressBar } from './styles';
+import {
+  Percent,
+  ProgressBar,
+  ProgressBarContainer,
+  Step,
+  Steps,
+  ColorText,
+  ContainerForIcon,
+  Textarea,
+} from './styles';
+import { BoldTitle, CardButton } from '../WelcomePage/styles';
+
+import Eye from '../../images/Eye.svg';
+import Attention from '../../images/attention.svg';
+import Copy from '../../images/copy.svg';
 import Logo from '../../images/logo.svg';
 
 export const CreateWalletPage = () => {
+  const [currentStep, setCurrentStep] = useState('1');
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <Body>
       {' '}
-      <Img>
-        {' '}
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
-      <Card>
+      <Row direction={'column'}>
+        <Img height={'10rem'}>
+          {' '}
+          <img src={Logo} width="100%" height="100%" />
+        </Img>
         <Row
-          direction={'column'}
-          justify={'space-between'}
-          height={'75%'}
-        ></Row>
-      </Card>
+          direction={'row'}
+          justify={'flex-start'}
+          align={'baseline'}
+          height={'15%'}
+        >
+          <ProgressBarContainer>
+            <ProgressBar currentStep={currentStep}>
+              <Percent />
+            </ProgressBar>
+
+            <Steps isCompleted={currentStep === '3'}>
+              <div>
+                {' '}
+                <Step
+                  isCompleted={+currentStep > 1}
+                  isSelected={currentStep === '1'}
+                  onClick={() => {
+                    setCurrentStep('1');
+                  }}
+                  id="1"
+                >
+                  1
+                </Step>
+                <Title
+                  style={{
+                    position: 'absolute',
+                    width: '10rem',
+                    right: '33rem',
+                    top: '2rem',
+                  }}
+                >
+                  Create Password
+                </Title>
+              </div>
+              <div>
+                <Step
+                  isCompleted={+currentStep > 2}
+                  isSelected={currentStep === '2'}
+                  onClick={() => {
+                    setCurrentStep('2');
+                  }}
+                  id="2"
+                >
+                  2
+                </Step>
+                <Title
+                  style={{
+                    position: 'absolute',
+                    width: '12rem',
+                    right: '14rem',
+                    top: '2rem',
+                  }}
+                >
+                  Confirm Seed Phrase
+                </Title>
+              </div>
+              <div>
+                <Step
+                  isSelected={currentStep === '3'}
+                  onClick={() => {
+                    setCurrentStep('3');
+                  }}
+                  id="3"
+                >
+                  3
+                </Step>
+                <Title
+                  style={{
+                    position: 'absolute',
+                    width: '7rem',
+                    left: '35rem',
+                    top: '2rem',
+                  }}
+                >
+                  Add Tokens
+                </Title>
+              </div>
+            </Steps>
+          </ProgressBarContainer>
+        </Row>
+        {currentStep === '1' ? (
+          <Card>
+            <Row direction={'column'}>
+              <BoldTitle style={{ marginBottom: '1.5rem' }}>
+                Create a password or type your addressbook
+              </BoldTitle>
+              <BoldTitle>password if you have created it already:</BoldTitle>
+            </Row>
+            <Row style={{ position: 'relative' }}>
+              <Input
+                style={{ position: 'relative' }}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+              ></Input>
+              <Img
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+                style={{
+                  position: 'absolute',
+                  right: '5rem',
+                  top: '4.7rem',
+                  cursor: 'pointer',
+                }}
+                width={'2rem'}
+                height={'2rem'}
+              >
+                <img width="100%" height="100%" src={Eye} />
+              </Img>
+            </Row>
+            <Row>
+              <VioletButton
+                onClick={() => {
+                  setCurrentStep('2');
+                }}
+                background={'#406EDC'}
+              >
+                Continue
+              </VioletButton>
+            </Row>
+          </Card>
+        ) : currentStep === '2' ? (
+          <Card>
+            <Row>
+              <BoldTitle>
+                Create a new wallet to hold Solana and SPL token
+              </BoldTitle>
+            </Row>
+            <Row>
+              <ColorText background={'rgba(164, 231, 151, 0.5)'}>
+                Please write down the following seed phrase and keep it in a
+                safe place:
+              </ColorText>
+            </Row>
+            <Row>
+              <Textarea
+                height={'8rem'}
+                placeholder={
+                  'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream'
+                }
+                type={'textarea'}
+              ></Textarea>
+              <ContainerForIcon>
+                <Img width="auto" height="auto">
+                  <img src={Copy} />
+                </Img>
+              </ContainerForIcon>
+            </Row>
+            <Row>
+              <ColorText
+                height={'10rem'}
+                background={'rgba(242, 154, 54, 0.5)'}
+              >
+                <img src={Attention} />
+                <Title width={'70%'} textAlign={'inherit'}>
+                  Your private keys are only stored on your current device. You
+                  will need these words to restore your wallet if your browser’s
+                  storage is cleared or your device is damaged or lost.
+                </Title>
+              </ColorText>
+            </Row>
+            <Row width={'90%'}>
+              <Row width={'50%'}>
+                <input type="checkbox"></input>
+                <Title fontSize={'1.1rem'}>
+                  I have saved these words in a safe place.
+                </Title>
+              </Row>
+              <VioletButton
+                onClick={() => {
+                  setCurrentStep('3');
+                }}
+                background={'#406EDC'}
+              >
+                Go to confirm seed phrase
+              </VioletButton>
+            </Row>
+          </Card>
+        ) : (
+          <Card></Card>
+        )}
+      </Row>
     </Body>
   );
 };

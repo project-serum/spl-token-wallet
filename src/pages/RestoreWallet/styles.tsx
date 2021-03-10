@@ -12,6 +12,7 @@ export const Row = styled.div`
   justify-content: ${(props) => props.justify || 'center'};
   flex-direction: ${(props) => props.direction || 'row'};
   align-items: ${(props) => props.align || 'center'};
+  position: relative;
 `;
 
 export const Card = styled.div`
@@ -29,9 +30,12 @@ export const Card = styled.div`
 
 export const Input = styled.input`
   width: ${(props) => props.width || '90%'};
-  height: 5rem;
+  height: ${(props) => props.height || '5rem'};
+  color: #fff;
+  font-family: Avenir Next Medium;
   border: 1px solid #3a475c;
   box-sizing: border-box;
+  font-size: 1.5rem;
   border-radius: 1.5rem;
   background: #222429;
   outline: none;
@@ -54,28 +58,33 @@ export const TextButton = styled.button`
   font-size: 1.2rem;
   text-align: center;
   letter-spacing: -0.457692px;
-  color: #f79894;
+  color: ${(props) => props.color || '#f79894'};
   border: none;
   background-color: #222429;
   backgroung: #222429;
-  width: 50%;
+  width: ${(props) => props.width || '50%'};
+  outline: none;
+  cursor: pointer;
 `;
 
 export const Title = styled.div`
+  width: ${(props) => props.width || 'auto'};
   font-family: Avenir Next Medium;
   font-style: normal;
   font-weight: normal;
   font-size: ${(props) => props.fontSize || '1.3rem'};
   text-align: center;
-  letter-spacing: -0.457692px;
+  letter-spacing: -0.857692px;
   color: #ecf0f3;
+  text-align: ${(props) => props.textAlign || 'center'};
 `;
 
 export const VioletButton = styled.button`
-  background: #7380eb;
+  background: ${(props) => props.background || '#7380eb'};
   border-radius: 1rem;
   color: #fff;
   border: none;
   width: 50%;
   height: 4.5rem;
+  outline: none;
 `;
