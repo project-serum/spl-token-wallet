@@ -56,7 +56,7 @@ const InputWithEye = ({
     <InputWithComponent
       ComponentToShow={
         <img
-          style={{ padding: '1.6rem 2rem 1.4rem 2rem', cursor: 'pointer', height: '2rem' }}
+          style={{ padding: '1.6rem 2rem 1.4rem 2rem', cursor: 'pointer', height: '4.5rem' }}
           onClick={onEyeClick}
           src={showPassword ? ClosedEye : Eye}
         />
