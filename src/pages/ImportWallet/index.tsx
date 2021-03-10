@@ -13,9 +13,12 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Logo from '../../components/Logo'
+import Logo from '../../components/Logo';
+import { InputWithEye, InputWithPaste } from '../../components/Input';
 
 export const ImportPage = () => {
+  const [password, setPassword] = useState('');
+  const [privateKey, setPrivateKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -43,8 +46,14 @@ export const ImportPage = () => {
             justify={'space-evenly'}
             style={{ position: 'relative' }}
           >
-            <Input type="text" placeholder="Paste your private key"></Input>
-            <TextButton
+            <InputWithPaste
+              type="text"
+              placeholder="Paste your private key"
+              value={privateKey}
+              onChange={(e) => setPrivateKey(e.target.value)}
+              onPasteClick={() => setPrivateKey('ararra')}
+            />
+            {/* <TextButton
               style={{
                 position: 'absolute',
                 right: '4rem',
@@ -55,26 +64,15 @@ export const ImportPage = () => {
               width={'5rem'}
             >
               Paste
-            </TextButton>
-            <Input
+            </TextButton> */}
+            <InputWithEye
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              showPassword={showPassword}
+              onEyeClick={() => setShowPassword(!showPassword)}
               type={showPassword ? 'text' : 'password'}
               placeholder="Create Password"
-            ></Input>
-            <Img
-              onClick={() => {
-                setShowPassword(!showPassword);
-              }}
-              style={{
-                position: 'absolute',
-                right: '5rem',
-                top: '9.6rem',
-                cursor: 'pointer',
-              }}
-              width={'2rem'}
-              height={'2rem'}
-            >
-              <img width="100%" height="100%" src={Eye} />
-            </Img>
+            />
           </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
             <a style={{ width: '50%', textAlign: 'center' }} href="/welcome">
