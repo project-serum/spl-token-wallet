@@ -28,7 +28,7 @@ export const ProgressBar = styled.div`
       : props.currentStep === '2'
       ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
       : props.currentStep === '3'
-      ? '#406EDC'
+      ? '#366CE5'
       : '#93A0B2'};
   border-image-slice: 1;
   z-index: -1;
@@ -58,7 +58,7 @@ export const Steps = styled.div`
   align-items: center;
   width: 40rem;
   height: 0.1rem;
-  background: ${(props) => (props.isCompleted ? '#7380EB' : 'none')};
+  background: ${(props) => (props.isCompleted ? '#366CE5' : 'none')};
 `;
 
 export const ColorText = styled.div`

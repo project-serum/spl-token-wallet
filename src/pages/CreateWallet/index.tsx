@@ -266,7 +266,12 @@ export const CreateWalletPage = () => {
             </Row>
           </Card>
         ) : (
-          <Card></Card>
+          <Card width={'100rem'}>
+            <Row>
+              <Row></Row>
+              <Row></Row>
+            </Row>
+          </Card>
         )}
       </Row>
     </Body>
