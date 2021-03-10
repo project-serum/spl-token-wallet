@@ -22,8 +22,13 @@ import {
   RowContainer,
   StyledCheckbox,
   SearchInput,
+  ListCard,
+  Stroke,
 } from '../commonStyles';
 
+import { InputWithSearch } from '../../components/Input';
+
+import SRM from '../../images/srm.svg';
 import Eye from '../../images/Eye.svg';
 import Attention from '../../images/attention.svg';
 import Copy from '../../images/copy.svg';
@@ -34,6 +39,7 @@ export const CreateWalletPage = () => {
   const [currentStep, setCurrentStep] = useState('1');
   const [showPassword, setShowPassword] = useState(false);
   const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const theme = useTheme();
 
   return (
@@ -331,7 +337,7 @@ export const CreateWalletPage = () => {
                 </Row>
                 <Row width={'85%'} justify={'space-between'}>
                   <VioletButton
-                    btnWidth={'28%'}
+                    btnWidth={'31%'}
                     height={'3.5rem'}
                     background={'#366CE5'}
                   >
@@ -345,7 +351,11 @@ export const CreateWalletPage = () => {
                   </span>
                 </Row>
               </RowContainer>
-              <RowContainer>
+              <RowContainer
+                justify={'space-evenly'}
+                height={'100%'}
+                direction={'column'}
+              >
                 {' '}
                 <Row width={'85%'} justify={'end'}>
                   <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
@@ -355,9 +365,30 @@ export const CreateWalletPage = () => {
                     Deposit some SOL to activate your wallet.
                   </BoldTitle>
                 </Row>
-                <RowContainer>
-                  <SearchInput placeholder={'Search'}></SearchInput>
-                </RowContainer>
+                <Row width={'85%'}>
+                  <InputWithSearch
+                    type={'text'}
+                    value={searchValue}
+                    onChange={(e) => {
+                      setSearchValue(e.target.value);
+                    }}
+                    onSearchClick={() => {}}
+                    placeholder={'Search'}
+                  ></InputWithSearch>
+                </Row>
+                <Row width="85%">
+                  <ListCard>
+                    <Stroke>
+                      <span>
+                        <Img>
+                          <img src={SRM} />
+                        </Img>
+                        <BoldTitle>SRM</BoldTitle>
+                      </span>
+                      <StyledCheckbox theme={theme} />
+                    </Stroke>
+                  </ListCard>
+                </Row>
               </RowContainer>
             </RowContainer>
           </Card>

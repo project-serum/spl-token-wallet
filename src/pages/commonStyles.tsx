@@ -155,8 +155,8 @@ export const ContainerForIcon = styled.div`
 `;
 
 export const Img = styled.div`
-  width: ${(props) => props.width || '30rem'};
-  height: ${(props) => props.width || '10rem'};
+  width: ${(props) => props.width || 'auto'};
+  height: ${(props) => props.width || 'auto'};
   margin-bottom: ${(props) => props.margin || '0rem'};
 `;
 
@@ -304,5 +304,20 @@ export const StyledCheckbox = styled(Checkbox)`
 export const SearchInput = styled.input`
   background: #383b45;
   border: 1px solid #3a475c;
+  border-radius: 1.7rem;
+  outline: none;
+  width: 100%;
+  height: 3.5rem;
+  color: #fff;
+  padding: 0 2rem;
+`;
+
+export const ListCard = styled.div`
+  width: ${(props) => props.width || '100%'};
+  height: ${(props) => props.height || '20rem'};
+  background: #222429;
+  border: 0.1rem solid #3a475c;
   border-radius: 1rem;
 `;
+
+export const Stroke = styled.div``;
