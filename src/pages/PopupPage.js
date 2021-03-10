@@ -26,7 +26,7 @@ import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
 import { BtnCustom } from '../components/BtnCustom';
-import { Row, RowContainer } from '../components/Common';
+import { Row, RowContainer } from './commonStyles';
 
 const StyledCard = styled(Card)`
   background: #17181a;

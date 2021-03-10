@@ -1,5 +1,49 @@
 import styled from 'styled-components';
 import { BtnCustom } from '../components/BtnCustom';
+import { Grid } from '@material-ui/core';
+
+export type RowProps = {
+  wrap?: string;
+  justify?: string;
+  direction?: string;
+  align?: string;
+  width?: string;
+  height?: string;
+  margin?: string;
+  padding?: string;
+  mediaDirection?: string;
+  mediaJustify?: string;
+  mediaMargin?: string;
+};
+
+export const Row = styled.div`
+  display: flex;
+  flex-wrap: ${(props: RowProps) => props.wrap || 'wrap'};
+  justify-content: ${(props: RowProps) => props.justify || 'center'};
+  flex-direction: ${(props: RowProps) => props.direction || 'row'};
+  align-items: ${(props: RowProps) => props.align || 'center'};
+  width: ${(props: RowProps) => props.width || 'auto'};
+  height: ${(props: RowProps) => props.height || 'auto'};
+  margin: ${(props: RowProps) => props.margin || '0'};
+  padding: ${(props: RowProps) => props.padding || '0'};
+`;
+
+export const RowContainer = styled((props) => <Row {...props} />)`
+  width: 100%;
+`;
+
+export const GridContainer = styled(({ ...rest }) => <Grid {...rest} />)`
+  display: flex;
+  flex: auto;
+  align-items: center;
+  width: calc(100%);
+  height: 6rem;
+  position: relative;
+  padding: 0rem 3rem;
+  margin: 0rem;
+  border-bottom: ${(props) => props.theme.customPalette.border.new};
+  background: ${(props) => props.theme.customPalette.dark.background};
+`;
 
 export const ProgressBarContainer = styled.div`
   position: relative;
@@ -116,16 +160,6 @@ export const Img = styled.div`
   height: ${(props) => props.width || '10rem'};
 `;
 
-export const Row = styled.div`
-  width: ${(props) => props.width || '100%'};
-  height: ${(props) => props.height || '100%'};
-  display: flex;
-  justify-content: ${(props) => props.justify || 'center'};
-  flex-direction: ${(props) => props.direction || 'row'};
-  align-items: ${(props) => props.align || 'center'};
-  position: relative;
-`;
-
 export const Card = styled.div`
   width: ${(props) => props.width || '50rem'};
   height: ${(props) => props.height || '40rem'};
@@ -192,14 +226,19 @@ export const Title = styled.span`
 `;
 
 export const VioletButton = styled((props) => (
-  <BtnCustom textDecoration={'capitalize'} {...props} />
+  <BtnCustom
+    width={props.width || '50%'}
+    fontSize={'1.4rem'}
+    height={'4.5rem'}
+    textTransform={'capitalize'}
+    backgroundColor={props.background || '#7380eb'}
+    borderColor={props.background || '#7380eb'}
+    btnColor={props.color || '#fff'}
+    borderRadius={'1rem'}
+    border={props.border || 'none'}
+    {...props}
+  />
 ))`
-  background: ${(props) => props.background || '#7380eb'};
-  border-radius: 1rem;
-  color: #fff;
-  border: ${(props) => props.border || 'none'};
-  width: ${(props) => props.width || '50%'};
-  height: 4.5rem;
   outline: none;
 `;
 

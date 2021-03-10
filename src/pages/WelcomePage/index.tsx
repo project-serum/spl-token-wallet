@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Card,
   Input,
+  Row,
   Body,
   TextButton,
   Img,
@@ -10,8 +11,6 @@ import {
   CardButton,
   BoldTitle,
 } from '../commonStyles';
-
-import { Row } from '../../components/Common';
 
 import Plus from '../../images/AddButton.svg';
 import Import from '../../images/ImportButton.svg';

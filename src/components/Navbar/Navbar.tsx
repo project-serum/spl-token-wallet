@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useLocation, Link } from 'react-router-dom';
-import { GridContainer, RowContainer, Row } from '../Common';
+import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties, makeStyles } from '@material-ui/styles';
