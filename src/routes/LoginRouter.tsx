@@ -1,11 +1,17 @@
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import LoginPage from '../pages/LoginPage';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import { useWallet } from '../utils/wallet';
+import {
+  hasLockedMnemonicAndSeed,
+} from '../utils/wallet-seed';
 
-export default function LoginRoutes({ match, location }) {
+export default () => {
+  const wallet = useWallet()
+
   return (
     <Switch>
-      <Route path={match.url} component={LoginPage} />
+      {!!wallet && <Redirect to="/wallet" />}
+      {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
     </Switch>
   );
 }

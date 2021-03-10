@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components'
+import { Redirect } from 'react-router-dom'
 import {
   generateMnemonicAndSeed,
   hasLockedMnemonicAndSeed,
@@ -31,6 +32,7 @@ import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
 
 import { BtnCustom } from '../components/BtnCustom'
+import { useWallet } from '../utils/wallet';
 
 const StyledCard = styled(Card)`
   background: #222429;
@@ -41,20 +43,16 @@ const StyledCard = styled(Card)`
 
 
 export default function LoginPage() {
+  const wallet = useWallet()
   const [restore, setRestore] = useState(false);
+
   return (
     <Container maxWidth="sm">
-      {restore ? (
-        <RestoreWalletForm goBack={() => setRestore(false)} />
-      ) : (
-        <>
-          {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
-          <br />
-          <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
-            Restore existing wallet
-          </Link>
-        </>
-      )}
+      
+      <br />
+      <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
+        Restore existing wallet
+      </Link>
     </Container>
   );
 }

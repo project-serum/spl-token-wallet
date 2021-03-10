@@ -14,12 +14,13 @@ import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 
 const Login = lazy(() => import('./routes/LoginRouter'));
-const ConnectingWallet = lazy(() => import('./routes/ConnectingWalletRouter'));
+const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
-const WelcomePage = lazy(() => import('./routes/WelcomeRouter'));
-const CreateWalletPage = lazy(() => import('./routes/CreateWalletRouter'));
+const WelcomePage = lazy(() => import('./routes/Welcome'));
+const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
+const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'))
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -128,6 +129,7 @@ export default function App() {
                     <Route path="/welcome" component={WelcomePage} />
                     <Route path="/create_wallet" component={CreateWalletPage} />
                     <Route path="/import_wallet" component={ImportWalletPage} />
+                    <Route path="/welcome_back" component={WelcomeBackPage} />
                   </Switch>
                 </WalletProvider>
               </SnackbarProvider>
