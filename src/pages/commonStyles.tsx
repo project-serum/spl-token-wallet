@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BtnCustom } from '../components/BtnCustom';
-import { Grid } from '@material-ui/core'
+import { Grid } from '@material-ui/core';
 
 export type RowProps = {
   wrap?: string;
@@ -32,9 +32,7 @@ export const RowContainer = styled((props) => <Row {...props} />)`
   width: 100%;
 `;
 
-export const GridContainer = styled(({ ...rest }) => (
-  <Grid {...rest} />
-))`
+export const GridContainer = styled(({ ...rest }) => <Grid {...rest} />)`
   display: flex;
   flex: auto;
   align-items: center;
@@ -216,7 +214,7 @@ export const TextButton = styled.button`
 
 export const Title = styled.span`
   width: ${(props) => props.width || 'auto'};
-  font-family: ${props => props.fontFamily || 'Avenir Next Medium'};
+  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
   font-weight: normal;
   font-size: ${(props) => props.fontSize || '1.3rem'};
@@ -224,16 +222,23 @@ export const Title = styled.span`
   letter-spacing: -0.857692px;
   color: #ecf0f3;
   text-align: ${(props) => props.textAlign || 'center'};
-  margin: ${props => props.margin || '0'};
+  margin: ${(props) => props.margin || '0'};
 `;
 
-export const VioletButton = styled((props) => <BtnCustom textDecoration={'capitalize'} {...props} />)`
-  background: ${(props) => props.background || '#7380eb'};
-  border-radius: 1rem;
-  color: #fff;
-  border: ${(props) => props.border || 'none'};
-  width: ${(props) => props.width || '50%'};
-  height: 4.5rem;
+export const VioletButton = styled((props) => (
+  <BtnCustom
+    width={props.width || '50%'}
+    fontSize={'1.4rem'}
+    height={'4.5rem'}
+    textTransform={'capitalize'}
+    backgroundColor={props.background || '#7380eb'}
+    borderColor={props.background || '#7380eb'}
+    btnColor={props.color || '#fff'}
+    borderRadius={'1rem'}
+    border={props.border || 'none'}
+    {...props}
+  />
+))`
   outline: none;
 `;
 
