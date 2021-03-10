@@ -66,13 +66,13 @@ export const ProgressBar = styled.div`
   position: absolute;
   width: 100%;
   height: 50%;
-  border-bottom: 2px solid transparent;
+  border-bottom: .1rem solid transparent;
   border-image: ${(props) =>
-    props.currentStep === '1'
+    props.currentStep === 1
       ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
-      : props.currentStep === '2'
+      : props.currentStep === 2
       ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
-      : props.currentStep === '3'
+      : props.currentStep === 3
       ? '#366CE5'
       : '#93A0B2'};
   border-image-slice: 1;

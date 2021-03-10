@@ -38,7 +38,7 @@ import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
 
 export const CreateWalletPage = () => {
-  const [currentStep, setCurrentStep] = useState('1');
+  const [currentStep, setCurrentStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -60,14 +60,14 @@ export const CreateWalletPage = () => {
               <Percent />
             </ProgressBar>
 
-            <Steps isCompleted={currentStep === '3'}>
+            <Steps isCompleted={currentStep === 3}>
               <div>
                 {' '}
                 <Step
-                  isCompleted={+currentStep > 1}
-                  isSelected={currentStep === '1'}
+                  isCompleted={currentStep > 1}
+                  isSelected={currentStep === 1}
                   onClick={() => {
-                    setCurrentStep('1');
+                    setCurrentStep(1);
                   }}
                   id="1"
                 >
@@ -87,10 +87,10 @@ export const CreateWalletPage = () => {
               </div>
               <div>
                 <Step
-                  isCompleted={+currentStep > 2}
-                  isSelected={currentStep === '2'}
+                  isCompleted={currentStep > 2}
+                  isSelected={currentStep === 2}
                   onClick={() => {
-                    setCurrentStep('2');
+                    setCurrentStep(2);
                   }}
                   id="2"
                 >
@@ -110,9 +110,9 @@ export const CreateWalletPage = () => {
               </div>
               <div>
                 <Step
-                  isSelected={currentStep === '3'}
+                  isSelected={currentStep === 3}
                   onClick={() => {
-                    setCurrentStep('3');
+                    setCurrentStep(3);
                   }}
                   id="3"
                 >
@@ -133,7 +133,8 @@ export const CreateWalletPage = () => {
             </Steps>
           </ProgressBarContainer>
         </RowContainer>
-        {currentStep === '1' ? (
+
+        {currentStep === 1 ? (
           <>
             <Card justify={'space-evenly'}>
               <RowContainer direction={'column'}>
@@ -142,12 +143,12 @@ export const CreateWalletPage = () => {
                 </BoldTitle>
                 <BoldTitle>password if you have created it already:</BoldTitle>
               </RowContainer>
-              <RowContainer style={{ position: 'relative' }}>
+              <RowContainer width={'90%'} style={{ position: 'relative' }}>
                 <Input
                   style={{ position: 'relative' }}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password"
-                ></Input>
+                />
                 <Img
                   onClick={() => {
                     setShowPassword(!showPassword);
@@ -167,7 +168,7 @@ export const CreateWalletPage = () => {
               <RowContainer>
                 <VioletButton
                   onClick={() => {
-                    setCurrentStep('2');
+                    setCurrentStep(2);
                   }}
                   background={'#406EDC'}
                 >
@@ -177,7 +178,7 @@ export const CreateWalletPage = () => {
             </Card>
             <BottomLink />
           </>
-        ) : currentStep === '2' && !isSpeedPhase ? (
+        ) : currentStep === 2 && !isSpeedPhase ? (
           <>
             <Card justify={'space-evenly'}>
               <RowContainer>
@@ -237,7 +238,7 @@ export const CreateWalletPage = () => {
             </Card>
             <BottomLink />
           </>
-        ) : currentStep === '2' && isSpeedPhase ? (
+        ) : currentStep === 2 && isSpeedPhase ? (
           <>
             <Card justify={'space-around'}>
               <RowContainer height={'auto'}>
@@ -268,7 +269,7 @@ export const CreateWalletPage = () => {
               <Row height={'auto'} width={'90%'} justify={'space-between'}>
                 <VioletButton
                   onClick={() => {
-                    setCurrentStep('3');
+                    setCurrentStep(3);
                   }}
                   background={'#222429'}
                   borderColor={'#fff'}
@@ -279,7 +280,7 @@ export const CreateWalletPage = () => {
                 </VioletButton>
                 <VioletButton
                   onClick={() => {
-                    setCurrentStep('3');
+                    setCurrentStep(3);
                   }}
                   background={'#406EDC'}
                   btnWidth={'48%'}
