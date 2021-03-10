@@ -16,9 +16,10 @@ import { SnackbarProvider } from 'notistack';
 const Login = lazy(() => import('./routes/LoginRouter'));
 const ConnectingWallet = lazy(() => import('./routes/ConnectingWalletRouter'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
-const RestorePage = lazy(() => import('./routes/Onboarding'));
+const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/WelcomeRouter'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWalletRouter'));
+const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -121,14 +122,12 @@ export default function App() {
                   <Switch>
                     <Redirect from="/" to="/login" exact />
                     <Route path="/login" component={Login} />
-                    <Route
-                      path="/connecting_wallet"
-                      component={ConnectingWallet}
-                    />
+                    <Route path="/connecting_wallet" component={ConnectingWallet} />
                     <Route path="/wallet" component={Wallet} />
                     <Route path="/restore_wallet" component={RestorePage} />
                     <Route path="/welcome" component={WelcomePage} />
                     <Route path="/create_wallet" component={CreateWalletPage} />
+                    <Route path="/import_wallet" component={ImportWalletPage} />
                   </Switch>
                 </WalletProvider>
               </SnackbarProvider>
