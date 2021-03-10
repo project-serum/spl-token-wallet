@@ -18,6 +18,7 @@ import {
   ColorText,
   ContainerForIcon,
   Textarea,
+  Legend,
 } from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
@@ -42,8 +43,7 @@ export const CreateWalletPage = () => {
           direction={'row'}
           justify={'flex-start'}
           align={'baseline'}
-          height={'10%'}
-          margin={'0 0 3rem 0'}
+          height={'15%'}
         >
           <ProgressBarContainer>
             <ProgressBar currentStep={currentStep}>
@@ -269,7 +269,74 @@ export const CreateWalletPage = () => {
         ) : (
           <Card width={'100rem'}>
             <Row>
-              <Row></Row>
+              {' '}
+              <Row
+                style={{ borderRight: '0.2rem solid #383B45' }}
+                height={'96%'}
+                direction={'column'}
+              >
+                <Row width={'85%'} justify={'end'}>
+                  <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
+                    Step 1:
+                  </BoldTitle>
+                  <BoldTitle>
+                    Deposit some SOL to activate your wallet.
+                  </BoldTitle>
+                </Row>
+                <Row justify={'end'} width={'85%'}>
+                  <BoldTitle style={{ width: '25%' }} fontSize={'1.3rem'}>
+                    Your SOL address
+                  </BoldTitle>
+                  <Legend />
+                </Row>
+                <Row width={'85%'}>
+                  {' '}
+                  <Input height={'4rem'} width={'100%'} type="text"></Input>
+                  <ContainerForIcon right={'1.5rem'} top={'1.1rem'}>
+                    <Img width="auto" height="auto">
+                      <img src={Copy} />
+                    </Img>
+                  </ContainerForIcon>
+                </Row>
+                <Row width={'85%'}>
+                  <ColorText
+                    width={'100%'}
+                    height={'12rem'}
+                    background={'rgba(242, 154, 54, 0.5)'}
+                  >
+                    <img src={Attention} />
+                    <span
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '87%',
+                        justifyContent: 'space-around',
+                        height: '90%',
+                      }}
+                    >
+                      <Title textAlign={'inherit'}>
+                        Transaction in Solana Network usually takes no more than
+                        a second, but if you send SOL from an exchange, the
+                        withdrawal can be delayed for few minutes.
+                      </Title>
+                      <Title textAlign={'inherit'}>
+                        Click the “Refresh Balance” button after exchange
+                        confirms your withdrawal to update your balance and
+                        continue setting up your wallet.
+                      </Title>
+                    </span>
+                  </ColorText>
+                </Row>
+                <Row>
+                  <VioletButton width={'30%'} background={'#366CE5'}>
+                    Refresh Balance
+                  </VioletButton>
+                  <span>
+                    <BoldTitle>Your Balance: </BoldTitle>
+                    <BoldTitle color={'#A5E898'}>1.000 SOL</BoldTitle>
+                  </span>
+                </Row>
+              </Row>
               <Row></Row>
             </Row>
           </Card>

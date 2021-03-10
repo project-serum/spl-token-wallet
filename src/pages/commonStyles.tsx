@@ -99,12 +99,12 @@ export const Textarea = styled.textarea`
 
 export const ContainerForIcon = styled.div`
   cursor: pointer;
-  width: 5rem;
+  width: 4rem;
   height: 3.5rem;
   border-radius: 1.5rem;
   position: absolute;
-  right: 5rem;
-  top: 2.5rem;
+  right: ${(props) => props.right || '5rem'};
+  top: ${(props) => props.top || '2.5rem'};
   border: 0.2rem solid #3a475c;
   display: flex;
   justify-content: center;
@@ -128,7 +128,7 @@ export const Row = styled.div`
 
 export const Card = styled.div`
   width: ${(props) => props.width || '50rem'};
-  height: ${(props) => props.width || '40rem'};
+  height: ${(props) => props.height || '40rem'};
   background: #222429;
   border: 0.1rem solid #3a475c;
   box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
@@ -141,7 +141,7 @@ export const Card = styled.div`
 
 export const Input = styled.input`
   width: ${(props) => props.width || '90%'};
-  height: ${(props) => props.height || '5rem'};
+  height: ${(props) => props.height || '4.5rem'};
   color: #fff;
   font-family: Avenir Next Medium;
   border: 1px solid #3a475c;
@@ -180,7 +180,7 @@ export const TextButton = styled.button`
 
 export const Title = styled.span`
   width: ${(props) => props.width || 'auto'};
-  font-family: ${props => props.fontFamily || 'Avenir Next Medium'};
+  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
   font-weight: normal;
   font-size: ${(props) => props.fontSize || '1.3rem'};
@@ -188,10 +188,12 @@ export const Title = styled.span`
   letter-spacing: -0.857692px;
   color: #ecf0f3;
   text-align: ${(props) => props.textAlign || 'center'};
-  margin: ${props => props.margin || '0'};
+  margin: ${(props) => props.margin || '0'};
 `;
 
-export const VioletButton = styled((props) => <BtnCustom textDecoration={'capitalize'} {...props} />)`
+export const VioletButton = styled((props) => (
+  <BtnCustom textDecoration={'capitalize'} {...props} />
+))`
   background: ${(props) => props.background || '#7380eb'};
   border-radius: 1rem;
   color: #fff;
@@ -221,8 +223,18 @@ export const CardButton = styled.div`
 `;
 
 export const BoldTitle = styled.div`
-  font-family: Avenir Next Bold;
-  font-size: 1.6rem;
+  font-family: Avenir Next Demi;
+  font-size: ${(props) => props.fontSize || '1.6rem'};
   letter-spacing: -0.523077px;
-  color: #f8faff;
+  color: ${(props) => props.color || '#f8faff'};
+`;
+
+export const Legend = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 75%;
+  height: 0.1rem;
+  background: #383b45;
 `;
