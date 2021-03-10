@@ -10,6 +10,7 @@ import {
   Img,
   Title,
   VioletButton,
+  RowContainer,
 } from '../commonStyles';
 
 import Logo from '../../components/Logo';
@@ -24,16 +25,25 @@ export const ImportPage = () => {
     <Body>
       <Logo />
       <Card>
-        <Row direction={'column'} justify={'space-between'} height={'75%'}>
-          <Row direction={'column'} justify={'space-around'} height={'20%'}>
+        <RowContainer
+          direction={'column'}
+          justify={'space-between'}
+          height={'75%'}
+        >
+          <RowContainer
+            direction={'column'}
+            justify={'space-around'}
+            height={'20%'}
+          >
             <Title>Import your wallet using your 12 seed words.</Title>
             <Title>
               Note that this will delete any existing wallet on this device.
             </Title>
-          </Row>
-          <Row
+          </RowContainer>
+          <RowContainer
             direction={'column'}
             height={'50%'}
+            justify={'space-evenly'}
             style={{ position: 'relative' }}
           >
             <InputWithPaste
@@ -47,7 +57,7 @@ export const ImportPage = () => {
               style={{
                 position: 'absolute',
                 right: '4rem',
-                top: '2rem',
+                top: '3.4rem',
                 cursor: 'pointer',
               }}
               color={'#406EDC'}
@@ -63,14 +73,14 @@ export const ImportPage = () => {
               type={showPassword ? 'text' : 'password'}
               placeholder="Create Password"
             />
-          </Row>
+          </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
-            <a style={{ width: '100%' }} href="/welcome">
+            <a style={{ width: '50%', textAlign: 'center' }} href="/welcome">
               <TextButton>Cancel</TextButton>
             </a>
-            <VioletButton>Import</VioletButton>
+            <VioletButton width={'50%'}>Import</VioletButton>
           </Row>
-        </Row>
+        </RowContainer>
       </Card>
     </Body>
   );

@@ -137,7 +137,6 @@ export const Textarea = styled.textarea`
   background: #222429;
   outline: none;
   padding: ${(props) => props.padding || '1rem 8rem 1rem 2rem'};
-  margin-bottom: 2rem;
   position: relative;
 `;
 
@@ -222,7 +221,7 @@ export const Title = styled.span`
   font-weight: normal;
   font-size: ${(props) => props.fontSize || '1.4rem'};
   text-align: center;
-  color: ${props => props.color || '#ecf0f3'};
+  color: ${(props) => props.color || '#ecf0f3'};
   text-align: ${(props) => props.textAlign || 'center'};
   margin: ${(props) => props.margin || '0'};
 `;
