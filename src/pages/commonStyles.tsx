@@ -298,3 +298,9 @@ export const StyledCheckbox = styled(Checkbox)`
     height: 2rem;
   }
 `;
+
+export const SearchInput = styled.input`
+  background: #383b45;
+  border: 1px solid #3a475c;
+  border-radius: 1rem;
+`;

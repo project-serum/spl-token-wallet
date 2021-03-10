@@ -21,6 +21,7 @@ import {
   Legend,
   RowContainer,
   StyledCheckbox,
+  SearchInput,
 } from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
@@ -344,7 +345,20 @@ export const CreateWalletPage = () => {
                   </span>
                 </Row>
               </RowContainer>
-              <RowContainer></RowContainer>
+              <RowContainer>
+                {' '}
+                <Row width={'85%'} justify={'end'}>
+                  <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
+                    Step 1:
+                  </BoldTitle>
+                  <BoldTitle>
+                    Deposit some SOL to activate your wallet.
+                  </BoldTitle>
+                </Row>
+                <RowContainer>
+                  <SearchInput placeholder={'Search'}></SearchInput>
+                </RowContainer>
+              </RowContainer>
             </RowContainer>
           </Card>
         )}
