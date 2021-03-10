@@ -102,8 +102,8 @@ const Navbar = () => {
     <GridContainer isChartPage={false} theme={theme}>
       <RowContainer justify={'space-between'} height={'100%'}>
         <Row theme={theme} height={'100%'}>
-          <a
-            href={'https://dex.cryptocurrencies.ai/chart/spot/SRM_USDT'}
+          <Link
+            to={'/'}
             style={{
               padding: '1rem 0',
               height: '100%',
@@ -115,7 +115,7 @@ const Navbar = () => {
               }}
               src={WalletLogo}
             />
-          </a>
+          </Link>
           <Row
             justify={'space-between'}
             padding={'1rem 4rem 1rem 4rem'}

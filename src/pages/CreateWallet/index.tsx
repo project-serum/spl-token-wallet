@@ -18,6 +18,7 @@ import {
   ColorText,
   ContainerForIcon,
   Textarea,
+  RowContainer,
 } from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
@@ -34,7 +35,7 @@ export const CreateWalletPage = () => {
     <Body>
       {' '}
       <Row direction={'column'}>
-        <Img height={'10rem'}>
+        <Img margin={'0'} height={'10rem'}>
           {' '}
           <img src={Logo} width="100%" height="100%" />
         </Img>

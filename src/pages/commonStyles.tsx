@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BtnCustom } from '../components/BtnCustom';
-import { Grid } from '@material-ui/core';
+import { Grid, Checkbox } from '@material-ui/core';
 
 export type RowProps = {
   wrap?: string;
@@ -18,7 +18,7 @@ export type RowProps = {
 
 export const Row = styled.div`
   display: flex;
-  flex-wrap: ${(props: RowProps) => props.wrap || 'wrap'};
+  flex-wrap: ${(props: RowProps) => props.wrap || 'nowrap'};
   justify-content: ${(props: RowProps) => props.justify || 'center'};
   flex-direction: ${(props: RowProps) => props.direction || 'row'};
   align-items: ${(props: RowProps) => props.align || 'center'};
@@ -158,6 +158,7 @@ export const ContainerForIcon = styled.div`
 export const Img = styled.div`
   width: ${(props) => props.width || '30rem'};
   height: ${(props) => props.width || '10rem'};
+  margin-bottom: ${props => props.margin || '8rem'};
 `;
 
 export const Card = styled.div`
@@ -185,7 +186,6 @@ export const Input = styled.input`
   background: #222429;
   outline: none;
   padding-left: 2rem;
-  margin-bottom: 2rem;
 `;
 export const Body = styled.div`
   width: 100%;
@@ -213,6 +213,7 @@ export const TextButton = styled.button`
 `;
 
 export const Title = styled.span`
+  display: block;
   width: ${(props) => props.width || 'auto'};
   font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
@@ -267,3 +268,24 @@ export const BoldTitle = styled.div`
   letter-spacing: -0.523077px;
   color: #f8faff;
 `;
+
+export const StyledLabel = styled.label`
+  font-family: Avenir Next;
+  font-size: 1.2rem;
+  color: #93a0b2;
+  cursor: pointer;
+`;
+
+export const StyledCheckbox = styled(Checkbox)`
+  &&& {
+    color: ${props => props.color || props.theme.customPalette.blue.new};
+    &:hover {
+      background-color: rgba(54, 108, 229, .1);
+    }
+  }
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+`

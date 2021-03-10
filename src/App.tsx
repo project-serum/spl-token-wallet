@@ -56,6 +56,7 @@ export default function App() {
                   additional: '#fff',
                   border: '#2E2E2E',
                   light: '#96999C',
+                  dark: '#93A0B2',
                 },
                 dark: {
                   main: '#D1DDEF',
@@ -63,6 +64,7 @@ export default function App() {
                 },
                 blue: {
                   serum: '#7380EB',
+                  new: '#366CE5',
                 },
                 white: {
                   main: '#fff',
@@ -87,6 +89,7 @@ export default function App() {
                   additional: '#0E1016',
                   border: '#e0e5ec',
                   light: '#96999C',
+                  dark: '#93A0B2',
                 },
                 dark: {
                   main: '#16253D',
@@ -94,6 +97,7 @@ export default function App() {
                 },
                 blue: {
                   serum: '#7380EB',
+                  new: '#366CE5',
                 },
                 white: {
                   main: '#fff',

@@ -26,7 +26,7 @@ import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
 import { BtnCustom } from '../components/BtnCustom';
-import { Row, RowContainer } from './commonStyles';
+import { Row, RowContainer, StyledLabel } from './commonStyles';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -36,11 +36,6 @@ const StyledCard = styled(Card)`
   padding: 0 3rem;
   margin: 0 auto;
   box-shadow: none;
-`;
-
-const StyledLabel = styled.label`
-  font-family: Avenir Next;
-  color: #93a0b2;
 `;
 
 const ExclamationMark = styled.span`
