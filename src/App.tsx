@@ -19,7 +19,7 @@ const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'))
+const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -56,6 +56,7 @@ export default function App() {
                   border: '#2E2E2E',
                   light: '#96999C',
                   dark: '#93A0B2',
+                  soft: '#E2E0E5',
                 },
                 dark: {
                   main: '#D1DDEF',
@@ -68,6 +69,9 @@ export default function App() {
                 white: {
                   main: '#fff',
                   background: '#1B2028',
+                },
+                red: {
+                  main: '#F69894',
                 },
               },
             }
@@ -89,6 +93,7 @@ export default function App() {
                   border: '#e0e5ec',
                   light: '#96999C',
                   dark: '#93A0B2',
+                  soft: '#383B45',
                 },
                 dark: {
                   main: '#16253D',
@@ -101,6 +106,9 @@ export default function App() {
                 white: {
                   main: '#fff',
                   background: '#1B2028',
+                },
+                red: {
+                  main: '#F69894',
                 },
               },
             },
@@ -135,7 +143,7 @@ export default function App() {
 }
 
 const Pages = () => {
-  const wallet = useWallet()
+  const wallet = useWallet();
   return (
     <Switch>
       <Route path="/connecting_wallet" component={ConnectingWallet} />
@@ -145,8 +153,13 @@ const Pages = () => {
       <Route path="/create_wallet" component={CreateWalletPage} />
       <Route path="/import_wallet" component={ImportWalletPage} />
       <Route path="/welcome_back" component={WelcomeBackPage} />
+      {/*  */}
       {!!wallet && <Redirect to="/wallet" />}
-      {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
-  </Switch>
-  )
-}
+      {hasLockedMnemonicAndSeed() ? (
+        <Redirect to="/welcome_back" />
+      ) : (
+        <Redirect to="/welcome" />
+      )}
+    </Switch>
+  );
+};

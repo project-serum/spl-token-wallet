@@ -185,7 +185,7 @@ export const Input = styled.input`
   background: #222429;
   outline: none;
   padding-left: 2rem;
-  padding-right: 4rem;
+  padding-right: 10rem;
 `;
 
 export const Body = styled.div`
@@ -235,6 +235,40 @@ export const VioletButton = styled((props) => (
     backgroundColor={props.background || '#7380eb'}
     borderColor={props.background || '#7380eb'}
     btnColor={props.color || '#fff'}
+    borderRadius={'1rem'}
+    border={props.border || 'none'}
+    {...props}
+  />
+))`
+  outline: none;
+`;
+
+export const RedButton = styled((props) => (
+  <BtnCustom
+    btnWidth={props.width || '50%'}
+    fontSize={'1.4rem'}
+    height={'4.5rem'}
+    textTransform={'capitalize'}
+    backgroundColor={props.background || 'transparent'}
+    borderColor={props.background || 'transparent'}
+    btnColor={props.color || props.theme.customPalette.red.main}
+    borderRadius={'1rem'}
+    border={props.border || 'none'}
+    {...props}
+  />
+))`
+  outline: none;
+`;
+
+export const WhiteButton = styled((props) => (
+  <BtnCustom
+    btnWidth={props.width || 'calc(50% - .5rem)'}
+    fontSize={'1.4rem'}
+    height={'4.5rem'}
+    textTransform={'capitalize'}
+    backgroundColor={props.background || 'transparent'}
+    borderColor={props.background || props.theme.customPalette.white.main}
+    btnColor={props.color || props.theme.customPalette.white.main}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -318,6 +352,17 @@ export const ListCard = styled.div`
   background: #222429;
   border: 0.1rem solid #3a475c;
   border-radius: 1rem;
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
 `;
 
-export const Stroke = styled.div``;
+export const Stroke = styled.div`
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 0.2rem solid #383b45;
+  width: 90%;
+  height: 4rem;
+`;

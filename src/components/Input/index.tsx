@@ -35,9 +35,9 @@ const InputWithComponent = ({
       <div
         style={{
           position: 'absolute',
-          right: '2rem',
+          right: '0',
           top: '50%',
-          transform: 'translateY(-40%)',
+          transform: 'translateY(-50%)',
         }}
       >
         {ComponentToShow}
@@ -97,7 +97,11 @@ const InputWithEye = ({
     <InputWithComponent
       ComponentToShow={
         <img
-          style={{ padding: '.5rem', cursor: 'pointer' }}
+          style={{
+            padding: '1.6rem 2rem 1.4rem 2rem',
+            cursor: 'pointer',
+            height: '4.5rem',
+          }}
           onClick={onEyeClick}
           src={showPassword ? ClosedEye : Eye}
         />
@@ -122,7 +126,11 @@ const InputWithPaste = ({
   return (
     <InputWithComponent
       ComponentToShow={
-        <TextButton color={theme.customPalette.blue.new} onClick={onPasteClick}>
+        <TextButton
+          color={theme.customPalette.blue.new}
+          onClick={onPasteClick}
+          style={{ padding: '1.2rem 2rem' }}
+        >
           Paste
         </TextButton>
       }
