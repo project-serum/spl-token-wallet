@@ -15,16 +15,14 @@ import {
 import Plus from '../../images/AddButton.svg';
 import Import from '../../images/ImportButton.svg';
 import Restore from '../../images/RestoreButton.svg';
-import Logo from '../../images/logo.svg';
+import Logo from '../../components/Logo'
+
 
 export const WelcomePage = () => {
   return (
     <Body>
       {' '}
-      <Img>
-        {' '}
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
+      <Logo />
       <Row>
         <Row>
           {' '}

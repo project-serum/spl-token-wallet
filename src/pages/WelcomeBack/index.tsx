@@ -19,7 +19,8 @@ import {
 } from '../commonStyles';
 
 import Eye from '../../images/Eye.svg';
-import Logo from '../../images/logo.svg';
+import Logo from '../../components/Logo'
+
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
 
@@ -44,9 +45,7 @@ const WelcomeBack = () => {
   return (
     <Body>
       {!!wallet && <Redirect to={'/wallet'} />}
-      <Img>
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
+      <Logo />
       <Card>
         <RowContainer
           direction={'column'}
@@ -73,6 +72,7 @@ const WelcomeBack = () => {
             <Input
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
+              onChange={e => setPassword(e.target.value)}
             />
           </RowContainer>
           <RowContainer direction={'column'} height={'calc(50% - 2.5rem)'}>

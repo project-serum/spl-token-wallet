@@ -12,18 +12,14 @@ import {
   VioletButton,
 } from '../commonStyles';
 
-import Logo from '../../images/logo.svg';
+import Logo from '../../components/Logo'
 
 export const ImportPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Body>
-      {' '}
-      <Img>
-        {' '}
-        <img src={Logo} width="100%" height="100%" />
-      </Img>
+      <Logo />
       <Card>
         <Row direction={'column'} justify={'space-between'} height={'75%'}>
           <Row direction={'column'} justify={'space-around'} height={'20%'}>
@@ -37,7 +33,6 @@ export const ImportPage = () => {
             height={'50%'}
             style={{ position: 'relative' }}
           >
-            {' '}
             <Input type="text" placeholder="Paste your private key"></Input>
             <TextButton
               style={{

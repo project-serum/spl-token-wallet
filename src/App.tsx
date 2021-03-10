@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
   ThemeProvider,
   unstable_createMuiStrictModeTheme as createMuiTheme,
@@ -9,11 +8,11 @@ import {
 import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
-import { WalletProvider } from './utils/wallet';
+import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
+import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 
-const Login = lazy(() => import('./routes/LoginRouter'));
 const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
@@ -124,17 +123,7 @@ export default function App() {
             <NavigationFrame>
               <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
                 <WalletProvider>
-                  <Switch>
-                    <Redirect from="/" to="/login" exact />
-                    <Route path="/login" component={Login} />
-                    <Route path="/connecting_wallet" component={ConnectingWallet} />
-                    <Route path="/wallet" component={Wallet} />
-                    <Route path="/restore_wallet" component={RestorePage} />
-                    <Route path="/welcome" component={WelcomePage} />
-                    <Route path="/create_wallet" component={CreateWalletPage} />
-                    <Route path="/import_wallet" component={ImportWalletPage} />
-                    <Route path="/welcome_back" component={WelcomeBackPage} />
-                  </Switch>
+                  <Pages />
                 </WalletProvider>
               </SnackbarProvider>
             </NavigationFrame>
@@ -143,4 +132,21 @@ export default function App() {
       </Suspense>
     </BrowserRouter>
   );
+}
+
+const Pages = () => {
+  const wallet = useWallet()
+  return (
+    <Switch>
+      <Route path="/connecting_wallet" component={ConnectingWallet} />
+      <Route path="/wallet" component={Wallet} />
+      <Route path="/restore_wallet" component={RestorePage} />
+      <Route path="/welcome" component={WelcomePage} />
+      <Route path="/create_wallet" component={CreateWalletPage} />
+      <Route path="/import_wallet" component={ImportWalletPage} />
+      <Route path="/welcome_back" component={WelcomeBackPage} />
+      {!!wallet && <Redirect to="/wallet" />}
+      {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
+  </Switch>
+  )
 }

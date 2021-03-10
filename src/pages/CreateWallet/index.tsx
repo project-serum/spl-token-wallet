@@ -25,7 +25,7 @@ import {
 import Eye from '../../images/Eye.svg';
 import Attention from '../../images/attention.svg';
 import Copy from '../../images/copy.svg';
-import Logo from '../../images/logo.svg';
+import Logo from '../../components/Logo'
 
 export const CreateWalletPage = () => {
   const [currentStep, setCurrentStep] = useState('1');
@@ -36,10 +36,7 @@ export const CreateWalletPage = () => {
     <Body>
       {' '}
       <Row direction={'column'}>
-        <Img margin={'0'} height={'10rem'}>
-          {' '}
-          <img src={Logo} width="100%" height="100%" />
-        </Img>
+        <Logo margin={'0'} />
         <Row
           direction={'row'}
           justify={'flex-start'}
