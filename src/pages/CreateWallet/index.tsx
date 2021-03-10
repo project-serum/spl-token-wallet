@@ -42,7 +42,8 @@ export const CreateWalletPage = () => {
           direction={'row'}
           justify={'flex-start'}
           align={'baseline'}
-          height={'15%'}
+          height={'10%'}
+          margin={'0 0 3rem 0'}
         >
           <ProgressBarContainer>
             <ProgressBar currentStep={currentStep}>

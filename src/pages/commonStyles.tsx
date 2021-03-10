@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { BtnCustom } from '../components/BtnCustom';
 
 export const ProgressBarContainer = styled.div`
   position: relative;
@@ -109,10 +110,12 @@ export const ContainerForIcon = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
 export const Img = styled.div`
   width: ${(props) => props.width || '30rem'};
-  height: ${(props) => props.width || '15rem'};
+  height: ${(props) => props.width || '10rem'};
 `;
+
 export const Row = styled.div`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '100%'};
@@ -175,9 +178,9 @@ export const TextButton = styled.button`
   cursor: pointer;
 `;
 
-export const Title = styled.div`
+export const Title = styled.span`
   width: ${(props) => props.width || 'auto'};
-  font-family: Avenir Next Medium;
+  font-family: ${props => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
   font-weight: normal;
   font-size: ${(props) => props.fontSize || '1.3rem'};
@@ -185,9 +188,10 @@ export const Title = styled.div`
   letter-spacing: -0.857692px;
   color: #ecf0f3;
   text-align: ${(props) => props.textAlign || 'center'};
+  margin: ${props => props.margin || '0'};
 `;
 
-export const VioletButton = styled.button`
+export const VioletButton = styled((props) => <BtnCustom textDecoration={'capitalize'} {...props} />)`
   background: ${(props) => props.background || '#7380eb'};
   border-radius: 1rem;
   color: #fff;

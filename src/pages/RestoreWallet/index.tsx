@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Eye from '../../images/Eye.svg';
 
 import {
   Card,
@@ -12,6 +11,7 @@ import {
   VioletButton,
 } from '../commonStyles';
 
+import Eye from '../../images/Eye.svg';
 import Logo from '../../images/logo.svg';
 
 export const RestorePage = () => {
