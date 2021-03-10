@@ -221,7 +221,7 @@ export const Title = styled.span`
   font-size: ${(props) => props.fontSize || '1.3rem'};
   text-align: center;
   letter-spacing: -0.857692px;
-  color: #ecf0f3;
+  color: ${props => props.color || '#ecf0f3'};
   text-align: ${(props) => props.textAlign || 'center'};
   margin: ${(props) => props.margin || '0'};
 `;
