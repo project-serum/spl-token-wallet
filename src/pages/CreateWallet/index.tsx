@@ -35,12 +35,12 @@ export const CreateWalletPage = () => {
   return (
     <Body>
       {' '}
-      <Row direction={'column'}>
+      <RowContainer direction={'column'}>
         <Img margin={'0'} height={'10rem'}>
           {' '}
           <img src={Logo} width="100%" height="100%" />
         </Img>
-        <Row
+        <RowContainer
           direction={'row'}
           justify={'flex-start'}
           align={'baseline'}
@@ -120,16 +120,16 @@ export const CreateWalletPage = () => {
               </div>
             </Steps>
           </ProgressBarContainer>
-        </Row>
+        </RowContainer>
         {currentStep === '1' ? (
           <Card>
-            <Row direction={'column'}>
+            <RowContainer direction={'column'}>
               <BoldTitle style={{ marginBottom: '1.5rem' }}>
                 Create a password or type your addressbook
               </BoldTitle>
               <BoldTitle>password if you have created it already:</BoldTitle>
-            </Row>
-            <Row style={{ position: 'relative' }}>
+            </RowContainer>
+            <RowContainer style={{ position: 'relative' }}>
               <Input
                 style={{ position: 'relative' }}
                 type={showPassword ? 'text' : 'password'}
@@ -150,8 +150,8 @@ export const CreateWalletPage = () => {
               >
                 <img width="100%" height="100%" src={Eye} />
               </Img>
-            </Row>
-            <Row>
+            </RowContainer>
+            <RowContainer>
               <VioletButton
                 onClick={() => {
                   setCurrentStep('2');
@@ -160,22 +160,22 @@ export const CreateWalletPage = () => {
               >
                 Continue
               </VioletButton>
-            </Row>
+            </RowContainer>
           </Card>
         ) : currentStep === '2' && !isSpeedPhase ? (
           <Card>
-            <Row>
+            <RowContainer>
               <BoldTitle>
                 Create a new wallet to hold Solana and SPL token
               </BoldTitle>
-            </Row>
-            <Row>
+            </RowContainer>
+            <RowContainer>
               <ColorText background={'rgba(164, 231, 151, 0.5)'}>
                 Please write down the following seed phrase and keep it in a
                 safe place:
               </ColorText>
-            </Row>
-            <Row>
+            </RowContainer>
+            <RowContainer>
               <Textarea
                 height={'8rem'}
                 placeholder={
@@ -187,8 +187,8 @@ export const CreateWalletPage = () => {
                   <img src={Copy} />
                 </Img>
               </ContainerForIcon>
-            </Row>
-            <Row>
+            </RowContainer>
+            <RowContainer>
               <ColorText
                 height={'10rem'}
                 background={'rgba(242, 154, 54, 0.5)'}
@@ -200,7 +200,7 @@ export const CreateWalletPage = () => {
                   storage is cleared or your device is damaged or lost.
                 </Title>
               </ColorText>
-            </Row>
+            </RowContainer>
             <Row width={'90%'}>
               <Row width={'50%'}>
                 <input type="checkbox"></input>
@@ -220,10 +220,10 @@ export const CreateWalletPage = () => {
           </Card>
         ) : currentStep === '2' && isSpeedPhase ? (
           <Card justify={'space-around'}>
-            <Row height={'auto'}>
+            <RowContainer height={'auto'}>
               <BoldTitle>Confirm the seed phrase</BoldTitle>
-            </Row>
-            <Row height={'auto'}>
+            </RowContainer>
+            <RowContainer height={'auto'}>
               <ColorText
                 background={'rgba(164, 231, 151, 0.5)'}
                 height={'6rem'}
@@ -235,8 +235,8 @@ export const CreateWalletPage = () => {
                   you.
                 </Title>
               </ColorText>
-            </Row>
-            <Row height={'auto'}>
+            </RowContainer>
+            <RowContainer height={'auto'}>
               <Textarea
                 height={'8rem'}
                 placeholder={
@@ -244,8 +244,12 @@ export const CreateWalletPage = () => {
                 }
                 padding={'1rem 2rem 1rem 2rem'}
               ></Textarea>
-            </Row>
-            <Row height={'auto'} width={'90%'} justify={'space-between'}>
+            </RowContainer>
+            <RowContainer
+              height={'auto'}
+              width={'90%'}
+              justify={'space-between'}
+            >
               <VioletButton
                 onClick={() => {
                   setCurrentStep('3');
@@ -265,13 +269,13 @@ export const CreateWalletPage = () => {
               >
                 Create wallet
               </VioletButton>
-            </Row>
+            </RowContainer>
           </Card>
         ) : (
           <Card width={'100rem'}>
-            <Row>
+            <RowContainer>
               {' '}
-              <Row
+              <RowContainer
                 style={{ borderRight: '0.2rem solid #383B45' }}
                 height={'96%'}
                 direction={'column'}
@@ -328,7 +332,7 @@ export const CreateWalletPage = () => {
                     </span>
                   </ColorText>
                 </Row>
-                <Row>
+                <RowContainer>
                   <VioletButton width={'30%'} background={'#366CE5'}>
                     Refresh Balance
                   </VioletButton>
@@ -336,13 +340,13 @@ export const CreateWalletPage = () => {
                     <BoldTitle>Your Balance: </BoldTitle>
                     <BoldTitle color={'#A5E898'}>1.000 SOL</BoldTitle>
                   </span>
-                </Row>
-              </Row>
-              <Row></Row>
-            </Row>
+                </RowContainer>
+              </RowContainer>
+              <RowContainer></RowContainer>
+            </RowContainer>
           </Card>
         )}
-      </Row>
+      </RowContainer>
     </Body>
   );
 };
