@@ -26,7 +26,7 @@ import {
   Stroke,
 } from '../commonStyles';
 
-import { InputWithSearch } from '../../components/Input';
+import { InputWithSearch, InputWithEye } from '../../components/Input';
 
 import SRM from '../../images/srm.svg';
 import Eye from '../../images/Eye.svg';
@@ -42,6 +42,7 @@ export const CreateWalletPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [password, setPassword] = useState('');
   const theme = useTheme();
 
   return (
@@ -142,28 +143,18 @@ export const CreateWalletPage = () => {
                 </BoldTitle>
                 <BoldTitle>password if you have created it already:</BoldTitle>
               </RowContainer>
-              <RowContainer style={{ position: 'relative' }}>
-                <Input
-                  style={{ position: 'relative' }}
+              <Row width={'90%'} style={{ position: 'relative' }}>
+                <InputWithEye
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
-                ></Input>
-                <Img
-                  onClick={() => {
-                    setShowPassword(!showPassword);
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
                   }}
-                  style={{
-                    position: 'absolute',
-                    right: '5rem',
-                    top: '1.3rem',
-                    cursor: 'pointer',
-                  }}
-                  width={'2rem'}
-                  height={'2rem'}
-                >
-                  <img width="100%" height="100%" src={Eye} />
-                </Img>
-              </RowContainer>
+                  placeholder={'Password'}
+                  showPassword={showPassword}
+                  onEyeClick={() => setShowPassword(!showPassword)}
+                />
+              </Row>
               <RowContainer>
                 <VioletButton
                   onClick={() => {
