@@ -12,6 +12,13 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
       >
         Unknown instruction:
       </Typography>
+      <LabelValue
+        key='Program'
+        label='Program'
+        value={instruction.programId?.toBase58()}
+        link={true}
+        onClick={() => onOpenAddress(instruction.programId.toBase58())}
+      />
       {instruction.accountMetas.map((accountMeta, index) => {
           return (
             <>
@@ -26,15 +33,8 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
             </>
           );
         })}
-      <LabelValue
-        key='Program Id'
-        label='Program Id'
-        value={instruction.programId?.toBase58()}
-        link={true}
-        onClick={() => onOpenAddress(instruction.programId.toBase58())}
-      />
       <Typography style={{ wordBreak: 'break-all' }}>
-        data: {instruction.rawData}
+        Data: {instruction.rawData}
       </Typography>
     </>
   );
