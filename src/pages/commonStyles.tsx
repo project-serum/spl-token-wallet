@@ -123,6 +123,16 @@ export const Input = styled.input`
   outline: none;
   padding-left: 2rem;
   padding-right: 10rem;
+
+  // fix for autocomplete
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover, 
+  &:-webkit-autofill:focus, 
+  &:-webkit-autofill:active
+  {
+    -webkit-box-shadow: 0px 0px 0 30px #222429 inset !important;
+    -webkit-text-fill-color: #fff;
+  }
 `;
 
 export const Body = styled.div`
@@ -172,14 +182,14 @@ export const VioletButton = styled((props) => (
     backgroundColor={
       props.disabled
         ? props.theme.customPalette.grey.dark
-        : props.background || '#7380eb'
+        : props.background || props.theme.customPalette.blue.serum
     }
     borderColor={
       props.disabled
         ? props.theme.customPalette.grey.dark
-        : props.background || '#7380eb'
+        : props.background || props.theme.customPalette.blue.serum
     }
-    btnColor={props.color || '#fff'}
+    btnColor={props.color || props.theme.customPalette.white.main}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}

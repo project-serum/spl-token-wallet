@@ -1,7 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useLocation, Link } from 'react-router-dom';
-import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
+import {
+  GridContainer,
+  RowContainer,
+  Row,
+  VioletButton,
+} from '../../pages/commonStyles';
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
@@ -134,6 +139,15 @@ const Navbar = () => {
           >
             <NavLinkButton
               theme={theme}
+              data-tut="farming"
+              pathname={location.pathname}
+              page={''}
+              component={(props) => <Link to={`/`} {...props} />}
+            >
+              Wallet
+            </NavLinkButton>
+            <NavLinkButton
+              theme={theme}
               pathname={location.pathname}
               page={'chart'}
               component={(props) => (
@@ -174,59 +188,35 @@ const Navbar = () => {
             >
               Addressbook
             </NavLinkButton>
-            <NavLinkButton
-              theme={theme}
-              data-tut="farming"
-              pathname={location.pathname}
-              page={''}
-              component={(props) => <Link to={`/`} {...props} />}
-            >
-              Wallet
-            </NavLinkButton>
           </RowContainer>
         </RowContainer>
         <Row height={'100%'}>
           <NetworkDropdown />
-          {/* <Link style={{ textDecoration: 'none' }} to={'/connect_wallet'}>
-            <BtnCustom
-              btnWidth={'14rem'}
+          <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
+            <VioletButton
+              theme={theme}
+              width={'14rem'}
               height={'3.5rem'}
               borderRadius=".6rem"
-              borderColor={theme.customPalette.blue.serum}
-              btnColor={theme.customPalette.white.main}
-              backgroundColor={theme.customPalette.blue.serum}
-              fontSize={'1.2rem'}
-              textTransform={'capitalize'}
               margin={'0 0 0 3rem'}
-              style={{
-                display: 'flex',
-                textTransform: 'none',
-                padding: '1rem',
-                textDeration: 'none',
-              }}
+              padding="1rem"
             >
-              Connect Wallet™
-            </BtnCustom>
+              Restore Wallet
+            </VioletButton>
           </Link>
           <Link style={{ textDecoration: 'none' }} to={'/create_wallet'}>
-            <BtnCustom
-              btnWidth={'14rem'}
+            <VioletButton
+              theme={theme}
+              width={'14rem'}
               height={'3.5rem'}
-              borderRadius=".6rem"
-              btnColor={theme.customPalette.blue.serum}
-              fontSize={'1.2rem'}
-              textTransform={'capitalize'}
+              color={theme.customPalette.blue.serum}
+              borderColor={theme.customPalette.blue.serum}
+              background={'transparent'}
               margin={'0 0 0 3rem'}
-              style={{
-                display: 'flex',
-                textTransform: 'none',
-                padding: '1rem',
-                textDeration: 'none',
-              }}
             >
               Create Wallet
-            </BtnCustom>
-          </Link> */}
+            </VioletButton>
+          </Link>
         </Row>
       </RowContainer>
     </GridContainer>
