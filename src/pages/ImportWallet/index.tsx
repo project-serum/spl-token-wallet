@@ -72,7 +72,7 @@ export const ImportPage = () => {
             <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
               <WhiteButton width={'100%'} theme={theme}>Cancel</WhiteButton>
             </Link>
-            <VioletButton width={'calc(50% - .5rem)'}>Import</VioletButton>
+            <VioletButton theme={theme} width={'calc(50% - .5rem)'}>Import</VioletButton>
           </Row>
         </RowContainer>
       </Card>

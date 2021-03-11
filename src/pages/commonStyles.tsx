@@ -45,67 +45,6 @@ export const GridContainer = styled(({ ...rest }) => <Grid {...rest} />)`
   background: ${(props) => props.theme.customPalette.dark.background};
 `;
 
-export const ProgressBarContainer = styled.div`
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-`;
-
-export const Percent = styled.div`
-  position: absolute;
-  width: 0;
-  height: 100%;
-  border-bottom: 2px solid #4b81bd;
-  z-index: 1;
-  transition: width 1s;
-`;
-
-export const ProgressBar = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  border-bottom: 0.1rem solid transparent;
-  border-image: ${(props) =>
-    props.currentStep === 1
-      ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
-      : props.currentStep === 2
-      ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
-      : props.currentStep === 3
-      ? '#366CE5'
-      : '#93A0B2'};
-  border-image-slice: 1;
-  z-index: -1;
-`;
-
-export const Step = styled.div`
-  width: 3rem;
-  height: 3rem;
-  background: ${(props) => (props.isCompleted ? '#406EDC' : '#17181a')};
-  color: #fff;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-  display: flex;
-  border: ${(props) =>
-    props.isSelected || props.isCompleted
-      ? '0.1rem solid #406EDC'
-      : '0.1rem solid #93A0B2'};
-  border-radius: 50%;
-  transition: background 1s;
-`;
-
-export const Steps = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 40rem;
-  height: 0.1rem;
-  background: ${(props) => (props.isCompleted ? '#366CE5' : 'none')};
-`;
-
 export const ColorText = styled.div`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
@@ -230,8 +169,16 @@ export const VioletButton = styled((props) => (
     fontSize={'1.4rem'}
     height={'4.5rem'}
     textTransform={'capitalize'}
-    backgroundColor={props.background || '#7380eb'}
-    borderColor={props.background || '#7380eb'}
+    backgroundColor={
+      props.disabled
+        ? props.theme.customPalette.grey.dark
+        : props.background || '#7380eb'
+    }
+    borderColor={
+      props.disabled
+        ? props.theme.customPalette.grey.dark
+        : props.background || '#7380eb'
+    }
     btnColor={props.color || '#fff'}
     borderRadius={'1rem'}
     border={props.border || 'none'}
@@ -314,7 +261,7 @@ export const Legend = styled.div`
 
 export const StyledLabel = styled.label`
   font-family: Avenir Next;
-  font-size: 1.2rem;
+  font-size: ${(props) => props.fontSize || '1.2rem'};
   color: #93a0b2;
   cursor: pointer;
 `;
@@ -355,12 +302,4 @@ export const ListCard = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: auto;
-`;
-
-export const Stroke = styled.div`
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 0.2rem solid #383b45;
-  width: 90%;
-  height: 4rem;
 `;

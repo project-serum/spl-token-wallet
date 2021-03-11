@@ -347,6 +347,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
           Cancel
         </WhiteButton>
         <VioletButton
+          theme={theme}
           width={"calc(50% - .5rem)"}
           onClick={() => onApprove(autoApprove)}
         >

@@ -51,6 +51,10 @@ export const BtnCustom = styled(
     ...rest
   }: Props) => <Button {...rest} />
 )`
+  &&& {
+    color: ${(props: Props) => props.btnColor || props.color || '#333'};
+  }
+  
   width: ${(props: Props) => props.btnWidth || '22.5rem'};
   height: ${(props: Props) => props.height || `3rem`};
   border: 0.1rem solid
@@ -59,7 +63,6 @@ export const BtnCustom = styled(
   border-width: ${(props: Props) => props.borderWidth || '.1rem'};
   border-color: ${(props: Props) =>
     props.borderColor || props.btnColor || props.color || '#333'};
-  color: ${(props: Props) => props.btnColor || props.color || '#333'};
   font-family: ${(props: Props) => props.fontFamily || 'Avenir Next Medium'};
   font-size: ${(props: Props) => props.fontSize || '1rem'};
   font-weight: ${(props: Props) => props.fontWeight || 500};
@@ -70,6 +73,7 @@ export const BtnCustom = styled(
   min-width: ${(props: Props) => !props.needMinWidth && 'auto'};
   text-transform: ${(props: Props) => props.textTransform || 'uppercase'};
   box-shadow: ${(props: Props) => props.boxShadow || 'none'};
+  transition: all .3s ease-out;
 
   &:hover {
     color: ${(props: Props) => props.hoverColor};

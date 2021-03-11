@@ -88,7 +88,7 @@ const WelcomeBack = () => {
               </StyledLabel>
             </RowContainer>
             <Row width={'90%'} height={'50%'} align={'flex-start'}>
-              <VioletButton onClick={submit}>Continue</VioletButton>
+              <VioletButton theme={theme} onClick={submit}>Continue</VioletButton>
             </Row>
           </RowContainer>
         </RowContainer>

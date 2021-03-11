@@ -12,6 +12,7 @@ import ClosedEye from '../../images/ClosedEye.svg';
 import Loupe from '../../images/Loupe.svg';
 import Copy from '../../images/copy.svg';
 import { useTheme } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
 
 const InputWithComponent = ({
   type,
@@ -132,6 +133,8 @@ const TextareaWithCopy = ({
   placeholder: string;
   onCopyClick: () => void;
 }) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   return (
     <TextareaWithComponent
       ComponentToShow={
@@ -141,8 +144,12 @@ const TextareaWithCopy = ({
             cursor: 'pointer',
             height: '4.5rem',
           }}
-          onClick={onCopyClick}
+          onClick={() => {
+            onCopyClick()
+            enqueueSnackbar("Copied!", { variant: 'success' });
+          }}
           src={Copy}
+          alt="copy"
         />
       }
       {...props}
@@ -192,13 +199,17 @@ const InputWithPaste = ({
   onPasteClick: () => void;
 }) => {
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <InputWithComponent
       ComponentToShow={
         <TextButton
           color={theme.customPalette.blue.new}
-          onClick={onPasteClick}
+          onClick={() => {
+            onPasteClick()
+            enqueueSnackbar("Pasted!", { variant: 'success' });
+          }}
           style={{ padding: '1.2rem 2rem' }}
         >
           Paste

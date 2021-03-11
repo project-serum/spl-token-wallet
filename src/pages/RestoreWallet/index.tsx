@@ -144,6 +144,7 @@ export const RestorePage = () => {
               </WhiteButton>
             </Link>
             <VioletButton
+              theme={theme}
               disabled={!isMnemonicCorrect || password === ''}
               width={'calc(50% - .5rem)'}
               onClick={submit}
