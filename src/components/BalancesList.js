@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -10,6 +10,7 @@ import {
   useWalletPublicKeys,
   useWalletSelector,
 } from '../utils/wallet';
+import { findAssociatedTokenAddress } from '../utils/tokens';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
@@ -31,25 +32,69 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import MergeType from '@material-ui/icons/MergeType';
+import SortIcon from '@material-ui/icons/Sort';
+import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import {
+  useIsProdNetwork,
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { serumMarkets, priceStore } from '../utils/markets';
+import { swapApiRequest } from '../utils/swap/api';
+import { showSwapAddress } from '../utils/config';
+import { useAsyncData } from '../utils/fetch-loop';
 import { showTokenInfoDialog } from '../utils/config';
+import { useConnection } from '../utils/connection';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
 import EditAccountNameDialog from './EditAccountNameDialog';
+import MergeAccountsDialog from './MergeAccountsDialog';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
   maximumFractionDigits: 4,
   useGrouping: true,
 });
+
+const SortAccounts = {
+  None: 0,
+  Ascending: 1,
+  Descending: 2,
+};
+
+// Aggregated $USD values of all child BalanceListItems child components.
+//
+// Values:
+// * undefined => loading.
+// * null => no market exists.
+// * float => done.
+//
+// For a given set of publicKeys, we know all the USD values have been loaded when
+// all of their values in this object are not `undefined`.
+const usdValues = {};
+
+// Calculating associated token addresses is an asynchronous operation, so we cache
+// the values so that we can quickly render components using them. This prevents
+// flickering for the associated token fingerprint icon.
+const associatedTokensCache = {};
+
+const numberFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+function fairsIsLoaded(publicKeys) {
+  return (
+    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
+    publicKeys.length
+  );
+}
 
 export default function BalancesList() {
   const wallet = useWallet();
@@ -58,15 +103,94 @@ export default function BalancesList() {
   const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
     false,
   );
+  const [showMergeAccounts, setShowMergeAccounts] = useState(false);
+  const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
+  // Dummy var to force rerenders on demand.
+  const [, setForceUpdate] = useState(false);
   const selectedAccount = accounts.find((a) => a.isSelected);
+  const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
+  let sortedPublicKeys = publicKeys;
+  if (allTokensLoaded && sortAccounts !== SortAccounts.None) {
+    sortedPublicKeys = [...publicKeys];
+    sortedPublicKeys.sort((a, b) => {
+      const aVal = usdValues[a.toString()];
+      const bVal = usdValues[b.toString()];
+
+      a = aVal === undefined || aVal === null ? -1 : aVal;
+      b = bVal === undefined || bVal === null ? -1 : bVal;
+      if (sortAccounts === SortAccounts.Descending) {
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else {
+        if (b < a) {
+          return -1;
+        } else if (b > a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+  }
+  const totalUsdValue = publicKeys
+    .filter((pk) => usdValues[pk.toString()])
+    .map((pk) => usdValues[pk.toString()])
+    .reduce((a, b) => a + b, 0.0);
+
+  // Memoized callback and component for the `BalanceListItems`.
+  //
+  // The `BalancesList` fetches data, e.g., fairs for tokens using React hooks
+  // in each of the child `BalanceListItem` components. However, we want the
+  // parent component, to aggregate all of this data together, for example,
+  // to show the cumulative USD amount in the wallet.
+  //
+  // To achieve this, we need to pass a callback from the parent to the chlid,
+  // so that the parent can collect the results of all the async network requests.
+  // However, this can cause a render loop, since invoking the callback can cause
+  // the parent to rerender, which causese the child to rerender, which causes
+  // the callback to be invoked.
+  //
+  // To solve this, we memoize all the `BalanceListItem` children components.
+  const setUsdValuesCallback = useCallback(
+    (publicKey, usdValue) => {
+      if (usdValues[publicKey.toString()] !== usdValue) {
+        usdValues[publicKey.toString()] = usdValue;
+        if (fairsIsLoaded(publicKeys)) {
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      }
+    },
+    [publicKeys],
+  );
+  const balanceListItemsMemo = useMemo(() => {
+    return sortedPublicKeys.map((pk) => {
+      return React.memo((props) => {
+        return (
+          <BalanceListItem
+            key={pk.toString()}
+            publicKey={pk}
+            setUsdValue={setUsdValuesCallback}
+          />
+        );
+      });
+    });
+  }, [sortedPublicKeys, setUsdValuesCallback]);
 
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances
+            {selectedAccount && selectedAccount.name} Balances{' '}
+            {allTokensLoaded && (
+              <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
+            )}
           </Typography>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
@@ -77,9 +201,35 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
+          <Tooltip title="Merge Accounts" arrow>
+            <IconButton onClick={() => setShowMergeAccounts(true)}>
+              <MergeType />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Add Token" arrow>
             <IconButton onClick={() => setShowAddTokenDialog(true)}>
               <AddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sort Accounts" arrow>
+            <IconButton
+              onClick={() => {
+                switch (sortAccounts) {
+                  case SortAccounts.None:
+                    setSortAccounts(SortAccounts.Ascending);
+                    return;
+                  case SortAccounts.Ascending:
+                    setSortAccounts(SortAccounts.Descending);
+                    return;
+                  case SortAccounts.Descending:
+                    setSortAccounts(SortAccounts.None);
+                    return;
+                  default:
+                    console.error('invalid sort type', sortAccounts);
+                }
+              }}
+            >
+              <SortIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Refresh" arrow>
@@ -98,8 +248,8 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {publicKeys.map((publicKey) => (
-          <BalanceListItem key={publicKey.toBase58()} publicKey={publicKey} />
+        {balanceListItemsMemo.map((Memoized) => (
+          <Memoized />
         ))}
         {loaded ? null : <LoadingIndicator />}
       </List>
@@ -115,6 +265,10 @@ export default function BalancesList() {
           setAccountName(selectedAccount.selector, name);
           setShowEditAccountNameDialog(false);
         }}
+      />
+      <MergeAccountsDialog
+        open={showMergeAccounts}
+        onClose={() => setShowMergeAccounts(false)}
       />
     </Paper>
   );
@@ -138,10 +292,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function BalanceListItem({ publicKey }) {
+export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
+  const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
+  const connection = useConnection();
   const [open, setOpen] = useState(false);
+  const [, setForceUpdate] = useState(false);
+  // Valid states:
+  //   * undefined => loading.
+  //   * null => not found.
+  //   * else => price is loaded.
+  const [price, setPrice] = useState(undefined);
+  useEffect(() => {
+    if (balanceInfo) {
+      if (balanceInfo.tokenSymbol) {
+        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        // Don't fetch USD stable coins. Mark to 1 USD.
+        if (coin === 'USDT' || coin === 'USDC') {
+          setPrice(1);
+        }
+        // A Serum market exists. Fetch the price.
+        else if (serumMarkets[coin]) {
+          let m = serumMarkets[coin];
+          priceStore
+            .getPrice(connection, m.name)
+            .then((price) => {
+              setPrice(price);
+            })
+            .catch((err) => {
+              console.error(err);
+              setPrice(null);
+            });
+        }
+        // No Serum market exists.
+        else {
+          setPrice(null);
+        }
+      }
+      // No token symbol so don't fetch market data.
+      else {
+        setPrice(null);
+      }
+    }
+  }, [price, balanceInfo, connection]);
+
+  expandable = expandable === undefined ? true : expandable;
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -149,28 +345,110 @@ function BalanceListItem({ publicKey }) {
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
 
+  // Fetch and cache the associated token address.
+  if (wallet && wallet.publicKey && mint) {
+    if (
+      associatedTokensCache[wallet.publicKey.toString()] === undefined ||
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()] ===
+        undefined
+    ) {
+      findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+        let walletAccounts = Object.assign(
+          {},
+          associatedTokensCache[wallet.publicKey.toString()],
+        );
+        walletAccounts[mint.toString()] = assocTok;
+        associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
+        if (assocTok.equals(publicKey)) {
+          // Force a rerender now that we've cached the value.
+          setForceUpdate((forceUpdate) => !forceUpdate);
+        }
+      });
+    }
+  }
+
+  const isAssociatedToken =
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+      ? associatedTokensCache[wallet.publicKey.toString()][mint.toString()]
+      : false;
+
+  const subtitle = (
+    <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
+      {isAssociatedToken && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            marginRight: '5px',
+          }}
+        >
+          <FingerprintIcon style={{ width: '20px' }} />
+        </div>
+      )}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        {publicKey.toBase58()}
+      </div>
+    </div>
+  );
+
+  const usdValue =
+    price === undefined // Not yet loaded.
+      ? undefined
+      : price === null // Loaded and empty.
+      ? null
+      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+  if (setUsdValue && usdValue !== undefined) {
+    setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
+  }
+
   return (
     <>
-      <ListItem button onClick={() => setOpen((open) => !open)}>
+      <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
           <TokenIcon mint={mint} tokenName={tokenName} size={28} />
         </ListItemIcon>
-        <ListItemText
-          primary={
-            <>
-              {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-              {tokenName ?? abbreviateAddress(mint)}
-              {tokenSymbol ? ` (${tokenSymbol})` : null}
-            </>
-          }
-          secondary={publicKey.toBase58()}
-          secondaryTypographyProps={{ className: classes.address }}
-        />
-        {open ? <ExpandLess /> : <ExpandMore />}
+        <div style={{ display: 'flex', flex: 1 }}>
+          <ListItemText
+            primary={
+              <>
+                {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
+                {tokenName ?? abbreviateAddress(mint)}
+                {tokenSymbol ? ` (${tokenSymbol})` : null}
+              </>
+            }
+            secondary={subtitle}
+            secondaryTypographyProps={{ className: classes.address }}
+          />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            {price && (
+              <Typography color="textSecondary">
+                {numberFormat.format(usdValue)}
+              </Typography>
+            )}
+          </div>
+        </div>
+        {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <BalanceListItemDetails
           publicKey={publicKey}
+          serumMarkets={serumMarkets}
           balanceInfo={balanceInfo}
         />
       </Collapse>
@@ -178,7 +456,7 @@ function BalanceListItem({ publicKey }) {
   );
 }
 
-function BalanceListItemDetails({ publicKey, balanceInfo }) {
+function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -190,6 +468,27 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
   const wallet = useWallet();
+  const isProdNetwork = useIsProdNetwork();
+  const [swapInfo] = useAsyncData(async () => {
+    if (!showSwapAddress || !isProdNetwork) {
+      return null;
+    }
+    return await swapApiRequest(
+      'POST',
+      'swap_to',
+      {
+        blockchain: 'sol',
+        coin: balanceInfo.mint?.toBase58(),
+        address: publicKey.toBase58(),
+      },
+      { ignoreUserErrors: true },
+    );
+  }, [
+    'swapInfo',
+    isProdNetwork,
+    balanceInfo.mint?.toBase58(),
+    publicKey.toBase58(),
+  ]);
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -200,6 +499,12 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
     mint === null && tokenName === 'SOL' && tokenSymbol === 'SOL';
+
+  const market = tokenSymbol
+    ? serumMarkets[tokenSymbol.toUpperCase()]
+      ? serumMarkets[tokenSymbol.toUpperCase()].publicKey
+      : undefined
+    : undefined;
 
   return (
     <>
@@ -274,9 +579,34 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                View on Solana
               </Link>
             </Typography>
+            {market && (
+              <Typography variant="body2">
+                <Link
+                  href={`https://dex.projectserum.com/#/market/${market}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Serum
+                </Link>
+              </Typography>
+            )}
+            {swapInfo && swapInfo.coin.erc20Contract && (
+              <Typography variant="body2">
+                <Link
+                  href={
+                    `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
+                    urlSuffix
+                  }
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View on Ethereum
+                </Link>
+              </Typography>
+            )}
           </div>
           {exportNeedsDisplay && wallet.allowsExport && (
             <div>
@@ -300,6 +630,7 @@ function BalanceListItemDetails({ publicKey, balanceInfo }) {
         onClose={() => setDepositDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
+        swapInfo={swapInfo}
       />
       <TokenInfoDialog
         open={tokenInfoDialogOpen}

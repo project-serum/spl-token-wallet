@@ -2,8 +2,10 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  Account,
+  TransactionInstruction,
+  SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
+import { TokenInstructions } from '@project-serum/serum';
 import {
   assertOwner,
   closeAccount,
@@ -73,6 +75,7 @@ export async function signAndSendTransaction(
   transaction,
   wallet,
   signers,
+  skipPreflight = false,
 ) {
   transaction.recentBlockhash = (
     await connection.getRecentBlockhash('max')
@@ -90,6 +93,7 @@ export async function signAndSendTransaction(
   transaction = await wallet.signTransaction(transaction);
   const rawTransaction = transaction.serialize();
   return await connection.sendRawTransaction(rawTransaction, {
+    skipPreflight,
     preflightCommitment: 'single',
   });
 }
@@ -196,6 +200,98 @@ export async function createAndInitializeTokenAccount({
   return await signAndSendTransaction(connection, transaction, payer, signers);
 }
 
+export async function createAssociatedTokenAccount({
+  connection,
+  wallet,
+  splTokenMintAddress,
+}) {
+  const [ix, address] = await createAssociatedTokenAccountIx(
+    wallet.publicKey,
+    wallet.publicKey,
+    splTokenMintAddress,
+  );
+  const tx = new Transaction();
+  tx.add(ix);
+  tx.feePayer = wallet.publicKey;
+  const txSig = await signAndSendTransaction(connection, tx, wallet, []);
+
+  return [address, txSig];
+}
+async function createAssociatedTokenAccountIx(
+  fundingAddress,
+  walletAddress,
+  splTokenMintAddress,
+) {
+  const associatedTokenAddress = await findAssociatedTokenAddress(
+    walletAddress,
+    splTokenMintAddress,
+  );
+  const systemProgramId = new PublicKey('11111111111111111111111111111111');
+  const keys = [
+    {
+      pubkey: fundingAddress,
+      isSigner: true,
+      isWritable: true,
+    },
+    {
+      pubkey: associatedTokenAddress,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: walletAddress,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: splTokenMintAddress,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: systemProgramId,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: TokenInstructions.TOKEN_PROGRAM_ID,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: SYSVAR_RENT_PUBKEY,
+      isSigner: false,
+      isWritable: false,
+    },
+  ];
+  const ix = new TransactionInstruction({
+    keys,
+    programId: ASSOCIATED_TOKEN_PROGRAM_ID,
+    data: Buffer.from([]),
+  });
+  return [ix, associatedTokenAddress];
+}
+
+export async function findAssociatedTokenAddress(
+  walletAddress,
+  tokenMintAddress,
+) {
+  return (
+    await PublicKey.findProgramAddress(
+      [
+        walletAddress.toBuffer(),
+        TokenInstructions.TOKEN_PROGRAM_ID.toBuffer(),
+        tokenMintAddress.toBuffer(),
+      ],
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+    )
+  )[0];
+}
+
+export const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+);
+
 export async function transferTokens({
   connection,
   owner,
@@ -204,6 +300,7 @@ export async function transferTokens({
   amount,
   memo,
   mint,
+  overrideDestinationCheck,
 }) {
   const destinationAccountInfo = await connection.getAccountInfo(
     destinationPublicKey,
@@ -221,7 +318,11 @@ export async function transferTokens({
       memo,
     });
   }
-  if (!destinationAccountInfo || destinationAccountInfo.lamports === 0) {
+
+  if (
+    (!destinationAccountInfo || destinationAccountInfo.lamports === 0) &&
+    !overrideDestinationCheck
+  ) {
     throw new Error('Cannot send to address with zero SOL balances');
   }
   const destinationSplTokenAccount = (
@@ -253,6 +354,31 @@ export async function transferTokens({
     memo,
     mint,
   });
+}
+
+// SPL tokens only.
+export async function transferAndClose({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+}) {
+  const tx = createTransferBetweenSplTokenAccountsInstruction({
+    ownerPublicKey: owner.publicKey,
+    sourcePublicKey,
+    destinationPublicKey,
+    amount,
+  });
+  tx.add(
+    closeAccount({
+      source: sourcePublicKey,
+      destination: owner.publicKey,
+      owner: owner.publicKey,
+    }),
+  );
+  let signers = [];
+  return await signAndSendTransaction(connection, tx, owner, signers);
 }
 
 function createTransferBetweenSplTokenAccountsInstruction({
@@ -304,7 +430,14 @@ async function createAndTransferToAccount({
   memo,
   mint,
 }) {
-  const newAccount = new Account();
+  const [
+    createAccountInstruction,
+    newAddress,
+  ] = await createAssociatedTokenAccountIx(
+    owner.publicKey,
+    destinationPublicKey,
+    mint,
+  );
   let transaction = new Transaction();
   transaction.add(
     assertOwner({
@@ -312,35 +445,18 @@ async function createAndTransferToAccount({
       owner: SystemProgram.programId,
     }),
   );
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: owner.publicKey,
-      newAccountPubkey: newAccount.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        ACCOUNT_LAYOUT.span,
-      ),
-      space: ACCOUNT_LAYOUT.span,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-  );
-  transaction.add(
-    initializeAccount({
-      account: newAccount.publicKey,
-      mint,
-      owner: destinationPublicKey,
-    }),
-  );
+  transaction.add(createAccountInstruction);
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
     {
       ownerPublicKey: owner.publicKey,
       sourcePublicKey,
-      destinationPublicKey: newAccount.publicKey,
+      destinationPublicKey: newAddress,
       amount,
       memo,
     },
   );
   transaction.add(transferBetweenAccountsTxn);
-  let signers = [newAccount];
+  let signers = [];
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
@@ -348,6 +464,7 @@ export async function closeTokenAccount({
   connection,
   owner,
   sourcePublicKey,
+  skipPreflight,
 }) {
   let transaction = new Transaction().add(
     closeAccount({
@@ -357,5 +474,11 @@ export async function closeTokenAccount({
     }),
   );
   let signers = [];
-  return await signAndSendTransaction(connection, transaction, owner, signers);
+  return await signAndSendTransaction(
+    connection,
+    transaction,
+    owner,
+    signers,
+    skipPreflight,
+  );
 }

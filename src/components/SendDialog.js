@@ -17,6 +17,7 @@ import Tab from '@material-ui/core/Tab';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
+  getErc20Balance,
   useEthAccount,
   withdrawEth,
 } from '../utils/swap/eth';
@@ -33,6 +34,8 @@ import {
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
+import { Switch, Tooltip } from '@material-ui/core';
+import { EthFeeEstimate } from './EthFeeEstimate';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -64,6 +67,13 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         <DialogTitle>
           Send {tokenName ?? abbreviateAddress(mint)}
           {tokenSymbol ? ` (${tokenSymbol})` : null}
+          {ethAccount && (
+            <div>
+              <Typography color="textSecondary" style={{ fontSize: '14px' }}>
+                Metamask connected: {ethAccount}
+              </Typography>
+            </div>
+          )}
         </DialogTitle>
         {swapCoinInfo ? (
           <Tabs
@@ -147,6 +157,10 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
+  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState(
+    false,
+  );
+  const [shouldShowOverride, setShouldShowOverride] = useState();
   const {
     fields,
     destinationAddress,
@@ -161,12 +175,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
         setPassValidation(undefined);
+        setShouldShowOverride(undefined);
         return;
       }
       try {
         const destinationAccountInfo = await wallet.connection.getAccountInfo(
           new PublicKey(destinationAddress),
         );
+        setShouldShowOverride(false);
 
         if (destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)) {
           const accountInfo = parseTokenAccountData(
@@ -186,11 +202,18 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       } catch (e) {
         console.log(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
+        setShouldShowOverride(true);
         setPassValidation(undefined);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationAddress, wallet, mintString]);
+
+  useEffect(() => {
+    return () => {
+      setOverrideDestinationCheck(false);
+    };
+  }, [setOverrideDestinationCheck]);
 
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
@@ -202,8 +225,14 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
+      null,
+      overrideDestinationCheck,
     );
   }
+
+  const disabled = shouldShowOverride
+    ? !overrideDestinationCheck || sending || !validAmount
+    : sending || !validAmount;
 
   async function onSubmit() {
     return sendTransaction(makeTransaction(), { onSuccess: onClose });
@@ -213,12 +242,24 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     <>
       <DialogContent>{fields}</DialogContent>
       <DialogActions>
+        {shouldShowOverride && (
+          <div
+            style={{
+              'align-items': 'center',
+              display: 'flex',
+              'text-align': 'left',
+            }}
+          >
+            <b>This address has no funds. Are you sure it's correct?</b>
+            <Switch
+              checked={overrideDestinationCheck}
+              onChange={(e) => setOverrideDestinationCheck(e.target.checked)}
+              color="primary"
+            />
+          </div>
+        )}
         <Button onClick={onClose}>Cancel</Button>
-        <Button
-          type="submit"
-          color="primary"
-          disabled={sending || !validAmount}
-        >
+        <Button type="submit" color="primary" disabled={disabled}>
           Send
         </Button>
       </DialogActions>
@@ -253,6 +294,25 @@ function SendSwapDialog({
     ? 'eth'
     : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
+
+  const [ethBalance] = useAsyncData(
+    () => getErc20Balance(ethAccount),
+    'ethBalance',
+    {
+      refreshInterval: 2000,
+    },
+  );
+  const ethFeeData = useSwapApiGet(
+    blockchain === 'eth' &&
+      `fees/eth/${ethAccount}` +
+        (swapCoinInfo.erc20Contract ? '/' + swapCoinInfo.erc20Contract : ''),
+    { refreshInterval: 2000 },
+  );
+  const [ethFeeEstimate] = ethFeeData;
+  const insufficientEthBalance =
+    typeof ethBalance === 'number' &&
+    typeof ethFeeEstimate === 'number' &&
+    ethBalance < ethFeeEstimate;
 
   useEffect(() => {
     if (blockchain === 'eth' && ethAccount) {
@@ -317,6 +377,32 @@ function SendSwapDialog({
     );
   }
 
+  let sendButton = (
+    <Button
+      type="submit"
+      color="primary"
+      disabled={
+        sending ||
+        (needMetamask && !ethAccount) ||
+        !validAmount ||
+        insufficientEthBalance
+      }
+    >
+      Send
+    </Button>
+  );
+
+  if (insufficientEthBalance) {
+    sendButton = (
+      <Tooltip
+        title="Insufficient ETH for withdrawal transaction fee"
+        placement="top"
+      >
+        <span>{sendButton}</span>
+      </Tooltip>
+    );
+  }
+
   return (
     <>
       <DialogContent style={{ paddingTop: 16 }}>
@@ -330,17 +416,20 @@ function SendSwapDialog({
           {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </DialogContentText>
+        {blockchain === 'eth' && (
+          <DialogContentText>
+            Estimated withdrawal transaction fee:
+            <EthFeeEstimate
+              ethFeeData={ethFeeData}
+              insufficientEthBalance={insufficientEthBalance}
+            />
+          </DialogContentText>
+        )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button
-          type="submit"
-          color="primary"
-          disabled={sending || (needMetamask && !ethAccount) || !validAmount}
-        >
-          Send
-        </Button>
+        {sendButton}
       </DialogActions>
     </>
   );
@@ -432,7 +521,12 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
 }
 
-function useForm(balanceInfo, addressHelperText, passAddressValidation) {
+function useForm(
+  balanceInfo,
+  addressHelperText,
+  passAddressValidation,
+  overrideValidation,
+) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
@@ -464,13 +558,15 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
         margin="normal"
         type="number"
         InputProps={{
-          endAdornment:  (
+          endAdornment: (
             <InputAdornment position="end">
-              <Button onClick={() =>
-                setTransferAmountString(
-                  balanceAmountToUserAmount(balanceAmount, decimals),
-                )
-              }>
+              <Button
+                onClick={() =>
+                  setTransferAmountString(
+                    balanceAmountToUserAmount(balanceAmount, decimals),
+                  )
+                }
+              >
                 MAX
               </Button>
               {tokenSymbol ? tokenSymbol : null}
@@ -507,7 +603,7 @@ function useForm(balanceInfo, addressHelperText, passAddressValidation) {
 }
 
 function balanceAmountToUserAmount(balanceAmount, decimals) {
-  return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals)
+  return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals);
 }
 
 function EthWithdrawalCompleter({ ethAccount, publicKey }) {

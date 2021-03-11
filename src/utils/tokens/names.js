@@ -202,6 +202,46 @@ export const TOKENS = {
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png',
     },
+    {
+      tokenSymbol: 'MAPS',
+      mintAddress: 'MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb',
+      tokenName: 'Maps.me Token',
+    },
+    {
+      tokenSymbol: 'RAY',
+      mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+      tokenName: 'Raydium',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-USDT',
+      mintAddress: 'CzPDyvotTcxNqtPne32yUiEVQ6jk42HZi1Y3hUu7qf7f',
+      tokenName: 'Raydium USDT Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-USDC',
+      mintAddress: 'FgmBnsF5Qrnv8X9bomQfEtQTQjNNiBCWRKGpzPnE5BDg',
+      tokenName: 'Raydium USDC Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-SRM',
+      mintAddress: '5QXBMXuCL7zfAk39jEVVEvcrz1AvBGgT9wAhLLHLyyUJ',
+      tokenName: 'Raydium Serum Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'OXY',
+      mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
+      tokenName: 'Oxygen Protocol',
+      icon:
+        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg'
+    },
   ],
 };
 
@@ -215,7 +255,10 @@ nameUpdated.setMaxListeners(100);
 export function useTokenName(mint) {
   const { endpoint } = useConnectionConfig();
   useListener(nameUpdated, 'update');
+  return getTokenName(mint, endpoint);
+}
 
+export function getTokenName(mint, endpoint) {
   if (!mint) {
     return { name: null, symbol: null };
   }

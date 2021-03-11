@@ -328,7 +328,9 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       if (!instruction) {
         unsafe = true;
       } else {
-        if (['cancelOrder', 'matchOrders'].includes(instruction.type)) {
+        if (instruction.type === 'raydium') {
+          // Whitelist raydium for now.
+        } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
@@ -337,7 +339,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
           } else {
             accountStates[newAccountPubkey.toBase58()] = states.CREATED;
           }
-        } else if (instruction.type === 'newOrder') {
+        } else if (['newOrder', 'newOrderV3'].includes(instruction.type)) {
           // New order instructions are safe if the owner is this wallet
           let { openOrdersPubkey, ownerPubkey } = instruction.data;
           if (ownerPubkey && owner.equals(ownerPubkey)) {
@@ -463,6 +465,7 @@ function ApproveSignatureForm({
   const getContent = (instruction) => {
     switch (instruction?.type) {
       case 'cancelOrder':
+      case 'cancelOrderV2':
       case 'matchOrders':
       case 'settleFunds':
         return (
@@ -493,6 +496,10 @@ function ApproveSignatureForm({
       case 'newOrder':
         return (
           <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} />
+        );
+      case 'newOrderV3':
+        return (
+          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} v3={true} />
         );
       default:
         return <UnknownInstruction instruction={instruction} />;
@@ -583,24 +590,6 @@ function ApproveSignatureForm({
                   </Typography>
                 ))}
               </>
-            )}
-            {!validator.safe && (
-              <SnackbarContent
-                className={classes.warningContainer}
-                message={
-                  <div>
-                    <span className={classes.warningTitle}>
-                      <WarningIcon className={classes.warningIcon} />
-                      Nonstandard DEX transaction
-                    </span>
-                    <Typography className={classes.warningMessage}>
-                      Sollet does not recognize this transaction as a standard
-                      Serum DEX transaction
-                    </Typography>
-                  </div>
-                }
-                classes={{ root: classes.snackbarRoot }}
-              />
             )}
           </>
         )}

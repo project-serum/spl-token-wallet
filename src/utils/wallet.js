@@ -10,9 +10,11 @@ import {
 import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
+  createAssociatedTokenAccount,
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
+  transferAndClose,
 } from './tokens';
 import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
 import {
@@ -78,13 +80,28 @@ export class Wallet {
     });
   };
 
+  createAssociatedTokenAccount = async (splTokenMintAddress) => {
+    return await createAssociatedTokenAccount({
+      connection: this.connection,
+      wallet: this,
+      splTokenMintAddress,
+    });
+  };
+
   tokenAccountCost = async () => {
     return this.connection.getMinimumBalanceForRentExemption(
       ACCOUNT_LAYOUT.span,
     );
   };
 
-  transferToken = async (source, destination, amount, mint, memo = null) => {
+  transferToken = async (
+    source,
+    destination,
+    amount,
+    mint,
+    memo = null,
+    overrideDestinationCheck = false,
+  ) => {
     if (source.equals(this.publicKey)) {
       if (memo) {
         throw new Error('Memo not implemented');
@@ -99,6 +116,7 @@ export class Wallet {
       amount,
       memo,
       mint,
+      overrideDestinationCheck,
     });
   };
 
@@ -106,11 +124,22 @@ export class Wallet {
     return nativeTransfer(this.connection, this, destination, amount);
   };
 
-  closeTokenAccount = async (publicKey) => {
+  closeTokenAccount = async (publicKey, skipPreflight = false) => {
     return await closeTokenAccount({
       connection: this.connection,
       owner: this,
       sourcePublicKey: publicKey,
+      skipPreflight,
+    });
+  };
+
+  transferAndClose = async (source, destination, amount) => {
+    return await transferAndClose({
+      connection: this.connection,
+      owner: this,
+      sourcePublicKey: source,
+      destinationPublicKey: destination,
+      amount,
     });
   };
 
@@ -127,7 +156,12 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const { mnemonic, seed, importsEncryptionKey } = getUnlockedMnemonicAndSeed();
+  const {
+    mnemonic,
+    seed,
+    importsEncryptionKey,
+    derivationPath,
+  } = getUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -180,6 +214,7 @@ export function WalletProvider({ children }) {
             ? getAccountFromSeed(
                 Buffer.from(seed, 'hex'),
                 walletSelector.walletIndex,
+                derivationPath,
               )
             : new Account(
                 (() => {
@@ -205,6 +240,7 @@ export function WalletProvider({ children }) {
     importsEncryptionKey,
     setWalletSelector,
     enqueueSnackbar,
+    derivationPath,
   ]);
 
   function addAccount({ name, importedAccount, ledger }) {
@@ -254,7 +290,8 @@ export function WalletProvider({ children }) {
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = getAccountFromSeed(seedBuffer, idx).publicKey;
+      let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
+        .publicKey;
       let name = localStorage.getItem(`name${idx}`);
       return {
         selector: {
@@ -320,6 +357,7 @@ export function WalletProvider({ children }) {
         accounts,
         addAccount,
         setAccountName,
+        derivationPath,
       }}
     >
       {children}

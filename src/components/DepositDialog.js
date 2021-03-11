@@ -4,23 +4,19 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogForm from './DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
-import {
-  useIsProdNetwork,
-  useSolanaExplorerUrlSuffix,
-} from '../utils/connection';
+import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { useAsyncData } from '../utils/fetch-loop';
 import tuple from 'immutable-tuple';
-import { showSwapAddress } from '../utils/config';
 import { useCallAsync } from '../utils/notifications';
-import { swapApiRequest } from '../utils/swap/api';
 import {
   ConnectToMetamaskButton,
   getErc20Balance,
   swapErc20ToSpl,
   useEthAccount,
+  estimateErc20SwapFees,
 } from '../utils/swap/eth';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
@@ -31,38 +27,20 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { DialogContentText } from '@material-ui/core';
+import { DialogContentText, Tooltip } from '@material-ui/core';
+import { EthFeeEstimate } from './EthFeeEstimate';
 
 export default function DepositDialog({
   open,
   onClose,
   publicKey,
   balanceInfo,
+  swapInfo,
 }) {
-  const isProdNetwork = useIsProdNetwork();
+  const ethAccount = useEthAccount();
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
-  const [swapInfo] = useAsyncData(async () => {
-    if (!showSwapAddress || !isProdNetwork) {
-      return null;
-    }
-    return await swapApiRequest(
-      'POST',
-      'swap_to',
-      {
-        blockchain: 'sol',
-        coin: balanceInfo.mint?.toBase58(),
-        address: publicKey.toBase58(),
-      },
-      { ignoreUserErrors: true },
-    );
-  }, [
-    'swapInfo',
-    isProdNetwork,
-    balanceInfo.mint?.toBase58(),
-    publicKey.toBase58(),
-  ]);
 
   let tabs = null;
   if (swapInfo) {
@@ -94,6 +72,13 @@ export default function DepositDialog({
       <DialogTitle>
         Deposit {tokenName ?? mint.toBase58()}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
+        {ethAccount && (
+          <div>
+            <Typography color="textSecondary" style={{ fontSize: '14px' }}>
+              Metamask connected: {ethAccount}
+            </Typography>
+          </div>
+        )}
       </DialogTitle>
       {tabs}
       <DialogContent style={{ paddingTop: 16 }}>
@@ -134,6 +119,7 @@ export default function DepositDialog({
           <SolletSwapDepositAddress
             balanceInfo={balanceInfo}
             swapInfo={swapInfo}
+            ethAccount={ethAccount}
           />
         )}
       </DialogContent>
@@ -144,10 +130,40 @@ export default function DepositDialog({
   );
 }
 
-function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
+function SolletSwapDepositAddress({ balanceInfo, swapInfo, ethAccount }) {
+  const [ethBalance] = useAsyncData(
+    () => getErc20Balance(ethAccount),
+    'ethBalance',
+    {
+      refreshInterval: 2000,
+    },
+  );
+
+  const ethFeeData = useAsyncData(
+    swapInfo.coin &&
+      (() =>
+        estimateErc20SwapFees({
+          erc20Address: swapInfo.coin.erc20Contract,
+          swapAddress: swapInfo.address,
+          ethAccount,
+        })),
+    'depositEthFee',
+    {
+      refreshInterval: 2000,
+    },
+  );
+
   if (!swapInfo) {
     return null;
   }
+
+  const ethFeeEstimate = Array.isArray(ethFeeData[0])
+    ? ethFeeData[0].reduce((acc, elem) => acc + elem)
+    : ethFeeData[0];
+  const insufficientEthBalance =
+    typeof ethBalance === 'number' &&
+    typeof ethFeeEstimate === 'number' &&
+    ethBalance < ethFeeEstimate;
 
   const { blockchain, address, memo, coin } = swapInfo;
   const { mint, tokenName } = balanceInfo;
@@ -174,9 +190,20 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
       <>
         <DialogContentText>
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
-          converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
+          converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask. To
+          convert, you must already have SOL in your wallet.
         </DialogContentText>
-        <MetamaskDeposit swapInfo={swapInfo} />
+        <DialogContentText>
+          Estimated withdrawal transaction fee:
+          <EthFeeEstimate
+            ethFeeData={ethFeeData}
+            insufficientEthBalance={insufficientEthBalance}
+          />
+        </DialogContentText>
+        <MetamaskDeposit
+          swapInfo={swapInfo}
+          insufficientEthBalance={insufficientEthBalance}
+        />
       </>
     );
   }
@@ -184,7 +211,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo }) {
   return null;
 }
 
-function MetamaskDeposit({ swapInfo }) {
+function MetamaskDeposit({ swapInfo, insufficientEthBalance }) {
   const ethAccount = useEthAccount();
   const [amount, setAmount] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -235,6 +262,28 @@ function MetamaskDeposit({ swapInfo }) {
   }
 
   if (!submitted) {
+    let convertButton = (
+      <Button
+        color="primary"
+        style={{ marginLeft: 8 }}
+        onClick={submit}
+        disabled={insufficientEthBalance}
+      >
+        Convert
+      </Button>
+    );
+
+    if (insufficientEthBalance) {
+      convertButton = (
+        <Tooltip
+          title="Insufficient ETH for withdrawal transaction fee"
+          placement="top"
+        >
+          <span>{convertButton}</span>
+        </Tooltip>
+      );
+    }
+
     return (
       <div style={{ display: 'flex', alignItems: 'baseline' }}>
         <TextField
@@ -261,9 +310,7 @@ function MetamaskDeposit({ swapInfo }) {
             ) : null
           }
         />
-        <Button color="primary" style={{ marginLeft: 8 }} onClick={submit}>
-          Convert
-        </Button>
+        {convertButton}
       </div>
     );
   }

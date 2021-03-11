@@ -21,9 +21,11 @@ import IconButton from '@material-ui/core/IconButton';
 import SolanaIcon from './SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 import AddAccountDialog from './AddAccountDialog';
-import DeleteAccountDialog from './DeleteAccountDialog';
+import DeleteMnemonicDialog from './DeleteMnemonicDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
+import { ExportMnemonicDialog } from './ExportAccountDialog.js';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -137,8 +139,8 @@ function WalletSelector() {
     addHardwareWalletDialogOpen,
     setAddHardwareWalletDialogOpen,
   ] = useState(false);
-  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
-  const [isDeleteAccountEnabled, setIsDeleteAccountEnabled] = useState(false);
+  const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
+  const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
   const classes = useStyles();
 
   if (accounts.length === 0) {
@@ -178,10 +180,13 @@ function WalletSelector() {
           setAddAccountOpen(false);
         }}
       />
-      <DeleteAccountDialog
-        open={deleteAccountOpen}
-        onClose={() => setDeleteAccountOpen(false)}
-        isDeleteAccountEnabled={isDeleteAccountEnabled}
+      <ExportMnemonicDialog
+        open={exportMnemonicOpen}
+        onClose={() => setExportMnemonicOpen(false)}
+      />
+      <DeleteMnemonicDialog
+        open={deleteMnemonicOpen}
+        onClose={() => setDeleteMnemonicOpen(false)}
       />
       <Hidden xsDown>
         <Button
@@ -251,17 +256,24 @@ function WalletSelector() {
         <MenuItem
           onClick={() => {
             setAnchorEl(null);
-            setIsDeleteAccountEnabled(false);
-            setDeleteAccountOpen(true);
-            setTimeout(() => {
-              setIsDeleteAccountEnabled(true);
-            }, 3000);
+            setExportMnemonicOpen(true);
+          }}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+            <ImportExportIcon fontSize="small" />
+          </ListItemIcon>
+          Export Mnemonic
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            setDeleteMnemonicOpen(true);
           }}
         >
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Delete Account
+          Delete Mnemonic
         </MenuItem>
       </Menu>
     </>

@@ -6,6 +6,8 @@ import Button from '@material-ui/core/Button';
 import { useCallAsync } from '../notifications';
 
 const web3 = new Web3(window.ethereum);
+// Change to use estimated gas limit
+const SUGGESTED_GAS_LIMIT = 200000;
 
 export function useEthAccount() {
   const [account, setAccount] = useState(null);
@@ -35,6 +37,42 @@ export async function getErc20Balance(account, erc20Address) {
     erc20.methods.decimals().call(),
   ]);
   return parseInt(value, 10) / 10 ** parseInt(decimals, 10);
+}
+
+export async function estimateErc20SwapFees({
+  erc20Address,
+  swapAddress,
+  ethAccount,
+}) {
+  if (!erc20Address) {
+    return estimateEthSwapFees({ swapAddress });
+  }
+
+  const erc20 = new web3.eth.Contract(ERC20_ABI, erc20Address);
+  const decimals = parseInt(await erc20.methods.decimals().call(), 10);
+
+  const approveAmount = addDecimals('100000000', decimals);
+
+  let approveEstimatedGas = await erc20.methods
+    .approve(swapAddress, approveAmount)
+    .estimateGas({ from: ethAccount });
+  // Account for Metamask over-estimation
+  approveEstimatedGas *= 1.5;
+
+  // Use estimated gas limit for now
+  const swapEstimatedGas = SUGGESTED_GAS_LIMIT;
+
+  const gasPrice = (await web3.eth.getGasPrice()) * 1e-18;
+
+  return [approveEstimatedGas * gasPrice, swapEstimatedGas * gasPrice];
+}
+
+export async function estimateEthSwapFees() {
+  const estimatedGas = SUGGESTED_GAS_LIMIT;
+
+  const gasPrice = (await web3.eth.getGasPrice()) * 1e-18;
+
+  return estimatedGas * gasPrice;
 }
 
 export async function swapErc20ToSpl({
@@ -70,7 +108,7 @@ export async function swapErc20ToSpl({
 
   const swapTx = swap.methods
     .swapErc20(erc20Address, destination, encodedAmount)
-    .send({ from: ethAccount, gasLimit: 200000 });
+    .send({ from: ethAccount, gasLimit: SUGGESTED_GAS_LIMIT });
   const swapTxid = await waitForTxid(swapTx);
 
   onStatusChange({ step: 2, txid: swapTxid, confirms: 0 });
@@ -157,7 +195,7 @@ export async function withdrawEth(from, withdrawal, callAsync) {
     return;
   }
   pendingNonces.add(nonce);
-  await callAsync(method.send({ from, gasLimit: 200000 }), {
+  await callAsync(method.send({ from, gasLimit: SUGGESTED_GAS_LIMIT }), {
     progressMessage: `Completing ${withdrawal.coin.ticker} transfer...`,
   });
   pendingNonces.delete(nonce);
