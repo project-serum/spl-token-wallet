@@ -12,23 +12,26 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
       >
         Unknown instruction:
       </Typography>
-      {instruction.accounts.map((accountAddress, index) => {
+      {instruction.accountMetas.map((accountMeta, index) => {
           return (
-            <LabelValue
-              key={index + ''}
-              label={'Account #' + (index + 1)}
-              value={accountAddress?.toBase58()}
-              link={true}
-              onClick={() => onOpenAddress(accountAddress?.toBase58())}
-            />
+            <>
+              <LabelValue
+                key={index + ''}
+                label={'Account #' + (index + 1)}
+                value={accountMeta.publicKey.toBase58()}
+                link={true}
+                onClick={() => onOpenAddress(accountMeta.publicKey.toBase58())}
+              />
+              <Typography gutterBottom>isWritable: {accountMeta.isWritable.toString()}</Typography>
+            </>
           );
         })}
       <LabelValue
         key='Program Id'
-        label='Program Id:'
+        label='Program Id'
         value={instruction.programId?.toBase58()}
         link={true}
-        onClick={() => onOpenAddress(instruction.programId?.toBase58())}
+        onClick={() => onOpenAddress(instruction.programId.toBase58())}
       />
       <Typography style={{ wordBreak: 'break-all' }}>
         data: {instruction.rawData}

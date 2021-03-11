@@ -46,6 +46,7 @@ export const decodeMessage = async (connection, wallet, message) => {
       publicKey,
       transactionMessage?.accountKeys,
       transactionInstruction,
+      transactionMessage,
       i,
     );
     instructions.push({
@@ -61,6 +62,7 @@ const toInstruction = async (
   publicKey,
   accountKeys,
   instruction,
+  transactionMessage,
   index,
 ) => {
   if (
@@ -130,7 +132,10 @@ const toInstruction = async (
     } else {
       return {
         type: 'Unknown',
-        accounts: instruction.accounts.map(index => accountKeys[index]),
+        accountMetas: instruction.accounts.map(index => ({
+            publicKey: accountKeys[index],
+            isWritable: transactionMessage.isAccountWritable(index)
+        })),
         programId
       }
     }
