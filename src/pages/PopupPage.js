@@ -485,6 +485,7 @@ function ApproveSignatureForm({
             onOpenAddress={onOpenAddress}
           />
         );
+      case 'systemCreateWithSeed':
       case 'systemCreate':
       case 'systemTransfer':
         return (
