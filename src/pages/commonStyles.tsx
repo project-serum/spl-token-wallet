@@ -66,7 +66,7 @@ export const ProgressBar = styled.div`
   position: absolute;
   width: 100%;
   height: 50%;
-  border-bottom: .1rem solid transparent;
+  border-bottom: 0.1rem solid transparent;
   border-image: ${(props) =>
     props.currentStep === 1
       ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
@@ -107,7 +107,7 @@ export const Steps = styled.div`
 `;
 
 export const ColorText = styled.div`
-  width: ${(props) => props.width || '90%'};
+  width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
   margin: ${(props) => props.margin || '0'};
   font-size: 1.2rem;
@@ -126,7 +126,7 @@ export const ColorText = styled.div`
 `;
 
 export const Textarea = styled.textarea`
-  width: ${(props) => props.width || '90%'};
+  width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
   font-family: Avenir Next Medium;
   border: 1px solid #3a475c;
@@ -146,9 +146,6 @@ export const ContainerForIcon = styled.div`
   width: 4rem;
   height: 3.5rem;
   border-radius: 1.5rem;
-  position: absolute;
-  right: ${(props) => props.right || '5rem'};
-  top: ${(props) => props.top || '2.5rem'};
   border: 0.2rem solid #3a475c;
   display: flex;
   justify-content: center;

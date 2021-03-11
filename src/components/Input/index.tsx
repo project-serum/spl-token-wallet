@@ -4,10 +4,13 @@ import {
   Input,
   TextButton,
   SearchInput,
+  Textarea,
+  ContainerForIcon,
 } from '../../pages/commonStyles';
 import Eye from '../../images/Eye.svg';
 import ClosedEye from '../../images/ClosedEye.svg';
 import Loupe from '../../images/Loupe.svg';
+import Copy from '../../images/copy.svg';
 import { useTheme } from '@material-ui/core';
 
 const InputWithComponent = ({
@@ -77,6 +80,73 @@ const SearchInputWithLoupe = ({
         {ComponentToShow}
       </div>
     </RowContainer>
+  );
+};
+
+const TextareaWithComponent = ({
+  type,
+  value,
+  onChange,
+  placeholder,
+  ComponentToShow,
+  height,
+}: {
+  type: string;
+  value: string;
+  onChange: any;
+  placeholder: string;
+  ComponentToShow: any;
+  height: string;
+}) => {
+  return (
+    <RowContainer style={{ position: 'relative', width: '100%' }}>
+      <Textarea
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        height={height}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          right: '2rem',
+          top: '50%',
+          transform: 'translateY(-50%)',
+        }}
+      >
+        <ContainerForIcon>{ComponentToShow}</ContainerForIcon>
+      </div>
+    </RowContainer>
+  );
+};
+
+const TextareaWithCopy = ({
+  onCopyClick,
+  ...props
+}: {
+  height: string;
+  type: string;
+  value: string;
+  onChange: any;
+  placeholder: string;
+  onCopyClick: () => void;
+}) => {
+  return (
+    <TextareaWithComponent
+      ComponentToShow={
+        <img
+          style={{
+            padding: '1.6rem 2rem 1.4rem 2rem',
+            cursor: 'pointer',
+            height: '4.5rem',
+          }}
+          onClick={onCopyClick}
+          src={Copy}
+        />
+      }
+      {...props}
+    />
   );
 };
 
@@ -164,5 +234,5 @@ const InputWithSearch = ({
   );
 };
 
-export { InputWithEye, InputWithPaste, SearchInputWithLoupe, InputWithSearch };
+export { InputWithEye, InputWithPaste, InputWithSearch, TextareaWithCopy };
 export default InputWithComponent;
