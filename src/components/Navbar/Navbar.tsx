@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useLocation, Link } from 'react-router-dom';
 import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-import { CSSProperties, makeStyles } from '@material-ui/styles';
+import { CSSProperties } from '@material-ui/styles';
 import WalletLogo from '../../images/logo.svg';
-import { BtnCustom } from '../BtnCustom';
 import NetworkDropdown from './NetworkDropdown';
 
 const StyledButton = styled(Button)`
@@ -21,9 +20,16 @@ const StyledButton = styled(Button)`
 `;
 
 const SButton = styled(
-  ({ isActivePage, type, white, black, style, ...rest }) => (
-    <StyledButton {...rest} />
-  ),
+  ({
+    isActivePage,
+    type,
+    white,
+    black,
+    style,
+    borderColor,
+    btnWidth,
+    ...rest
+  }) => <StyledButton {...rest} />,
 )`
   && {
     color: ${(props) => (props.isActivePage ? props.dark : props.grey)};
@@ -99,9 +105,9 @@ const Navbar = () => {
   const theme = useTheme();
 
   return (
-    <GridContainer isChartPage={false} theme={theme}>
+    <GridContainer theme={theme}>
       <RowContainer justify={'space-between'} height={'100%'}>
-        <Row theme={theme} height={'100%'}>
+        <RowContainer theme={theme} height={'100%'}>
           <Link
             to={'/'}
             style={{
@@ -113,11 +119,11 @@ const Navbar = () => {
               style={{
                 height: '100%',
               }}
+              alt="logo"
               src={WalletLogo}
             />
           </Link>
-          <Row
-            justify={'space-between'}
+          <RowContainer
             padding={'1rem 4rem 1rem 4rem'}
             height={'100%'}
             margin={' 0 0 0 4rem'}
@@ -131,7 +137,9 @@ const Navbar = () => {
               pathname={location.pathname}
               page={'chart'}
               component={(props) => (
-                <a href={`https://dex.cryptocurrencies.ai/chart`} {...props} />
+                <a href={`https://dex.cryptocurrencies.ai/chart`} {...props}>
+                  {props.children}
+                </a>
               )}
             >
               Trading
@@ -144,21 +152,24 @@ const Navbar = () => {
                 <a
                   href={`https://dex.cryptocurrencies.ai/analytics`}
                   {...props}
-                />
+                >
+                  {props.children}
+                </a>
               )}
             >
               Analytics
             </NavLinkButton>
             <NavLinkButton
               theme={theme}
-              data-tut="farming"
               page={'addressbook'}
               pathname={location.pathname}
               component={(props) => (
                 <a
                   href={`https://dex.cryptocurrencies.ai/addressbook`}
                   {...props}
-                />
+                >
+                  {props.children}
+                </a>
               )}
             >
               Addressbook
@@ -168,15 +179,15 @@ const Navbar = () => {
               data-tut="farming"
               pathname={location.pathname}
               page={''}
-              component={(props) => <Link href={`/`} {...props} />}
+              component={(props) => <Link to={`/`} {...props} />}
             >
               Wallet
             </NavLinkButton>
-          </Row>
-        </Row>
+          </RowContainer>
+        </RowContainer>
         <Row height={'100%'}>
           <NetworkDropdown />
-          <Link style={{ textDecoration: 'none' }} to={'/connect_wallet'}>
+          {/* <Link style={{ textDecoration: 'none' }} to={'/connect_wallet'}>
             <BtnCustom
               btnWidth={'14rem'}
               height={'3.5rem'}
@@ -215,7 +226,7 @@ const Navbar = () => {
             >
               Create Wallet
             </BtnCustom>
-          </Link>
+          </Link> */}
         </Row>
       </RowContainer>
     </GridContainer>

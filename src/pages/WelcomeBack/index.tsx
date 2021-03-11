@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Link, Redirect } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { loadMnemonicAndSeed } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 
 import {
   Body,
   Card,
-  TextButton,
   Row,
-  Img,
   Title,
   VioletButton,
   RowContainer,

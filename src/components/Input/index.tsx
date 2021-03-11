@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import {
   RowContainer,
   Input,
@@ -104,6 +103,7 @@ const InputWithEye = ({
           }}
           onClick={onEyeClick}
           src={showPassword ? ClosedEye : Eye}
+          alt="eye"
         />
       }
       {...props}
@@ -149,8 +149,6 @@ const InputWithSearch = ({
   placeholder: string;
   onSearchClick: () => void;
 }) => {
-  const theme = useTheme();
-
   return (
     <SearchInputWithLoupe
       ComponentToShow={
@@ -158,6 +156,7 @@ const InputWithSearch = ({
           style={{ padding: '.5rem', cursor: 'pointer' }}
           onClick={onSearchClick}
           src={Loupe}
+          alt="search icon"
         />
       }
       {...props}

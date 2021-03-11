@@ -27,6 +27,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     // add types later
     customPalette: any;
   }
+
   interface ThemeOptions {
     customPalette: any;
   }

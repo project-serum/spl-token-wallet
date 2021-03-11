@@ -664,7 +664,6 @@ function ApproveSignatureForm({
           Cancel
         </BtnCustom>
         <BtnCustom
-          ref={buttonRef}
           className={classes.approveButton}
           variant="contained"
           color="primary"

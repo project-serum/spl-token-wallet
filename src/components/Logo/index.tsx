@@ -8,10 +8,13 @@ const LogoContainer = styled.div`
   margin: ${props => props.margin || '0 0 8rem 0'};
 `
 
-export default ({ width, height, margin }: { width?: string, height?: string, margin?: string }) => {
+const LogoComponent = ({ width, height, margin }: { width?: string, height?: string, margin?: string }) => {
   return (
     <LogoContainer width={width} height={height} margin={margin}>
-      <img src={Logo} width="100%" height="100%" />
+      <img src={Logo} alt="logo" width="100%" height="100%" />
     </LogoContainer>
   );
 };
+
+
+export default LogoComponent

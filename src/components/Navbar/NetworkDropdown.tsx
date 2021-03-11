@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useConnectionConfig, MAINNET_URL } from '../../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
@@ -18,7 +18,15 @@ export const StyledDropdown = styled.div`
   padding: 1rem 0;
 `;
 
-export const StyledPaper = styled(Paper)`
+export const StyledPaper = styled(
+  ({
+    customNotActiveRem,
+    customActiveRem,
+    isWalletConnected,
+    theme,
+    ...props
+  }) => <Paper {...props} />,
+)`
   display: none;
   &&& {
     z-index: 11;
@@ -113,18 +121,15 @@ const NetworkDropdown = () => {
   };
 
   return (
-    <StyledDropdown theme={theme} style={{ margin: '0 2rem', height: '100%' }}>
+    <StyledDropdown theme={theme} style={{ margin: '0 0 0 3rem', height: '100%' }}>
       <WalletStatusButton
         connection={currentConnectionEndpoint.label}
         theme={theme}
       />
       <StyledPaper
-        style={{
-          // display: 'flex',
-        }}
         theme={theme}
         isWalletConnected={false}
-        customNotActiveRem={`37rem`}
+        customNotActiveRem={`1rem`}
       >
         <MenuList style={{ padding: 0 }}>
           {networkLabels.map((endpoint) => (
@@ -156,7 +161,6 @@ const NetworkDropdown = () => {
                   setEndpoint(endpoint.endpoint);
                 }}
               >
-                {/* <SvgIcon src={CCAI} width={'20%'} height={'70%'} /> */}
                 {endpoint.name}
               </BtnCustom>
             </StyledMenuItem>

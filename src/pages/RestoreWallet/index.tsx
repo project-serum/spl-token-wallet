@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom';
+
+import {
+  mnemonicToSeed,
+  storeMnemonicAndSeed,
+} from '../../utils/wallet-seed';
+import {
+  DERIVATION_PATH,
+} from '../../utils/walletProvider/localStorage.js';
+import { useCallAsync } from '../../utils/notifications';
+import { validateMnemonic } from 'bip39';
 
 import {
   Card,
   Body,
-  TextButton,
   Row,
   Title,
   VioletButton,
@@ -12,20 +21,79 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Logo from '../../components/Logo'
+import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
-import BottomLink from '../../components/BottomLink'
+import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
 
+const DerivationPathMenuItem = {
+  Deprecated: 0,
+  Bip44: 1,
+  Bip44Change: 2,
+};
+
+function toDerivationPath(dPathMenuItem) {
+  switch (dPathMenuItem) {
+    case DerivationPathMenuItem.Deprecated:
+      return DERIVATION_PATH.deprecated;
+    case DerivationPathMenuItem.Bip44:
+      return DERIVATION_PATH.bip44;
+    case DerivationPathMenuItem.Bip44Change:
+      return DERIVATION_PATH.bip44Change;
+    default:
+      throw new Error(`invalid derivation path: ${dPathMenuItem}`);
+  }
+}
+
 export const RestorePage = () => {
+  const [redirectToWallet, setRedirectToWallet] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
-  const [seedPhrase, setSeedPhrase] = useState('');
+  const [mnemonic, setMnemonic] = useState('');
 
-  const theme = useTheme()
+  const theme = useTheme();
+  const callAsync = useCallAsync();
+
+  const [dPathMenuItem] = useState(
+    DerivationPathMenuItem.Bip44Change,
+  );
+
+  // for list of addresses
+  // const urlSuffix = useSolanaExplorerUrlSuffix();
+  // const accounts = [...Array(10)].map((_, idx) => {
+  //   return getAccountFromSeed(
+  //     Buffer.from(seed, 'hex'),
+  //     idx,
+  //     toDerivationPath(dPathMenuItem),
+  //   );
+  // });
+
+  const isMnemonicCorrect = validateMnemonic(mnemonic);
+
+  const submit = async () => {
+    if (!isMnemonicCorrect || password === '') return;
+
+    await mnemonicToSeed(mnemonic).then(async (seed) => {
+      console.log('seed', seed)
+
+      await callAsync(
+        storeMnemonicAndSeed(
+          mnemonic,
+          seed,
+          password,
+          toDerivationPath(dPathMenuItem),
+        ),
+      );
+  
+      console.log('stRedirect')
+  
+      await setRedirectToWallet(true);
+    });
+  };
 
   return (
     <Body>
+      {redirectToWallet && <Redirect to="/wallet" />}
       <Logo />
       <Card>
         <RowContainer
@@ -52,12 +120,12 @@ export const RestorePage = () => {
             <InputWithPaste
               type="text"
               placeholder="Paste your seed phrase"
-              value={seedPhrase}
-              onChange={(e) => setSeedPhrase(e.target.value)}
+              value={mnemonic}
+              onChange={(e) => setMnemonic(e.target.value)}
               onPasteClick={() =>
                 navigator.clipboard
                   .readText()
-                  .then((clipText) => setSeedPhrase(clipText))
+                  .then((clipText) => setMnemonic(clipText))
               }
             />
             <InputWithEye
@@ -70,10 +138,18 @@ export const RestorePage = () => {
             />
           </RowContainer>
           <Row width={'90%'} height={'20%'} justify={'space-between'}>
-          <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
-              <WhiteButton width={'100%'} theme={theme}>Cancel</WhiteButton>
+            <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+              <WhiteButton width={'100%'} theme={theme}>
+                Cancel
+              </WhiteButton>
             </Link>
-            <VioletButton width={'calc(50% - .5rem)'}>Restore</VioletButton>
+            <VioletButton
+              disabled={!isMnemonicCorrect || password === ''}
+              width={'calc(50% - .5rem)'}
+              onClick={submit}
+            >
+              Restore
+            </VioletButton>
           </Row>
         </RowContainer>
       </Card>

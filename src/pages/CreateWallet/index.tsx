@@ -4,13 +4,11 @@ import {
   Card,
   Input,
   Body,
-  TextButton,
   Row,
   Img,
   Title,
   VioletButton,
   BoldTitle,
-  CardButton,
   Percent,
   ProgressBar,
   ProgressBarContainer,
@@ -22,7 +20,6 @@ import {
   Legend,
   RowContainer,
   StyledCheckbox,
-  SearchInput,
   ListCard,
   Stroke,
 } from '../commonStyles';
@@ -191,7 +188,7 @@ export const CreateWalletPage = () => {
                   }
                 />
                 <ContainerForIcon onClick={() => copy('spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream')}>
-                  <img src={Copy} />
+                  <img alt={'copy'} src={Copy} />
                 </ContainerForIcon>
               </RowContainer>
               <RowContainer>
@@ -199,7 +196,7 @@ export const CreateWalletPage = () => {
                   height={'10rem'}
                   background={'rgba(242, 154, 54, 0.5)'}
                 >
-                  <img src={Attention} />
+                  <img alt={'attention'} src={Attention} />
                   <Title width={'70%'} textAlign={'inherit'}>
                     Your private keys are only stored on your current device.
                     You will need these words to restore your wallet if your
@@ -318,7 +315,7 @@ export const CreateWalletPage = () => {
                       height={'12rem'}
                       background={'rgba(242, 154, 54, 0.5)'}
                     >
-                      <img src={Attention} />
+                      <img alt={'Attention'} src={Attention} />
                       <span
                         style={{
                           display: 'flex',
@@ -398,7 +395,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
@@ -415,7 +412,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
@@ -432,7 +429,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
@@ -449,7 +446,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
@@ -466,7 +463,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
@@ -483,7 +480,7 @@ export const CreateWalletPage = () => {
                           }}
                         >
                           <Img>
-                            <img src={SRM} />
+                            <img alt="asset icon" src={SRM} />
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>

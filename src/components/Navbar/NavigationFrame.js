@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components'
-import Toolbar from '@material-ui/core/Toolbar';
-import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { useConnectionConfig, MAINNET_URL } from '../../utils/connection';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { clusterApiUrl } from '@solana/web3.js';
 import { useWalletSelector } from '../../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
@@ -19,7 +15,6 @@ import UsbIcon from '@material-ui/icons/Usb';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import SolanaIcon from '../SolanaIcon';
 import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
@@ -68,7 +63,7 @@ export default function NavigationFrame({ children }) {
   );
 }
 
-function WalletSelector() {
+export function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
