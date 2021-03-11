@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import copy from 'clipboard-copy'
+import React, { useState, useEffect } from 'react';
+import copy from 'clipboard-copy';
 import {
   Card,
   Input,
@@ -27,7 +27,11 @@ import {
   Stroke,
 } from '../commonStyles';
 
-import { InputWithSearch, InputWithEye } from '../../components/Input';
+import {
+  InputWithSearch,
+  InputWithEye,
+  TextareaWithCopy,
+} from '../../components/Input';
 
 import SRM from '../../images/srm.svg';
 import Attention from '../../images/attention.svg';
@@ -43,7 +47,14 @@ export const CreateWalletPage = () => {
   const [isSpeedPhase, setSpeedPhaseOn] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [password, setPassword] = useState('');
+  const [address, setAddress] = useState(
+    'FBfkAWERNksjheslnerjlLSKEJTLKDJGlkrngn',
+  );
+  const [selectedCoins, selectCoin] = useState<string[]>([]);
   const theme = useTheme();
+
+  // useEffect(() => {
+  // }, [searchValue]);
 
   return (
     <Body>
@@ -171,58 +182,71 @@ export const CreateWalletPage = () => {
           </>
         ) : currentStep === 2 && !isSpeedPhase ? (
           <>
-            <Card justify={'space-evenly'}>
-              <RowContainer>
-                <BoldTitle>
-                  Create a new wallet to hold Solana and SPL token
-                </BoldTitle>
-              </RowContainer>
-              <RowContainer>
-                <ColorText background={'rgba(164, 231, 151, 0.5)'}>
-                  Please write down the following seed phrase and keep it in a
-                  safe place:
-                </ColorText>
-              </RowContainer>
-              <RowContainer style={{ position: 'relative' }}>
-                <Textarea
-                  height={'8rem'}
-                  value={
-                    'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream'
-                  }
-                />
-                <ContainerForIcon onClick={() => copy('spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream')}>
-                  <img src={Copy} />
-                </ContainerForIcon>
-              </RowContainer>
-              <RowContainer>
-                <ColorText
-                  height={'10rem'}
-                  background={'rgba(242, 154, 54, 0.5)'}
-                >
-                  <img src={Attention} />
-                  <Title width={'70%'} textAlign={'inherit'}>
-                    Your private keys are only stored on your current device.
-                    You will need these words to restore your wallet if your
-                    browser’s storage is cleared or your device is damaged or
-                    lost.
-                  </Title>
-                </ColorText>
-              </RowContainer>
-              <Row width={'90%'}>
-                <Row width={'50%'}>
-                  <StyledCheckbox theme={theme}></StyledCheckbox>
-                  <Title style={{ whiteSpace: 'nowrap' }} fontSize={'0.9rem'}>
-                    I have saved these words in a safe place.
-                  </Title>
-                </Row>
-                <VioletButton
-                  onClick={() => {
-                    setSpeedPhaseOn(true);
-                  }}
-                  background={'#406EDC'}
-                >
-                  Go to confirm seed phrase
-                </VioletButton>
+            <Card>
+              <Row
+                width={'90%'}
+                height={'100%'}
+                direction={'column'}
+                justify={'space-evenly'}
+              >
+                <RowContainer>
+                  <BoldTitle>
+                    Create a new wallet to hold Solana and SPL token
+                  </BoldTitle>
+                </RowContainer>
+                <RowContainer>
+                  <ColorText background={'rgba(164, 231, 151, 0.5)'}>
+                    Please write down the following seed phrase and keep it in a
+                    safe place:
+                  </ColorText>
+                </RowContainer>
+                <RowContainer style={{ position: 'relative' }}>
+                  <Textarea
+                    height={'8rem'}
+                    value={
+                      'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream'
+                    }
+                  />
+                  <ContainerForIcon
+                    onClick={() =>
+                      copy(
+                        'spacer namer juice cozek captek shlohmo vibes lou parrot very gromko scream',
+                      )
+                    }
+                  >
+                    <img src={Copy} />
+                  </ContainerForIcon>
+                </RowContainer>
+                <RowContainer>
+                  <ColorText
+                    height={'10rem'}
+                    background={'rgba(242, 154, 54, 0.5)'}
+                  >
+                    <img src={Attention} />
+                    <Title width={'70%'} textAlign={'inherit'}>
+                      Your private keys are only stored on your current device.
+                      You will need these words to restore your wallet if your
+                      browser’s storage is cleared or your device is damaged or
+                      lost.
+                    </Title>
+                  </ColorText>
+                </RowContainer>
+                <RowContainer>
+                  <Row width={'50%'}>
+                    <StyledCheckbox theme={theme}></StyledCheckbox>
+                    <Title style={{ whiteSpace: 'nowrap' }} fontSize={'0.9rem'}>
+                      I have saved these words in a safe place.
+                    </Title>
+                  </Row>
+                  <VioletButton
+                    onClick={() => {
+                      setSpeedPhaseOn(true);
+                    }}
+                    background={'#406EDC'}
+                  >
+                    Go to confirm seed phrase
+                  </VioletButton>
+                </RowContainer>
               </Row>
             </Card>
             <BottomLink />
@@ -233,7 +257,7 @@ export const CreateWalletPage = () => {
               <RowContainer height={'auto'}>
                 <BoldTitle>Confirm the seed phrase</BoldTitle>
               </RowContainer>
-              <RowContainer height={'auto'}>
+              <Row width={'90%'}>
                 <ColorText
                   background={'rgba(164, 231, 151, 0.5)'}
                   height={'6rem'}
@@ -245,8 +269,8 @@ export const CreateWalletPage = () => {
                     to you.
                   </Title>
                 </ColorText>
-              </RowContainer>
-              <RowContainer height={'auto'}>
+              </Row>
+              <Row width={'90%'}>
                 <Textarea
                   height={'8rem'}
                   placeholder={
@@ -254,7 +278,7 @@ export const CreateWalletPage = () => {
                   }
                   padding={'1rem 2rem 1rem 2rem'}
                 />
-              </RowContainer>
+              </Row>
               <Row height={'auto'} width={'90%'} justify={'space-between'}>
                 <VioletButton
                   onClick={() => {
@@ -310,7 +334,18 @@ export const CreateWalletPage = () => {
                   </Row>
                   <Row width={'85%'}>
                     {' '}
-                    <Input height={'4rem'} width={'100%'} type="text"></Input>
+                    <TextareaWithCopy
+                      height={'4.5rem'}
+                      type="text"
+                      value={address}
+                      onChange={(e) => {
+                        setAddress(e.target.value);
+                      }}
+                      placeholder={''}
+                      onCopyClick={() =>
+                        copy('FBfkAWERNksjheslnerjlLSKEJTLKDJGlkrngn')
+                      }
+                    ></TextareaWithCopy>
                   </Row>
                   <Row width={'85%'}>
                     <ColorText
@@ -379,6 +414,13 @@ export const CreateWalletPage = () => {
                       type={'text'}
                       value={searchValue}
                       onChange={(e) => {
+                        if (
+                          !`${e.target.value}`.match(/[a-zA-Z1-9]/) &&
+                          e.target.value !== ''
+                        ) {
+                          return;
+                        }
+
                         setSearchValue(e.target.value);
                       }}
                       onSearchClick={() => {}}
@@ -402,7 +444,20 @@ export const CreateWalletPage = () => {
                           </Img>
                           <BoldTitle>SRM</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('SRM')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'SRM',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'SRM'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>{' '}
                       <Stroke theme={theme}>
                         <span
@@ -417,9 +472,22 @@ export const CreateWalletPage = () => {
                           <Img>
                             <img src={SRM} />
                           </Img>
-                          <BoldTitle>SRM</BoldTitle>
+                          <BoldTitle>SOL</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('SOL')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'SOL',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'SOL'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>{' '}
                       <Stroke theme={theme}>
                         <span
@@ -434,9 +502,22 @@ export const CreateWalletPage = () => {
                           <Img>
                             <img src={SRM} />
                           </Img>
-                          <BoldTitle>SRM</BoldTitle>
+                          <BoldTitle>BTC</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('BTC')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'BTC',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'BTC'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>
                       <Stroke theme={theme}>
                         <span
@@ -451,9 +532,22 @@ export const CreateWalletPage = () => {
                           <Img>
                             <img src={SRM} />
                           </Img>
-                          <BoldTitle>SRM</BoldTitle>
+                          <BoldTitle>CHZ</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('CHZ')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'CHZ',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'CHZ'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>
                       <Stroke theme={theme}>
                         <span
@@ -468,9 +562,22 @@ export const CreateWalletPage = () => {
                           <Img>
                             <img src={SRM} />
                           </Img>
-                          <BoldTitle>SRM</BoldTitle>
+                          <BoldTitle>ETH</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('ETH')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'ETH',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'ETH'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>
                       <Stroke theme={theme}>
                         <span
@@ -485,9 +592,22 @@ export const CreateWalletPage = () => {
                           <Img>
                             <img src={SRM} />
                           </Img>
-                          <BoldTitle>SRM</BoldTitle>
+                          <BoldTitle>DEFI</BoldTitle>
                         </span>
-                        <StyledCheckbox theme={theme} />
+                        <StyledCheckbox
+                          onChange={() => {
+                            selectCoin(
+                              selectedCoins.includes('DEFI')
+                                ? [
+                                    ...selectedCoins.filter(
+                                      (name) => name !== 'DEFI',
+                                    ),
+                                  ]
+                                : [...selectedCoins, 'DEFI'],
+                            );
+                          }}
+                          theme={theme}
+                        />
                       </Stroke>
                     </ListCard>
                   </Row>
