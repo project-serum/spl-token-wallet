@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
@@ -26,7 +26,16 @@ import AddAccountDialog from './AddAccountDialog';
 import DeleteMnemonicDialog from './DeleteMnemonicDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from './ExportAccountDialog.js';
-import { isExtensionPopup, useIsExtensionWidth } from '../utils/utils';
+import {
+  isExtension,
+  isExtensionPopup,
+  useIsExtensionWidth,
+} from '../utils/utils';
+import ConnectionIcon from './ConnectionIcon';
+import { Badge } from '@material-ui/core';
+import { useConnectedWallets } from '../utils/connected-wallets';
+import { usePage } from '../utils/page';
+import { MonetizationOn } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -47,6 +56,12 @@ const useStyles = makeStyles((theme) => ({
   menuItemIcon: {
     minWidth: 32,
   },
+  badge: {
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.text.main,
+    height: 16,
+    width: 16,
+  },
 }));
 
 export default function NavigationFrame({ children }) {
@@ -59,16 +74,86 @@ export default function NavigationFrame({ children }) {
           <Typography variant="h6" className={classes.title} component="h1">
             {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>
-          {!isExtensionPopup && (
-            <>
-              <WalletSelector />
-              <NetworkSelector />
-            </>
-          )}
+          {!isExtensionPopup && <NavigationButtons />}
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
       {!isExtensionWidth && <Footer />}
+    </>
+  );
+}
+
+function NavigationButtons() {
+  const [page] = usePage();
+
+  if (page === 'wallet') {
+    return (
+      <>
+        {isExtension && <ConnectionsButton />}
+        <WalletSelector />
+        <NetworkSelector />
+      </>
+    );
+  } else if (page === 'connections') {
+    return <WalletButton />;
+  }
+}
+
+function WalletButton() {
+  const classes = useStyles();
+  const [_, setPage] = usePage();
+  const onClick = useCallback(() => setPage('wallet'), []);
+
+  return (
+    <>
+      <Hidden smUp>
+        <Tooltip title="Wallet Balances">
+          <IconButton color="inherit" onClick={onClick}>
+            <MonetizationOn />
+          </IconButton>
+        </Tooltip>
+      </Hidden>
+      <Hidden xsDown>
+        <Button color="inherit" onClick={onClick} className={classes.button}>
+          Wallet
+        </Button>
+      </Hidden>
+    </>
+  );
+}
+
+function ConnectionsButton() {
+  const classes = useStyles();
+  const [_, setPage] = usePage();
+  const onClick = useCallback(() => setPage('connections'), []);
+  const connectedWallets = useConnectedWallets();
+
+  const connectionAmount = Object.keys(connectedWallets).length;
+
+  return (
+    <>
+      <Hidden smUp>
+        <Tooltip title="Manage Connections">
+          <IconButton color="inherit" onClick={onClick}>
+            <Badge
+              badgeContent={connectionAmount}
+              classes={{ badge: classes.badge }}
+            >
+              <ConnectionIcon />
+            </Badge>
+          </IconButton>
+        </Tooltip>
+      </Hidden>
+      <Hidden xsDown>
+        <Badge
+          badgeContent={connectionAmount}
+          classes={{ badge: classes.badge }}
+        >
+          <Button color="inherit" onClick={onClick} className={classes.button}>
+            Connections
+          </Button>
+        </Badge>
+      </Hidden>
     </>
   );
 }

@@ -46,7 +46,12 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "env": {
+      "browser": true,
+      "es6": true,
+      "webextensions": true
+    },
+    "extends": ["react-app"]
   },
   "jest": {
     "transformIgnorePatterns": [

@@ -66,7 +66,6 @@ export default function PopupPage({ opener }) {
   const postMessage = useCallback(
     (message) => {
       if (isExtension) {
-        // eslint-disable-next-line no-undef
         chrome.runtime.sendMessage({
           channel: 'sollet_extension_background_channel',
           data: message,
@@ -81,7 +80,6 @@ export default function PopupPage({ opener }) {
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
     if (isExtension) {
-      // eslint-disable-next-line no-undef
       chrome.storage.local.get('connectedWallets', (result) => {
         const connectedWallet = (result.connectedWallets || {})[origin];
         if (connectedWallet) {
@@ -180,7 +178,6 @@ export default function PopupPage({ opener }) {
     function connect(autoApprove) {
       setConnectedAccount(wallet.publicKey);
       if (isExtension) {
-        // eslint-disable-next-line no-undef
         chrome.storage.local.get('connectedWallets', (result) => {
           // TODO better way to do this
           const account = accounts.find((account) =>
@@ -195,7 +192,6 @@ export default function PopupPage({ opener }) {
               autoApprove,
             },
           };
-          // eslint-disable-next-line no-undef
           chrome.storage.local.set({ connectedWallets });
         });
       }

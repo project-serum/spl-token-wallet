@@ -173,7 +173,6 @@ export function forgetWallet() {
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
   if (isExtension) {
     // Must use wrapper function for window.location.reload
-    // eslint-disable-next-line no-undef
     chrome.storage.local.clear(() => window.location.reload());
   } else {
     window.location.reload();
