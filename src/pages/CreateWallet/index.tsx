@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import copy from 'clipboard-copy';
 import {
   Card,
-  Input,
   Body,
   Row,
   Img,
@@ -211,7 +210,7 @@ export const CreateWalletPage = () => {
                       )
                     }
                   >
-                    <img src={Copy} />
+                    <img alt="copy" src={Copy} />
                   </ContainerForIcon>
                 </RowContainer>
                 <RowContainer>
@@ -219,7 +218,7 @@ export const CreateWalletPage = () => {
                     height={'10rem'}
                     background={'rgba(242, 154, 54, 0.5)'}
                   >
-                    <img src={Attention} />
+                    <img alt="Attention" src={Attention} />
                     <Title width={'70%'} textAlign={'inherit'}>
                       Your private keys are only stored on your current device.
                       You will need these words to restore your wallet if your
