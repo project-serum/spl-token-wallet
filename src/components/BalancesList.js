@@ -367,13 +367,21 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     }
   }
 
-  const isAssociatedToken =
-    wallet &&
-    wallet.publicKey &&
-    mint &&
-    associatedTokensCache[wallet.publicKey.toString()]
-      ? associatedTokensCache[wallet.publicKey.toString()][mint.toString()]
-      : false;
+  const isAssociatedToken = (() => {
+    if (
+      wallet &&
+      wallet.publicKey &&
+      mint &&
+      associatedTokensCache[wallet.publicKey.toString()]
+    ) {
+      let acc =
+        associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
+      if (acc && acc.equals(publicKey)) {
+        return true;
+      }
+    }
+    return false;
+  })();
 
   const subtitle = (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
