@@ -98,7 +98,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
               assocTokAddr.equals(mintGroup[0].publicKey)
             )
           ) {
-            const name = getTokenName(mint, connection._rpcEndpoint);
+            const name = await getTokenName(mint, connection._rpcEndpoint);
             const symbol = name.symbol ? name.symbol : mint.toString();
             console.log(`Merging ${symbol}`);
             enqueueSnackbar(`Merging ${symbol}`, {

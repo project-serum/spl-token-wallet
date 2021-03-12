@@ -11,7 +11,7 @@ import {
   useWalletTokenAccounts,
 } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
+import { getTokenListForCluster, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
@@ -57,7 +57,8 @@ export default function AddTokenDialog({ open, onClose }) {
   let updateTokenName = useUpdateTokenName();
   const [sendTransaction, sending] = useSendTransaction();
   const { endpoint } = useConnectionConfig();
-  const popularTokens = TOKENS[endpoint];
+  const [popularTokens] = useAsyncData(async () => await getTokenListForCluster(endpoint));
+  
   const [walletAccounts] = useWalletTokenAccounts();
 
   const [tab, setTab] = useState(!!popularTokens ? 'popular' : 'manual');
@@ -172,17 +173,16 @@ export default function AddTokenDialog({ open, onClose }) {
         ) : tab === 'popular' ? (
           <List disablePadding>
             {popularTokens
-              .filter((token) => !token.deprecated)
-              .map((token) => (
+              .map((tokenInfo) => (
                 <TokenListItem
-                  key={token.mintAddress}
-                  {...token}
+                  key={tokenInfo.address}
+                  tokenInfo={tokenInfo}
                   existingAccount={(walletAccounts || []).find(
                     (account) =>
-                      account.parsed.mint.toBase58() === token.mintAddress,
+                      account.parsed.mint.toBase58() === tokenInfo.address,
                   )}
                   onSubmit={onSubmit}
-                  disalbed={sending}
+                  disabled={sending}
                 />
               ))}
           </List>
@@ -228,10 +228,7 @@ export default function AddTokenDialog({ open, onClose }) {
 }
 
 function TokenListItem({
-  tokenName,
-  icon,
-  tokenSymbol,
-  mintAddress,
+  tokenInfo,
   onSubmit,
   disabled,
   existingAccount,
@@ -241,10 +238,10 @@ function TokenListItem({
   const alreadyExists = !!existingAccount;
   return (
     <React.Fragment>
-      <div style={{ display: 'flex' }} key={tokenName}>
+      <div style={{ display: 'flex' }} key={tokenInfo.name}>
         <ListItem button onClick={() => setOpen((open) => !open)}>
           <ListItemIcon>
-            <TokenIcon url={icon} tokenName={tokenName} size={20} />
+            <TokenIcon url={tokenInfo.logoURI} tokenName={tokenInfo.name} size={20} />
           </ListItemIcon>
           <ListItemText
             primary={
@@ -252,12 +249,12 @@ function TokenListItem({
                 target="_blank"
                 rel="noopener"
                 href={
-                  `https://explorer.solana.com/account/${mintAddress}` +
+                  `https://explorer.solana.com/account/${tokenInfo.address}` +
                   urlSuffix
                 }
               >
-                {tokenName ?? abbreviateAddress(mintAddress)}
-                {tokenSymbol ? ` (${tokenSymbol})` : null}
+                {tokenInfo.name ?? abbreviateAddress(tokenInfo.address)}
+                {tokenInfo.symbol ? ` (${tokenInfo.symbol})` : null}
               </Link>
             }
           />
@@ -267,15 +264,15 @@ function TokenListItem({
           type="submit"
           color="primary"
           disabled={disabled || alreadyExists}
-          onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
+          onClick={() => onSubmit({ tokenName: tokenInfo.name, tokenSymbol: tokenInfo.symbol, mintAddress: tokenInfo.address })}
         >
           {alreadyExists ? 'Added' : 'Add'}
         </Button>
       </div>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <CopyableDisplay
-          value={mintAddress}
-          label={`${tokenSymbol} Mint Address`}
+          value={tokenInfo.adress}
+          label={`${tokenInfo.symbol} Mint Address`}
         />
       </Collapse>
     </React.Fragment>
