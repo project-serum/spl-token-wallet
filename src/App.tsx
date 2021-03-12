@@ -59,13 +59,14 @@ export default function App() {
                   light: '#96999C',
                   dark: '#93A0B2',
                   soft: '#E2E0E5',
+                  background: '#222429',
                 },
                 dark: {
                   main: '#D1DDEF',
                   background: '#17181A',
                 },
                 blue: {
-                  serum: '#7380EB',
+                  serum: '#366CE5',
                   new: '#366CE5',
                 },
                 white: {
@@ -74,6 +75,14 @@ export default function App() {
                 },
                 red: {
                   main: '#F69894',
+                },
+                green: {
+                  main: '#97E873',
+                  light: '#A5E898',
+                },
+                orange: {
+                  dark: '#F8B567',
+                  light: '#F29C38',
                 },
               },
             }
@@ -96,13 +105,14 @@ export default function App() {
                   light: '#96999C',
                   dark: '#93A0B2',
                   soft: '#383B45',
+                  background: '#222429',
                 },
                 dark: {
                   main: '#16253D',
                   background: '#17181A',
                 },
                 blue: {
-                  serum: '#7380EB',
+                  serum: '#366CE5',
                   new: '#366CE5',
                 },
                 white: {
@@ -111,6 +121,14 @@ export default function App() {
                 },
                 red: {
                   main: '#F69894',
+                },
+                green: {
+                  main: '#97E873',
+                  light: '#A5E898',
+                },
+                orange: {
+                  dark: '#F8B567',
+                  light: '#F29C38',
                 },
               },
             },
@@ -128,15 +146,15 @@ export default function App() {
       <Suspense fallback={<LoadingIndicator />}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <ConnectionProvider>
-            <NavigationFrame>
-              <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
-                <WalletProvider>
+          <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
+            <ConnectionProvider>
+              <WalletProvider>
+                <NavigationFrame>
                   <Pages />
-                </WalletProvider>
-              </SnackbarProvider>
-            </NavigationFrame>
-          </ConnectionProvider>
+                </NavigationFrame>
+              </WalletProvider>
+            </ConnectionProvider>
+          </SnackbarProvider>
         </ThemeProvider>
       </Suspense>
     </BrowserRouter>
@@ -144,7 +162,7 @@ export default function App() {
 }
 
 const Pages = () => {
-  const wallet = useWallet()
+  const wallet = useWallet();
   return (
     <Switch>
       <Route path="/connecting_wallet" component={ConnectingWallet} />
@@ -161,7 +179,11 @@ const Pages = () => {
       {/* if wallet exists - for case when we'll have unlocked wallet */}
       {!!wallet && <Redirect to="/wallet" />}
       {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed() ? <Redirect to="/welcome_back" /> : <Redirect to="/welcome" />}
-  </Switch>
-  )
-}
+      {hasLockedMnemonicAndSeed() ? (
+        <Redirect to="/welcome_back" />
+      ) : (
+        <Redirect to="/welcome" />
+      )}
+    </Switch>
+  );
+};

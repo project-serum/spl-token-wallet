@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTheme } from '@material-ui/core';
 
 import {
   Card,
-  Row,
   VioletButton,
   BoldTitle,
   RowContainer,
+  WhiteButton,
 } from '../../commonStyles';
 
 import { InputWithEye } from '../../../components/Input';
-
 import BottomLink from '../../../components/BottomLink';
 
 const CreatePassword = ({
@@ -24,7 +24,7 @@ const CreatePassword = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const theme = useTheme()
+  const theme = useTheme();
 
   return (
     <>
@@ -35,7 +35,7 @@ const CreatePassword = ({
           </BoldTitle>
           <BoldTitle>password if you have created it already:</BoldTitle>
         </RowContainer>
-        <Row width={'90%'} style={{ position: 'relative' }}>
+        <RowContainer style={{ position: 'relative' }}>
           <InputWithEye
             type={showPassword ? 'text' : 'password'}
             value={password}
@@ -46,9 +46,15 @@ const CreatePassword = ({
             showPassword={showPassword}
             onEyeClick={() => setShowPassword(!showPassword)}
           />
-        </Row>
-        <RowContainer>
+        </RowContainer>
+        <RowContainer justify="space-between" width="90%">
+          <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+            <WhiteButton theme={theme} width={'100%'}>
+              Back
+            </WhiteButton>
+          </Link>
           <VioletButton
+            width={'calc(50% - .5rem)'}
             theme={theme}
             disabled={password === ''}
             onClick={() => {

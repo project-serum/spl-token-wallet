@@ -6,12 +6,22 @@ import {
   RowContainer,
   Row,
   VioletButton,
+  RedButton,
+  Title,
 } from '../../pages/commonStyles';
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import WalletLogo from '../../images/logo.svg';
+import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
+import { useWallet } from '../../utils/wallet';
+
+const ButtonsContainer = styled(Row)`
+  @media (max-width: 1200px) {
+    display: none;
+  }
+`;
 
 const StyledButton = styled(Button)`
   font-size: 12px;
@@ -108,6 +118,7 @@ const NavLinkButton = ({
 const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
+  const wallet = useWallet();
 
   return (
     <GridContainer theme={theme}>
@@ -192,31 +203,69 @@ const Navbar = () => {
         </RowContainer>
         <Row height={'100%'}>
           <NetworkDropdown />
-          <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
-            <VioletButton
-              theme={theme}
-              width={'14rem'}
-              height={'3.5rem'}
-              borderRadius=".6rem"
-              margin={'0 0 0 3rem'}
-              padding="1rem"
-            >
-              Restore Wallet
-            </VioletButton>
-          </Link>
-          <Link style={{ textDecoration: 'none' }} to={'/create_wallet'}>
-            <VioletButton
-              theme={theme}
-              width={'14rem'}
-              height={'3.5rem'}
-              color={theme.customPalette.blue.serum}
-              borderColor={theme.customPalette.blue.serum}
-              background={'transparent'}
-              margin={'0 0 0 3rem'}
-            >
-              Create Wallet
-            </VioletButton>
-          </Link>
+          {!!wallet ? (
+            <RowContainer>
+              <img
+                src={WalletIcon}
+                alt="wallet icon"
+                style={{ margin: '0 2rem', height: '100%' }}
+              />
+              <Row direction="column" align="flex-start">
+                <Title fontSize="1rem" fontFamily="Avenir Next">
+                  <span style={{ fontFamily: 'Avenir Next Demi' }}>
+                    Wallet™
+                  </span>{' '}
+                  by Cryptocurrencies.Ai
+                </Title>
+                <Title
+                  fontFamily="Avenir Next"
+                  color={theme.customPalette.grey.dark}
+                  fontSize="1rem"
+                >
+                  {wallet.publicKey.toBase58()}
+                </Title>
+                <Title color={theme.customPalette.green.main} fontSize="1rem">
+                  $0.00
+                </Title>
+              </Row>
+              <RedButton
+                width="10rem"
+                height="2rem"
+                theme={theme}
+                style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Bold' }}
+              >
+                Disconnect
+              </RedButton>
+            </RowContainer>
+          ) : (
+            <ButtonsContainer>
+              <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
+                <VioletButton
+                  theme={theme}
+                  width={'14rem'}
+                  height={'3.5rem'}
+                  borderRadius=".6rem"
+                  margin={'0 0 0 3rem'}
+                  padding="1rem"
+                >
+                  Restore Wallet
+                </VioletButton>
+              </Link>
+              <Link style={{ textDecoration: 'none' }} to={'/create_wallet'}>
+                <VioletButton
+                  theme={theme}
+                  width={'14rem'}
+                  height={'3.5rem'}
+                  color={theme.customPalette.blue.serum}
+                  borderColor={theme.customPalette.blue.serum}
+                  background={'transparent'}
+                  margin={'0 0 0 3rem'}
+                >
+                  Create Wallet
+                </VioletButton>
+              </Link>
+            </ButtonsContainer>
+          )}
         </Row>
       </RowContainer>
     </GridContainer>

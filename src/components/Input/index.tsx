@@ -18,12 +18,14 @@ const InputWithComponent = ({
   type,
   value,
   onChange,
+  autofocus = false,
   placeholder,
   ComponentToShow,
 }: {
   type: string;
   value: string;
   onChange: any;
+  autofocus?: boolean,
   placeholder: string;
   ComponentToShow: any;
 }) => {
@@ -32,6 +34,7 @@ const InputWithComponent = ({
       <Input
         type={type}
         value={value}
+        autoFocus={autofocus}
         onChange={onChange}
         placeholder={placeholder}
       />
@@ -171,6 +174,7 @@ const InputWithEye = ({
 }) => {
   return (
     <InputWithComponent
+      autofocus={true}
       ComponentToShow={
         <img
           style={{

@@ -16,7 +16,19 @@ export type RowProps = {
   mediaMargin?: string;
 };
 
-export const Row = styled.div`
+export const Row = styled(
+  ({
+    wrap,
+    justify,
+    direction,
+    align,
+    width,
+    height,
+    margin,
+    padding,
+    ...props
+  }) => <div {...props} />,
+)`
   display: flex;
   flex-wrap: ${(props: RowProps) => props.wrap || 'nowrap'};
   justify-content: ${(props: RowProps) => props.justify || 'center'};
@@ -29,10 +41,11 @@ export const Row = styled.div`
 `;
 
 export const RowContainer = styled((props) => <Row {...props} />)`
-  width: 100%;
+  width: ${(props: RowProps) => props.width || '100%'};
 `;
 
-export const GridContainer = styled(({ ...rest }) => <Grid {...rest} />)`
+export const GridContainer = styled(({ theme, ...rest }) => <Grid {...rest} />)`
+  position: relative;
   display: flex;
   flex: auto;
   align-items: center;
@@ -43,6 +56,10 @@ export const GridContainer = styled(({ ...rest }) => <Grid {...rest} />)`
   margin: 0rem;
   border-bottom: ${(props) => props.theme.customPalette.border.new};
   background: ${(props) => props.theme.customPalette.dark.background};
+
+  @media (max-width: 850px) {
+    display: none;
+  }
 `;
 
 export const ColorText = styled.div`
@@ -126,10 +143,9 @@ export const Input = styled.input`
 
   // fix for autocomplete
   &:-webkit-autofill,
-  &:-webkit-autofill:hover, 
-  &:-webkit-autofill:focus, 
-  &:-webkit-autofill:active
-  {
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
     -webkit-box-shadow: 0px 0px 0 30px #222429 inset !important;
     -webkit-text-fill-color: #fff;
   }
@@ -160,8 +176,11 @@ export const TextButton = styled.button`
   cursor: pointer;
 `;
 
-export const Title = styled.span`
-  display: block;
+export const Title = styled(
+  ({ width, fontFamily, fontSize, color, textAlign, margin, ...props }) => (
+    <span {...props} />
+  ),
+)`
   width: ${(props) => props.width || 'auto'};
   font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
@@ -312,4 +331,14 @@ export const ListCard = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: auto;
+`;
+
+export const ExclamationMark = styled(({ fontSize, lineHeight, ...props }) => (
+  <span {...props}>!</span>
+))`
+  color: ${(props) => props.color || props.theme.customPalette.orange.dark};
+  font-family: Avenir Next Demi;
+  font-size: ${(props) => props.fontSize || '5rem'};
+  line-height: ${(props) => props.lineHeight || '6rem'};
+  margin: ${(props) => props.margin || '0 2rem 0 0'};
 `;

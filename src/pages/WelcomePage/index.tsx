@@ -6,6 +6,7 @@ import {
   Title,
   CardButton,
   BoldTitle,
+  RowContainer,
 } from '../commonStyles';
 
 import Plus from '../../images/AddButton.svg';
@@ -17,11 +18,9 @@ import Logo from '../../components/Logo'
 export const WelcomePage = () => {
   return (
     <Body>
-      {' '}
       <Logo />
       <Row>
         <Row>
-          {' '}
           <a href={'/create_wallet'}>
             <CardButton width="35rem" height="35rem" margin={'0 2rem 0 0'}>
               <Row
@@ -30,7 +29,6 @@ export const WelcomePage = () => {
                 height={'100%'}
               >
                 <Img width="12rem" height="12rem">
-                  {' '}
                   <img src={Plus} alt={'plus, add'} width="100%" height="100%" />
                 </Img>
                 <BoldTitle>Create New Wallet</BoldTitle>
@@ -40,25 +38,16 @@ export const WelcomePage = () => {
         </Row>
 
         <Row direction={'column'} justify={'space-between'} height={'100%'}>
-          {' '}
           <a href={'/restore_wallet'}>
-            <CardButton width="35rem" height="16.5rem">
-              <Row width={'80%'} justify={'space-between'}>
-                {' '}
-                <Img width="9rem" height="9rem">
-                  {' '}
+            <CardButton width="35rem" height="35rem">
+              <Row justify={'space-around'} direction={'column'} height={'100%'}>
+                <Img width="12rem" height="12rem">
                   <img src={Restore} alt={'restore'}  width="100%" height="100%" />
                 </Img>
-                <Row
-                  direction={'column'}
-                  justify={'center'}
-                  align={'end'}
-                  width={'60%'}
-                >
-                  {' '}
+                <RowContainer direction={'column'}>
                   <BoldTitle>Restore Existing Wallet </BoldTitle>
-                  <Title>by seed phrase</Title>{' '}
-                </Row>
+                  <Title>by seed phrase</Title>
+                </RowContainer>
               </Row>
             </CardButton>
           </a>

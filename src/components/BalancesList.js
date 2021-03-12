@@ -168,6 +168,7 @@ export default function BalancesList() {
     },
     [publicKeys],
   );
+  
   const balanceListItemsMemo = useMemo(() => {
     return sortedPublicKeys.map((pk) => {
       return React.memo((props) => {
@@ -407,6 +408,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
       : price === null // Loaded and empty.
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+      
   if (setUsdValue && usdValue !== undefined) {
     setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
   }

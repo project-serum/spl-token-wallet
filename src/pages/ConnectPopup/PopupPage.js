@@ -26,7 +26,7 @@ import SystemInstruction from '../../components/instructions/SystemInstruction';
 import DexInstruction from '../../components/instructions/DexInstruction';
 import TokenInstruction from '../../components/instructions/TokenInstruction';
 import { BtnCustom } from '../../components/BtnCustom';
-import { Row, RowContainer, StyledLabel, VioletButton, WhiteButton } from '../commonStyles';
+import { Row, RowContainer, StyledLabel, VioletButton, WhiteButton, ExclamationMark } from '../commonStyles';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -36,14 +36,6 @@ const StyledCard = styled(Card)`
   padding: 3rem;
   margin: 0 auto;
   box-shadow: none;
-`;
-
-const ExclamationMark = styled.span`
-  font-family: Avenir Next Demi;
-  font-size: 5rem;
-  line-height: 6rem;
-  color: #f29c38;
-  margin-right: 2rem;
 `;
 
 export default function PopupPage({ opener }) {
@@ -329,7 +321,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
               borderRadius: '.6rem',
             }}
           />
-          <ExclamationMark>!</ExclamationMark>
+          <ExclamationMark theme={theme} />
           <Typography style={{ padding: '1rem 0', textAlign: 'left' }}>
             Only connect with sites you trust.{' '}
             {autoApprove &&

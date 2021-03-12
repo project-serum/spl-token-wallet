@@ -5,6 +5,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import { Theme, useTheme, Paper, MenuList, MenuItem } from '@material-ui/core';
 
 import { BtnCustom } from '../BtnCustom';
+import { useWallet } from '../../utils/wallet';
 
 export const StyledDropdown = styled.div`
   display: flex;
@@ -107,6 +108,7 @@ const WalletStatusButton = ({
 
 const NetworkDropdown = () => {
   const theme = useTheme();
+  const wallet = useWallet()
   const { endpoint, setEndpoint } = useConnectionConfig();
 
   const networkLabels = [
@@ -129,7 +131,7 @@ const NetworkDropdown = () => {
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
-        customNotActiveRem={`1rem`}
+        customNotActiveRem={wallet ? '33.5rem' : '35rem'}
       >
         <MenuList style={{ padding: 0 }}>
           {networkLabels.map((endpoint) => (

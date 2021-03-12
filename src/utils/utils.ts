@@ -85,3 +85,40 @@ export async function confirmTransaction(
   );
   return result.value;
 }
+
+export const formatNumberToUSFormat = (
+  numberToFormat: number | string | null
+) => {
+  const stringNumber = numberToFormat === null ? '' : numberToFormat.toString()
+
+  return stringNumber.match(/\./g)
+    ? stringNumber.replace(/\d(?=(\d{3})+\.)/g, '$&,')
+    : stringNumber.replace(/\d(?=(\d{3})+$)/g, '$&,')
+}
+
+export const stripDigitPlaces = (
+  num: number | string,
+  stripToPlaces = 2
+): string | number => {
+  const reg = new RegExp(
+    `^((\\-|)[0-9]{1,21}\\.[0-9]{0,${stripToPlaces}})|[0-9]{1,21}`
+  )
+  const regWithE = /e/g
+
+  const stringFromNumber = (+num).toString()
+  if (regWithE.test(stringFromNumber)) {
+    return parseFloat(stringFromNumber).toFixed(stripToPlaces)
+  }
+
+  const regResult = stringFromNumber.match(reg)
+
+  let strippedNumber
+
+  if (regResult !== null && regResult[0].endsWith('.')) {
+    strippedNumber = regResult[0].slice(0, regResult[0].length - 1)
+  } else {
+    strippedNumber = regResult !== null ? regResult[0] : num 
+  }
+
+  return strippedNumber
+}
