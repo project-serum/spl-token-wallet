@@ -414,7 +414,7 @@ async function transferBetweenSplTokenAccounts({
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
-async function createAndTransferToAccount({
+export async function createAndTransferToAccount({
   connection,
   owner,
   sourcePublicKey,
