@@ -446,13 +446,11 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         } else if (['newOrder', 'newOrderV3'].includes(instruction.type)) {
           // New order instructions are safe if the owner is this wallet
           let { openOrdersPubkey, ownerPubkey } = instruction.data;
-          console.log('#1');
           if (ownerPubkey && owner.equals(ownerPubkey)) {
             accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
           } else {
             unsafe = true;
           }
-          console.log('#2', unsafe);
         } else if (instruction.type === 'initializeAccount') {
           // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
           let { ownerPubkey, accountPubkey } = instruction.data;
@@ -498,7 +496,6 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
   ) {
     unsafe = true;
   }
-  console.log('#3', unsafe);
 
   return !unsafe;
 }
