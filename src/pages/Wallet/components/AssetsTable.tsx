@@ -260,7 +260,7 @@ const AssetsTable = ({
   const theme = useTheme();
   const wallet = useWallet();
 
-  const [marketsData, setMarketsData] = useState({});
+  const [marketsData, setMarketsData] = useState<any>(null);
 
   const [
     publicKeys,
@@ -418,7 +418,7 @@ const AssetItem = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price, lastPriceDiff } = marketsData.get(
+  let { closePrice: price, lastPriceDiff } =  !!marketsData && marketsData.get(
     `${tokenSymbol?.toUpperCase()}_USDT`,
   ) || { closePrice: 0, lastPriceDiff: 0 };
 

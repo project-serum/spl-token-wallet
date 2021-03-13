@@ -27,7 +27,7 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price } = marketsData.get(
+  let { closePrice: price } = !!marketsData && marketsData.get(
     `${tokenSymbol?.toUpperCase()}_USDT`,
   ) || { closePrice: 0, lastPriceDiff: 0 };
 
@@ -51,7 +51,7 @@ const Item = ({
 
 const TotalBalance = () => {
   const [publicKeys] = useWalletPublicKeys();
-  const [marketsData, setMarketsData] = useState({});
+  const [marketsData, setMarketsData] = useState<any>(null);
   const [, setForceUpdate] = useState(false);
 
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
