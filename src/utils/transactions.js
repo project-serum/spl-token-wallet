@@ -132,12 +132,12 @@ const toInstruction = async (
     } else {
       return {
         type: 'Unknown',
-        accountMetas: instruction.accounts.map(index => ({
-            publicKey: accountKeys[index],
-            isWritable: transactionMessage.isAccountWritable(index)
+        accountMetas: instruction.accounts.map((index) => ({
+          publicKey: accountKeys[index],
+          isWritable: transactionMessage.isAccountWritable(index),
         })),
-        programId
-      }
+        programId,
+      };
     }
   } catch {}
 

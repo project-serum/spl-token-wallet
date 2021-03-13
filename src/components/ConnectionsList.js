@@ -95,7 +95,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
       result.connectedWallets[origin].autoApprove = autoApprove;
       chrome.storage.local.set({ connectedWallets: result.connectedWallets });
     });
-  }
+  };
 
   const disconnectWallet = () => {
     chrome.storage.local.get('connectedWallets', (result) => {
@@ -103,7 +103,6 @@ function ConnectionsListItem({ origin, connectedWallet }) {
       chrome.storage.local.set({ connectedWallets: result.connectedWallets });
     });
   };
-
 
   return (
     <>
@@ -118,7 +117,10 @@ function ConnectionsListItem({ origin, connectedWallet }) {
           </div>
         </ListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
-          <ListItemText primary={origin} primaryTypographyProps={classes.origin} />
+          <ListItemText
+            primary={origin}
+            primaryTypographyProps={classes.origin}
+          />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
@@ -126,7 +128,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
         <div class={classes.itemDetails}>
           <div class={classes.buttonContainer}>
             <Button
-              variant={connectedWallet.autoApprove ? "contained" : "outlined"}
+              variant={connectedWallet.autoApprove ? 'contained' : 'outlined'}
               color="primary"
               size="small"
               startIcon={<DoneAll />}

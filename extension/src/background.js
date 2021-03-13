@@ -18,7 +18,7 @@ function launchPopup(message, sender, sendResponse) {
       setSelfAsOpener: true,
       focused: true,
     });
-  })
+  });
 
   responseHandlers.set(message.data.id, sendResponse);
 }
@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleConnect(message, sender, sendResponse);
     } else if (message.data.method === 'disconnect') {
       handleDisconnect(message, sender, sendResponse);
-    }  else {
+    } else {
       launchPopup(message, sender, sendResponse);
     }
     // keeps response channel open

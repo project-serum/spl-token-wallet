@@ -240,7 +240,7 @@ export const TOKENS = {
       mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
       tokenName: 'Oxygen Protocol',
       icon:
-        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg'
+        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
   ],
 };
