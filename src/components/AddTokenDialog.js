@@ -11,7 +11,7 @@ import {
   useWalletTokenAccounts,
 } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { getTokenListForCluster, useUpdateTokenName } from '../utils/tokens/names';
+import { useTokenInfos, useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
@@ -25,7 +25,6 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
 import {
-  useConnectionConfig,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
 import Link from '@material-ui/core/Link';
@@ -56,8 +55,7 @@ export default function AddTokenDialog({ open, onClose }) {
   let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
   const [sendTransaction, sending] = useSendTransaction();
-  const { endpoint } = useConnectionConfig();
-  const [popularTokens] = useAsyncData(async () => await getTokenListForCluster(endpoint));
+  const popularTokens = useTokenInfos();
   
   const [walletAccounts] = useWalletTokenAccounts();
 

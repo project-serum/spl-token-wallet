@@ -1,31 +1,17 @@
 import EventEmitter from 'events';
 import { useConnectionConfig } from '../connection';
 import { useListener } from '../utils';
+import { useAsyncData } from '../fetch-loop';
 import { useCallback } from 'react';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
-let tokenListContainer = null;
-export async function getTokenListForCluster(cluster) {
-  if (tokenListContainer === null) {
-    tokenListContainer = await new TokenListProvider().resolve();
-  }
-  return tokenListContainer.filterByClusterSlug(cluster).getList();
-}
-new TokenListProvider().resolve().then((tokens) => {
-  const tokenList = tokens.filterByClusterSlug('mainnet-beta').getList();
-  console.log(tokenList);
-});
+const tokenListProvider = new TokenListProvider();
+export function useTokenInfos() {
+  const [tokenListContainer] = useAsyncData(tokenListProvider.resolve, tokenListProvider.resolve);
+  const { endpoint } = useConnectionConfig();
 
-// export interface TokenInfo {
-//   readonly chainId: number;
-//   readonly address: string;
-//   readonly name: string;
-//   readonly decimals: number;
-//   readonly symbol: string;
-//   readonly logoURI?: string;
-//   readonly tags?: string[];
-//   readonly extensions?: TokenExtensions;
-// }
+  return tokenListContainer?.filterByClusterSlug(endpoint).getList()
+}
 
 const customTokenNamesByNetwork = JSON.parse(
   localStorage.getItem('tokenNames') ?? '{}',
@@ -37,16 +23,17 @@ nameUpdated.setMaxListeners(100);
 export async function useTokenName(mint) {
   const { endpoint } = useConnectionConfig();
   useListener(nameUpdated, 'update');
-  return getTokenName(mint, endpoint);
+  const tokenInfos = useTokenInfos();
+  return getTokenName(mint, endpoint, tokenInfos);
 }
 
-export async function getTokenName(mint, endpoint) {
+export async function getTokenName(mint, endpoint, tokenInfos) {
   if (!mint) {
     return { name: null, symbol: null };
   }
 
   let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];
-  let match = (await getTokenListForCluster(endpoint))?.find(
+  let match = tokenInfos?.find(
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
   if (match && !info) {
