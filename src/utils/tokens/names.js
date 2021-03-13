@@ -215,23 +215,58 @@ export const TOKENS = {
         'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
     },
     {
-      tokenSymbol: 'RAY-USDT',
+      tokenSymbol: 'RAY-LEGACY-USDT',
       mintAddress: 'CzPDyvotTcxNqtPne32yUiEVQ6jk42HZi1Y3hUu7qf7f',
+      tokenName: 'Raydium Legacy USDT Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-LEGACY-USDC',
+      mintAddress: 'FgmBnsF5Qrnv8X9bomQfEtQTQjNNiBCWRKGpzPnE5BDg',
+      tokenName: 'Raydium Legacy USDC Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-LEGACY-SRM',
+      mintAddress: '5QXBMXuCL7zfAk39jEVVEvcrz1AvBGgT9wAhLLHLyyUJ',
+      tokenName: 'Raydium Legacy Serum Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-ETH',
+      mintAddress: 'Q6MKy5Yxb9vG1mWzppMtMb2nrhNuCRNUkJTeiE3fuwD',
+      tokenName: 'Raydium ETH Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-SOL',
+      mintAddress: 'F5PPQHGcznZ2FxD9JaxJMXaf7XkaFFJ6zzTBcW8osQjw',
+      tokenName: 'Raydium SOL Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-SRM',
+      mintAddress: 'DSX5E21RE9FB9hM8Nh8xcXQfPK6SzRaJiywemHBSsfup',
+      tokenName: 'Raydium SRM Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-USDT',
+      mintAddress: 'FdhKXYjCou2jQfgKWcNY7jb8F2DPLU1teTTTRfLBD2v1',
       tokenName: 'Raydium USDT Liquidity Pool',
       icon:
         'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
     },
     {
       tokenSymbol: 'RAY-USDC',
-      mintAddress: 'FgmBnsF5Qrnv8X9bomQfEtQTQjNNiBCWRKGpzPnE5BDg',
+      mintAddress: 'BZFGfXMrjG2sS7QT2eiCDEevPFnkYYF7kzJpWfYxPbcx',
       tokenName: 'Raydium USDC Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-SRM',
-      mintAddress: '5QXBMXuCL7zfAk39jEVVEvcrz1AvBGgT9wAhLLHLyyUJ',
-      tokenName: 'Raydium Serum Liquidity Pool',
       icon:
         'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
     },
@@ -240,7 +275,7 @@ export const TOKENS = {
       mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
       tokenName: 'Oxygen Protocol',
       icon:
-        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg'
+        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
   ],
 };
