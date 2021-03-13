@@ -82,7 +82,7 @@ const AccountInfo = () => {
       </Row>
       <Row width="60%" height="100%">
         <Row
-          width="22rem"
+          width="26rem"
           height="100%"
           margin="0 2rem 0 0"
           padding=".5rem 1.5rem"
@@ -106,7 +106,7 @@ const AccountInfo = () => {
           </Title>
         </Row>
         <Row
-          width="22rem"
+          width="26rem"
           height="100%"
           margin="0 4rem 0 0"
           padding=".5rem 1.5rem"
