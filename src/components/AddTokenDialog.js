@@ -269,7 +269,7 @@ function TokenListItem({
       </div>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <CopyableDisplay
-          value={tokenInfo.adress}
+          value={tokenInfo.address}
           label={`${tokenInfo.symbol} Mint Address`}
         />
       </Collapse>

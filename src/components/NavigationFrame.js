@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { useConnectionConfig, MAINNET_URL } from '../utils/connection';
+import { useConnectionConfig } from '../utils/connection';
+import { CLUSTERS, clusterForEndpoint } from '../utils/clusters';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { clusterApiUrl } from '@solana/web3.js';
 import { useWalletSelector } from '../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
@@ -184,21 +184,9 @@ function ConnectionsButton() {
 
 function NetworkSelector() {
   const { endpoint, setEndpoint } = useConnectionConfig();
+  const cluster = useMemo(() => clusterForEndpoint(endpoint), [endpoint])
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
-
-  const networks = [
-    MAINNET_URL,
-    clusterApiUrl('devnet'),
-    clusterApiUrl('testnet'),
-    'http://localhost:8899',
-  ];
-
-  const networkLabels = {
-    [MAINNET_URL]: 'Mainnet Beta',
-    [clusterApiUrl('devnet')]: 'Devnet',
-    [clusterApiUrl('testnet')]: 'Testnet',
-  };
 
   return (
     <>
@@ -208,7 +196,7 @@ function NetworkSelector() {
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          {networkLabels[endpoint] ?? 'Network'}
+          {cluster?.label ?? 'Network'}
         </Button>
       </Hidden>
       <Hidden smUp>
@@ -228,19 +216,19 @@ function NetworkSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {networks.map((network) => (
+        {CLUSTERS.map((cluster) => (
           <MenuItem
-            key={network}
+            key={cluster.apiUrl}
             onClick={() => {
               setAnchorEl(null);
-              setEndpoint(network);
+              setEndpoint(cluster.apiUrl);
             }}
-            selected={network === endpoint}
+            selected={cluster.apiUrl === endpoint}
           >
             <ListItemIcon className={classes.menuItemIcon}>
-              {network === endpoint ? <CheckIcon fontSize="small" /> : null}
+              {cluster.apiUrl === endpoint ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
-            {network}
+            {cluster.apiUrl}
           </MenuItem>
         ))}
       </Menu>

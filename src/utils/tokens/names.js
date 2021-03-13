@@ -2,15 +2,18 @@ import EventEmitter from 'events';
 import { useConnectionConfig } from '../connection';
 import { useListener } from '../utils';
 import { useAsyncData } from '../fetch-loop';
+import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
 const tokenListProvider = new TokenListProvider();
 export function useTokenInfos() {
-  const [tokenListContainer] = useAsyncData(tokenListProvider.resolve, tokenListProvider.resolve);
+  const [tokenListContainer] = useAsyncData(tokenListProvider.resolve, tokenListProvider.resolve, { refreshInterval: 120000});
   const { endpoint } = useConnectionConfig();
+  const cluster = clusterForEndpoint(endpoint);
 
-  return tokenListContainer?.filterByClusterSlug(endpoint).getList()
+  const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(cluster?.name);
+  return tokenListContainer !== filteredTokenListContainer ? filteredTokenListContainer?.getList(): null; // Workaround for filter return all on unknown slug
 }
 
 const customTokenNamesByNetwork = JSON.parse(
