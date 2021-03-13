@@ -418,9 +418,11 @@ const AssetItem = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price, lastPriceDiff } =  !!marketsData && marketsData.get(
-    `${tokenSymbol?.toUpperCase()}_USDT`,
-  ) || { closePrice: 0, lastPriceDiff: 0 };
+  let { closePrice: price, lastPriceDiff } = (!!marketsData &&
+    marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`)) || {
+    closePrice: 0,
+    lastPriceDiff: 0,
+  };
 
   if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
     price = 1;

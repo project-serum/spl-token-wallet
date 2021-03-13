@@ -4,7 +4,7 @@ import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
 import { fairsIsLoaded } from './AssetsTable';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 
-import { getMarketsData } from './AssetsTable'
+import { getMarketsData } from './AssetsTable';
 
 const usdValues: any = {};
 
@@ -15,7 +15,7 @@ const Item = ({
 }: {
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
-  marketsData: any
+  marketsData: any;
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
 
@@ -27,12 +27,14 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price } = !!marketsData && marketsData.get(
-    `${tokenSymbol?.toUpperCase()}_USDT`,
-  ) || { closePrice: 0, lastPriceDiff: 0 };
+  let { closePrice: price } = (!!marketsData &&
+    marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`)) || {
+    closePrice: 0,
+    lastPriceDiff: 0,
+  };
 
   if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
-    price = 1
+    price = 1;
   }
 
   const usdValue =
@@ -101,7 +103,9 @@ const TotalBalance = () => {
 
   return (
     <>
-      {memoizedAssetsList.map(Memoized => <Memoized />)}
+      {memoizedAssetsList.map((Memoized) => (
+        <Memoized />
+      ))}
       <span>${formatNumberToUSFormat(stripDigitPlaces(totalUsdValue, 2))}</span>
     </>
   );
