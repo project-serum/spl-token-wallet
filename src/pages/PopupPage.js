@@ -592,6 +592,7 @@ function ApproveSignatureForm({
             onOpenAddress={onOpenAddress}
           />
         );
+      case 'systemCreateWithSeed':
       case 'systemCreate':
       case 'systemTransfer':
         return (
@@ -613,7 +614,7 @@ function ApproveSignatureForm({
           />
         );
       default:
-        return <UnknownInstruction instruction={instruction} />;
+        return <UnknownInstruction instruction={instruction} onOpenAddress={onOpenAddress} />;
     }
   };
 
