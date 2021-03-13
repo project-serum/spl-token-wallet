@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BtnCustom } from '../components/BtnCustom';
-import { Grid, Checkbox } from '@material-ui/core';
+import { Grid, Checkbox, Radio } from '@material-ui/core';
 
 export type RowProps = {
   wrap?: string;
@@ -134,7 +134,7 @@ export const Input = styled.input`
   height: ${(props) => props.height || '4.5rem'};
   color: #fff;
   font-family: Avenir Next Medium;
-  border: 1px solid #3a475c;
+  border: .1rem solid #3a475c;
   box-sizing: border-box;
   font-size: 1.5rem;
   border-radius: 1.5rem;
@@ -298,6 +298,20 @@ export const StyledLabel = styled.label`
 `;
 
 export const StyledCheckbox = styled(Checkbox)`
+  &&& {
+    color: ${(props) => props.color || props.theme.customPalette.blue.new};
+    &:hover {
+      background-color: rgba(54, 108, 229, 0.1);
+    }
+  }
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+`;
+
+export const StyledRadio = styled(Radio)`
   &&& {
     color: ${(props) => props.color || props.theme.customPalette.blue.new};
     &:hover {

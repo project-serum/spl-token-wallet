@@ -1,9 +1,9 @@
-import { Radio, useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
 import { BtnCustom } from '../../../components/BtnCustom';
 import { useWalletSelector } from '../../../utils/wallet';
-import { RowContainer, Card, Title } from '../../commonStyles';
+import { RowContainer, Card, Title, StyledRadio } from '../../commonStyles';
 import { GreyTitle } from './AssetsTable';
 
 import AddIcon from '../../../images/addIcon.svg';
@@ -42,25 +42,26 @@ const AccountsSelector = ({
         direction="column"
         padding="1.6rem 1.6rem .5rem 1.6rem"
       >
-        <Title fontFamily="Avenir Next Demi" fontSize="1.4rem">
+        <Title fontFamily="Avenir Next Demi" fontSize="1.4rem" style={{ marginBottom: '1rem'}}>
           Your Accounts
         </Title>
         <RowContainer
           style={{ borderBottom: theme.customPalette.border.new }}
           direction="column"
           margin="0 0 1rem 0"
+          padding="0 0 1rem 0"
         >
           {accounts.map(({ isSelected, name, selector }) => {
             return (
               <RowContainer
                 justify="flex-start"
-                padding="1rem 1.6rem 1rem 0"
+                padding="0rem 1.6rem 0rem 0"
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
                   setWalletSelector(selector);
                 }}
               >
-                <Radio checked={isSelected} />
+                <StyledRadio theme={theme} checked={isSelected} />
                 <Title>{name}</Title>
               </RowContainer>
             );

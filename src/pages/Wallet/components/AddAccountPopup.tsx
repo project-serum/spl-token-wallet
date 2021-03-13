@@ -29,11 +29,11 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
     <DialogForm
       height="30rem"
       open={open}
-      onEnter={() => {
-        setName('');
-        setIsImport(false);
-        setPrivateKey('');
-      }}
+      // onEnter={() => {
+      //   setName('');
+      //   setIsImport(false);
+      //   setPrivateKey('');
+      // }}
       onClose={onClose}
       fullWidth
     >

@@ -1,16 +1,20 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import dayjs from 'dayjs';
 import styled from 'styled-components';
 import { Theme, useTheme } from '@material-ui/core';
 
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 
 import TokenIcon from '../../../components/TokenIcon';
-import { serumMarkets, priceStore } from '../../../utils/markets';
-import { refreshWalletPublicKeys, useBalanceInfo, useWallet, useWalletPublicKeys } from '../../../utils/wallet';
+import {
+  refreshWalletPublicKeys,
+  useBalanceInfo,
+  useWallet,
+  useWalletPublicKeys,
+} from '../../../utils/wallet';
 
 import {
   refreshAccountInfo,
-  useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../../utils/connection';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
@@ -28,6 +32,15 @@ const TableContainer = styled(({ theme, ...props }) => (
   background: ${(props) => props.theme.customPalette.grey.background};
   border: ${(props) => props.theme.customPalette.border.new};
   border-radius: 1.2rem;
+  height: 80%;
+
+  @media (max-width: 1600px) {
+    height: 70%;
+  }
+
+  @media (max-width: 1440px) {
+    height: 75%;
+  }
 `;
 
 const StyledTable = styled.table`
@@ -122,6 +135,88 @@ const AssetAmountUSD = styled(AssetAmount)`
   font-family: Avenir Next Demi;
 `;
 
+export const getMarketsData = async () => {
+  const getSerumMarketData = `
+  query getSerumMarketData(
+      $publicKey: String!
+      $exchange: String!
+      $marketType: Int!
+      $startTimestamp: String!
+      $endTimestamp: String!
+      $prevStartTimestamp: String!
+      $prevEndTimestamp: String!
+    ) {
+      getSerumMarketData(
+        publicKey: $publicKey
+        exchange: $exchange
+        marketType: $marketType
+        startTimestamp: $startTimestamp
+        endTimestamp: $endTimestamp
+        prevStartTimestamp: $prevStartTimestamp
+        prevEndTimestamp: $prevEndTimestamp
+      ) {
+        symbol
+        tradesCount
+        tradesDiff
+        volume
+        volumeChange
+        minPrice
+        maxPrice
+        closePrice
+        precentageTradesDiff
+        lastPriceDiff
+        isCustomUserMarket
+        isPrivateCustomMarket
+        address
+        programId
+      }
+    }
+`;
+
+  const datesForQuery = {
+    startOfTime: dayjs().startOf('hour').subtract(24, 'hour').unix(),
+
+    endOfTime: dayjs().endOf('hour').unix(),
+
+    prevStartTimestamp: dayjs().startOf('hour').subtract(48, 'hour').unix(),
+
+    prevEndTimestamp: dayjs().startOf('hour').subtract(24, 'hour').unix(),
+  };
+
+  return await fetch('https://develop.api.cryptocurrencies.ai/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify({
+      operationName: 'getSerumMarketData',
+      variables: {
+        exchange: 'serum',
+        marketType: 0,
+        publicKey: '',
+        startTimestamp: `${datesForQuery.startOfTime}`,
+        endTimestamp: `${datesForQuery.endOfTime}`,
+        prevStartTimestamp: `${datesForQuery.prevStartTimestamp}`,
+        prevEndTimestamp: `${datesForQuery.prevEndTimestamp}`,
+      },
+      query: getSerumMarketData,
+    }),
+  })
+    .then((data) => data.json())
+    .then((data) => {
+      const map = new Map();
+
+      if (data && data.data && data.data.getSerumMarketData) {
+        data.data.getSerumMarketData.forEach((market) => {
+          map.set(market.symbol, market);
+        });
+      }
+
+      return map;
+    });
+};
+
 // const balanceFormat = new Intl.NumberFormat(undefined, {
 //   minimumFractionDigits: 4,
 //   maximumFractionDigits: 4,
@@ -163,12 +258,24 @@ const AssetsTable = ({
   setDepositDialogOpen: (isOpen: boolean) => void;
 }) => {
   const theme = useTheme();
-  const wallet = useWallet()
+  const wallet = useWallet();
+
+  const [marketsData, setMarketsData] = useState({});
 
   const [
     publicKeys,
     // loaded
   ] = useWalletPublicKeys();
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await getMarketsData();
+      setMarketsData(data);
+    };
+
+    getData();
+  }, []);
+
   // const { accounts, setAccountName } = useWalletSelector();
 
   // Dummy var to force rerenders on demand.
@@ -216,6 +323,7 @@ const AssetsTable = ({
             key={pk.toString()}
             publicKey={pk}
             theme={theme}
+            marketsData={marketsData}
             setUsdValue={setUsdValuesCallback}
             selectPublicKey={selectPublicKey}
             setSendDialogOpen={setSendDialogOpen}
@@ -224,16 +332,11 @@ const AssetsTable = ({
         );
       });
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKeys, setUsdValuesCallback, theme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publicKeys, setUsdValuesCallback, theme, marketsData]);
 
   return (
-    <TableContainer
-      theme={theme}
-      height="80%"
-      direction="column"
-      justify={'flex-start'}
-    >
+    <TableContainer theme={theme} direction="column" justify={'flex-start'}>
       <RowContainer theme={theme}>
         <HeadRow
           theme={theme}
@@ -291,12 +394,14 @@ const AssetItem = ({
   publicKey,
   setUsdValue,
   theme,
+  marketsData,
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
 }: {
   publicKey: any;
   theme: Theme;
+  marketsData: any;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
   selectPublicKey: (publicKey: any) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
@@ -313,43 +418,20 @@ const AssetItem = ({
     tokenSymbol: '--',
   };
 
-  const connection = useConnection();
-  // const [, setForceUpdate] = useState(false);
+  let { closePrice: price, lastPriceDiff } = marketsData.get(
+    `${tokenSymbol?.toUpperCase()}_USDT`,
+  ) || { closePrice: 0, lastPriceDiff: 0 };
 
-  const [price, setPrice] = useState<undefined | null | number>(undefined);
+  if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
+    price = 1;
+  }
 
-  useEffect(() => {
-    if (balanceInfo) {
-      if (balanceInfo.tokenSymbol) {
-        const coin = balanceInfo.tokenSymbol.toUpperCase();
-        // Don't fetch USD stable coins. Mark to 1 USD.
-        if (coin === 'USDT' || coin === 'USDC') {
-          setPrice(1);
-        }
-        // A Serum market exists. Fetch the price.
-        else if (serumMarkets[coin]) {
-          let m = serumMarkets[coin];
-          priceStore
-            .getPrice(connection, m.name)
-            .then((price) => {
-              setPrice(price);
-            })
-            .catch((err) => {
-              console.error(err);
-              setPrice(null);
-            });
-        }
-        // No Serum market exists.
-        else {
-          setPrice(null);
-        }
-      }
-      // No token symbol so don't fetch market data.
-      else {
-        setPrice(null);
-      }
-    }
-  }, [price, balanceInfo, connection]);
+  const prevClosePrice = price + lastPriceDiff * -1;
+
+  const priceChangePercentage = !!price
+    ? (price - prevClosePrice) / (prevClosePrice / 100)
+    : 0;
+  const sign24hChange = +priceChangePercentage > 0 ? `+` : ``;
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -409,7 +491,11 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            Soon
+            {`${sign24hChange}${formatNumberToUSFormat(
+              stripDigitPlaces(priceChangePercentage, 2),
+            )}% / ${formatNumberToUSFormat(
+              stripDigitPlaces(lastPriceDiff, 4),
+            )}`}
           </Title>
         </RowContainer>
       </StyledTd>

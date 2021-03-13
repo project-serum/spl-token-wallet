@@ -234,6 +234,7 @@ const Navbar = () => {
                 width="10rem"
                 height="2rem"
                 theme={theme}
+                onClick={() => window.location.reload()}
                 style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Bold' }}
               >
                 Disconnect

@@ -28,6 +28,18 @@ const RowWithSelector = styled(Row)`
   }
 `;
 
+const AccountInfoContainer = styled(RowContainer)`
+  height: 20%;
+
+  @media (max-width: 1600px) {
+    height: 30%;
+  }
+
+  @media (max-width: 1440px) {
+    height: 25%;
+  }
+`
+
 const AccountInfo = () => {
   const theme = useTheme();
   const wallet = useWallet();
@@ -52,7 +64,7 @@ const AccountInfo = () => {
   };
 
   return (
-    <RowContainer height="20%" padding="5rem 4rem">
+    <AccountInfoContainer padding="5rem 4rem">
       <Row
         width="40%"
         height="100%"
@@ -212,7 +224,7 @@ const AccountInfo = () => {
         open={isDeleteAccountOpen}
         onClose={() => setIsDeleteAccountOpen(false)}
       />
-    </RowContainer>
+    </AccountInfoContainer>
   );
 };
 

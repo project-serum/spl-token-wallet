@@ -47,7 +47,7 @@ class PriceStore {
         return;
       }
       if (this.cache[marketName] === undefined) {
-        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
+        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`, { mode: 'cors' }).then(
           (resp) => {
             resp.json().then((resp) => {
               if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {

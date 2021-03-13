@@ -14,8 +14,6 @@ export default function DeleteMnemonicDialog({ open, onClose }) {
   const [deleteCheck, setDeleteCheck] = useState('');
   const theme = useTheme();
 
-  console.log('rerneder')
-
   return (
     <>
       <DialogForm

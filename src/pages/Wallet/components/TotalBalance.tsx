@@ -1,23 +1,25 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { serumMarkets, priceStore } from '../../../utils/markets';
 import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
-
 import { fairsIsLoaded } from './AssetsTable';
-import { useConnection } from '../../../utils/connection';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+
+import { getMarketsData } from './AssetsTable'
 
 const usdValues: any = {};
 
 const Item = ({
   publicKey,
   setUsdValue,
+  marketsData,
 }: {
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
+  marketsData: any
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
-  let { amount, decimals } = balanceInfo || {
+
+  let { amount, decimals, tokenSymbol } = balanceInfo || {
     amount: 0,
     decimals: 8,
     mint: null,
@@ -25,43 +27,13 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const connection = useConnection();
-  // const [, setForceUpdate] = useState(false);
+  let { closePrice: price } = marketsData.get(
+    `${tokenSymbol?.toUpperCase()}_USDT`,
+  ) || { closePrice: 0, lastPriceDiff: 0 };
 
-  const [price, setPrice] = useState<undefined | null | number>(undefined);
-
-  useEffect(() => {
-    if (balanceInfo) {
-      if (balanceInfo.tokenSymbol) {
-        const coin = balanceInfo.tokenSymbol.toUpperCase();
-        // Don't fetch USD stable coins. Mark to 1 USD.
-        if (coin === 'USDT' || coin === 'USDC') {
-          setPrice(1);
-        }
-        // A Serum market exists. Fetch the price.
-        else if (serumMarkets[coin]) {
-          let m = serumMarkets[coin];
-          priceStore
-            .getPrice(connection, m.name)
-            .then((price) => {
-              setPrice(price);
-            })
-            .catch((err) => {
-              console.error(err);
-              setPrice(null);
-            });
-        }
-        // No Serum market exists.
-        else {
-          setPrice(null);
-        }
-      }
-      // No token symbol so don't fetch market data.
-      else {
-        setPrice(null);
-      }
-    }
-  }, [price, balanceInfo, connection]);
+  if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
+    price = 1
+  }
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -79,10 +51,19 @@ const Item = ({
 
 const TotalBalance = () => {
   const [publicKeys] = useWalletPublicKeys();
-
+  const [marketsData, setMarketsData] = useState({});
   const [, setForceUpdate] = useState(false);
 
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await getMarketsData();
+      setMarketsData(data);
+    };
+
+    getData();
+  }, []);
 
   const totalUsdValue = sortedPublicKeys
     .filter((pk) => usdValues[pk.toString()])
@@ -111,11 +92,12 @@ const TotalBalance = () => {
             key={pk.toString()}
             publicKey={pk}
             setUsdValue={setUsdValuesCallback}
+            marketsData={marketsData}
           />
         );
       });
     });
-  }, [publicKeys, setUsdValuesCallback]);
+  }, [publicKeys, setUsdValuesCallback, marketsData]);
 
   return (
     <>
