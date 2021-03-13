@@ -88,7 +88,6 @@ export async function confirmTransaction(
   return result.value;
 }
 
-<<<<<<< HEAD
 // TODO consolidate popup dimensions
 export function useIsExtensionWidth() {
   return useMediaQuery('(max-width:450px)');
@@ -97,7 +96,6 @@ export function useIsExtensionWidth() {
 export const isExtension = window.location.protocol === 'chrome-extension:';
 
 export const isExtensionPopup = isExtension && window.opener;
-=======
 /**
  * Returns an account object when given the private key
  */
@@ -112,4 +110,3 @@ export const decodeAccount = (privateKey: string) => {
     }
   }
 }
->>>>>>> origin
