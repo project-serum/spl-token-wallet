@@ -16,6 +16,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { DoneAll, ExpandLess, ExpandMore } from '@material-ui/icons';
 import { useConnectedWallets } from '../utils/connected-wallets';
 import { useIsExtensionWidth } from '../utils/utils';
+import { useWalletSelector } from '../utils/wallet';
 
 export default function ConnectionsList() {
   const isExtensionWidth = useIsExtensionWidth();
@@ -51,10 +52,6 @@ const ICON_SIZE = 28;
 const IMAGE_SIZE = 24;
 
 const useStyles = makeStyles((theme) => ({
-  origin: {
-    textOverflow: 'ellipsis',
-    overflowX: 'hidden',
-  },
   itemDetails: {
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
@@ -89,6 +86,11 @@ function ConnectionsListItem({ origin, connectedWallet }) {
   const appleIconUrl = origin + '/apple-touch-icon.png';
   const faviconUrl = origin + '/favicon.ico';
   const [iconUrl, setIconUrl] = useState(appleIconUrl);
+  const { accounts } = useWalletSelector();
+  // TODO better way to do this
+  const account = accounts.find((account) =>
+    account.address.toBase58() === connectedWallet.publicKey,
+  );
 
   const setAutoApprove = (autoApprove) => {
     chrome.storage.local.get('connectedWallets', (result) => {
@@ -119,7 +121,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
         <div style={{ display: 'flex', flex: 1 }}>
           <ListItemText
             primary={origin}
-            primaryTypographyProps={classes.origin}
+            secondary={account.name}
           />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}
