@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import {
   Row,
   Body,
@@ -21,7 +22,7 @@ export const WelcomePage = () => {
       <Logo />
       <Row>
         <Row>
-          <a href={'/create_wallet'}>
+          <Link to={'/create_wallet'}>
             <CardButton width="35rem" height="35rem" margin={'0 2rem 0 0'}>
               <Row
                 direction={'column'}
@@ -34,11 +35,11 @@ export const WelcomePage = () => {
                 <BoldTitle>Create New Wallet</BoldTitle>
               </Row>
             </CardButton>
-          </a>
+          </Link>
         </Row>
 
         <Row direction={'column'} justify={'space-between'} height={'100%'}>
-          <a href={'/restore_wallet'}>
+          <Link to={'/restore_wallet'}>
             <CardButton width="35rem" height="35rem">
               <Row justify={'space-around'} direction={'column'} height={'100%'}>
                 <Img width="12rem" height="12rem">
@@ -50,7 +51,7 @@ export const WelcomePage = () => {
                 </RowContainer>
               </Row>
             </CardButton>
-          </a>
+          </Link>
           {/* <a href={'/import_wallet'}>
             <CardButton width="35rem" height="16.5rem">
               <Row width={'80%'} justify={'space-between'}>
