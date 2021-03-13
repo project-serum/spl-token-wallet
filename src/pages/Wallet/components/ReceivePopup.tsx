@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import DialogForm from './DialogForm';
 import {
   useIsProdNetwork,
@@ -21,7 +21,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
-import { Tooltip, useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import { useBalanceInfo } from '../../../utils/wallet';
 import { swapApiRequest } from '../../../utils/swap/api';
@@ -95,7 +95,9 @@ export default function DepositDialog({ open, onClose, publicKey }) {
     <DialogForm
       open={open}
       onClose={onClose}
-      height={tab === 0 ? '45rem' : '50rem'}
+      height={
+        tab === 0 ? '45rem' : swapInfo?.blockchain === 'btc' ? '30rem' : '50rem'
+      }
     >
       <RowContainer padding="2rem 0 1rem 0">
         <Title>
@@ -127,10 +129,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
               autoFocus
               qrCode
             /> */}
-              <TextareaWithCopy
-                value={publicKey?.toBase58()}
-                height={'5rem'}
-              />
+              <TextareaWithCopy value={publicKey?.toBase58()} height={'5rem'} />
             </RowContainer>
             <RowContainer
               width="90%"
@@ -208,7 +207,7 @@ function SolletSwapDepositAddress({
   );
 
   const ethFeeData = useAsyncData(
-    swapInfo.coin &&
+    swapInfo?.coin &&
       (() =>
         estimateErc20SwapFees({
           erc20Address: swapInfo.coin.erc20Contract,
@@ -238,14 +237,14 @@ function SolletSwapDepositAddress({
 
   if (blockchain === 'btc' && memo === null) {
     return (
-      <RowContainer direction="column">
-        <Title>
+      <RowContainer direction="column" width="90%">
+        <Title style={{ marginBottom: '2rem' }}>
           Native BTC can be converted to SPL {tokenName} by sending it to the
           following address:
         </Title>
         <TextareaWithCopy
           value={address}
-          height="6rem"
+          height="5rem"
           // qrCode={`bitcoin:${address}`}
         />
       </RowContainer>
@@ -365,16 +364,16 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
       </VioletButton>
     );
 
-    if (insufficientEthBalance) {
-      convertButton = (
-        <Tooltip
-          title="Insufficient ETH for withdrawal transaction fee"
-          placement="top"
-        >
-          <span>{convertButton}</span>
-        </Tooltip>
-      );
-    }
+    // if (insufficientEthBalance) {
+    //   convertButton = (
+    //     <Tooltip
+    //       title="Insufficient ETH for withdrawal transaction fee"
+    //       placement="top"
+    //     >
+    //       <span>{convertButton}</span>
+    //     </Tooltip>
+    //   );
+    // }
 
     return (
       <>
@@ -393,7 +392,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         <RowContainer width="90%" padding="2rem 0">
           <AttentionComponent
             text={
-              'To convert ETH to SOL , your  SOL balance shouldn’t be empty.'
+              `To convert ${swapInfo?.coin?.ticker} to SOL , your  SOL balance shouldn’t be empty.`
             }
             blockHeight={'4rem'}
             iconStyle={{ margin: '0 2rem 0 3rem', height: '2.5rem' }}
@@ -404,12 +403,19 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         </RowContainer>
         <InputWithMax
           value={amount}
-          maxText={`${Number(maxAmount).toFixed(6)} ETH`}
+          maxText={`${Number(maxAmount).toFixed(6)} ${swapInfo?.coin?.ticker}`}
           onChange={(e) => setAmount(e.target.value.trim())}
           onMaxClick={() => setAmount(Number(maxAmount).toFixed(6))}
           placeholder={'Amount'}
           type={'text'}
         />
+        {insufficientEthBalance && (
+          <RowContainer width="90%" margin="2rem 0 0 0">
+            <Title color={theme.customPalette.red.main}>
+              Insufficient {swapInfo?.coin?.ticker} for withdrawal transaction fee
+            </Title>
+          </RowContainer>
+        )}
         <RowContainer justify="space-between" width="90%" margin="2rem 0 0 0">
           <WhiteButton
             theme={theme}

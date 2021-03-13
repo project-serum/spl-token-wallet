@@ -9,8 +9,6 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallAsync, useSendTransaction } from '../../../utils/notifications';
 import { swapApiRequest, useSwapApiGet } from '../../../utils/swap/api';
 import { showSwapAddress } from '../../../utils/config';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
@@ -31,7 +29,7 @@ import {
   WRAPPED_SOL_MINT,
 } from '../../../utils/tokens/instructions';
 import { parseTokenAccountData } from '../../../utils/tokens/data';
-import { Tooltip, useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core';
 import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import {
   RowContainer,
@@ -42,6 +40,7 @@ import {
 } from '../../commonStyles';
 import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
+import { StyledTab, StyledTabs } from '../styles';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -72,7 +71,13 @@ export default function SendDialog({ open, onClose, publicKey }) {
 
   return (
     <>
-      <DialogForm open={open} theme={theme} onClose={onClose} fullWidth>
+      <DialogForm
+        open={open}
+        theme={theme}
+        onClose={onClose}
+        fullWidth
+        height={tab === 'spl' ? '40rem' : '45rem'}
+      >
         <>
           <RowContainer>
             <Title>Send {tokenSymbol ? ` ${tokenSymbol} to` : null}</Title>
@@ -85,8 +90,9 @@ export default function SendDialog({ open, onClose, publicKey }) {
             )} */}
           </RowContainer>
           {swapCoinInfo ? (
-            <Tabs
+            <StyledTabs
               value={tab}
+              theme={theme}
               variant="fullWidth"
               onChange={(e, value) => setTab(value)}
               textColor="primary"
@@ -94,21 +100,34 @@ export default function SendDialog({ open, onClose, publicKey }) {
             >
               {mint?.equals(WUSDC_MINT)
                 ? [
-                    <Tab label="SPL WUSDC" key="spl" value="spl" />,
-                    <Tab
+                    <StyledTab
+                      theme={theme}
+                      label="SPL WUSDC"
+                      key="spl"
+                      value="spl"
+                    />,
+                    <StyledTab
+                      theme={theme}
                       label="SPL USDC"
                       key="wusdcToSplUsdc"
                       value="wusdcToSplUsdc"
                     />,
-                    <Tab label="ERC20 USDC" key="swap" value="swap" />,
+                    <StyledTab
+                      theme={theme}
+                      label="ERC20 USDC"
+                      key="swap"
+                      value="swap"
+                    />,
                   ]
                 : [
-                    <Tab
+                    <StyledTab
+                      theme={theme}
                       label={`SPL ${swapCoinInfo.ticker}`}
                       key="spl"
                       value="spl"
                     />,
-                    <Tab
+                    <StyledTab
+                      theme={theme}
                       label={`${
                         swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
                       } ${swapCoinInfo.ticker}`}
@@ -116,7 +135,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
                       value="swap"
                     />,
                   ]}
-            </Tabs>
+            </StyledTabs>
           ) : null}
           {tab === 'spl' ? (
             <SendSplDialog
@@ -178,7 +197,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     destinationAddress,
     transferAmountString,
     validAmount,
-  } = useForm(balanceInfo, addressHelperText, passValidation);
+  } = useForm(balanceInfo, addressHelperText, passValidation, 'spl');
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
 
@@ -320,7 +339,7 @@ function SendSwapDialog({
     transferAmountString,
     setDestinationAddress,
     validAmount,
-  } = useForm(balanceInfo);
+  } = useForm(balanceInfo, '', true, 'swap');
 
   const theme = useTheme();
 
@@ -423,6 +442,8 @@ function SendSwapDialog({
     <VioletButton
       type="submit"
       color="primary"
+      theme={theme}
+      width="calc(50% - .5rem)"
       disabled={
         !!(
           sending ||
@@ -437,21 +458,21 @@ function SendSwapDialog({
     </VioletButton>
   );
 
-  if (insufficientEthBalance) {
-    sendButton = (
-      <Tooltip
-        title="Insufficient ETH for withdrawal transaction fee"
-        placement="top"
-      >
-        <span>{sendButton}</span>
-      </Tooltip>
-    );
-  }
+  // if (insufficientEthBalance) {
+  //   sendButton = (
+  //     <Tooltip
+  //       title="Insufficient ETH for withdrawal transaction fee"
+  //       placement="top"
+  //     >
+  //       <span>{sendButton}</span>
+  //     </Tooltip>
+  //   );
+  // }
 
   return (
     <>
-      <RowContainer style={{ paddingTop: 16 }}>
-        <DialogContentText>
+      <RowContainer direction="column" margin="2rem 0 0 0">
+        <Title>
           SPL {tokenName} can be converted to{' '}
           {blockchain === 'eth' && swapCoinInfo.erc20Contract
             ? 'ERC20'
@@ -460,21 +481,34 @@ function SendSwapDialog({
             : 'native'}{' '}
           {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
-        </DialogContentText>
+        </Title>
         {blockchain === 'eth' && (
-          <DialogContentText>
+          <Title>
             Estimated withdrawal transaction fee:
             <EthFeeEstimate
               ethFeeData={ethFeeData}
               insufficientEthBalance={insufficientEthBalance}
             />
-          </DialogContentText>
+          </Title>
         )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
-        <WhiteButton theme={theme} onClick={onClose}>
-          Cancel
-        </WhiteButton>
-        {sendButton}
+        {insufficientEthBalance && (
+          <RowContainer width="90%" margin="2rem 0 0 0">
+            <Title color={theme.customPalette.red.main}>
+              Insufficient {swapCoinInfo.ticker} for withdrawal transaction fee
+            </Title>
+          </RowContainer>
+        )}
+        <RowContainer width="90%" justify="space-between">
+          <WhiteButton
+            theme={theme}
+            onClick={onClose}
+            width="calc(50% - .5rem)"
+          >
+            Cancel
+          </WhiteButton>
+          {sendButton}
+        </RowContainer>
       </RowContainer>
     </>
   );
@@ -571,6 +605,7 @@ function useForm(
   balanceInfo,
   addressHelperText = '',
   passAddressValidation = true,
+  tab = 'spl',
 ) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
@@ -612,9 +647,9 @@ function useForm(
             color: theme.customPalette.orange.dark,
             fontSize: '1.4rem',
           }}
-          text={
-            'Please make sure that you sending funds to the SOL address in the SPL network.'
-          }
+          text={`Please make sure that you sending funds to the ${tokenSymbol} address in the ${
+            tab === 'spl' ? 'SPL' : 'Native'
+          } network.`}
         />
       </RowContainer>
 
