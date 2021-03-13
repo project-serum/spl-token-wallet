@@ -43,7 +43,7 @@ function getInitialRequests() {
     return [];
   }
 
-  // TODO CHECK OPENER?
+  // TODO CHECK OPENER (?)
 
   const urlParams = new URLSearchParams(window.location.hash.slice(1));
   return [JSON.parse(urlParams.get('request'))];
@@ -98,7 +98,7 @@ export default function PopupPage({ opener }) {
     if (isExtension && connectedAccount) {
       setWallet(selectedWallet);
     }
-  }, [connectedAccount]);
+  }, [connectedAccount, selectedWallet]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -185,7 +185,6 @@ export default function PopupPage({ opener }) {
           );
           const connectedWallets = {
             ...(result.connectedWallets || {}),
-            // TODO ADD SELECTOR
             [origin]: {
               publicKey: wallet.publicKey.toBase58(),
               selector: account.selector,
@@ -254,7 +253,6 @@ export default function PopupPage({ opener }) {
     });
   }
 
-  // TODO handle this case
   function sendReject() {
     popRequest();
     postMessage({
@@ -442,17 +440,19 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
           let { newAccountPubkey } = instruction.data;
           if (!newAccountPubkey) {
             unsafe = true;
-          } else {
+          } else {  
             accountStates[newAccountPubkey.toBase58()] = states.CREATED;
           }
         } else if (['newOrder', 'newOrderV3'].includes(instruction.type)) {
           // New order instructions are safe if the owner is this wallet
           let { openOrdersPubkey, ownerPubkey } = instruction.data;
+          console.log("#1");
           if (ownerPubkey && owner.equals(ownerPubkey)) {
             accountStates[openOrdersPubkey.toBase58()] = states.OWNED;
           } else {
             unsafe = true;
           }
+          console.log("#2", unsafe);
         } else if (instruction.type === 'initializeAccount') {
           // New SPL token accounts are only considered safe if they are owned by this wallet and newly created
           let { ownerPubkey, accountPubkey } = instruction.data;
@@ -498,6 +498,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
   ) {
     unsafe = true;
   }
+  console.log("#3", unsafe);
 
   return !unsafe;
 }

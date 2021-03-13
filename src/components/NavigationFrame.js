@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
@@ -35,7 +35,7 @@ import ConnectionIcon from './ConnectionIcon';
 import { Badge } from '@material-ui/core';
 import { useConnectedWallets } from '../utils/connected-wallets';
 import { usePage } from '../utils/page';
-import { MonetizationOn } from '@material-ui/icons';
+import { MonetizationOn, OpenInNew } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -74,7 +74,7 @@ export default function NavigationFrame({ children }) {
           <Typography variant="h6" className={classes.title} component="h1">
             {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>
-          {!isExtensionPopup && <NavigationButtons />}
+          <NavigationButtons />
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
@@ -84,25 +84,49 @@ export default function NavigationFrame({ children }) {
 }
 
 function NavigationButtons() {
+  const isExtensionWidth = useIsExtensionWidth();
   const [page] = usePage();
 
-  if (page === 'wallet') {
-    return (
-      <>
-        {isExtension && <ConnectionsButton />}
-        <WalletSelector />
-        <NetworkSelector />
-      </>
-    );
-  } else if (page === 'connections') {
-    return <WalletButton />;
+  if (isExtensionPopup) {
+    return null;
   }
+
+  let elements = [];
+  if (page === 'wallet') {
+    elements = [
+      isExtension && <ConnectionsButton />,
+      <WalletSelector />,
+      <NetworkSelector />,
+    ];
+  } else if (page === 'connections') {
+    elements = [<WalletButton />];
+  }
+
+  if (isExtension && isExtensionWidth) {
+    elements.push(<ExpandButton />);
+  }
+
+  return elements;
+}
+
+function ExpandButton() {
+  const onClick = () => {
+    window.open(chrome.extension.getURL('index.html'), '_blank');
+  }
+
+  return (
+    <Tooltip title="Expand View">
+      <IconButton color="inherit" onClick={onClick}>
+        <OpenInNew />
+      </IconButton>
+    </Tooltip>
+  );
 }
 
 function WalletButton() {
   const classes = useStyles();
   const [_, setPage] = usePage();
-  const onClick = useCallback(() => setPage('wallet'), []);
+  const onClick = () => setPage('wallet');
 
   return (
     <>
@@ -125,7 +149,7 @@ function WalletButton() {
 function ConnectionsButton() {
   const classes = useStyles();
   const [_, setPage] = usePage();
-  const onClick = useCallback(() => setPage('connections'), []);
+  const onClick = () => setPage('connections');
   const connectedWallets = useConnectedWallets();
 
   const connectionAmount = Object.keys(connectedWallets).length;

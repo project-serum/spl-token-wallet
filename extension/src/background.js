@@ -7,48 +7,57 @@ function launchPopup(message, sender, sendResponse) {
   searchParams.set('request', JSON.stringify(message.data));
 
   // TODO consolidate popup dimensions
-  chrome.windows.create({
-    url: 'index.html/#' + searchParams.toString(),
-    type: 'popup',
-    width: 375,
-    height: 600,
-    setSelfAsOpener: true,
-    focused: true,
-  });
+  chrome.windows.getLastFocused((focusedWindow) => {
+    chrome.windows.create({
+      url: 'index.html/#' + searchParams.toString(),
+      type: 'popup',
+      width: 375,
+      height: 600,
+      top: focusedWindow.top,
+      left: focusedWindow.left + (focusedWindow.width - 375),
+      setSelfAsOpener: true,
+      focused: true,
+    });
+  })
 
   responseHandlers.set(message.data.id, sendResponse);
 }
 
+function handleConnect(message, sender, sendResponse) {
+  chrome.storage.local.get('connectedWallets', (result) => {
+    const connectedWallet = (result.connectedWallets || {})[sender.origin];
+    if (!connectedWallet) {
+      launchPopup(message, sender, sendResponse);
+    } else {
+      sendResponse({
+        method: 'connected',
+        params: {
+          publicKey: connectedWallet.publicKey,
+          autoApprove: connectedWallet.autoApprove,
+        },
+        id: message.data.id,
+      });
+    }
+  });
+}
+
+function handleDisconnect(message, sender, sendResponse) {
+  chrome.storage.local.get('connectedWallets', (result) => {
+    delete result.connectedWallets[sender.origin];
+    chrome.storage.local.set(
+      { connectedWallets: result.connectedWallets },
+      () => sendResponse({ method: 'disconnected', id: message.data.id }),
+    );
+  });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.channel === 'sollet_contentscript_background_channel') {
-    if (
-      message.data.method === 'connect' ||
-      message.data.method === 'disconnect'
-    ) {
-      chrome.storage.local.get('connectedWallets', (result) => {
-        const connectedWallet = (result.connectedWallets || {})[sender.origin];
-        if (!connectedWallet) {
-          launchPopup(message, sender, sendResponse);
-          return;
-        }
-        if (message.data.method === 'connect') {
-          sendResponse({
-            method: 'connected',
-            params: {
-              publicKey: connectedWallet.publicKey,
-              autoApprove: connectedWallet.autoApprove,
-            },
-            id: message.data.id,
-          });
-        } else if (message.data.method === 'disconnect') {
-          delete result.connectedWallets[sender.origin];
-          chrome.storage.local.set(
-            { connectedWallets: result.connectedWallets },
-            () => sendResponse({ method: 'disconnected', id: message.data.id }),
-          );
-        }
-      });
-    } else {
+    if (message.data.method === 'connect') {
+      handleConnect(message, sender, sendResponse);
+    } else if (message.data.method === 'disconnect') {
+      handleDisconnect(message, sender, sendResponse);
+    }  else {
       launchPopup(message, sender, sendResponse);
     }
     // keeps response channel open

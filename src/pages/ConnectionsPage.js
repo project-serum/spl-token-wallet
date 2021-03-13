@@ -3,6 +3,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core';
 import { useIsExtensionWidth } from '../utils/utils';
+import ConnectionsList from '../components/ConnectionsList';
 
 const useStyles = makeStyles((theme) => ({
   container: {
