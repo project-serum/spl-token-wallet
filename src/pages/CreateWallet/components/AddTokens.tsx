@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import copy from 'clipboard-copy';
 import {
   Card,
   Row,
@@ -20,6 +19,8 @@ import SRM from '../../../images/srm.svg';
 import Attention from '../../../images/attention.svg';
 import BottomLink from '../../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
+import { refreshWalletPublicKeys, useWallet, useWalletPublicKeys } from '../../../utils/wallet';
+import { refreshAccountInfo } from '../../../utils/connection';
 
 const AddTokens = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -27,6 +28,11 @@ const AddTokens = () => {
   const [selectedCoins, selectCoin] = useState<string[]>([]);
 
   const theme = useTheme();
+  const wallet = useWallet()
+
+  const [publicKeys] = useWalletPublicKeys();
+  const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
+
 
   return (
     <>
@@ -55,15 +61,10 @@ const AddTokens = () => {
               {' '}
               <TextareaWithCopy
                 height={'4.5rem'}
-                type="text"
                 value={address}
                 onChange={(e) => {
                   setAddress(e.target.value);
                 }}
-                placeholder={''}
-                onCopyClick={() =>
-                  copy('FBfkAWERNksjheslnerjlLSKEJTLKDJGlkrngn')
-                }
               />
             </Row>
             <Row width={'85%'}>
@@ -101,6 +102,12 @@ const AddTokens = () => {
                 btnWidth={'31%'}
                 height={'3.5rem'}
                 background={'#366CE5'}
+                onClick={() => {
+                  refreshWalletPublicKeys(wallet);
+                  sortedPublicKeys.map((publicKey) =>
+                    refreshAccountInfo(wallet.connection, publicKey, true),
+                  );
+                }}
               >
                 Refresh Balance
               </VioletButton>
@@ -171,136 +178,6 @@ const AddTokens = () => {
                     }}
                     theme={theme}
                   />
-                </Stroke>{' '}
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>SOL</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('SOL')
-                          ? [...selectedCoins.filter((name) => name !== 'SOL')]
-                          : [...selectedCoins, 'SOL'],
-                      );
-                    }}
-                    theme={theme}
-                  />
-                </Stroke>{' '}
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>BTC</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('BTC')
-                          ? [...selectedCoins.filter((name) => name !== 'BTC')]
-                          : [...selectedCoins, 'BTC'],
-                      );
-                    }}
-                    theme={theme}
-                  />
-                </Stroke>
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>CHZ</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('CHZ')
-                          ? [...selectedCoins.filter((name) => name !== 'CHZ')]
-                          : [...selectedCoins, 'CHZ'],
-                      );
-                    }}
-                    theme={theme}
-                  />
-                </Stroke>
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>ETH</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('ETH')
-                          ? [...selectedCoins.filter((name) => name !== 'ETH')]
-                          : [...selectedCoins, 'ETH'],
-                      );
-                    }}
-                    theme={theme}
-                  />
-                </Stroke>
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>DEFI</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('DEFI')
-                          ? [...selectedCoins.filter((name) => name !== 'DEFI')]
-                          : [...selectedCoins, 'DEFI'],
-                      );
-                    }}
-                    theme={theme}
-                  />
                 </Stroke>
               </ListCard>
             </Row>
@@ -309,7 +186,6 @@ const AddTokens = () => {
               width={'85%'}
               justify={'space-between'}
             >
-              {' '}
               <Row>
                 <span style={{ display: 'flex' }}>
                   <BoldTitle fontSize={'1.5rem'}>Cost: </BoldTitle>

@@ -73,13 +73,20 @@ const HeadRow = styled(Row)`
   border-bottom: ${(props) => props.theme.customPalette.border.new};
 `;
 
-const AddTokenButton = ({ theme }) => {
+const AddTokenButton = ({
+  theme,
+  setShowAddTokenDialog,
+}: {
+  theme: Theme;
+  setShowAddTokenDialog: (isOpen: boolean) => void;
+}) => {
   return (
     <BtnCustom
       textTransform={'capitalize'}
       borderWidth="0"
       height={'100%'}
       padding={'1.2rem 0'}
+      onClick={() => setShowAddTokenDialog(true)}
     >
       <img src={AddIcon} alt="addIcon" style={{ marginRight: '1rem' }} />
       <GreyTitle theme={theme}>Add token</GreyTitle>
@@ -252,10 +259,12 @@ const AssetsTable = ({
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
+  setShowAddTokenDialog,
 }: {
   selectPublicKey: (publicKey: any) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
+  setShowAddTokenDialog: (isOpen: boolean) => void;
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
@@ -346,7 +355,10 @@ const AssetsTable = ({
           <GreyTitle theme={theme}>Assets</GreyTitle>
         </HeadRow>
         <HeadRow theme={theme}>
-          <AddTokenButton theme={theme} />
+          <AddTokenButton
+            setShowAddTokenDialog={setShowAddTokenDialog}
+            theme={theme}
+          />
         </HeadRow>
         <HeadRow theme={theme}>
           <BtnCustom
@@ -381,7 +393,10 @@ const AssetsTable = ({
               justify="flex-start"
               style={{ height: '5rem' }}
             >
-              <AddTokenButton theme={theme} />
+              <AddTokenButton
+                setShowAddTokenDialog={setShowAddTokenDialog}
+                theme={theme}
+              />
             </RowContainer>
           </StyledTd>
         </StyledTr>

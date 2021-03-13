@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import copy from 'clipboard-copy';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -106,10 +105,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
       <RowContainer width="90%">
         <TextareaWithCopy
           value={mnemonic}
-          onChange={() => {}}
-          onCopyClick={() => copy(mnemonic)}
           height={'11.5rem'}
-          type={'text'}
           placeholder={'***'}
         />
       </RowContainer>

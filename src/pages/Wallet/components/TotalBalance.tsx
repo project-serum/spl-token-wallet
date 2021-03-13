@@ -52,10 +52,10 @@ const Item = ({
 };
 
 const TotalBalance = () => {
-  const [publicKeys] = useWalletPublicKeys();
   const [marketsData, setMarketsData] = useState<any>(null);
   const [, setForceUpdate] = useState(false);
 
+  const [publicKeys] = useWalletPublicKeys();
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
 
   useEffect(() => {

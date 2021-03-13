@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import copy from 'clipboard-copy';
 import DialogForm from './DialogForm';
 import {
   useIsProdNetwork,
@@ -129,12 +128,8 @@ export default function DepositDialog({ open, onClose, publicKey }) {
               qrCode
             /> */}
               <TextareaWithCopy
-                onChange={() => {}}
                 value={publicKey?.toBase58()}
-                onCopyClick={() => copy(publicKey?.toBase58())}
                 height={'5rem'}
-                placeholder={''}
-                type={'text'}
               />
             </RowContainer>
             <RowContainer
@@ -251,10 +246,6 @@ function SolletSwapDepositAddress({
         <TextareaWithCopy
           value={address}
           height="6rem"
-          onChange={() => {}}
-          onCopyClick={() => copy(address)}
-          type={'text'}
-          placeholder={''}
           // qrCode={`bitcoin:${address}`}
         />
       </RowContainer>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import copy from 'clipboard-copy';
 import { useTheme } from '@material-ui/core';
 
 import {
@@ -52,13 +51,7 @@ const CreatePassword = ({
           <RowContainer style={{ position: 'relative' }}>
             <TextareaWithCopy
               height={'8rem'}
-              type="text"
               value={seedPhrase}
-              onChange={() => {}}
-              placeholder={''}
-              onCopyClick={() => {
-                copy(seedPhrase);
-              }}
             />
           </RowContainer>
           <RowContainer>

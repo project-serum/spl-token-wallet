@@ -1,4 +1,5 @@
 import React from 'react';
+import copy from 'clipboard-copy'
 import {
   RowContainer,
   Input,
@@ -16,20 +17,22 @@ import { useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 
 const InputWithComponent = ({
-  type,
+  type = 'text',
   value,
   onChange,
-  autofocus = false,
-  placeholder,
+  autoFocus = false,
+  disabled = false,
+  placeholder = '',
   ComponentToShow,
-  style,
+  style = {},
   containerStyle
 }: {
-  type: string;
+  type?: string;
   value: string;
   onChange: any;
-  autofocus?: boolean,
-  placeholder: string;
+  disabled?: boolean;
+  autoFocus?: boolean,
+  placeholder?: string;
   ComponentToShow: any;
   style?: any
   containerStyle?: any
@@ -39,10 +42,11 @@ const InputWithComponent = ({
       <Input
         type={type}
         value={value}
-        autoFocus={autofocus}
+        autoFocus={autoFocus}
         onChange={onChange}
         placeholder={placeholder}
         style={style}
+        disabled={disabled}
       />
       <div
         style={{
@@ -94,19 +98,19 @@ const SearchInputWithLoupe = ({
 };
 
 const TextareaWithComponent = ({
-  type,
+  type = 'text',
   value,
-  onChange,
-  placeholder,
+  onChange = () => {},
+  placeholder = '',
   ComponentToShow,
-  height,
+  height = '6rem',
 }: {
-  type: string;
+  type?: string;
   value: string;
-  onChange: any;
-  placeholder: string;
+  onChange?: any;
+  placeholder?: string;
   ComponentToShow: any;
-  height: string;
+  height?: string;
 }) => {
   return (
     <RowContainer style={{ position: 'relative', width: '100%' }}>
@@ -132,15 +136,13 @@ const TextareaWithComponent = ({
 };
 
 const TextareaWithCopy = ({
-  onCopyClick,
   ...props
 }: {
-  height: string;
-  type: string;
+  height?: string;
+  type?: string;
   value: string;
-  onChange: any;
-  placeholder: string;
-  onCopyClick: () => void;
+  onChange?: any;
+  placeholder?: string;
 }) => {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -154,7 +156,7 @@ const TextareaWithCopy = ({
             height: '4.5rem',
           }}
           onClick={() => {
-            onCopyClick()
+            copy(props.value)
             enqueueSnackbar("Copied!", { variant: 'success' });
           }}
           src={Copy}
@@ -182,7 +184,7 @@ const InputWithEye = ({
 }) => {
   return (
     <InputWithComponent
-      autofocus={true}
+      autoFocus={true}
       ComponentToShow={
         <img
           style={{
@@ -204,7 +206,9 @@ const InputWithPaste = ({
   onPasteClick,
   ...props
 }: {
-  type: string;
+  type?: string;
+  disabled?: boolean;
+  autoFocus?: boolean;
   value: string;
   onChange: any;
   placeholder: string;
