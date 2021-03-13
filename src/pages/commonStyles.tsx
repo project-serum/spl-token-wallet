@@ -125,6 +125,8 @@ export const Card = styled.div`
   justify-content: ${(props) => props.justify || 'center'};
   flex-direction: column;
   align-items: center;
+
+  transition: .3s all ease-out;
 `;
 
 export const Input = styled.input`

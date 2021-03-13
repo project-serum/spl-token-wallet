@@ -146,15 +146,15 @@ export default function App() {
       <Suspense fallback={<LoadingIndicator />}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
             <ConnectionProvider>
+            <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
               <WalletProvider>
                 <NavigationFrame>
                   <Pages />
                 </NavigationFrame>
               </WalletProvider>
+              </SnackbarProvider>
             </ConnectionProvider>
-          </SnackbarProvider>
         </ThemeProvider>
       </Suspense>
     </BrowserRouter>

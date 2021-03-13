@@ -2,6 +2,30 @@ html {
   font-size: 10px;
 }
 
+@media screen and (min-width: 1920px) {
+  html {
+    font-size: 11px;
+  }
+}
+
+@media screen and (min-width: 2200px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@media screen and (min-width: 2400px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 body {
   margin: 0;
   font-family: 'Avenir Next Medium';
@@ -16,10 +40,14 @@ body,
   height: 100%;
 }
 
-a {
+a, a:hover {
   text-decoration: none;
 }
 
 input, textarea {
   resize: none;
+}
+
+.MuiTabs-indicator.MuiTabs-indicator  {
+  background: transparent;
 }

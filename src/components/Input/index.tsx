@@ -6,6 +6,7 @@ import {
   SearchInput,
   Textarea,
   ContainerForIcon,
+  Title,
 } from '../../pages/commonStyles';
 import Eye from '../../images/Eye.svg';
 import ClosedEye from '../../images/ClosedEye.svg';
@@ -21,6 +22,7 @@ const InputWithComponent = ({
   autofocus = false,
   placeholder,
   ComponentToShow,
+  style
 }: {
   type: string;
   value: string;
@@ -28,6 +30,7 @@ const InputWithComponent = ({
   autofocus?: boolean,
   placeholder: string;
   ComponentToShow: any;
+  style?: any
 }) => {
   return (
     <RowContainer style={{ position: 'relative', width: '90%' }}>
@@ -37,6 +40,7 @@ const InputWithComponent = ({
         autoFocus={autofocus}
         onChange={onChange}
         placeholder={placeholder}
+        style={style}
       />
       <div
         style={{
@@ -171,6 +175,7 @@ const InputWithEye = ({
   placeholder: string;
   showPassword: boolean;
   onEyeClick: () => void;
+  style?: any
 }) => {
   return (
     <InputWithComponent
@@ -201,6 +206,7 @@ const InputWithPaste = ({
   onChange: any;
   placeholder: string;
   onPasteClick: () => void;
+  style?: any
 }) => {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
@@ -223,6 +229,45 @@ const InputWithPaste = ({
     />
   );
 };
+
+const InputWithMax = ({
+  onMaxClick,
+  maxText,
+  ...props
+}: {
+  type: string;
+  value: string;
+  onChange: any;
+  maxText: string;
+  placeholder: string;
+  onMaxClick: () => void;
+  style?: any
+}) => {
+  const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return (
+    <InputWithComponent
+      ComponentToShow={
+        <>
+        <Title fontSize={'1rem'} color={theme.customPalette.grey.dark}>Max:</Title>
+        <TextButton
+          color={theme.customPalette.blue.new}
+          onClick={() => {
+            onMaxClick()
+            enqueueSnackbar("Set!", { variant: 'success' });
+          }}
+          style={{ padding: '1.2rem 2rem 1.2rem .5rem', whiteSpace: 'nowrap' }}
+        >
+          {maxText}
+        </TextButton>
+        </>
+      }
+      {...props}
+    />
+  );
+};
+
 
 const InputWithSearch = ({
   onSearchClick,
@@ -249,5 +294,5 @@ const InputWithSearch = ({
   );
 };
 
-export { InputWithEye, InputWithPaste, InputWithSearch, TextareaWithCopy };
+export { InputWithEye, InputWithPaste, InputWithMax, InputWithSearch, TextareaWithCopy };
 export default InputWithComponent;

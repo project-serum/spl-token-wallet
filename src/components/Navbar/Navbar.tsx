@@ -15,6 +15,8 @@ import { CSSProperties } from '@material-ui/styles';
 import WalletLogo from '../../images/logo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
+import TotalBalance from '../../pages/Wallet/components/TotalBalance'
+
 import { useWallet } from '../../utils/wallet';
 
 const ButtonsContainer = styled(Row)`
@@ -225,7 +227,7 @@ const Navbar = () => {
                   {wallet.publicKey.toBase58()}
                 </Title>
                 <Title color={theme.customPalette.green.main} fontSize="1rem">
-                  $0.00
+                  <TotalBalance />
                 </Title>
               </Row>
               <RedButton

@@ -1,13 +1,13 @@
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Dialog } from '@material-ui/core';
+import { Card } from '../../commonStyles';
 
 export default function DialogForm({
   open,
   onClose,
-  onSubmit,
-  children,
+  onSubmit = () => {},
   ...rest
 }) {
   const theme = useTheme();
@@ -16,6 +16,7 @@ export default function DialogForm({
   return (
     <Dialog
       open={open}
+      PaperComponent={() => <Card {...rest} />}
       PaperProps={{
         component: 'form',
         onSubmit: (e) => {
@@ -28,8 +29,6 @@ export default function DialogForm({
       onClose={onClose}
       fullScreen={fullScreen}
       {...rest}
-    >
-      {children}
-    </Dialog>
+    />
   );
 }

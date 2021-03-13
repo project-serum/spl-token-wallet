@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogForm from './DialogForm';
+import DialogForm from '../pages/Wallet/components/DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
 import { useSolanaExplorerUrlSuffix } from '../utils/connection';

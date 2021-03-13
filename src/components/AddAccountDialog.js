@@ -8,7 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Switch from '@material-ui/core/Switch';
 import { Account } from '@solana/web3.js';
-import DialogForm from './DialogForm';
+import DialogForm from '../pages/Wallet/components/DialogForm';
 
 export default function AddAccountDialog({ open, onAdd, onClose }) {
   const [name, setName] = useState('');

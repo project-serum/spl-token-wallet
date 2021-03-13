@@ -1,5 +1,6 @@
 import { DialogContentText } from "@material-ui/core";
 import { useEffect, useState } from "react";
+import { Title } from "../pages/commonStyles";
 import { useConnection } from "../utils/connection";
 import { priceStore, serumMarkets } from "../utils/markets";
 
@@ -7,7 +8,7 @@ function FeeContentText({ ethFee, ethPrice, warning = false, prefix = "", bold =
   let usdFeeEstimate = ethPrice !== undefined ? ethPrice * ethFee : null;
 
   return (
-    <DialogContentText
+    <Title
       color={warning ? 'secondary' : 'textPrimary'}
       // @ts-ignore
       style={{ marginBottom: '0px', fontWeight: bold ? '500' : undefined }}
@@ -16,7 +17,7 @@ function FeeContentText({ ethFee, ethPrice, warning = false, prefix = "", bold =
       {ethFee.toFixed(4)}
       {' ETH'}
       {usdFeeEstimate && ` (${usdFeeEstimate.toFixed(2)} USD)`}
-    </DialogContentText>
+    </Title>
   );
 }
 
