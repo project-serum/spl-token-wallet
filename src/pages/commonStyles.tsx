@@ -126,7 +126,7 @@ export const Card = styled.div`
   flex-direction: column;
   align-items: center;
 
-  transition: .3s all ease-out;
+  transition: 0.3s all ease-out;
 `;
 
 export const Input = styled.input`
@@ -134,7 +134,7 @@ export const Input = styled.input`
   height: ${(props) => props.height || '4.5rem'};
   color: #fff;
   font-family: Avenir Next Medium;
-  border: .1rem solid #3a475c;
+  border: 0.1rem solid #3a475c;
   box-sizing: border-box;
   font-size: 1.5rem;
   border-radius: 1.5rem;
@@ -152,7 +152,7 @@ export const Input = styled.input`
     -webkit-text-fill-color: #fff;
   }
 
-  ${props => props.style};
+  ${(props) => props.style};
 `;
 
 export const Body = styled.div`
@@ -301,7 +301,10 @@ export const StyledLabel = styled.label`
 
 export const StyledCheckbox = styled(Checkbox)`
   &&& {
-    color: ${(props) => props.color || props.theme.customPalette.blue.new};
+    color: ${(props) =>
+      props.disabled
+        ? props.theme.customPalette.grey.light
+        : props.color || props.theme.customPalette.blue.new};
     &:hover {
       background-color: rgba(54, 108, 229, 0.1);
     }
@@ -349,6 +352,7 @@ export const ListCard = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: auto;
+  padding: 0 1.6rem;
 `;
 
 export const ExclamationMark = styled(({ fontSize, lineHeight, ...props }) => (

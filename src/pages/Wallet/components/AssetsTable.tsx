@@ -32,15 +32,7 @@ const TableContainer = styled(({ theme, ...props }) => (
   background: ${(props) => props.theme.customPalette.grey.background};
   border: ${(props) => props.theme.customPalette.border.new};
   border-radius: 1.2rem;
-  height: 80%;
-
-  @media (max-width: 1600px) {
-    height: 70%;
-  }
-
-  @media (max-width: 1440px) {
-    height: 75%;
-  }
+  height: 100%;
 `;
 
 const StyledTable = styled.table`
@@ -108,10 +100,9 @@ export const GreyTitle = styled(({ theme, ...props }) => (
 const StyledTr = styled.tr`
   height: 7rem;
 
-  &:hover td {
+  &:nth-child(2n) td {
     background: ${(props) =>
       props.disableHover ? '' : props.theme.customPalette.dark.background};
-    transition: 0.3s all ease-out;
   }
 `;
 

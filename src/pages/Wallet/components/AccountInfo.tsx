@@ -29,15 +29,8 @@ const RowWithSelector = styled(Row)`
 `;
 
 const AccountInfoContainer = styled(RowContainer)`
-  height: 20%;
-
-  @media (max-width: 1600px) {
-    height: 30%;
-  }
-
-  @media (max-width: 1440px) {
-    height: 25%;
-  }
+  width: 100%;
+  height: auto;
 `
 
 const AccountInfo = () => {
@@ -88,7 +81,7 @@ const AccountInfo = () => {
             setIsDeleteAccountOpen={setIsDeleteAccountOpen}
           />
         </RowWithSelector>
-        <Title style={{ position: 'relative', bottom: '3rem' }} color={theme.customPalette.grey.light}>
+        <Title style={{ position: 'relative' }} color={theme.customPalette.grey.light}>
           {wallet.publicKey.toBase58()}
         </Title>
       </Row>

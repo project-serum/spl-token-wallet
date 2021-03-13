@@ -149,7 +149,7 @@ const AddTokens = () => {
                 }}
                 onSearchClick={() => {}}
                 placeholder={'Search'}
-              ></InputWithSearch>
+              />
             </Row>
             <Row width="85%">
               <ListCard>
