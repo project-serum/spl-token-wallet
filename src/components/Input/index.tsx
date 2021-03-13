@@ -22,7 +22,8 @@ const InputWithComponent = ({
   autofocus = false,
   placeholder,
   ComponentToShow,
-  style
+  style,
+  containerStyle
 }: {
   type: string;
   value: string;
@@ -31,9 +32,10 @@ const InputWithComponent = ({
   placeholder: string;
   ComponentToShow: any;
   style?: any
+  containerStyle?: any
 }) => {
   return (
-    <RowContainer style={{ position: 'relative', width: '90%' }}>
+    <RowContainer style={{ position: 'relative', width: '90%', ...containerStyle }}>
       <Input
         type={type}
         value={value}
@@ -176,6 +178,7 @@ const InputWithEye = ({
   showPassword: boolean;
   onEyeClick: () => void;
   style?: any
+  containerStyle?: any
 }) => {
   return (
     <InputWithComponent

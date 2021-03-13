@@ -32,7 +32,7 @@ export const StyledDialog = styled(Dialog)`
 `
 
 export const StyledTabs = styled(Tabs)`
-  width: 70%;
+  width: 90%;
   & > div > span {
     background: ${props => props.theme.customPalette.blue.serum} !important;
   }

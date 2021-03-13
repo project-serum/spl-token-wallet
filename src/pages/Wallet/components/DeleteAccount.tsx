@@ -20,6 +20,9 @@ export default function DeleteMnemonicDialog({ open, onClose }) {
         open={open}
         onClose={onClose}
         fullWidth
+        onEnter={() => {
+          setDeleteCheck('')
+        }}
       >
         <RowContainer direction="column" margin="0 0 2rem 0">
           <Title fontSize="2rem">Delete Mnemonic</Title>

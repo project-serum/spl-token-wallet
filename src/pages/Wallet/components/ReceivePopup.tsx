@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import copy from 'clipboard-copy';
 import DialogForm from './DialogForm';
-import CopyableDisplay from '../../../components/CopyableDisplay';
 import {
   useIsProdNetwork,
   useSolanaExplorerUrlSuffix,
@@ -33,10 +32,7 @@ import {
   VioletButton,
   WhiteButton,
 } from '../../commonStyles';
-import {
-  InputWithMax,
-  TextareaWithCopy,
-} from '../../../components/Input';
+import { InputWithMax, TextareaWithCopy } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
 import { StyledTab, StyledTabs, StyledStepLabel } from '../styles';
 
@@ -252,11 +248,14 @@ function SolletSwapDepositAddress({
           Native BTC can be converted to SPL {tokenName} by sending it to the
           following address:
         </Title>
-        <CopyableDisplay
+        <TextareaWithCopy
           value={address}
-          label="Native BTC Deposit Address"
-          autoFocus
-          qrCode={`bitcoin:${address}`}
+          height="6rem"
+          onChange={() => {}}
+          onCopyClick={() => copy(address)}
+          type={'text'}
+          placeholder={''}
+          // qrCode={`bitcoin:${address}`}
         />
       </RowContainer>
     );

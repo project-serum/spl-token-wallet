@@ -139,6 +139,10 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo, ethAccount }) {
     },
   );
 
+  if (!swapInfo) {
+    return null;
+  }
+
   const ethFeeData = useAsyncData(
     swapInfo.coin &&
       (() =>
@@ -152,10 +156,6 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo, ethAccount }) {
       refreshInterval: 2000,
     },
   );
-
-  if (!swapInfo) {
-    return null;
-  }
 
   const ethFeeEstimate = Array.isArray(ethFeeData[0])
     ? ethFeeData[0].reduce((acc, elem) => acc + elem)

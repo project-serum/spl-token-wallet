@@ -151,6 +151,8 @@ export const Input = styled.input`
     -webkit-box-shadow: 0px 0px 0 30px #222429 inset !important;
     -webkit-text-fill-color: #fff;
   }
+
+  ${props => props.style};
 `;
 
 export const Body = styled.div`
