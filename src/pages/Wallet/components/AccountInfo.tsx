@@ -20,8 +20,8 @@ import DeleteAccount from './DeleteAccount';
 
 const RowWithSelector = styled(Row)`
   position: relative;
-  bottom: 3rem;
-  padding: 3rem 3rem 3rem 0;
+  bottom: 1rem;
+  padding: 1rem 3rem 3rem 0;
 
   &:hover #accountSelector {
     display: flex;

@@ -45,7 +45,7 @@ const GreenText = styled(WhiteText)`
   color: ${(props) => props.theme.customPalette.green.light};
 `;
 
-const feeFormat = new Intl.NumberFormat(undefined, {
+export const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
   maximumFractionDigits: 6,
 });

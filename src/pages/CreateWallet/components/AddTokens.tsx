@@ -1,38 +1,82 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom'
 import {
   Card,
   Row,
-  Img,
   Title,
   VioletButton,
   BoldTitle,
   ColorText,
   Legend,
   RowContainer,
-  StyledCheckbox,
   ListCard,
 } from '../../commonStyles';
-import { Stroke } from './ProgressBar';
 import { InputWithSearch, TextareaWithCopy } from '../../../components/Input';
 
-import SRM from '../../../images/srm.svg';
 import Attention from '../../../images/attention.svg';
 import BottomLink from '../../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
-import { refreshWalletPublicKeys, useWallet, useWalletPublicKeys } from '../../../utils/wallet';
-import { refreshAccountInfo } from '../../../utils/connection';
+import { refreshWalletPublicKeys, useBalanceInfo, useWallet, useWalletPublicKeys, useWalletTokenAccounts } from '../../../utils/wallet';
+import { refreshAccountInfo, useConnectionConfig } from '../../../utils/connection';
+
+import { TokenListItem, feeFormat } from '../../Wallet/components/AddTokenPopup'
+import { abbreviateAddress, formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+import { TOKENS, useUpdateTokenName } from '../../../utils/tokens/names';
+import { useSendTransaction } from '../../../utils/notifications';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { useAsyncData } from '../../../utils/fetch-loop';
 
 const AddTokens = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [address, setAddress] = useState('');
-  const [selectedCoins, selectCoin] = useState<string[]>([]);
+  const [redirectToWallet, setRedirectToWallet] = useState(false)
+  const [selectedTokens, setSelectedTokens] = useState([]);
 
   const theme = useTheme();
   const wallet = useWallet()
+  let [tokenAccountCost] = useAsyncData(
+    wallet.tokenAccountCost,
+    wallet.tokenAccountCost,
+  );
+  let updateTokenName = useUpdateTokenName();
+  const [walletAccounts] = useWalletTokenAccounts();
+
+  const [sendTransaction, sending] = useSendTransaction();
+  const { endpoint } = useConnectionConfig();
 
   const [publicKeys] = useWalletPublicKeys();
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
+  const popularTokens = TOKENS[endpoint];
 
+  const balanceInfo = useBalanceInfo(wallet.publicKey);
+  let { amount, decimals } = balanceInfo || {
+    amount: 0,
+    decimals: 8,
+    mint: null,
+    tokenName: 'Loading...',
+    tokenSymbol: '--',
+  };
+
+  function onSubmit() {
+      Promise.all(
+        selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
+      ).then(async () => {
+        await refreshWalletPublicKeys(wallet);
+        await setRedirectToWallet(true)
+      });
+
+      return;
+  }
+
+  async function addToken({
+    mintAddress,
+    tokenName,
+    tokenSymbol,
+  }) {
+    let mint = new PublicKey(mintAddress);
+    updateTokenName(mint, tokenName, tokenSymbol);
+    const resp = await wallet.createAssociatedTokenAccount(mint);
+    return resp[1];
+  }
 
   return (
     <>
@@ -61,10 +105,7 @@ const AddTokens = () => {
               {' '}
               <TextareaWithCopy
                 height={'4.5rem'}
-                value={address}
-                onChange={(e) => {
-                  setAddress(e.target.value);
-                }}
+                value={wallet?.publicKey?.toBase58()}
               />
             </Row>
             <Row width={'85%'}>
@@ -112,9 +153,11 @@ const AddTokens = () => {
                 Refresh Balance
               </VioletButton>
               <span style={{ display: 'flex' }}>
-                <BoldTitle fontSize={'1.5rem'}>Your Balance: </BoldTitle>
+                <BoldTitle fontSize={'1.5rem'}>Your Balance:&nbsp;</BoldTitle>
                 <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
-                  &ensp; 1.000 SOL
+                  {formatNumberToUSFormat(
+                stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
+              )} SOL
                 </BoldTitle>
               </span>
             </Row>
@@ -152,33 +195,38 @@ const AddTokens = () => {
               />
             </Row>
             <Row width="85%">
-              <ListCard>
-                <Stroke theme={theme}>
-                  <span
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      minWidth: '6rem',
-                      width: 'auto',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Img>
-                      <img alt="asset icon" src={SRM} />
-                    </Img>
-                    <BoldTitle>SRM</BoldTitle>
-                  </span>
-                  <StyledCheckbox
-                    onChange={() => {
-                      selectCoin(
-                        selectedCoins.includes('SRM')
-                          ? [...selectedCoins.filter((name) => name !== 'SRM')]
-                          : [...selectedCoins, 'SRM'],
-                      );
-                    }}
-                    theme={theme}
-                  />
-                </Stroke>
+            <ListCard>
+                {popularTokens
+                  .filter(
+                    (token) =>
+                      !token.deprecated &&
+                      (searchValue !== ''
+                        ? (
+                            token.tokenName ??
+                            abbreviateAddress(token.mintAddress)
+                          )
+                            .toLowerCase()
+                            .includes(searchValue.toLowerCase()) ||
+                          token.tokenSymbol
+                            .toLowerCase()
+                            .includes(searchValue.toLowerCase())
+                        : true),
+                  )
+
+                  .map((token) => (
+                    <TokenListItem
+                      key={token.mintAddress}
+                      {...token}
+                      existingAccount={(walletAccounts || []).find(
+                        (account) =>
+                          account.parsed.mint.toBase58() === token.mintAddress,
+                      )}
+                      onSubmit={onSubmit}
+                      disalbed={sending}
+                      selectedTokens={selectedTokens}
+                      setSelectedTokens={setSelectedTokens}
+                    />
+                  ))}
               </ListCard>
             </Row>
             <Row
@@ -188,13 +236,14 @@ const AddTokens = () => {
             >
               <Row>
                 <span style={{ display: 'flex' }}>
-                  <BoldTitle fontSize={'1.5rem'}>Cost: </BoldTitle>
+                  <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
                   <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
-                    &ensp; 1.000 SOL
+                   {+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) *
+                selectedTokens.length} SOL
                   </BoldTitle>
                 </span>
               </Row>
-              <VioletButton theme={theme} background={'#366CE5'}>Finish</VioletButton>
+              <VioletButton theme={theme} background={'#366CE5'} onClick={() => onSubmit()}>Finish</VioletButton>
             </Row>
           </RowContainer>
         </RowContainer>
@@ -205,6 +254,7 @@ const AddTokens = () => {
         toText={'Skip for now'}
         to={'/wallet'}
       />
+      {redirectToWallet && <Redirect to="/wallet" />}
     </>
   );
 };

@@ -13,6 +13,7 @@ import {
 } from '../../commonStyles';
 
 import BottomLink from '../../../components/BottomLink';
+import { sleep } from '../../../utils/utils';
 
 const ConfirmSeedPhrase = ({
   password,
@@ -23,11 +24,11 @@ const ConfirmSeedPhrase = ({
 }: {
   password: string;
   seedPhrase: string;
-  createWallet: (password: string) => void;
+  createWallet: (password: string, onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
 }) => {
-  const [savedSeedPhrase, setSavedSeedPhrase] = useState('')
+  const [savedSeedPhrase, setSavedSeedPhrase] = useState('');
   const theme = useTheme();
 
   return (
@@ -39,8 +40,9 @@ const ConfirmSeedPhrase = ({
         <Row width={'90%'}>
           <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
             <Title width={'100%'}>
-              Please manually enter the 12 or 24 seed phrase words you saved in the
-              previous step in the order in which they were presented to you.
+              Please manually enter the 12 or 24 seed phrase words you saved in
+              the previous step in the order in which they were presented to
+              you.
             </Title>
           </ColorText>
         </Row>
@@ -48,7 +50,7 @@ const ConfirmSeedPhrase = ({
           <Textarea
             height={'11.2rem'}
             value={savedSeedPhrase}
-            onChange={e => setSavedSeedPhrase(e.target.value)}
+            onChange={(e) => setSavedSeedPhrase(e.target.value)}
             placeholder={
               'Enter your 12 or 24 words in the correct order, separated by spaces here'
             }
@@ -70,8 +72,10 @@ const ConfirmSeedPhrase = ({
             width={'calc(50% - .5rem)'}
             disabled={seedPhrase !== savedSeedPhrase}
             onClick={async () => {
-              await createWallet(password)
-              await setCurrentStep(3);
+              await createWallet(password, async () => {
+                await sleep(1000);
+                await setCurrentStep(3);
+              });
             }}
           >
             Create wallet

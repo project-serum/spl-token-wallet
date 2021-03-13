@@ -30,9 +30,9 @@ export const CreateWalletPage = () => {
 
   const callAsync = useCallAsync();
 
-  const submit = async (password) => {
+  const submit = async (password, onSuccess) => {
     const { mnemonic, seed } = mnemonicAndSeed;
-    callAsync(
+    await callAsync(
       storeMnemonicAndSeed(
         mnemonic,
         seed,
@@ -43,7 +43,7 @@ export const CreateWalletPage = () => {
         progressMessage: 'Creating wallet...',
         successMessage: 'Wallet created',
         onError: () => {},
-        onSuccess: () => {},
+        onSuccess,
       },
     );
   };
