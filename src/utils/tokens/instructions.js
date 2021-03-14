@@ -169,7 +169,6 @@ function publicKeyLayout(property) {
   return new PublicKeyLayout(property);
 }
 
-
 export const OWNER_VALIDATION_PROGRAM_ID = new PublicKey(
   '4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5',
 );

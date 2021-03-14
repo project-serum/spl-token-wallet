@@ -40,7 +40,7 @@ export function useSendTransaction() {
     } catch (e) {
       closeSnackbar(id);
       setSending(false);
-      console.warn(e.message);
+      console.warn(e);
       enqueueSnackbar(e.message, { variant: 'error' });
       if (onError) {
         onError(e);

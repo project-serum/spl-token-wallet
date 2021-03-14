@@ -2,7 +2,6 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  Account,
   TransactionInstruction,
   SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
@@ -431,7 +430,14 @@ async function createAndTransferToAccount({
   memo,
   mint,
 }) {
-  const newAccount = new Account();
+  const [
+    createAccountInstruction,
+    newAddress,
+  ] = await createAssociatedTokenAccountIx(
+    owner.publicKey,
+    destinationPublicKey,
+    mint,
+  );
   let transaction = new Transaction();
   transaction.add(
     assertOwner({
@@ -439,35 +445,18 @@ async function createAndTransferToAccount({
       owner: SystemProgram.programId,
     }),
   );
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: owner.publicKey,
-      newAccountPubkey: newAccount.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        ACCOUNT_LAYOUT.span,
-      ),
-      space: ACCOUNT_LAYOUT.span,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-  );
-  transaction.add(
-    initializeAccount({
-      account: newAccount.publicKey,
-      mint,
-      owner: destinationPublicKey,
-    }),
-  );
+  transaction.add(createAccountInstruction);
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
     {
       ownerPublicKey: owner.publicKey,
       sourcePublicKey,
-      destinationPublicKey: newAccount.publicKey,
+      destinationPublicKey: newAddress,
       amount,
       memo,
     },
   );
   transaction.add(transferBetweenAccountsTxn);
-  let signers = [newAccount];
+  let signers = [];
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 

@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@blockworks-foundation/mango-client": "^0.1.4",
-    "@ledgerhq/hw-transport-webusb": "^5.34.0",
+    "@ledgerhq/hw-transport-webusb": "^5.45.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@project-serum/serum": "^0.13.24",
@@ -38,14 +38,21 @@
     "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
     "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.js\" --write",
+    "fix:prettier": "prettier \"src/**/*.js\" \"extension/src/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
+    "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "env": {
+      "browser": true,
+      "es6": true,
+      "webextensions": true
+    },
+    "extends": ["react-app"]
   },
   "jest": {
     "transformIgnorePatterns": [
