@@ -125,7 +125,7 @@ function ExpandButton() {
 
 function WalletButton() {
   const classes = useStyles();
-  const [_, setPage] = usePage();
+  const setPage = usePage()[1];
   const onClick = () => setPage('wallet');
 
   return (
@@ -148,7 +148,7 @@ function WalletButton() {
 
 function ConnectionsButton() {
   const classes = useStyles();
-  const [_, setPage] = usePage();
+  const setPage = usePage()[1];
   const onClick = () => setPage('connections');
   const connectedWallets = useConnectedWallets();
 

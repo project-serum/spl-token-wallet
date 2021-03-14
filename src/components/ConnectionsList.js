@@ -88,8 +88,8 @@ function ConnectionsListItem({ origin, connectedWallet }) {
   const [iconUrl, setIconUrl] = useState(appleIconUrl);
   const { accounts } = useWalletSelector();
   // TODO better way to do this
-  const account = accounts.find((account) =>
-    account.address.toBase58() === connectedWallet.publicKey,
+  const account = accounts.find(
+    (account) => account.address.toBase58() === connectedWallet.publicKey,
   );
 
   const setAutoApprove = (autoApprove) => {
@@ -115,14 +115,12 @@ function ConnectionsListItem({ origin, connectedWallet }) {
               src={iconUrl}
               onError={() => setIconUrl(faviconUrl)}
               className={classes.listItemImage}
+              alt={origin}
             />
           </div>
         </ListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
-          <ListItemText
-            primary={origin}
-            secondary={account.name}
-          />
+          <ListItemText primary={origin} secondary={account.name} />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
