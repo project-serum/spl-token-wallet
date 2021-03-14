@@ -13,6 +13,7 @@ import {
   NEW_ORDER_V3_OPEN_ORDERS_INDEX,
   NEW_ORDER_V3_OWNER_INDEX,
 } from '@project-serum/serum';
+import { MangoInstructionLayout } from '@blockworks-foundation/mango-client';
 import { PublicKey } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 
@@ -133,7 +134,7 @@ const toInstruction = async (
       );
     } else if (programId.equals(MANGO_PROGRAM_ID)) {
       console.log('[' + index + '] Handled as mango markets instruction');
-      let decodedInstruction = decodeMangoInstruction(decoded);
+      let decodedInstruction = MangoInstructionLayout.decode(decoded);
       return await handleMangoInstruction(
         connection,
         instruction,
@@ -155,10 +156,9 @@ const handleMangoInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  // TODO
-  return {
-    type: 'mango',
-  };
+  const type = `Mango${Object.keys(decodedInstruction)[0]}`;
+  let data = Object.values(decodedInstruction)[0];
+  return { type, data };
 };
 
 const handleRayStakeInstruction = async (
@@ -183,11 +183,6 @@ const handleRayLpInstruction = async (
   return {
     type: 'raydium',
   };
-};
-
-const decodeMangoInstruction = () => {
-  // TODO
-  return undefined;
 };
 
 const decodeStakeInstruction = () => {

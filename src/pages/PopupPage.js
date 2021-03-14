@@ -330,7 +330,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (instruction.type === 'mango') {
+        } else if (['MangoInitMarginAccount', 'MangoDeposit', 'MangoWithdraw', 'MangoBorrow', 'MangoSettleBorrow', 'MangoDepositSrm', 'MangoWithdrawSrm', 'MangoPlaceOrder', 'MangoSettleFunds', 'MangoCancelOrder', ].includes(instruction.type)) {
           // Whitelist mango for now.
         } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
           // It is always considered safe to cancel orders, match orders
