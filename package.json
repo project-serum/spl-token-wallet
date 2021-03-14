@@ -37,14 +37,21 @@
     "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
     "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.js\" --write",
+    "fix:prettier": "prettier \"src/**/*.js\" \"extension/src/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
+    "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "env": {
+      "browser": true,
+      "es6": true,
+      "webextensions": true
+    },
+    "extends": ["react-app"]
   },
   "jest": {
     "transformIgnorePatterns": [

@@ -132,12 +132,12 @@ const toInstruction = async (
     } else {
       return {
         type: 'Unknown',
-        accountMetas: instruction.accounts.map(index => ({
-            publicKey: accountKeys[index],
-            isWritable: transactionMessage.isAccountWritable(index)
+        accountMetas: instruction.accounts.map((index) => ({
+          publicKey: accountKeys[index],
+          isWritable: transactionMessage.isAccountWritable(index),
         })),
-        programId
-      }
+        programId,
+      };
     }
   } catch {}
 
@@ -411,7 +411,7 @@ const getNewOrderV3Data = (accounts, accountKeys) => {
     NEW_ORDER_V3_OWNER_INDEX,
   );
   return { openOrdersPubkey, ownerPubkey };
-}
+};
 
 const getSettleFundsData = (accounts, accountKeys) => {
   const basePubkey = getAccountByIndex(

@@ -3,7 +3,7 @@ import LabelValue from './LabelValue';
 import Typography from '@material-ui/core/Typography';
 
 export default function UnknownInstruction({ instruction, onOpenAddress }) {
-    return (
+  return (
     <>
       <Typography
         variant="subtitle1"
@@ -13,14 +13,15 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
         Unknown instruction:
       </Typography>
       <LabelValue
-        key='Program'
-        label='Program'
+        key="Program"
+        label="Program"
         value={instruction.programId?.toBase58()}
         link={true}
         gutterBottom={true}
         onClick={() => onOpenAddress(instruction.programId.toBase58())}
       />
-      {instruction.accountMetas && instruction.accountMetas.map((accountMeta, index) => {
+      {instruction.accountMetas &&
+        instruction.accountMetas.map((accountMeta, index) => {
           return (
             <>
               <LabelValue
@@ -30,7 +31,9 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
                 link={true}
                 onClick={() => onOpenAddress(accountMeta.publicKey.toBase58())}
               />
-              <Typography gutterBottom>Writable: {accountMeta.isWritable.toString()}</Typography>
+              <Typography gutterBottom>
+                Writable: {accountMeta.isWritable.toString()}
+              </Typography>
             </>
           );
         })}

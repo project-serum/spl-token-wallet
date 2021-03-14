@@ -26,14 +26,26 @@ import AddAccountDialog from './AddAccountDialog';
 import DeleteMnemonicDialog from './DeleteMnemonicDialog';
 import AddHardwareWalletDialog from './AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from './ExportAccountDialog.js';
+import {
+  isExtension,
+  isExtensionPopup,
+  useIsExtensionWidth,
+} from '../utils/utils';
+import ConnectionIcon from './ConnectionIcon';
+import { Badge } from '@material-ui/core';
+import { useConnectedWallets } from '../utils/connected-wallets';
+import { usePage } from '../utils/page';
+import { MonetizationOn, OpenInNew } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
-    paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
+    [theme.breakpoints.up(theme.ext)]: {
+      paddingTop: theme.spacing(3),
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
   },
   title: {
     flexGrow: 1,
@@ -44,23 +56,128 @@ const useStyles = makeStyles((theme) => ({
   menuItemIcon: {
     minWidth: 32,
   },
+  badge: {
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.text.main,
+    height: 16,
+    width: 16,
+  },
 }));
 
 export default function NavigationFrame({ children }) {
   const classes = useStyles();
+  const isExtensionWidth = useIsExtensionWidth();
   return (
     <>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            Solana SPL Token Wallet
+            {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>
-          <WalletSelector />
-          <NetworkSelector />
+          <NavigationButtons />
         </Toolbar>
       </AppBar>
       <main className={classes.content}>{children}</main>
-      <Footer />
+      {!isExtensionWidth && <Footer />}
+    </>
+  );
+}
+
+function NavigationButtons() {
+  const isExtensionWidth = useIsExtensionWidth();
+  const [page] = usePage();
+
+  if (isExtensionPopup) {
+    return null;
+  }
+
+  let elements = [];
+  if (page === 'wallet') {
+    elements = [
+      isExtension && <ConnectionsButton />,
+      <WalletSelector />,
+      <NetworkSelector />,
+    ];
+  } else if (page === 'connections') {
+    elements = [<WalletButton />];
+  }
+
+  if (isExtension && isExtensionWidth) {
+    elements.push(<ExpandButton />);
+  }
+
+  return elements;
+}
+
+function ExpandButton() {
+  const onClick = () => {
+    window.open(chrome.extension.getURL('index.html'), '_blank');
+  };
+
+  return (
+    <Tooltip title="Expand View">
+      <IconButton color="inherit" onClick={onClick}>
+        <OpenInNew />
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+function WalletButton() {
+  const classes = useStyles();
+  const setPage = usePage()[1];
+  const onClick = () => setPage('wallet');
+
+  return (
+    <>
+      <Hidden smUp>
+        <Tooltip title="Wallet Balances">
+          <IconButton color="inherit" onClick={onClick}>
+            <MonetizationOn />
+          </IconButton>
+        </Tooltip>
+      </Hidden>
+      <Hidden xsDown>
+        <Button color="inherit" onClick={onClick} className={classes.button}>
+          Wallet
+        </Button>
+      </Hidden>
+    </>
+  );
+}
+
+function ConnectionsButton() {
+  const classes = useStyles();
+  const setPage = usePage()[1];
+  const onClick = () => setPage('connections');
+  const connectedWallets = useConnectedWallets();
+
+  const connectionAmount = Object.keys(connectedWallets).length;
+
+  return (
+    <>
+      <Hidden smUp>
+        <Tooltip title="Manage Connections">
+          <IconButton color="inherit" onClick={onClick}>
+            <Badge
+              badgeContent={connectionAmount}
+              classes={{ badge: classes.badge }}
+            >
+              <ConnectionIcon />
+            </Badge>
+          </IconButton>
+        </Tooltip>
+      </Hidden>
+      <Hidden xsDown>
+        <Badge
+          badgeContent={connectionAmount}
+          classes={{ badge: classes.badge }}
+        >
+          <Button color="inherit" onClick={onClick} className={classes.button}>
+            Connections
+          </Button>
+        </Badge>
+      </Hidden>
     </>
   );
 }

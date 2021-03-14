@@ -19,7 +19,7 @@ import Link from '@material-ui/core/Link';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
-import { abbreviateAddress } from '../utils/utils';
+import { abbreviateAddress, useIsExtensionWidth } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
@@ -106,6 +106,7 @@ export default function BalancesList() {
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
+  const isExtensionWidth = useIsExtensionWidth();
   // Dummy var to force rerenders on demand.
   const [, setForceUpdate] = useState(false);
   const selectedAccount = accounts.find((a) => a.isSelected);
@@ -182,12 +183,19 @@ export default function BalancesList() {
     });
   }, [sortedPublicKeys, setUsdValuesCallback]);
 
+  const iconSize = isExtensionWidth ? 'small' : 'medium';
+
   return (
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }} component="h2">
-            {selectedAccount && selectedAccount.name} Balances{' '}
+          <Typography
+            variant="h6"
+            style={{ flexGrow: 1, fontSize: isExtensionWidth && '1rem' }}
+            component="h2"
+          >
+            {selectedAccount && selectedAccount.name}
+            {isExtensionWidth ? '' : ' Balances'}{' '}
             {allTokensLoaded && (
               <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
             )}
@@ -196,23 +204,33 @@ export default function BalancesList() {
             selectedAccount.name !== 'Main account' &&
             selectedAccount.name !== 'Hardware wallet' && (
               <Tooltip title="Edit Account Name" arrow>
-                <IconButton onClick={() => setShowEditAccountNameDialog(true)}>
+                <IconButton
+                  size={iconSize}
+                  onClick={() => setShowEditAccountNameDialog(true)}
+                >
                   <EditIcon />
                 </IconButton>
               </Tooltip>
             )}
           <Tooltip title="Merge Accounts" arrow>
-            <IconButton onClick={() => setShowMergeAccounts(true)}>
+            <IconButton
+              size={iconSize}
+              onClick={() => setShowMergeAccounts(true)}
+            >
               <MergeType />
             </IconButton>
           </Tooltip>
           <Tooltip title="Add Token" arrow>
-            <IconButton onClick={() => setShowAddTokenDialog(true)}>
+            <IconButton
+              size={iconSize}
+              onClick={() => setShowAddTokenDialog(true)}
+            >
               <AddIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Sort Accounts" arrow>
             <IconButton
+              size={iconSize}
               onClick={() => {
                 switch (sortAccounts) {
                   case SortAccounts.None:
@@ -234,6 +252,7 @@ export default function BalancesList() {
           </Tooltip>
           <Tooltip title="Refresh" arrow>
             <IconButton
+              size={iconSize}
               onClick={() => {
                 refreshWalletPublicKeys(wallet);
                 publicKeys.map((publicKey) =>
@@ -298,6 +317,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
+  const isExtensionWidth = useIsExtensionWidth();
   const [, setForceUpdate] = useState(false);
   // Valid states:
   //   * undefined => loading.
@@ -344,6 +364,13 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   }
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo;
+  tokenName = tokenName ?? abbreviateAddress(mint);
+  let displayName;
+  if (isExtensionWidth) {
+    displayName = tokenSymbol ?? tokenName;
+  } else {
+    displayName = tokenName + (tokenSymbol ? ` (${tokenSymbol})` : '');
+  }
 
   // Fetch and cache the associated token address.
   if (wallet && wallet.publicKey && mint) {
@@ -383,7 +410,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     return false;
   })();
 
-  const subtitle = (
+  const subtitle = isExtensionWidth ? undefined : (
     <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
       {isAssociatedToken && (
         <div
@@ -430,8 +457,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
             primary={
               <>
                 {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
-                {tokenName ?? abbreviateAddress(mint)}
-                {tokenSymbol ? ` (${tokenSymbol})` : null}
+                {displayName}
               </>
             }
             secondary={subtitle}
@@ -497,6 +523,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
     balanceInfo.mint?.toBase58(),
     publicKey.toBase58(),
   ]);
+  const isExtensionWidth = useIsExtensionWidth();
 
   if (!balanceInfo) {
     return <LoadingIndicator delay={0} />;
@@ -513,6 +540,75 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
       ? serumMarkets[tokenSymbol.toUpperCase()].publicKey
       : undefined
     : undefined;
+
+  const additionalInfo = isExtensionWidth ? undefined : (
+    <>
+      <Typography variant="body2" className={classes.address}>
+        Deposit Address: {publicKey.toBase58()}
+      </Typography>
+      <Typography variant="body2">
+        Token Name: {tokenName ?? 'Unknown'}
+      </Typography>
+      <Typography variant="body2">
+        Token Symbol: {tokenSymbol ?? 'Unknown'}
+      </Typography>
+      {mint ? (
+        <Typography variant="body2" className={classes.address}>
+          Token Address: {mint.toBase58()}
+        </Typography>
+      ) : null}
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <Typography variant="body2">
+            <Link
+              href={
+                `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                urlSuffix
+              }
+              target="_blank"
+              rel="noopener"
+            >
+              View on Solana
+            </Link>
+          </Typography>
+          {market && (
+            <Typography variant="body2">
+              <Link
+                href={`https://dex.projectserum.com/#/market/${market}`}
+                target="_blank"
+                rel="noopener"
+              >
+                View on Serum
+              </Link>
+            </Typography>
+          )}
+          {swapInfo && swapInfo.coin.erc20Contract && (
+            <Typography variant="body2">
+              <Link
+                href={
+                  `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
+                  urlSuffix
+                }
+                target="_blank"
+                rel="noopener"
+              >
+                View on Ethereum
+              </Link>
+            </Typography>
+          )}
+        </div>
+        {exportNeedsDisplay && wallet.allowsExport && (
+          <div>
+            <Typography variant="body2">
+              <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
+                Export
+              </Link>
+            </Typography>
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <>
@@ -562,70 +658,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
             </Button>
           ) : null}
         </div>
-        <Typography variant="body2" className={classes.address}>
-          Deposit Address: {publicKey.toBase58()}
-        </Typography>
-        <Typography variant="body2">
-          Token Name: {tokenName ?? 'Unknown'}
-        </Typography>
-        <Typography variant="body2">
-          Token Symbol: {tokenSymbol ?? 'Unknown'}
-        </Typography>
-        {mint ? (
-          <Typography variant="body2" className={classes.address}>
-            Token Address: {mint.toBase58()}
-          </Typography>
-        ) : null}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <Typography variant="body2">
-              <Link
-                href={
-                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
-                  urlSuffix
-                }
-                target="_blank"
-                rel="noopener"
-              >
-                View on Solana
-              </Link>
-            </Typography>
-            {market && (
-              <Typography variant="body2">
-                <Link
-                  href={`https://dex.projectserum.com/#/market/${market}`}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  View on Serum
-                </Link>
-              </Typography>
-            )}
-            {swapInfo && swapInfo.coin.erc20Contract && (
-              <Typography variant="body2">
-                <Link
-                  href={
-                    `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
-                    urlSuffix
-                  }
-                  target="_blank"
-                  rel="noopener"
-                >
-                  View on Ethereum
-                </Link>
-              </Typography>
-            )}
-          </div>
-          {exportNeedsDisplay && wallet.allowsExport && (
-            <div>
-              <Typography variant="body2">
-                <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
-                  Export
-                </Link>
-              </Typography>
-            </div>
-          )}
-        </div>
+        {additionalInfo}
       </div>
       <SendDialog
         open={sendDialogOpen}
