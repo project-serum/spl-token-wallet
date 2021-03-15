@@ -23,7 +23,7 @@ import {
   parseTokenAccountData,
 } from './tokens/data';
 import { useListener, useLocalStorageState, useRefEqual } from './utils';
-import { useTokenName } from './tokens/names';
+import { useTokenInfo } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 import { WalletProviderFactory } from './walletProvider/factory';
@@ -419,22 +419,10 @@ export function useBalanceInfo(publicKey) {
     ? parseTokenAccountData(accountInfo.data)
     : {};
   let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
-  let { name, symbol } = useTokenName(mint);
+  let { name, symbol, logoUri } = useTokenInfo(mint);
 
   if (!accountInfoLoaded) {
     return null;
-  }
-
-  if (mint && mint.equals(WRAPPED_SOL_MINT)) {
-    return {
-      amount,
-      decimals: 9,
-      mint,
-      owner,
-      tokenName: 'Wrapped SOL',
-      tokenSymbol: 'SOL',
-      valid: true,
-    };
   }
 
   if (mint && mintInfoLoaded) {
@@ -447,6 +435,7 @@ export function useBalanceInfo(publicKey) {
         owner,
         tokenName: name,
         tokenSymbol: symbol,
+        tokenLogoUri: logoUri,
         valid: true,
       };
     } catch (e) {
@@ -457,6 +446,7 @@ export function useBalanceInfo(publicKey) {
         owner,
         tokenName: 'Invalid',
         tokenSymbol: 'INVALID',
+        tokenLogoUri: null,
         valid: false,
       };
     }

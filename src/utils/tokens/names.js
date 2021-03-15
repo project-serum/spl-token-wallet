@@ -4,11 +4,11 @@ import { useListener } from '../utils';
 import { useAsyncData } from '../fetch-loop';
 import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
-import { TokenListProvider } from '@solana/spl-token-registry';
+import { TokenListProvider, Strategy } from '@solana/spl-token-registry';
 
 const tokenListProvider = new TokenListProvider();
 export function useTokenInfos() {
-  const [tokenListContainer] = useAsyncData(tokenListProvider.resolve, tokenListProvider.resolve, { refreshInterval: 120000});
+  const [tokenListContainer] = useAsyncData(() => tokenListProvider.resolve(Strategy.Static), tokenListProvider.resolve, { refreshInterval: 120000});
   const { endpoint } = useConnectionConfig();
   const cluster = clusterForEndpoint(endpoint);
 
@@ -23,14 +23,14 @@ const customTokenNamesByNetwork = JSON.parse(
 const nameUpdated = new EventEmitter();
 nameUpdated.setMaxListeners(100);
 
-export async function useTokenName(mint) {
+export function useTokenInfo(mint) {
   const { endpoint } = useConnectionConfig();
   useListener(nameUpdated, 'update');
   const tokenInfos = useTokenInfos();
-  return getTokenName(mint, endpoint, tokenInfos);
+  return getTokenInfo(mint, endpoint, tokenInfos);
 }
 
-export async function getTokenName(mint, endpoint, tokenInfos) {
+export function getTokenInfo(mint, endpoint, tokenInfos) {
   if (!mint) {
     return { name: null, symbol: null };
   }
@@ -40,9 +40,9 @@ export async function getTokenName(mint, endpoint, tokenInfos) {
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
   if (match && !info) {
-    info = { name: match.name, symbol: match.symbol };
+    info = { name: match.name, symbol: match.symbol, logoUri: match.logoURI };
   }
-  return { name: info?.name, symbol: info?.symbol };
+  return { name: info?.name, symbol: info?.symbol, logoUri: info?.logoUri };
 }
 
 export function useUpdateTokenName() {
