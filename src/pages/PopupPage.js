@@ -549,10 +549,14 @@ function ApproveSignatureForm({
       // to ensure chrome brings window to front
       window.focus();
 
-      // scroll to approve button and focus it to enable approve with enter
-      if (buttonRef.current) {
-        buttonRef.current.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => buttonRef.current.focus(), 50);
+      // Scroll to approve button and focus it to enable approve with enter.
+      // Keep currentButtonRef in local variable, so the reference can't become
+      // invalid until the timeout is over. this was happening to all auto-
+      // approvals for unknown reasons.
+      let currentButtonRef = buttonRef.current;
+      if (currentButtonRef) {
+        currentButtonRef.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => currentButtonRef.focus(), 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
