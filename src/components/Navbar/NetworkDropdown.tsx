@@ -7,6 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { BtnCustom } from '../BtnCustom';
 import { useWallet } from '../../utils/wallet';
+import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
 
 export const StyledDropdown = styled.div`
   display: flex;
@@ -134,7 +135,7 @@ const wallet = useWallet()
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
-        customNotActiveRem={wallet ? '37rem' : '38rem'}
+        customNotActiveRem={wallet ? '37rem' : hasLockedMnemonicAndSeed() ? '4rem' : '38rem'}
       >
         <MenuList style={{ padding: 0 }}>
           {networkLabels.map((endpoint) => (

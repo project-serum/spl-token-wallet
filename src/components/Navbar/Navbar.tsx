@@ -19,6 +19,7 @@ import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance'
 
 import { useWallet } from '../../utils/wallet';
+import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
 
 const ButtonsContainer = styled(Row)`
   @media (max-width: 1200px) {
@@ -245,7 +246,7 @@ const Navbar = () => {
                 Disconnect
               </RedButton>
             </RowContainer>
-          ) : (
+          ) : !hasLockedMnemonicAndSeed() ? (
             <ButtonsContainer>
               <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
                 <VioletButton
@@ -273,7 +274,7 @@ const Navbar = () => {
                 </VioletButton>
               </Link>
             </ButtonsContainer>
-          )}
+          ) : null}
         </Row>
       </RowContainer>
     </GridContainer>
