@@ -16,7 +16,7 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import ImportExportIcon from '../../images/importExxcportIcon.svg';
+import ImportExportIcon from '../../images/importExportIcon.svg';
 import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';

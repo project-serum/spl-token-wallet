@@ -111,7 +111,7 @@ const WalletStatusButton = ({
 
 const NetworkDropdown = () => {
   const theme = useTheme();
-  const wallet = useWallet()
+const wallet = useWallet()
   const { endpoint, setEndpoint } = useConnectionConfig();
 
   const networkLabels = [
