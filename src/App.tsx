@@ -166,15 +166,6 @@ const Pages = () => {
 
   return (
     <Switch>
-      <Route path="/connecting_wallet" component={ConnectingWallet} />
-      <Route path="/wallet" component={Wallet} />
-      <Route path="/restore_wallet" component={RestorePage} />
-      <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" component={CreateWalletPage} />
-      <Route path="/import_wallet" component={ImportWalletPage} />
-      <Route path="/welcome_back" component={WelcomeBackPage} />
-      <Route path="/connect_popup" component={ConnectPopup} />
-
       {/* popup if connecting from dex UI */}
       {window.opener && <Redirect to="/connect_popup" />}
       {/* if wallet exists - for case when we'll have unlocked wallet */}
@@ -185,6 +176,17 @@ const Pages = () => {
       ) : (
         <Redirect to="/welcome" />
       )}
+      
+      <Route path="/connecting_wallet" component={ConnectingWallet} />
+      <Route path="/wallet" component={Wallet} />
+      <Route path="/restore_wallet" component={RestorePage} />
+      <Route path="/welcome" component={WelcomePage} />
+      <Route path="/create_wallet" component={CreateWalletPage} />
+      <Route path="/import_wallet" component={ImportWalletPage} />
+      <Route path="/welcome_back" component={WelcomeBackPage} />
+      <Route path="/connect_popup" component={ConnectPopup} />
+
+
     </Switch>
   );
 };
