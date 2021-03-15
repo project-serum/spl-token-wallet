@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useConnectionConfig, MAINNET_URL } from '../../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
 import { Theme, useTheme, Paper, MenuList, MenuItem } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { BtnCustom } from '../BtnCustom';
 import { useWallet } from '../../utils/wallet';
@@ -16,7 +17,8 @@ export const StyledDropdown = styled.div`
   &:hover > div {
     display: block !important;
   }
-  padding: 1rem 0;
+  padding: 1rem 3rem 1rem 0;
+  border-right: ${props => props.theme.customPalette.border.new};
 `;
 
 export const StyledPaper = styled(
@@ -103,6 +105,7 @@ const WalletStatusButton = ({
     fontSize={'1.2rem'}
   >
     {connection}
+    <ExpandMoreIcon fontSize="small" style={{ marginLeft: '.5rem' }} />
   </BtnCustom>
 );
 
@@ -123,7 +126,7 @@ const NetworkDropdown = () => {
   };
 
   return (
-    <StyledDropdown theme={theme} style={{ margin: '0 0 0 3rem', height: '100%' }}>
+    <StyledDropdown theme={theme} style={{ margin: '0 0rem 0 3rem', height: '100%' }}>
       <WalletStatusButton
         connection={currentConnectionEndpoint.label}
         theme={theme}
@@ -131,7 +134,7 @@ const NetworkDropdown = () => {
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
-        customNotActiveRem={wallet ? '33.5rem' : '35rem'}
+        customNotActiveRem={wallet ? '37rem' : '38rem'}
       >
         <MenuList style={{ padding: 0 }}>
           {networkLabels.map((endpoint) => (

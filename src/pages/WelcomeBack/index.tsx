@@ -16,7 +16,7 @@ import {
 
 import Logo from '../../components/Logo'
 import { InputWithEye } from '../../components/Input'
-import BottomLink from '../../components/BottomLink'
+// import BottomLink from '../../components/BottomLink'
 
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
@@ -93,7 +93,7 @@ const WelcomeBack = () => {
           </RowContainer>
         </RowContainer>
       </Card>
-      <BottomLink />
+      {/* <BottomLink /> */}
     </Body>
   );
 };

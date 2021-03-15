@@ -45,13 +45,13 @@ const ProgressBar = styled.div`
 `;
 
 const Step = styled.div`
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   background: ${(props) => (props.isCompleted ? '#406EDC' : '#17181a')};
   color: #fff;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   display: flex;
   border: ${(props) =>
     props.isSelected || props.isCompleted
@@ -77,7 +77,7 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
       direction={'row'}
       justify={'flex-start'}
       align={'baseline'}
-      margin={'0 0 5rem 0'}
+      margin={'0 0 7rem 0'}
     >
       <ProgressBarContainer>
         <ProgressBar currentStep={currentStep}>
@@ -97,9 +97,9 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
             <Title
               style={{
                 position: 'absolute',
-                width: '10rem',
+                width: '11rem',
                 right: '33rem',
-                top: '2rem',
+                top: '2.5rem',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -117,9 +117,9 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
             <Title
               style={{
                 position: 'absolute',
-                width: '12rem',
-                right: '14rem',
-                top: '2rem',
+                width: '14rem',
+                right: '13rem',
+                top: '2.5rem',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -133,9 +133,9 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
             <Title
               style={{
                 position: 'absolute',
-                width: '7rem',
-                left: '35rem',
-                top: '2rem',
+                width: '8rem',
+                left: '34rem',
+                top: '2.5rem',
                 whiteSpace: 'nowrap',
               }}
             >

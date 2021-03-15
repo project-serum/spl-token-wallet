@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { Redirect } from 'react-router-dom'
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
 import { useConnection, useSolanaExplorerUrlSuffix } from '../../utils/connection';
@@ -15,7 +16,7 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import ImportExportIcon from '../../images/importExportIcon.svg';
+import ImportExportIcon from '../../images/importExxcportIcon.svg';
 import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
@@ -260,6 +261,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
   return (
     <StyledCard>
+      {!wallet && <Redirect to="/create_wallet" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'center'}>
           <img alt={'logo'} src={Logo} />

@@ -9,6 +9,7 @@ import {
   RedButton,
   Title,
 } from '../../pages/commonStyles';
+
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
@@ -234,8 +235,12 @@ const Navbar = () => {
                 width="10rem"
                 height="2rem"
                 theme={theme}
-                onClick={() => window.location.reload()}
-                style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Bold' }}
+                fontSize="1.2rem"
+                onClick={() => {
+                  sessionStorage.removeItem('unlocked')
+                  window.location.reload()
+                }}
+                style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Demi' }}
               >
                 Disconnect
               </RedButton>

@@ -25,7 +25,8 @@ const InputWithComponent = ({
   placeholder = '',
   ComponentToShow,
   style = {},
-  containerStyle
+  containerStyle,
+  autoComplete = "true"
 }: {
   type?: string;
   value: string;
@@ -36,6 +37,7 @@ const InputWithComponent = ({
   ComponentToShow: any;
   style?: any
   containerStyle?: any
+  autoComplete?: string
 }) => {
   return (
     <RowContainer style={{ position: 'relative', width: '90%', ...containerStyle }}>
@@ -46,6 +48,7 @@ const InputWithComponent = ({
         onChange={onChange}
         placeholder={placeholder}
         style={style}
+        autoComplete={autoComplete}
         disabled={disabled}
       />
       <div
@@ -181,6 +184,7 @@ const InputWithEye = ({
   onEyeClick: () => void;
   style?: any
   containerStyle?: any
+  autoComplete?: string
 }) => {
   return (
     <InputWithComponent
@@ -214,6 +218,7 @@ const InputWithPaste = ({
   placeholder: string;
   onPasteClick: () => void;
   style?: any
+  autoComplete?: string
 }) => {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();

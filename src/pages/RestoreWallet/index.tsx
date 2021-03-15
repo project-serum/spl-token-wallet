@@ -122,6 +122,7 @@ export const RestorePage = () => {
               placeholder="Paste your seed phrase"
               value={mnemonic}
               onChange={(e) => setMnemonic(e.target.value)}
+              autoComplete="false"
               onPasteClick={() =>
                 navigator.clipboard
                   .readText()
@@ -130,6 +131,7 @@ export const RestorePage = () => {
             />
             <InputWithEye
               value={password}
+              autoComplete="false"
               onChange={(e) => setPassword(e.target.value)}
               showPassword={showPassword}
               onEyeClick={() => setShowPassword(!showPassword)}

@@ -181,7 +181,7 @@ export const getMarketsData = async () => {
     prevEndTimestamp: dayjs().startOf('hour').subtract(24, 'hour').unix(),
   };
 
-  return await fetch('https://develop.api.cryptocurrencies.ai/graphql', {
+  return await fetch('https://api.cryptocurrencies.ai/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -439,7 +439,8 @@ const AssetItem = ({
   const priceChangePercentage = !!price
     ? (price - prevClosePrice) / (prevClosePrice / 100)
     : 0;
-  const sign24hChange = +priceChangePercentage > 0 ? `+` : ``;
+  const sign24hChange = +priceChangePercentage > 0 ? `+` : `-`;
+  const color = +priceChangePercentage > 0 ? theme.customPalette.green.light : theme.customPalette.red.main
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -498,13 +499,19 @@ const AssetItem = ({
       <StyledTd>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
-          <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            {`${sign24hChange}${formatNumberToUSFormat(
-              stripDigitPlaces(priceChangePercentage, 2),
-            )}% / ${formatNumberToUSFormat(
-              stripDigitPlaces(lastPriceDiff, 4),
-            )}`}
-          </Title>
+          <RowContainer justify="flex-start">
+            <Title fontSize="1.4rem" color={color}>
+              {`${sign24hChange}${formatNumberToUSFormat(
+                stripDigitPlaces(Math.abs(priceChangePercentage), 2),
+              )}% `}&nbsp;
+            </Title>
+            <Title fontSize="1.4rem">/</Title>&nbsp;
+            <Title color={color} fontSize="1.4rem" fontFamily="Avenir Next Demi">
+              {` ${sign24hChange}$${formatNumberToUSFormat(
+                stripDigitPlaces(Math.abs(lastPriceDiff), 4),
+              )}`}
+            </Title>
+          </RowContainer>
         </RowContainer>
       </StyledTd>
       <StyledTd>

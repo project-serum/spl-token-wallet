@@ -163,6 +163,7 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
+
   return (
     <Switch>
       <Route path="/connecting_wallet" component={ConnectingWallet} />

@@ -21,7 +21,7 @@ import DeleteAccount from './DeleteAccount';
 const RowWithSelector = styled(Row)`
   position: relative;
   bottom: 1rem;
-  padding: 1rem 3rem 3rem 0;
+  padding: 1rem 3rem 2rem 0;
 
   &:hover #accountSelector {
     display: flex;
@@ -85,12 +85,12 @@ const AccountInfo = () => {
           {wallet.publicKey.toBase58()}
         </Title>
       </Row>
-      <Row width="60%" height="100%">
+      <Row width="60%" height="100%" justify="flex-end">
         <Row
           width="26rem"
           height="100%"
           margin="0 2rem 0 0"
-          padding=".5rem 1.5rem"
+          padding="1rem 1.5rem"
           direction="column"
           align="flex-start"
           justify="space-between"
@@ -114,7 +114,7 @@ const AccountInfo = () => {
           width="26rem"
           height="100%"
           margin="0 4rem 0 0"
-          padding=".5rem 1.5rem"
+          padding="1rem 1.5rem"
           direction="column"
           align="flex-start"
           justify="space-between"

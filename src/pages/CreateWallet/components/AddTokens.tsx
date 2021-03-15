@@ -238,7 +238,7 @@ const AddTokens = () => {
                 <span style={{ display: 'flex' }}>
                   <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
                   <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
-                   {+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) *
+                   {(+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
                 selectedTokens.length} SOL
                   </BoldTitle>
                 </span>

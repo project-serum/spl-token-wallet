@@ -70,7 +70,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
 
   const ethAccount = useEthAccount();
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
+  const { mint, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
   const theme = useTheme();
 
@@ -99,12 +99,6 @@ export default function DepositDialog({ open, onClose, publicKey }) {
         tab === 0 ? '45rem' : swapInfo?.blockchain === 'btc' ? '30rem' : '50rem'
       }
     >
-      <RowContainer padding="2rem 0 1rem 0">
-        <Title>
-          Deposit {tokenName ?? mint.toBase58()} to{' '}
-          {tokenSymbol ? ` (${tokenSymbol})` : null}
-        </Title>
-      </RowContainer>
       {swapInfo && (
         <RowContainer padding="1.6rem 0 2.4rem 0">
           <StyledTabs
@@ -180,7 +174,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
           />
         )}
       </RowContainer>
-      {!ethAccount ||
+      {
         (tab === 0 && (
           <RowContainer margin="2rem 0 0 0">
             <WhiteButton theme={theme} width={'calc(50%)'} onClick={onClose}>

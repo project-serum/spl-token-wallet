@@ -33,6 +33,11 @@ export const StyledDialog = styled(Dialog)`
 
 export const StyledTabs = styled(Tabs)`
   width: 90%;
+
+  .MuiTabs-flexContainer {
+    justify-content: center;
+  }
+  
   & > div > span {
     background: ${props => props.theme.customPalette.blue.serum} !important;
   }
@@ -40,6 +45,7 @@ export const StyledTabs = styled(Tabs)`
 
 export const StyledTab = styled(Tab)`
   &&& {
+    min-width: auto;
     color: ${props => props.theme.customPalette.blue.serum};
     border-color: ${props => props.theme.customPalette.blue.serum};
     text-transform: capitalize;
