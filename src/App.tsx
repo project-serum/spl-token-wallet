@@ -1,5 +1,7 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, 
+  // Redirect 
+} from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   ThemeProvider,
@@ -8,10 +10,12 @@ import {
 import blue from '@material-ui/core/colors/blue';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
-import { useWallet, WalletProvider } from './utils/wallet';
+import { 
+  // useWallet, 
+  WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
-import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
+// import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 
 const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
@@ -162,7 +166,7 @@ export default function App() {
 }
 
 const Pages = () => {
-  const wallet = useWallet();
+  // const wallet = useWallet();
 
   return (
     <Switch>
