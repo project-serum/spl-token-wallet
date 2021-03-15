@@ -166,17 +166,17 @@ const Pages = () => {
 
   return (
     <Switch>
-      {/* popup if connecting from dex UI */}
-      {window.opener && <Redirect to="/connect_popup" />}
+       {/* popup if connecting from dex UI */}
+      {/* {window.opener && <Redirect to="/connect_popup" />} */}
       {/* if wallet exists - for case when we'll have unlocked wallet */}
-      {!!wallet && <Redirect to="/wallet" />}
+      {/* {!!wallet && <Redirect to="/wallet" />} */}
       {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed() ? (
+      {/* {hasLockedMnemonicAndSeed() ? (
         <Redirect to="/welcome_back" />
       ) : (
         <Redirect to="/welcome" />
-      )}
-      
+      )}  */}
+
       <Route path="/connecting_wallet" component={ConnectingWallet} />
       <Route path="/wallet" component={Wallet} />
       <Route path="/restore_wallet" component={RestorePage} />
