@@ -241,6 +241,31 @@ export const RedButton = styled((props) => (
   outline: none;
 `;
 
+export const RedFilledButton = styled((props) => (
+  <BtnCustom
+    btnWidth={props.width || '50%'}
+    fontSize={'1.4rem'}
+    height={'4.5rem'}
+    textTransform={'capitalize'}
+    backgroundColor={
+      props.disabled
+        ? props.theme.customPalette.grey.dark
+        : props.background || props.theme.customPalette.red.main
+    }
+    borderColor={
+      props.disabled
+        ? props.theme.customPalette.grey.dark
+        : props.background || props.theme.customPalette.red.main
+    }
+    btnColor={props.color || props.theme.customPalette.white.main}
+    borderRadius={'1rem'}
+    border={props.border || 'none'}
+    {...props}
+  />
+))`
+  outline: none;
+`;
+
 export const WhiteButton = styled((props) => (
   <BtnCustom
     btnWidth={props.width || 'calc(50% - .5rem)'}

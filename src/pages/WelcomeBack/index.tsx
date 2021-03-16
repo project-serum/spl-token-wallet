@@ -20,6 +20,7 @@ import { InputWithEye } from '../../components/Input'
 
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
+import BottomLink from '../../components/BottomLink';
 
 const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -94,7 +95,7 @@ const WelcomeBack = () => {
           </RowContainer>
         </RowContainer>
       </Card>
-      {/* <BottomLink /> */}
+      <BottomLink toText="Restore Another Wallet" />
     </Body>
   );
 };

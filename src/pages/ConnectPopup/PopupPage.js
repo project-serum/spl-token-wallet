@@ -51,7 +51,8 @@ const StyledCard = styled(Card)`
   box-shadow: none;
 `;
 
-export default function PopupPage({ opener }) {
+export default function PopupPage() {
+  const opener = window.opener;
   const wallet = useWallet();
 
   const origin = useMemo(() => {

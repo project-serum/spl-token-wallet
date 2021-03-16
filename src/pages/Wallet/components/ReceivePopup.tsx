@@ -44,7 +44,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
     mint: null,
     tokenName: 'Loading...',
     tokenSymbol: '--',
-    owner: '',
+    owner: null,
   };
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
@@ -150,7 +150,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
             <RowContainer width="90%" padding="2rem 0">
               <AttentionComponent
                 text={
-                  publicKey?.equals(owner)
+                  !!owner && publicKey?.equals(owner)
                     ? 'This address can only be used to receive SOL. Do not send other tokens to this address.'
                     : `This address can only be used to receive ${
                         tokenSymbol ?? abbreviateAddress(mint)

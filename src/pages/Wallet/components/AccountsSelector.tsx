@@ -20,14 +20,14 @@ import DeleteAccountIcon from '../../../images/deleteAccount.svg';
 
 import AddAccountPopup from './AddAccountPopup';
 import AddHardwareWalletPopup from './AddHardwareWalletPopup';
-import { ExportMnemonicDialog } from './ExportAccount';
-import DeleteAccount from './DeleteAccount';
+import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
+import ForgetWallet from './ForgetWallet';
 
 const StyledCard = styled(Card)`
   position: absolute;
   top: 100%;
-  ${props => props.isFromPopup ? 'right: 0' : 'left: 0'};
-  width: 25rem;
+  ${(props) => (props.isFromPopup ? 'right: 0' : 'left: 0')};
+  width: 28rem;
   height: auto;
   display: none;
   z-index: 2;
@@ -57,6 +57,7 @@ const AccountsSelector = ({
     setIsAddHardwareWalletDialogOpen,
   ] = useState(false);
   const [isExportMnemonicOpen, setIsExportMnemonicOpen] = useState(false);
+  const [isExportAccountOpen, setIsExportAccountOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
   const { accounts, addAccount, setWalletSelector } = useWalletSelector();
@@ -96,15 +97,37 @@ const AccountsSelector = ({
             {accounts.map(({ isSelected, name, selector }) => {
               return (
                 <RowContainer
-                  justify="flex-start"
+                  justify="space-between"
                   padding="0rem 1.6rem 0rem 0"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
                     setWalletSelector(selector);
                   }}
                 >
-                  <StyledRadio theme={theme} checked={isSelected} />
-                  <Title>{name}</Title>
+                  <Row justify="flex-start">
+                    <StyledRadio theme={theme} checked={isSelected} />
+                    <Title
+                      style={{
+                        width: '60%',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis ',
+                      }}
+                    >
+                      {name}
+                    </Title>
+                  </Row>
+                  <BtnCustom
+                    btnWidth="auto"
+                    textTransform="capitalize"
+                    color={theme.customPalette.blue.serum}
+                    borderWidth="0"
+                    fontFamily="Avenir Next Demi"
+                    fontSize="1rem"
+                    onClick={() => setIsExportAccountOpen(true)}
+                  >
+                    Export Private Key
+                  </BtnCustom>
                 </RowContainer>
               );
             })}
@@ -214,8 +237,13 @@ const AccountsSelector = ({
         open={isExportMnemonicOpen}
         onClose={() => setIsExportMnemonicOpen(false)}
       />
-      <DeleteAccount
+      <ExportAccount
+        open={isExportAccountOpen}
+        onClose={() => setIsExportAccountOpen(false)}
+      />
+      <ForgetWallet
         open={isDeleteAccountOpen}
+        openExportMnemonicPopup={() => setIsExportMnemonicOpen(true)}
         onClose={() => setIsDeleteAccountOpen(false)}
       />
     </RowWithSelector>

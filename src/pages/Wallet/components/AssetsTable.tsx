@@ -271,12 +271,16 @@ const AssetsTable = ({
             height={'100%'}
             padding={'1.2rem 0'}
             onClick={() => {
-              refreshWalletPublicKeys(wallet);
-              console.log('refreshWalletPublicKeys')
-              sortedPublicKeys.forEach((publicKey) => {
-                console.log('refreshAccountInfo', publicKey)
-                refreshAccountInfo(wallet.connection, publicKey, true);
-              });
+              try {
+                refreshWalletPublicKeys(wallet);
+                console.log('refreshWalletPublicKeys');
+                sortedPublicKeys.forEach((publicKey) => {
+                  console.log('refreshAccountInfo', publicKey);
+                  refreshAccountInfo(wallet.connection, publicKey, true);
+                });
+              } catch (e) {
+                console.error(e);
+              }
             }}
           >
             <img
@@ -355,7 +359,10 @@ const AssetItem = ({
     ? (price - prevClosePrice) / (prevClosePrice / 100)
     : 0;
   const sign24hChange = +priceChangePercentage > 0 ? `+` : `-`;
-  const color = +priceChangePercentage > 0 ? theme.customPalette.green.light : theme.customPalette.red.main
+  const color =
+    +priceChangePercentage > 0
+      ? theme.customPalette.green.light
+      : theme.customPalette.red.main;
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -418,10 +425,15 @@ const AssetItem = ({
             <Title fontSize="1.4rem" color={color}>
               {`${sign24hChange}${formatNumberToUSFormat(
                 stripDigitPlaces(Math.abs(priceChangePercentage), 2),
-              )}% `}&nbsp;
+              )}% `}
+              &nbsp;
             </Title>
             <Title fontSize="1.4rem">/</Title>&nbsp;
-            <Title color={color} fontSize="1.4rem" fontFamily="Avenir Next Demi">
+            <Title
+              color={color}
+              fontSize="1.4rem"
+              fontFamily="Avenir Next Demi"
+            >
               {` ${sign24hChange}$${formatNumberToUSFormat(
                 stripDigitPlaces(Math.abs(lastPriceDiff), 4),
               )}`}
