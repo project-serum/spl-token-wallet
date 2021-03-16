@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import dayjs from 'dayjs';
 import styled from 'styled-components';
 import { Theme, useTheme } from '@material-ui/core';
 
@@ -25,6 +24,7 @@ import RefreshIcon from '../../../images/refresh.svg';
 import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
+import { getMarketsData } from '../../../utils/ccai';
 
 const TableContainer = styled(({ theme, ...props }) => (
   <RowContainer {...props} />
@@ -33,6 +33,7 @@ const TableContainer = styled(({ theme, ...props }) => (
   border: ${(props) => props.theme.customPalette.border.new};
   border-radius: 1.2rem;
   height: 100%;
+  overflow-y: auto;
 `;
 
 const StyledTable = styled.table`
@@ -132,94 +133,6 @@ const AssetAmount = styled(Title)`
 const AssetAmountUSD = styled(AssetAmount)`
   font-family: Avenir Next Demi;
 `;
-
-export const getMarketsData = async () => {
-  const getSerumMarketData = `
-  query getSerumMarketData(
-      $publicKey: String!
-      $exchange: String!
-      $marketType: Int!
-      $startTimestamp: String!
-      $endTimestamp: String!
-      $prevStartTimestamp: String!
-      $prevEndTimestamp: String!
-    ) {
-      getSerumMarketData(
-        publicKey: $publicKey
-        exchange: $exchange
-        marketType: $marketType
-        startTimestamp: $startTimestamp
-        endTimestamp: $endTimestamp
-        prevStartTimestamp: $prevStartTimestamp
-        prevEndTimestamp: $prevEndTimestamp
-      ) {
-        symbol
-        tradesCount
-        tradesDiff
-        volume
-        volumeChange
-        minPrice
-        maxPrice
-        closePrice
-        precentageTradesDiff
-        lastPriceDiff
-        isCustomUserMarket
-        isPrivateCustomMarket
-        address
-        programId
-      }
-    }
-`;
-
-  const datesForQuery = {
-    startOfTime: dayjs().startOf('hour').subtract(24, 'hour').unix(),
-
-    endOfTime: dayjs().endOf('hour').unix(),
-
-    prevStartTimestamp: dayjs().startOf('hour').subtract(48, 'hour').unix(),
-
-    prevEndTimestamp: dayjs().startOf('hour').subtract(24, 'hour').unix(),
-  };
-
-  return await fetch('https://develop.api.cryptocurrencies.ai/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: JSON.stringify({
-      operationName: 'getSerumMarketData',
-      variables: {
-        exchange: 'serum',
-        marketType: 0,
-        publicKey: '',
-        startTimestamp: `${datesForQuery.startOfTime}`,
-        endTimestamp: `${datesForQuery.endOfTime}`,
-        prevStartTimestamp: `${datesForQuery.prevStartTimestamp}`,
-        prevEndTimestamp: `${datesForQuery.prevEndTimestamp}`,
-      },
-      query: getSerumMarketData,
-    }),
-  })
-    .then((data) => data.json())
-    .then((data) => {
-      const map = new Map();
-
-      if (data && data.data && data.data.getSerumMarketData) {
-        data.data.getSerumMarketData.forEach((market) => {
-          map.set(market.symbol, market);
-        });
-      }
-
-      return map;
-    });
-};
-
-// const balanceFormat = new Intl.NumberFormat(undefined, {
-//   minimumFractionDigits: 4,
-//   maximumFractionDigits: 4,
-//   useGrouping: true,
-// });
 
 // Aggregated $USD values of all child BalanceListItems child components.
 //
@@ -359,9 +272,11 @@ const AssetsTable = ({
             padding={'1.2rem 0'}
             onClick={() => {
               refreshWalletPublicKeys(wallet);
-              sortedPublicKeys.map((publicKey) =>
-                refreshAccountInfo(wallet.connection, publicKey, true),
-              );
+              console.log('refreshWalletPublicKeys')
+              sortedPublicKeys.forEach((publicKey) => {
+                console.log('refreshAccountInfo', publicKey)
+                refreshAccountInfo(wallet.connection, publicKey, true);
+              });
             }}
           >
             <img

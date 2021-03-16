@@ -1,6 +1,7 @@
+import React, { useState } from 'react';
 import { useConnectionConfig } from '../utils/connection';
 import { TOKENS } from '../utils/tokens/names';
-import React, { useState } from 'react';
+import CoinPlaceholder from '../images/coinPlaceholder.svg'
 
 export default function TokenIcon({
   mint,
@@ -29,7 +30,7 @@ export default function TokenIcon({
   }
 
   if (hasError || !url) {
-    return null;
+    url = CoinPlaceholder
   }
 
   return (

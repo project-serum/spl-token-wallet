@@ -3,8 +3,7 @@ import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
 import { fairsIsLoaded } from './AssetsTable';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
-
-import { getMarketsData } from './AssetsTable';
+import { getMarketsData } from '../../../utils/ccai';
 
 const usdValues: any = {};
 
