@@ -13,7 +13,7 @@ import {
   useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../utils/connection';
-import { Divider, Checkbox, Typography, useTheme } from '@material-ui/core';
+import { Divider, Typography, useTheme } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -31,21 +31,23 @@ import DexInstruction from '../../components/instructions/DexInstruction';
 import TokenInstruction from '../../components/instructions/TokenInstruction';
 import { BtnCustom } from '../../components/BtnCustom';
 import {
-  Row,
   RowContainer,
-  StyledLabel,
   VioletButton,
   WhiteButton,
-  ExclamationMark,
+  Row,
+  StyledLabel,
+  Title,
+  StyledCheckbox
 } from '../commonStyles';
 
 import AccountsSelector from '../Wallet/components/AccountsSelector';
+import AttentionComponent from '../../components/Attention';
 
 const StyledCard = styled(Card)`
   background: #17181a;
   color: #ecf0f3;
   text-align: center;
-  width: 39rem;
+  width: 50rem;
   padding: 3rem;
   margin: 0 auto;
   box-shadow: none;
@@ -196,7 +198,9 @@ export default function PopupPage() {
   }
 
   return (
-    <Typography>Please keep this window open in the background.</Typography>
+    <RowContainer>
+      <Title>Please keep this window open in the background.</Title>
+    </RowContainer>
   );
 }
 
@@ -214,9 +218,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
     textAlign: 'center',
   },
-  transaction: {
-    wordBreak: 'break-all',
-  },
   approveButton: {
     backgroundColor: '#43a047',
     color: 'white',
@@ -224,44 +225,9 @@ const useStyles = makeStyles((theme) => ({
   actions: {
     justifyContent: 'space-between',
   },
-  snackbarRoot: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  warningMessage: {
-    margin: theme.spacing(1),
-    color: theme.palette.text.primary,
-  },
-  warningIcon: {
-    marginRight: theme.spacing(1),
-    fontSize: 24,
-  },
-  warningTitle: {
-    color: theme.palette.warning.light,
-    fontWeight: 600,
-    fontSize: 16,
-    alignItems: 'center',
-    display: 'flex',
-  },
-  warningContainer: {
-    marginTop: theme.spacing(1),
-    background: '#F29C38',
-  },
   divider: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-  },
-  allowTitle: {
-    color: '#ECF0F3',
-    fontFamily: 'Avenir Next Demi',
-    marginBottom: '3rem',
-    fontSize: '1.8rem',
-  },
-  publicKey: {
-    color: '#ECF0F3',
-    fontFamily: 'Avenir Next',
-  },
-  checkbox: {
-    color: '#96999C',
   },
 }));
 
@@ -277,75 +243,60 @@ function ApproveConnectionForm({ origin, onApprove }) {
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <img style={{ width: '40%' }} alt={'logo'} src={Logo} />
+          <img style={{ width: '50%' }} alt={'logo'} src={Logo} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
-        <Typography
-          variant="h6"
-          component="h1"
-          gutterBottom
-          className={classes.allowTitle}
+        <Title
+          fontSize="2.4rem"
+          fontFamily="Avenir Next Demi"
+          style={{ marginBottom: '3rem' }}
         >
           Allow this site to access your Wallet™?
-        </Typography>
+        </Title>
         <RowContainer
           margin={'0 0 4rem 0'}
           direction={'column'}
           className={classes.connection}
         >
-          <Typography className={classes.publicKey}>{origin}</Typography>
+          <RowContainer margin="6rem 0 0 0">
+            <Title className={classes.publicKey}>{origin}</Title>
+          </RowContainer>
           <img
             alt={'import export icon'}
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Typography className={classes.publicKey}>
+          <Title fontSize="1.6rem" className={classes.publicKey}>
             {wallet?.publicKey?.toBase58()}
-          </Typography>
+          </Title>
         </RowContainer>
 
         <RowContainer direction={'row'}>
-          <Checkbox
+          <StyledCheckbox
             id="autoApprove"
+            theme={theme}
             checked={autoApprove}
             onChange={() => setAutoApprove(!autoApprove)}
-            color="primary"
-            classes={{ root: classes.checkbox }}
           />
           <Row style={{ textAlign: 'left' }}>
-            <StyledLabel htmlFor="autoApprove">
+            <StyledLabel theme={theme} htmlFor="autoApprove" style={{ fontSize: '1.6rem' }}>
               Automatically approve transactions from{' '}
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>
           </Row>
         </RowContainer>
-        <RowContainer
-          justify={'flex-start'}
-          margin={'4rem 0 3rem 0'}
-          padding={'0rem 3rem'}
-          style={{ position: 'relative', borderRadius: '.6rem' }}
-        >
-          <RowContainer
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              height: '100%',
-              background: '#f29c38',
-              opacity: '.5',
-              borderRadius: '.6rem',
-            }}
+        <RowContainer margin="6rem 0 0 0">
+          <AttentionComponent
+            text={
+              'Only connect with sites you trust. Auto approve allows sending some transactions on your behalf without requesting your permission for the remainder of this session.'
+            }
+            textStyle={{ fontSize: '1.6rem', textAlign: 'left' }}
+            iconStyle={{ height: '7rem', margin: '0 2rem 0 3rem' }}
           />
-          <ExclamationMark theme={theme} />
-          <Typography style={{ padding: '1rem 0', textAlign: 'left' }}>
-            Only connect with sites you trust.{' '}
-            {autoApprove &&
-              'This setting allows sending some transactions on your behalf without requesting your permission for the remainder of this session.'}
-          </Typography>
         </RowContainer>
       </CardContent>
-      <RowContainer justify={'space-between'}>
+      <RowContainer margin="6rem 0 0 0" justify={'space-between'}>
         <WhiteButton
           width={'calc(50% - .5rem)'}
           theme={theme}
