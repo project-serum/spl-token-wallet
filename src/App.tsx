@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { BrowserRouter, Route, Switch, 
   Redirect 
 } from 'react-router-dom';
@@ -17,7 +17,7 @@ import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 
-const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
+// const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
@@ -167,17 +167,21 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
+  const origin = useMemo(() => {
+    let params = new URLSearchParams(window.location.hash.slice(1));
+    return params.get('origin');
+  }, []);
 
   return (
     <Switch>
-      <Route path="/connecting_wallet" component={ConnectingWallet} />
+      {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
       <Route path="/wallet" component={Wallet} />
       <Route path="/restore_wallet" component={RestorePage} />
       <Route path="/welcome" component={WelcomePage} />
       <Route path="/create_wallet" component={CreateWalletPage} />
       <Route path="/import_wallet" component={ImportWalletPage} />
       <Route exact path="/welcome_back" component={WelcomeBackPage} />
-      <Route path="/connect_popup" component={ConnectPopup} />
+      <Route path="/connect_popup" component={(props) => <ConnectPopup origin={origin} {...props} />} />
 
        {/* popup if connecting from dex UI */}
        {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}

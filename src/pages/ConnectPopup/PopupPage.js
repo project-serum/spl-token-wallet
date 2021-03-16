@@ -53,14 +53,18 @@ const StyledCard = styled(Card)`
   box-shadow: none;
 `;
 
-export default function PopupPage() {
+export default function PopupPage({ origin }) {
   const opener = window.opener;
   const wallet = useWallet();
 
-  const origin = useMemo(() => {
-    let params = new URLSearchParams(window.location.hash.slice(1));
-    return params.get('origin');
-  }, []);
+  // const origin = useMemo(() => {
+  //   let params = new URLSearchParams(window.location.hash.slice(1));
+  //   return params.get('origin');
+  // }, []);
+
+  console.log('origin', origin)
+  console.log('opener', opener)
+
   const postMessage = useCallback(
     (message) => {
       opener.postMessage({ jsonrpc: '2.0', ...message }, origin);
