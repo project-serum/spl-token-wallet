@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 
-const PageContext = createContext('wallet');
+const PageContext = createContext(['wallet', () => {}]);
 
 export const PageProvider = ({ children }) => {
   const [page, setPage] = useState('wallet');
