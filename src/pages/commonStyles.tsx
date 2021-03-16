@@ -148,7 +148,7 @@ export const Input = styled.input`
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0px 0px 0 30px #222429 inset !important;
+    -webkit-box-shadow: 0px 0px 0 50px #222429 inset !important;
     -webkit-text-fill-color: #fff;
   }
 

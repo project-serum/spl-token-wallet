@@ -38,7 +38,6 @@ import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
-import DepositDialog from './DepositDialog';
 import {
   useIsProdNetwork,
   refreshAccountInfo,
@@ -462,7 +461,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
-  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
   const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   const [
@@ -627,13 +626,13 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
-      <DepositDialog
+      {/* <DepositDialog
         open={depositDialogOpen}
         onClose={() => setDepositDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
         swapInfo={swapInfo}
-      />
+      /> */}
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
         onClose={() => setTokenInfoDialogOpen(false)}

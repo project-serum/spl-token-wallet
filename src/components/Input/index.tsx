@@ -26,7 +26,7 @@ const InputWithComponent = ({
   ComponentToShow,
   style = {},
   containerStyle,
-  autoComplete = "true"
+  autoComplete = "on"
 }: {
   type?: string;
   value: string;
