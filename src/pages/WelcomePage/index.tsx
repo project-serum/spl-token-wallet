@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import {
   Row,
@@ -15,15 +16,28 @@ import Plus from '../../images/AddButton.svg';
 import Restore from '../../images/RestoreButton.svg';
 import Logo from '../../components/Logo'
 
+const StyledContainer = styled(Row)`
+  @media (max-width: 620px) {
+    flex-direction: column;
+  }
+`
+
+const CreateWalletButton = styled(CardButton)`
+  margin: 0 2rem 0 0;
+
+  @media (max-width: 620px) {
+    margin: 0 0 2rem 0;
+  }
+`
 
 export const WelcomePage = () => {
   return (
     <Body>
       <Logo />
-      <Row>
+      <StyledContainer>
         <Row>
           <Link to={'/create_wallet'}>
-            <CardButton width="35rem" height="35rem" margin={'0 2rem 0 0'}>
+            <CreateWalletButton width="35rem" height="35rem">
               <Row
                 direction={'column'}
                 justify={'space-around'}
@@ -34,7 +48,7 @@ export const WelcomePage = () => {
                 </Img>
                 <BoldTitle>Create New Wallet</BoldTitle>
               </Row>
-            </CardButton>
+            </CreateWalletButton>
           </Link>
         </Row>
 
@@ -74,7 +88,7 @@ export const WelcomePage = () => {
             </CardButton>
           </a> */}
         </Row>
-      </Row>
+      </StyledContainer>
     </Body>
   );
 };

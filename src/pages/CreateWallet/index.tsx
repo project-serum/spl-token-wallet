@@ -14,6 +14,7 @@ import {
 } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 import { DERIVATION_PATH } from '../../utils/walletProvider/localStorage';
+import FakeInputs from '../../components/FakeInputs';
 
 export const CreateWalletPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -50,6 +51,7 @@ export const CreateWalletPage = () => {
 
   return (
     <Body>
+      <FakeInputs />
       <RowContainer direction={'column'}>
         <Logo margin={'0 0 3rem 0'} />
         <ProgressBar currentStep={currentStep} />
