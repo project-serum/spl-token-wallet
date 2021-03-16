@@ -41,6 +41,7 @@ const WelcomeBack = () => {
 
   return (
     <Body>
+      {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
       {!!wallet && <Redirect to={'/wallet'} />}
       <Logo />
       <Card>

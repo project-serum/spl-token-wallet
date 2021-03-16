@@ -6,10 +6,13 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
-import { useConnection, useSolanaExplorerUrlSuffix } from '../../utils/connection';
+import {
+  useConnection,
+  useSolanaExplorerUrlSuffix,
+} from '../../utils/connection';
 import { Divider, Checkbox, Typography, useTheme } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
@@ -27,7 +30,16 @@ import SystemInstruction from '../../components/instructions/SystemInstruction';
 import DexInstruction from '../../components/instructions/DexInstruction';
 import TokenInstruction from '../../components/instructions/TokenInstruction';
 import { BtnCustom } from '../../components/BtnCustom';
-import { Row, RowContainer, StyledLabel, VioletButton, WhiteButton, ExclamationMark } from '../commonStyles';
+import {
+  Row,
+  RowContainer,
+  StyledLabel,
+  VioletButton,
+  WhiteButton,
+  ExclamationMark,
+} from '../commonStyles';
+
+import AccountsSelector from '../Wallet/components/AccountsSelector';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -255,18 +267,17 @@ const useStyles = makeStyles((theme) => ({
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
   const classes = useStyles();
-  const [autoApprove, setAutoApprove] = useState(false);
+  const [autoApprove, setAutoApprove] = useState(true);
 
-  const theme = useTheme()
-
-  console.log('wallet', wallet, 'wallet.publicKey', wallet.publicKey)
+  const theme = useTheme();
 
   return (
     <StyledCard>
-      {!wallet && <Redirect to="/create_wallet" />}
+      {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
-        <RowContainer margin={'0 0 2rem 0'} justify={'center'}>
-          <img alt={'logo'} src={Logo} />
+        <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
+          <img style={{ width: '40%' }} alt={'logo'} src={Logo} />
+          <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
         <Typography
           variant="h6"
@@ -288,7 +299,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
             src={ImportExportIcon}
           />
           <Typography className={classes.publicKey}>
-            {wallet.publicKey.toBase58()}
+            {wallet?.publicKey?.toBase58()}
           </Typography>
         </RowContainer>
 
@@ -335,7 +346,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
       </CardContent>
       <RowContainer justify={'space-between'}>
         <WhiteButton
-          width={"calc(50% - .5rem)"}
+          width={'calc(50% - .5rem)'}
           theme={theme}
           color={'#ECF0F3'}
           onClick={window.close}
@@ -344,7 +355,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
         </WhiteButton>
         <VioletButton
           theme={theme}
-          width={"calc(50% - .5rem)"}
+          width={'calc(50% - .5rem)'}
           onClick={() => onApprove(autoApprove)}
         >
           Connect

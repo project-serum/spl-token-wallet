@@ -1,51 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import {
-  useBalanceInfo,
-  useWallet,
-  useWalletSelector,
-} from '../../../utils/wallet';
+import { useBalanceInfo, useWallet } from '../../../utils/wallet';
 import { Row, RowContainer, Title, ExclamationMark } from '../../commonStyles';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 
+import AccountsSelector from './AccountsSelector'
 import TotalBalance from './TotalBalance';
-import AccountSelector from './AccountsSelector';
-import AddAccountPopup from './AddAccountPopup';
-import AddHardwareWalletPopup from './AddHardwareWalletPopup';
-import { ExportMnemonicDialog } from './ExportAccount';
-import DeleteAccount from './DeleteAccount';
-
-const RowWithSelector = styled(Row)`
-  position: relative;
-  bottom: 1rem;
-  padding: 1rem 3rem 2rem 0;
-
-  &:hover #accountSelector {
-    display: flex;
-  }
-`;
 
 const AccountInfoContainer = styled(RowContainer)`
   width: 100%;
   height: auto;
-`
+`;
 
 const AccountInfo = () => {
   const theme = useTheme();
   const wallet = useWallet();
-  const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
-  const [
-    isAddHardwareWalletDialogOpen,
-    setIsAddHardwareWalletDialogOpen,
-  ] = useState(false);
-  const [isExportMnemonicOpen, setIsExportMnemonicOpen] = useState(false);
-  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
-
-  const { accounts, addAccount, setWalletSelector } = useWalletSelector();
-  const selectedAccount = accounts.find((a) => a.isSelected);
 
   const balanceInfo = useBalanceInfo(wallet.publicKey);
   let { amount, decimals } = balanceInfo || {
@@ -65,23 +36,11 @@ const AccountInfo = () => {
         align="flex-start"
         justify="space-between"
       >
-        <RowWithSelector>
-          <Title
-            fontSize="2.4rem"
-            fontFamily="Avenir Next Demi"
-            style={{ textTransform: 'capitalize', marginRight: '1rem' }}
-          >
-            {selectedAccount && selectedAccount.name}
-          </Title>
-          <ExpandMoreIcon fontSize="large" />
-          <AccountSelector
-            setIsAddAccountOpen={setIsAddAccountOpen}
-            setIsAddHardwareWalletDialogOpen={setIsAddHardwareWalletDialogOpen}
-            setIsExportMnemonicOpen={setIsExportMnemonicOpen}
-            setIsDeleteAccountOpen={setIsDeleteAccountOpen}
-          />
-        </RowWithSelector>
-        <Title style={{ position: 'relative' }} color={theme.customPalette.grey.light}>
+        <AccountsSelector />
+        <Title
+          style={{ position: 'relative' }}
+          color={theme.customPalette.grey.light}
+        >
           {wallet.publicKey.toBase58()}
         </Title>
       </Row>
@@ -176,47 +135,6 @@ const AccountInfo = () => {
           />
         </Row>
       </Row>
-
-      <AddAccountPopup
-        open={isAddAccountOpen}
-        onAdd={({ name, importedAccount }) => {
-          addAccount({ name, importedAccount });
-          setWalletSelector({
-            walletIndex: importedAccount ? undefined : accounts.length,
-            importedPubkey: importedAccount
-              ? importedAccount.publicKey.toString()
-              : undefined,
-            ledger: false,
-          });
-          setIsAddAccountOpen(false);
-        }}
-        onClose={() => setIsAddAccountOpen(false)}
-      />
-
-      <AddHardwareWalletPopup
-        open={isAddHardwareWalletDialogOpen}
-        onClose={() => setIsAddHardwareWalletDialogOpen(false)}
-        onAdd={(pubKey) => {
-          addAccount({
-            name: 'Hardware wallet',
-            importedAccount: pubKey.toString(),
-            ledger: true,
-          });
-          setWalletSelector({
-            walletIndex: undefined,
-            importedPubkey: pubKey.toString(),
-            ledger: true,
-          });
-        }}
-      />
-      <ExportMnemonicDialog
-        open={isExportMnemonicOpen}
-        onClose={() => setIsExportMnemonicOpen(false)}
-      />
-      <DeleteAccount
-        open={isDeleteAccountOpen}
-        onClose={() => setIsDeleteAccountOpen(false)}
-      />
     </AccountInfoContainer>
   );
 };

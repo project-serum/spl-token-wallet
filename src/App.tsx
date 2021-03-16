@@ -180,9 +180,11 @@ const Pages = () => {
       <Route path="/connect_popup" component={ConnectPopup} />
 
        {/* popup if connecting from dex UI */}
-       {window.opener && <Redirect from="/" to="/connect_popup" />}
+       {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
+
       {/* if wallet exists - for case when we'll have unlocked wallet */}
       {!!wallet && <Redirect from="/" to="/wallet" />}
+
       {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
       {hasLockedMnemonicAndSeed() ? (
         <Redirect from="/" to="/welcome_back" />

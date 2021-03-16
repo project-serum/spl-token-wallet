@@ -123,9 +123,10 @@ const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
+  const showButtons = !hasLockedMnemonicAndSeed() || !!wallet
 
   return (
-    <GridContainer theme={theme}>
+    <GridContainer theme={theme} style={{ paddingRight: !showButtons && '0' }}>
       <RowContainer justify={'space-between'} height={'100%'}>
         <RowContainer theme={theme} height={'100%'}>
           <Link

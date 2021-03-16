@@ -50,6 +50,7 @@ const StyledMain = styled.main`
 
 export default function NavigationFrame({ children }) {
   const isConnectPopup = window.opener;
+  
   return isConnectPopup ? (
     <>
       <StyledMain haveNavbar>{children}</StyledMain>

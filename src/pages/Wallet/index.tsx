@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom'
 
 import AccountInfo from './components/AccountInfo';
 import AssetsTable from './components/AssetsTable';
@@ -23,6 +24,8 @@ const Wallet = () => {
 
   return (
     <RowContainer direction="column" height="100%" padding="0 3rem 3rem 3rem">
+      {window.opener && <Redirect to={'/connect_popup'} />}
+
       <AccountInfo />
       <AssetsTable
         selectPublicKey={selectPublicKey}

@@ -19,7 +19,7 @@ export const StyledDropdown = styled.div`
     display: block !important;
   }
   padding: 1rem 3rem 1rem 0;
-  border-right: ${props => props.theme.customPalette.border.new};
+  border-right: ${(props) => props.theme.customPalette.border.new};
 `;
 
 export const StyledPaper = styled(
@@ -112,7 +112,7 @@ const WalletStatusButton = ({
 
 const NetworkDropdown = () => {
   const theme = useTheme();
-const wallet = useWallet()
+  const wallet = useWallet();
   const { endpoint, setEndpoint } = useConnectionConfig();
 
   const networkLabels = [
@@ -126,8 +126,17 @@ const wallet = useWallet()
     label: networkLabels.find((a) => a.endpoint === endpoint)?.name || '',
   };
 
+  const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed();
+
   return (
-    <StyledDropdown theme={theme} style={{ margin: '0 0rem 0 3rem', height: '100%' }}>
+    <StyledDropdown
+      theme={theme}
+      style={{
+        margin: '0 0rem 0 3rem',
+        height: '100%',
+        borderRight: isUserHasLockedMnemonicAndSeed && !wallet && 'none',
+      }}
+    >
       <WalletStatusButton
         connection={currentConnectionEndpoint.label}
         theme={theme}
@@ -135,7 +144,9 @@ const wallet = useWallet()
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
-        customNotActiveRem={wallet ? '37rem' : hasLockedMnemonicAndSeed() ? '4rem' : '38rem'}
+        customNotActiveRem={
+          !!wallet ? '37rem' : isUserHasLockedMnemonicAndSeed ? '1rem' : '38rem'
+        }
       >
         <MenuList style={{ padding: 0 }}>
           {networkLabels.map((endpoint) => (

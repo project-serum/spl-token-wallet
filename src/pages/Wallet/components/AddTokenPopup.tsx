@@ -306,8 +306,11 @@ export default function AddTokenDialog({ open, onClose }) {
           <WhiteText theme={theme}>
             Cost:{' '}
             <GreenText theme={theme}>
-              {(+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
-                selectedTokens.length}{' '}
+              {tab === 'popular'
+                ? (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
+                    0.002039) * selectedTokens.length
+                : +feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
+                  0.002039}{' '}
               SOL
             </GreenText>
           </WhiteText>
