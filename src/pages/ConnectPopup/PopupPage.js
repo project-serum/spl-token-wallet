@@ -62,9 +62,6 @@ export default function PopupPage({ origin }) {
   //   return params.get('origin');
   // }, []);
 
-  console.log('origin', origin)
-  console.log('opener', opener)
-
   const postMessage = useCallback(
     (message) => {
       opener.postMessage({ jsonrpc: '2.0', ...message }, origin);
