@@ -259,6 +259,8 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
   const theme = useTheme()
 
+  console.log('wallet', wallet, 'wallet.publicKey', wallet.publicKey)
+
   return (
     <StyledCard>
       {!wallet && <Redirect to="/create_wallet" />}
