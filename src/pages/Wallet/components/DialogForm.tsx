@@ -25,6 +25,7 @@ export default function DialogForm({
         // @ts-ignore
         height: rest.height,
         width: rest.width,
+        padding: rest.padding,
       }}
       onClose={onClose}
       // fullScreen={fullScreen}

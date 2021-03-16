@@ -20,6 +20,8 @@ export default function DeleteMnemonicDialog({ open, onClose }) {
         open={open}
         onClose={onClose}
         fullWidth
+        height="auto"
+        padding="2rem 0"
         onEnter={() => {
           setDeleteCheck('')
         }}

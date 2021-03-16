@@ -80,7 +80,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
   if (swapInfo) {
     firstTab = `Deposit SPL ${tokenSymbol ?? swapInfo.coin.ticker}`;
     secondTab = !mint
-      ? `Deposit ${swapInfo.coin.ticker} to SOL`
+      ? `Convert ${swapInfo.coin.ticker} to SOL`
       : swapInfo.coin.ticker;
     if (!mint) {
       firstTab = 'Deposit SOL';
@@ -96,8 +96,9 @@ export default function DepositDialog({ open, onClose, publicKey }) {
       open={open}
       onClose={onClose}
       height={
-        tab === 0 ? '45rem' : swapInfo?.blockchain === 'btc' ? '30rem' : '50rem'
+        'auto'
       }
+      padding={'2rem 0'}
     >
       {swapInfo && (
         <RowContainer padding="1.6rem 0 2.4rem 0">
@@ -158,9 +159,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
                 blockHeight={'8rem'}
                 iconStyle={{ margin: '0 2rem 0 3rem' }}
                 textStyle={{
-                  color: theme.customPalette.orange.light,
                   fontSize: '1.4rem',
-                  fontFamily: 'Avenir Next',
                 }}
               />
             </RowContainer>

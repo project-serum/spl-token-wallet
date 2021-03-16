@@ -66,3 +66,7 @@ input, textarea {
 .MuiTabs-indicator.MuiTabs-indicator  {
   background: transparent;
 }
+
+::-webkit-scrollbar-thumb {
+  color: #366CE5;
+}

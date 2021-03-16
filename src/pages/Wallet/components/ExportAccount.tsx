@@ -61,8 +61,8 @@ export function ExportMnemonicDialog({ open, onClose }) {
     <DialogForm
       open={open}
       onClose={onClose}
-      height="30rem"
-      fullWidth
+      height="auto"
+      padding="2rem 0"
       onEnter={() => {
         setMnemonic('')
         setPassword('')

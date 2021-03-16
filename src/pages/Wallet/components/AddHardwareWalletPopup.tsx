@@ -40,7 +40,8 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
 
   return (
     <DialogForm
-      height="25rem"
+      height="auto"
+      padding="2rem 0"
       open={open}
       onEnter={() => {}}
       onClose={() => {

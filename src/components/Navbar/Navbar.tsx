@@ -244,7 +244,7 @@ const Navbar = () => {
                 }}
                 style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Demi' }}
               >
-                Disconnect
+                Lock Wallet
               </RedButton>
             </RowContainer>
           ) : !hasLockedMnemonicAndSeed() ? (

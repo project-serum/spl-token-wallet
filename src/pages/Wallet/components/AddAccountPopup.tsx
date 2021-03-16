@@ -27,7 +27,8 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
 
   return (
     <DialogForm
-      height="30rem"
+      height="auto"
+      padding="2rem 0"
       open={open}
       // onEnter={() => {
       //   setName('');

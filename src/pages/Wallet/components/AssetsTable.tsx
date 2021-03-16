@@ -181,7 +181,7 @@ export const getMarketsData = async () => {
     prevEndTimestamp: dayjs().startOf('hour').subtract(24, 'hour').unix(),
   };
 
-  return await fetch('https://api.cryptocurrencies.ai/graphql', {
+  return await fetch('https://develop.api.cryptocurrencies.ai/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -382,7 +382,7 @@ const AssetsTable = ({
             <RowContainer
               width="14rem"
               justify="flex-start"
-              style={{ height: '5rem' }}
+              style={{ height: '5rem', paddingLeft: '2rem' }}
             >
               <AddTokenButton
                 setShowAddTokenDialog={setShowAddTokenDialog}

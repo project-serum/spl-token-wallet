@@ -76,7 +76,8 @@ export default function SendDialog({ open, onClose, publicKey }) {
         theme={theme}
         onClose={onClose}
         fullWidth
-        height={tab === 'spl' ? '40rem' : '45rem'}
+        height={'auto'}
+        padding={'2rem 0'}
       >
         <>
           <RowContainer>
@@ -122,15 +123,15 @@ export default function SendDialog({ open, onClose, publicKey }) {
                 : [
                     <StyledTab
                       theme={theme}
-                      label={`SPL ${swapCoinInfo.ticker}`}
+                      label={`SPL ${swapCoinInfo?.ticker}`}
                       key="spl"
                       value="spl"
                     />,
                     <StyledTab
                       theme={theme}
                       label={`${
-                        swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
-                      } ${swapCoinInfo.ticker}`}
+                        swapCoinInfo?.erc20Contract ? 'ERC20' : 'Native'
+                      } ${swapCoinInfo?.ticker}`}
                       key="swap"
                       value="swap"
                     />,
@@ -346,9 +347,9 @@ function SendSwapDialog({
   const { tokenName, decimals, mint } = balanceInfo;
   const blockchain = wusdcToSplUsdc
     ? 'sol'
-    : swapCoinInfo.blockchain === 'sol'
+    : swapCoinInfo?.blockchain === 'sol'
     ? 'eth'
-    : swapCoinInfo.blockchain;
+    : swapCoinInfo?.blockchain;
   const needMetamask = blockchain === 'eth';
 
   const [ethBalance] = useAsyncData(
@@ -361,7 +362,7 @@ function SendSwapDialog({
   const ethFeeData = useSwapApiGet(
     blockchain === 'eth' &&
       `fees/eth/${ethAccount}` +
-        (swapCoinInfo.erc20Contract ? '/' + swapCoinInfo.erc20Contract : ''),
+        (swapCoinInfo?.erc20Contract ? '/' + swapCoinInfo?.erc20Contract : ''),
     { refreshInterval: 2000 },
   );
   const [ethFeeEstimate] = ethFeeData;
@@ -396,9 +397,9 @@ function SendSwapDialog({
       size: amount / 10 ** decimals,
     };
     if (blockchain === 'sol') {
-      params.coin = swapCoinInfo.splMint;
+      params.coin = swapCoinInfo?.splMint;
     } else if (blockchain === 'eth') {
-      params.coin = swapCoinInfo.erc20Contract;
+      params.coin = swapCoinInfo?.erc20Contract;
     }
     if (mint?.equals(WUSDC_MINT)) {
       params.wusdcToUsdc = true;
@@ -458,28 +459,17 @@ function SendSwapDialog({
     </VioletButton>
   );
 
-  // if (insufficientEthBalance) {
-  //   sendButton = (
-  //     <Tooltip
-  //       title="Insufficient ETH for withdrawal transaction fee"
-  //       placement="top"
-  //     >
-  //       <span>{sendButton}</span>
-  //     </Tooltip>
-  //   );
-  // }
-
   return (
     <>
       <RowContainer direction="column" margin="2rem 0 0 0">
         <Title>
           SPL {tokenName} can be converted to{' '}
-          {blockchain === 'eth' && swapCoinInfo.erc20Contract
+          {blockchain === 'eth' && swapCoinInfo?.erc20Contract
             ? 'ERC20'
-            : blockchain === 'sol' && swapCoinInfo.splMint
+            : blockchain === 'sol' && swapCoinInfo?.splMint
             ? 'SPL'
             : 'native'}{' '}
-          {swapCoinInfo.ticker}
+          {swapCoinInfo?.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </Title>
         {blockchain === 'eth' && (
@@ -495,11 +485,11 @@ function SendSwapDialog({
         {insufficientEthBalance && (
           <RowContainer width="90%" margin="2rem 0 0 0">
             <Title color={theme.customPalette.red.main}>
-              Insufficient {swapCoinInfo.ticker} for withdrawal transaction fee
+              Insufficient {swapCoinInfo?.ticker} for withdrawal transaction fee
             </Title>
           </RowContainer>
         )}
-        <RowContainer width="90%" justify="space-between">
+        <RowContainer width="90%" justify="space-between" margin={!ethAccount && "2rem 0 0 0"}>
           <WhiteButton
             theme={theme}
             onClick={onClose}
@@ -644,7 +634,6 @@ function useForm(
           blockHeight="8rem"
           iconStyle={{ margin: '0 2rem 0 3rem' }}
           textStyle={{
-            color: theme.customPalette.orange.dark,
             fontSize: '1.4rem',
           }}
           text={`Please make sure that you sending funds to the ${tokenSymbol} address in the ${

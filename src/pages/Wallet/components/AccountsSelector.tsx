@@ -169,10 +169,10 @@ const AccountsSelector = ({
             >
               <img
                 src={DeleteAccountIcon}
-                alt="delete account"
+                alt="forget wallet"
                 style={{ marginRight: '1rem' }}
               />
-              <GreyTitle theme={theme}>Delete Account</GreyTitle>
+              <GreyTitle theme={theme}>Forget wallet</GreyTitle>
             </BtnCustom>
           </RowContainer>
         </RowContainer>

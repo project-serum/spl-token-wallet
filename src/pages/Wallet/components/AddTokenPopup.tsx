@@ -146,7 +146,8 @@ export default function AddTokenDialog({ open, onClose }) {
     <DialogForm
       open={open}
       onClose={onClose}
-      height={tab === 'erc20' ? '30rem' : tab === 'popular' ? '55rem' : '45rem'}
+      height={'auto'}
+      padding={'2rem 0'}
     >
       {!!popularTokens && (
         <RowContainer margin="0 0 2rem 0">
@@ -169,7 +170,7 @@ export default function AddTokenDialog({ open, onClose }) {
             <WhiteText theme={theme}>
               Add a token to your wallet. This will cost{' '}
               <GreenText theme={theme}>
-                {feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL)} SOL
+                {stripDigitPlaces(tokenAccountCost / LAMPORTS_PER_SOL, 6)} SOL
               </GreenText>{' '}
               per token.
             </WhiteText>
