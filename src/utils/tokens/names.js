@@ -62,8 +62,15 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
   let match = tokenInfos?.find(
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
-  if (match && !info) {
-    info = { name: match.name, symbol: match.symbol, logoUri: match.logoURI };
+  console.log('match', match);
+  if (match) {
+    if (!info) {
+      info = { name: match.name, symbol: match.symbol, logoUri: match.logoURI };
+    }
+    // The user has overridden a name locally.
+    else {
+      info = { ...info, logoUri: match.logoURI };
+    }
   }
   return { name: info?.name, symbol: info?.symbol, logoUri: info?.logoUri };
 }
