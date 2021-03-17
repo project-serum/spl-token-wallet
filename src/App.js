@@ -11,6 +11,7 @@ import { ConnectionProvider } from './utils/connection';
 import WalletPage from './pages/WalletPage';
 import { useWallet, WalletProvider } from './utils/wallet';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
+import { TokenRegistryProvider } from './utils/tokens/names';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
@@ -62,9 +63,11 @@ export default function App() {
         <CssBaseline />
 
         <ConnectionProvider>
-          <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-            <WalletProvider>{appElement}</WalletProvider>
-          </SnackbarProvider>
+          <TokenRegistryProvider>
+            <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
+              <WalletProvider>{appElement}</WalletProvider>
+            </SnackbarProvider>
+          </TokenRegistryProvider>
         </ConnectionProvider>
       </ThemeProvider>
     </Suspense>

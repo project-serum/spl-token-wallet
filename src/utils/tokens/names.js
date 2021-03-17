@@ -1,9 +1,20 @@
+import React, { useContext, useState, useEffect } from 'react';
 import EventEmitter from 'events';
 import { useConnectionConfig, MAINNET_URL } from '../connection';
 import { useListener } from '../utils';
+import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { TokenListProvider } from '@solana/spl-token-registry';
 
-export const TOKENS = {
+// This list is used for deciding what to display in the popular tokens list
+// in the `AddTokenDialog`.
+//
+// Icons, names, and symbols are fetched not from here, but from the
+// @solana/spl-token-registry. To add an icon or token name to the wallet,
+// add the mints to that package. To add a token to the `AddTokenDialog`,
+// add the `mintAddress` here. The rest of the fields are not used.
+const POPULAR_TOKENS = {
   [MAINNET_URL]: [
     {
       mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
@@ -215,62 +226,6 @@ export const TOKENS = {
         'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
     },
     {
-      tokenSymbol: 'RAY-LEGACY-USDT',
-      mintAddress: 'CzPDyvotTcxNqtPne32yUiEVQ6jk42HZi1Y3hUu7qf7f',
-      tokenName: 'Raydium Legacy USDT Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-LEGACY-USDC',
-      mintAddress: 'FgmBnsF5Qrnv8X9bomQfEtQTQjNNiBCWRKGpzPnE5BDg',
-      tokenName: 'Raydium Legacy USDC Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-LEGACY-SRM',
-      mintAddress: '5QXBMXuCL7zfAk39jEVVEvcrz1AvBGgT9wAhLLHLyyUJ',
-      tokenName: 'Raydium Legacy Serum Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-ETH',
-      mintAddress: 'Q6MKy5Yxb9vG1mWzppMtMb2nrhNuCRNUkJTeiE3fuwD',
-      tokenName: 'Raydium ETH Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-SOL',
-      mintAddress: 'F5PPQHGcznZ2FxD9JaxJMXaf7XkaFFJ6zzTBcW8osQjw',
-      tokenName: 'Raydium SOL Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-SRM',
-      mintAddress: 'DSX5E21RE9FB9hM8Nh8xcXQfPK6SzRaJiywemHBSsfup',
-      tokenName: 'Raydium SRM Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-USDT',
-      mintAddress: 'FdhKXYjCou2jQfgKWcNY7jb8F2DPLU1teTTTRfLBD2v1',
-      tokenName: 'Raydium USDT Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
-      tokenSymbol: 'RAY-USDC',
-      mintAddress: 'BZFGfXMrjG2sS7QT2eiCDEevPFnkYYF7kzJpWfYxPbcx',
-      tokenName: 'Raydium USDC Liquidity Pool',
-      icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
-    },
-    {
       tokenSymbol: 'OXY',
       mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
       tokenName: 'Oxygen Protocol',
@@ -280,6 +235,39 @@ export const TOKENS = {
   ],
 };
 
+const TokenListContext = React.createContext({});
+
+export function useTokenInfos() {
+  const { tokenInfos } = useContext(TokenListContext);
+  return tokenInfos;
+}
+
+export function TokenRegistryProvider(props) {
+  const { endpoint } = useConnectionConfig();
+  const [tokenInfos, setTokenInfos] = useState(null);
+  useEffect(() => {
+    const tokenListProvider = new TokenListProvider();
+    tokenListProvider.resolve().then((tokenListContainer) => {
+      const cluster = clusterForEndpoint(endpoint);
+
+      const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
+        cluster?.name,
+      );
+      const tokenInfos =
+        tokenListContainer !== filteredTokenListContainer
+          ? filteredTokenListContainer?.getList()
+          : null; // Workaround for filter return all on unknown slug
+      setTokenInfos(tokenInfos);
+    });
+  }, [endpoint]);
+
+  return (
+    <TokenListContext.Provider value={{ tokenInfos }}>
+      {props.children}
+    </TokenListContext.Provider>
+  );
+}
+
 const customTokenNamesByNetwork = JSON.parse(
   localStorage.getItem('tokenNames') ?? '{}',
 );
@@ -287,25 +275,32 @@ const customTokenNamesByNetwork = JSON.parse(
 const nameUpdated = new EventEmitter();
 nameUpdated.setMaxListeners(100);
 
-export function useTokenName(mint) {
+export function useTokenInfo(mint) {
   const { endpoint } = useConnectionConfig();
   useListener(nameUpdated, 'update');
-  return getTokenName(mint, endpoint);
+  const tokenInfos = useTokenInfos();
+  return getTokenInfo(mint, endpoint, tokenInfos);
 }
 
-export function getTokenName(mint, endpoint) {
+export function getTokenInfo(mint, endpoint, tokenInfos) {
   if (!mint) {
     return { name: null, symbol: null };
   }
 
   let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];
-  let match = TOKENS?.[endpoint]?.find(
-    (token) => token.mintAddress === mint.toBase58(),
+  let match = tokenInfos?.find(
+    (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
-  if (match && (!info || match.deprecated)) {
-    info = { name: match.tokenName, symbol: match.tokenSymbol };
+  if (match) {
+    if (!info) {
+      info = { ...match, logoUri: match.logoURI };
+    }
+    // The user has overridden a name locally.
+    else {
+      info = { ...info, logoUri: match.logoURI };
+    }
   }
-  return { name: info?.name, symbol: info?.symbol };
+  return { ...info };
 }
 
 export function useUpdateTokenName() {
@@ -332,5 +327,16 @@ export function useUpdateTokenName() {
       nameUpdated.emit('update');
     },
     [endpoint],
+  );
+}
+// Returns tokenInfos for the popular tokens list.
+export function usePopularTokens() {
+  const tokenInfos = useTokenInfos();
+  const { endpoint } = useConnectionConfig();
+  return (!POPULAR_TOKENS[endpoint]
+    ? []
+    : POPULAR_TOKENS[endpoint]
+  ).map((tok) =>
+    getTokenInfo(new PublicKey(tok.mintAddress), endpoint, tokenInfos),
   );
 }
