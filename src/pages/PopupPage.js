@@ -430,6 +430,8 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
+        } else if (instruction.type === 'mango') {
+          // Whitelist mango for now.
         } else if (
           ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
             instruction.type,

@@ -23,6 +23,10 @@ const RAYDIUM_LP_PROGRAM_ID = new PublicKey(
   'RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr',
 );
 
+const MANGO_PROGRAM_ID = new PublicKey(
+  'JD3bq9hGdy38PuWQ4h2YJpELmHVGPPfFSuFkpzAd9zfu',
+);
+
 const marketCache = {};
 let marketCacheConnection = null;
 const cacheDuration = 15 * 1000;
@@ -129,6 +133,15 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
+    } else if (programId.equals(MANGO_PROGRAM_ID)) {
+      console.log('[' + index + '] Handled as mango markets instruction');
+      let decodedInstruction = decodeMangoInstruction(decoded);
+      return await handleMangoInstruction(
+        connection,
+        instruction,
+        accountKeys,
+        decodedInstruction,
+      );
     } else {
       return {
         type: 'Unknown',
@@ -145,6 +158,18 @@ const toInstruction = async (
   console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
 
   return;
+};
+
+const handleMangoInstruction = async (
+  connection,
+  instruction,
+  accountKeys,
+  decodedInstruction,
+) => {
+  // TODO
+  return {
+    type: 'mango',
+  };
 };
 
 const handleRayStakeInstruction = async (
@@ -169,6 +194,11 @@ const handleRayLpInstruction = async (
   return {
     type: 'raydium',
   };
+};
+
+const decodeMangoInstruction = () => {
+  // TODO
+  return undefined;
 };
 
 const decodeStakeInstruction = () => {
