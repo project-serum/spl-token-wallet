@@ -12,6 +12,7 @@ import {
 
 import { InputWithEye } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
+import FakeInputs from '../../../components/FakeInputs';
 
 const CreatePassword = ({
   password,
@@ -25,7 +26,7 @@ const CreatePassword = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const theme = useTheme();
-  const isDisabled = password === ''
+  const isDisabled = password === '';
   const submit = () => setCurrentStep(2);
 
   const handleKeyDown = (event: any) => {
@@ -36,6 +37,7 @@ const CreatePassword = ({
 
   return (
     <>
+      <FakeInputs />
       <Card justify={'space-evenly'}>
         <RowContainer direction={'column'}>
           <BoldTitle style={{ marginBottom: '1.5rem' }}>

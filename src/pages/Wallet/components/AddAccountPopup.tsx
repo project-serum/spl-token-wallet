@@ -12,6 +12,7 @@ import {
 } from '../../commonStyles';
 import { useTheme } from '@material-ui/core';
 import { InputWithPaste } from '../../../components/Input';
+import FakeInputs from '../../../components/FakeInputs';
 
 export default function AddAccountDialog({ open, onAdd, onClose }) {
   const [name, setName] = useState('');
@@ -46,6 +47,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
       onClose={onClose}
       fullWidth
     >
+      <FakeInputs />
       <RowContainer>
         <Title fontSize="2rem">Add account</Title>
       </RowContainer>

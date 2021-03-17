@@ -16,6 +16,7 @@ import { TextareaWithCopy } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
 import AttentionComponent from '../../../components/Attention';
 import clipboardCopy from 'clipboard-copy';
+import FakeInputs from '../../../components/FakeInputs';
 
 const CreatePassword = ({
   seedPhrase,
@@ -29,9 +30,9 @@ const CreatePassword = ({
 
   const submit = () => {
     setIsConfirmSeedPhrase(true);
-  }
+  };
 
-  const isDisabled = !savedSeedPhrase
+  const isDisabled = !savedSeedPhrase;
 
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter' && !isDisabled) {
@@ -41,6 +42,7 @@ const CreatePassword = ({
 
   return (
     <>
+      <FakeInputs />
       <Card width="53rem" height="55rem">
         <Row
           width={'90%'}

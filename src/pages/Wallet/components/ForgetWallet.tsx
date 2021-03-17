@@ -10,6 +10,7 @@ import {
 } from '../../commonStyles';
 import { useTheme } from '@material-ui/core';
 import AttentionComponent from '../../../components/Attention';
+import FakeInputs from '../../../components/FakeInputs';
 
 export default function DeleteMnemonicDialog({ open, onClose, openExportMnemonicPopup }) {
   const [deleteCheck, setDeleteCheck] = useState('');
@@ -27,6 +28,7 @@ export default function DeleteMnemonicDialog({ open, onClose, openExportMnemonic
           setDeleteCheck('');
         }}
       >
+        <FakeInputs />
         <RowContainer width="90%" justify="flex-start" margin="0 0 2rem 0">
           <Title fontSize="2.4rem">Forget wallet for this device</Title>
         </RowContainer>

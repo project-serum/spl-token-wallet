@@ -21,6 +21,7 @@ import { InputWithEye } from '../../components/Input'
 import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
 import BottomLink from '../../components/BottomLink';
+import FakeInputs from '../../components/FakeInputs';
 
 const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -48,6 +49,7 @@ const WelcomeBack = () => {
 
   return (
     <Body>
+      <FakeInputs />
       {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
       {!!wallet && <Redirect to={'/wallet'} />}
       <Logo />

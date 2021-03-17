@@ -41,6 +41,7 @@ import {
 import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
 import { StyledTab, StyledTabs } from '../styles';
+import FakeInputs from '../../../components/FakeInputs';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -83,6 +84,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
         padding={'2rem 0'}
       >
         <>
+        <FakeInputs />
           <RowContainer>
             <Title>Send {tokenSymbol ? ` ${tokenSymbol} to` : null}</Title>
             {/* {ethAccount && (

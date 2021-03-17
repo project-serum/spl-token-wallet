@@ -36,6 +36,7 @@ import AttentionComponent from '../../../components/Attention';
 import { StyledTab, StyledTabs, StyledStepLabel } from '../styles';
 
 import MetamaskIcon from '../../../images/metamask.png';
+import FakeInputs from '../../../components/FakeInputs';
 
 export default function DepositDialog({ open, onClose, publicKey }) {
   const balanceInfo = useBalanceInfo(publicKey) || {
@@ -98,6 +99,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
       height={'auto'}
       padding={'2rem 0'}
     >
+      <FakeInputs />
       {swapInfo && (
         <RowContainer padding="1.6rem 0 2.4rem 0">
           <StyledTabs

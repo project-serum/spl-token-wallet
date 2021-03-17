@@ -14,6 +14,7 @@ import {
 
 import BottomLink from '../../../components/BottomLink';
 import { sleep } from '../../../utils/utils';
+import FakeInputs from '../../../components/FakeInputs';
 
 const ConfirmSeedPhrase = ({
   password,
@@ -28,7 +29,7 @@ const ConfirmSeedPhrase = ({
   createWallet: (password: string, onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
-  randomNumbersOfSeedWords: number[]
+  randomNumbersOfSeedWords: number[];
 }) => {
   const theme = useTheme();
 
@@ -44,7 +45,7 @@ const ConfirmSeedPhrase = ({
       await sleep(1000);
       await setCurrentStep(3);
     });
-  }
+  };
 
   const isDisabled =
     firstWord !== seedPhraseArray[randomNumbersOfSeedWords[0] - 1] ||
@@ -60,6 +61,7 @@ const ConfirmSeedPhrase = ({
 
   return (
     <>
+      <FakeInputs />
       <Card justify={'space-around'}>
         <RowContainer height={'auto'} padding="1rem 0 0 0">
           <BoldTitle>Confirm the seed phrase</BoldTitle>
