@@ -75,3 +75,7 @@ input, textarea {
 ::-webkit-scrollbar-thumb {
   background: #366CE5;
 }
+
+#notistack-snackbar {
+  font-size: 1.6rem;
+}

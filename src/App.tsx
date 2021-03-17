@@ -14,7 +14,7 @@ import {
   useWallet, 
   WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
-import { SnackbarProvider } from 'notistack';
+import SnackbarProvider from './components/SnackbarProvider'
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 
 // const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
