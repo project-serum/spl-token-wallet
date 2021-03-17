@@ -11,7 +11,7 @@ import {
   useWalletTokenAccounts,
 } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { useTokenInfos, useUpdateTokenName } from '../utils/tokens/names';
+import { useUpdateTokenName, usePopularTokens } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';
@@ -24,9 +24,7 @@ import { abbreviateAddress } from '../utils/utils';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
-import {
-  useSolanaExplorerUrlSuffix,
-} from '../utils/connection';
+import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import Link from '@material-ui/core/Link';
 import CopyableDisplay from './CopyableDisplay';
 import DialogForm from './DialogForm';
@@ -55,10 +53,9 @@ export default function AddTokenDialog({ open, onClose }) {
   let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
   const [sendTransaction, sending] = useSendTransaction();
-  const popularTokens = useTokenInfos();
-  
-  const [walletAccounts] = useWalletTokenAccounts();
 
+  const [walletAccounts] = useWalletTokenAccounts();
+  const popularTokens = usePopularTokens();
   const [tab, setTab] = useState(!!popularTokens ? 'popular' : 'manual');
   const [mintAddress, setMintAddress] = useState('');
   const [tokenName, setTokenName] = useState('');
@@ -170,19 +167,18 @@ export default function AddTokenDialog({ open, onClose }) {
           </React.Fragment>
         ) : tab === 'popular' ? (
           <List disablePadding>
-            {popularTokens
-              .map((tokenInfo) => (
-                <TokenListItem
-                  key={tokenInfo.address}
-                  tokenInfo={tokenInfo}
-                  existingAccount={(walletAccounts || []).find(
-                    (account) =>
-                      account.parsed.mint.toBase58() === tokenInfo.address,
-                  )}
-                  onSubmit={onSubmit}
-                  disabled={sending}
-                />
-              ))}
+            {popularTokens.map((tokenInfo) => (
+              <TokenListItem
+                key={tokenInfo.address}
+                tokenInfo={tokenInfo}
+                existingAccount={(walletAccounts || []).find(
+                  (account) =>
+                    account.parsed.mint.toBase58() === tokenInfo.address,
+                )}
+                onSubmit={onSubmit}
+                disabled={sending}
+              />
+            ))}
           </List>
         ) : tab === 'erc20' ? (
           <>
@@ -225,21 +221,21 @@ export default function AddTokenDialog({ open, onClose }) {
   );
 }
 
-function TokenListItem({
-  tokenInfo,
-  onSubmit,
-  disabled,
-  existingAccount,
-}) {
+function TokenListItem({ tokenInfo, onSubmit, disabled, existingAccount }) {
   const [open, setOpen] = useState(false);
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const alreadyExists = !!existingAccount;
+
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }} key={tokenInfo.name}>
         <ListItem button onClick={() => setOpen((open) => !open)}>
           <ListItemIcon>
-            <TokenIcon url={tokenInfo.logoURI} tokenName={tokenInfo.name} size={20} />
+            <TokenIcon
+              url={tokenInfo.logoUri}
+              tokenName={tokenInfo.name}
+              size={20}
+            />
           </ListItemIcon>
           <ListItemText
             primary={
@@ -262,7 +258,13 @@ function TokenListItem({
           type="submit"
           color="primary"
           disabled={disabled || alreadyExists}
-          onClick={() => onSubmit({ tokenName: tokenInfo.name, tokenSymbol: tokenInfo.symbol, mintAddress: tokenInfo.address })}
+          onClick={() =>
+            onSubmit({
+              tokenName: tokenInfo.name,
+              tokenSymbol: tokenInfo.symbol,
+              mintAddress: tokenInfo.address,
+            })
+          }
         >
           {alreadyExists ? 'Added' : 'Add'}
         </Button>

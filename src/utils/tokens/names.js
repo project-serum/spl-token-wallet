@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import EventEmitter from 'events';
-import { useConnectionConfig } from '../connection';
+import { useConnectionConfig, MAINNET_URL } from '../connection';
 import { useListener } from '../utils';
 import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
+import { PublicKey } from '@solana/web3.js';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
 const TokenListContext = React.createContext({});
@@ -64,14 +65,14 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
   );
   if (match) {
     if (!info) {
-      info = { name: match.name, symbol: match.symbol, logoUri: match.logoURI };
+      info = { ...match, logoUri: match.logoURI };
     }
     // The user has overridden a name locally.
     else {
       info = { ...info, logoUri: match.logoURI };
     }
   }
-  return { name: info?.name, symbol: info?.symbol, logoUri: info?.logoUri };
+  return { ...info };
 }
 
 export function useUpdateTokenName() {
@@ -100,3 +101,298 @@ export function useUpdateTokenName() {
     [endpoint],
   );
 }
+// Returns tokenInfos for the popular tokens list.
+export function usePopularTokens() {
+  const tokenInfos = useTokenInfos();
+  const { endpoint } = useConnectionConfig();
+  return (!POPULAR_TOKENS[endpoint]
+    ? []
+    : POPULAR_TOKENS[endpoint]
+  ).map((tok) =>
+    getTokenInfo(new PublicKey(tok.mintAddress), endpoint, tokenInfos),
+  );
+}
+
+// This list is used for deciding what to display in the popular tokens list
+// in the `AddTokenDialog`.
+//
+// Icons, names, and symbols are fetched not from here, but from the
+// @solana/spl-token-registry. To add an icon or token name to the wallet,
+// add the mints to that package. To add a token to the `AddTokenDialog`,
+// add the `mintAddress` here. The rest of the fields are not used.
+const POPULAR_TOKENS = {
+  [MAINNET_URL]: [
+    {
+      mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
+      tokenName: 'Serum',
+      tokenSymbol: 'SRM',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x476c5E26a75bd202a9683ffD34359C0CC15be0fF/logo.png',
+    },
+    {
+      mintAddress: 'MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L',
+      tokenName: 'MegaSerum',
+      tokenSymbol: 'MSRM',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x476c5E26a75bd202a9683ffD34359C0CC15be0fF/logo.png',
+    },
+    {
+      tokenSymbol: 'BTC',
+      mintAddress: '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
+      tokenName: 'Wrapped Bitcoin',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png',
+    },
+    {
+      tokenSymbol: 'ETH',
+      mintAddress: '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
+      tokenName: 'Wrapped Ethereum',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    },
+    {
+      tokenSymbol: 'FTT',
+      mintAddress: 'AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3',
+      tokenName: 'Wrapped FTT',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9/logo.png',
+    },
+    {
+      tokenSymbol: 'YFI',
+      mintAddress: '3JSf5tPeuscJGtaCp5giEiDhv51gQ4v3zWg8DGgyLfAB',
+      tokenName: 'Wrapped YFI',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e/logo.png',
+    },
+    {
+      tokenSymbol: 'LINK',
+      mintAddress: 'CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG',
+      tokenName: 'Wrapped Chainlink',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
+    },
+    {
+      tokenSymbol: 'XRP',
+      mintAddress: 'Ga2AXHpfAF6mv2ekZwcsJFqu7wB4NV331qNH7fW9Nst8',
+      tokenName: 'Wrapped XRP',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png',
+    },
+    {
+      tokenSymbol: 'USDT',
+      mintAddress: 'BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4',
+      tokenName: 'Wrapped USDT',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
+    },
+    {
+      tokenSymbol: 'USDC',
+      mintAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+      tokenName: 'USD Coin',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    },
+    {
+      tokenSymbol: 'WUSDC',
+      mintAddress: 'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
+      tokenName: 'Wrapped USDC',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+      deprecated: true,
+    },
+    {
+      tokenSymbol: 'SUSHI',
+      mintAddress: 'AR1Mtgh7zAtxuxGd2XPovXPVjcSdY3i4rQYisNadjfKy',
+      tokenName: 'Wrapped SUSHI',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B3595068778DD592e39A122f4f5a5cF09C90fE2/logo.png',
+    },
+    {
+      tokenSymbol: 'ALEPH',
+      mintAddress: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
+      tokenName: 'Wrapped ALEPH',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/6996a371cd02f516506a8f092eeb29888501447c/blockchains/nuls/assets/NULSd6HgyZkiqLnBzTaeSQfx1TNg2cqbzq51h/logo.png',
+    },
+    {
+      tokenSymbol: 'SXP',
+      mintAddress: 'SF3oTvfWzEP3DTwGSvUXRrGTvr75pdZNnBLAH9bzMuX',
+      tokenName: 'Wrapped SXP',
+      icon:
+        'https://github.com/trustwallet/assets/raw/b0ab88654fe64848da80d982945e4db06e197d4f/blockchains/ethereum/assets/0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9/logo.png',
+    },
+    {
+      tokenSymbol: 'HGET',
+      mintAddress: 'BtZQfWqDGbk9Wf2rXEiWyQBdBY1etnUUn6zEphvVS7yN',
+      tokenName: 'Wrapped HGET',
+    },
+    {
+      tokenSymbol: 'CREAM',
+      mintAddress: '5Fu5UUgbjpUvdBveb3a1JTNirL8rXtiYeSMWvKjtUNQv',
+      tokenName: 'Wrapped CREAM',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/4c82c2a409f18a4dd96a504f967a55a8fe47026d/blockchains/smartchain/assets/0xd4CB328A82bDf5f03eB737f37Fa6B370aef3e888/logo.png',
+    },
+    {
+      tokenSymbol: 'UBXT',
+      mintAddress: '873KLxCbz7s9Kc4ZzgYRtNmhfkQrhfyWGZJBmyCbC3ei',
+      tokenName: 'Wrapped UBXT',
+    },
+    {
+      tokenSymbol: 'HNT',
+      mintAddress: 'HqB7uswoVg4suaQiDP3wjxob1G5WdZ144zhdStwMCq7e',
+      tokenName: 'Wrapped HNT',
+    },
+    {
+      tokenSymbol: 'FRONT',
+      mintAddress: '9S4t2NEAiJVMvPdRYKVrfJpBafPBLtvbvyS3DecojQHw',
+      tokenName: 'Wrapped FRONT',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/6e375e4e5fb0ffe09ed001bae1ef8ca1d6c86034/blockchains/ethereum/assets/0xf8C3527CC04340b208C854E985240c02F7B7793f/logo.png',
+    },
+    {
+      tokenSymbol: 'AKRO',
+      mintAddress: '6WNVCuxCGJzNjmMZoKyhZJwvJ5tYpsLyAtagzYASqBoF',
+      tokenName: 'Wrapped AKRO',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/878dcab0fab90e6593bcb9b7d941be4915f287dc/blockchains/ethereum/assets/0xb2734a4Cec32C81FDE26B0024Ad3ceB8C9b34037/logo.png',
+    },
+    {
+      tokenSymbol: 'HXRO',
+      mintAddress: 'DJafV9qemGp7mLMEn5wrfqaFwxsbLgUsGVS16zKRk9kc',
+      tokenName: 'Wrapped HXRO',
+    },
+    {
+      tokenSymbol: 'UNI',
+      mintAddress: 'DEhAasscXF4kEGxFgJ3bq4PpVGp5wyUxMRvn6TzGVHaw',
+      tokenName: 'Wrapped UNI',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
+    },
+    {
+      tokenSymbol: 'MATH',
+      mintAddress: 'GeDS162t9yGJuLEHPWXXGrb1zwkzinCgRwnT8vHYjKza',
+      tokenName: 'Wrapped MATH',
+    },
+    {
+      tokenSymbol: 'TOMO',
+      mintAddress: 'GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd',
+      tokenName: 'Wrapped TOMO',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/08d734b5e6ec95227dc50efef3a9cdfea4c398a1/blockchains/tomochain/info/logo.png',
+    },
+    {
+      tokenSymbol: 'LUA',
+      mintAddress: 'EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX',
+      tokenName: 'Wrapped LUA',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/2d2491130e6beda208ba4fc6df028a82a0106ab6/blockchains/ethereum/assets/0xB1f66997A5760428D3a87D68b90BfE0aE64121cC/logo.png',
+    },
+    {
+      tokenSymbol: 'FIDA',
+      mintAddress: 'EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp',
+      tokenName: 'Bonfida Token',
+      icon:
+        'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/fida.svg',
+    },
+    {
+      tokenSymbol: 'LQID',
+      mintAddress: 'A6aY2ceogBz1VaXBxm1j2eJuNZMRqrWUAnKecrMH85zj',
+      tokenName: 'LQID',
+      icon:
+        'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/lqid.svg',
+    },
+    {
+      tokenSymbol: 'SECO',
+      mintAddress: '7CnFGR9mZWyAtWxPcVuTewpyC3A3MDW4nLsu5NY6PDbd',
+      tokenName: 'Serum Ecosystem Pool Token',
+    },
+    {
+      tokenSymbol: 'HOLY',
+      mintAddress: '3GECTP7H4Tww3w8jEPJCJtXUtXxiZty31S9szs84CcwQ',
+      tokenName: 'Holy Trinity Pool',
+    },
+    {
+      tokenSymbol: 'KIN',
+      mintAddress: 'kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6',
+      tokenName: 'KIN',
+      icon:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png',
+    },
+    {
+      tokenSymbol: 'MAPS',
+      mintAddress: 'MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb',
+      tokenName: 'Maps.me Token',
+    },
+    {
+      tokenSymbol: 'RAY',
+      mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+      tokenName: 'Raydium',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-LEGACY-USDT',
+      mintAddress: 'CzPDyvotTcxNqtPne32yUiEVQ6jk42HZi1Y3hUu7qf7f',
+      tokenName: 'Raydium Legacy USDT Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-LEGACY-USDC',
+      mintAddress: 'FgmBnsF5Qrnv8X9bomQfEtQTQjNNiBCWRKGpzPnE5BDg',
+      tokenName: 'Raydium Legacy USDC Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-LEGACY-SRM',
+      mintAddress: '5QXBMXuCL7zfAk39jEVVEvcrz1AvBGgT9wAhLLHLyyUJ',
+      tokenName: 'Raydium Legacy Serum Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-ETH',
+      mintAddress: 'Q6MKy5Yxb9vG1mWzppMtMb2nrhNuCRNUkJTeiE3fuwD',
+      tokenName: 'Raydium ETH Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-SOL',
+      mintAddress: 'F5PPQHGcznZ2FxD9JaxJMXaf7XkaFFJ6zzTBcW8osQjw',
+      tokenName: 'Raydium SOL Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-SRM',
+      mintAddress: 'DSX5E21RE9FB9hM8Nh8xcXQfPK6SzRaJiywemHBSsfup',
+      tokenName: 'Raydium SRM Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-USDT',
+      mintAddress: 'FdhKXYjCou2jQfgKWcNY7jb8F2DPLU1teTTTRfLBD2v1',
+      tokenName: 'Raydium USDT Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'RAY-USDC',
+      mintAddress: 'BZFGfXMrjG2sS7QT2eiCDEevPFnkYYF7kzJpWfYxPbcx',
+      tokenName: 'Raydium USDC Liquidity Pool',
+      icon:
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+    },
+    {
+      tokenSymbol: 'OXY',
+      mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
+      tokenName: 'Oxygen Protocol',
+      icon:
+        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
+    },
+  ],
+};
