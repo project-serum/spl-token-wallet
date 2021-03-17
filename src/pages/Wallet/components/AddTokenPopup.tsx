@@ -121,7 +121,21 @@ export default function AddTokenDialog({ open, onClose }) {
     });
   }
 
-  const isDisabled = sending || !valid;
+  const cost =
+    tab === 'popular'
+      ? stripDigitPlaces(
+          (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
+            selectedTokens.length,
+          8,
+        )
+      : stripDigitPlaces(
+          +feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039,
+          8,
+        );
+
+  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost;
+
+  const isDisabled = sending || !valid || isBalanceLowerCost;
 
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter' && !isDisabled) {
@@ -318,29 +332,22 @@ export default function AddTokenDialog({ open, onClose }) {
         <RowContainer width="90%" justify="space-between" margin="2rem 0 0 0">
           <WhiteText theme={theme}>
             Your SOL Balance:{' '}
-            <GreenText theme={theme}>
+            <WhiteText
+              theme={theme}
+              style={{
+                color: isBalanceLowerCost
+                  ? theme.customPalette.red.main
+                  : theme.customPalette.green.light,
+              }}
+            >
               {formatNumberToUSFormat(
                 stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
               )}{' '}
               SOL
-            </GreenText>
+            </WhiteText>
           </WhiteText>
           <WhiteText theme={theme}>
-            Cost:{' '}
-            <GreenText theme={theme}>
-              {tab === 'popular'
-                ? stripDigitPlaces(
-                    (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
-                      0.002039) * selectedTokens.length,
-                    8,
-                  )
-                : stripDigitPlaces(
-                    +feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
-                      0.002039,
-                    8,
-                  )}{' '}
-              SOL
-            </GreenText>
+            Cost: <GreenText theme={theme}>{cost} SOL</GreenText>
           </WhiteText>
         </RowContainer>
         <RowContainer width="90%" justify="space-between" margin="2rem 0 0 0">

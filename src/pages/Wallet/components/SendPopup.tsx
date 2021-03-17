@@ -76,7 +76,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
         theme={theme}
         onClose={onClose}
         onEnter={() => {
-          setTab('spl')
+          setTab('spl');
         }}
         fullWidth
         height={'auto'}
@@ -492,7 +492,11 @@ function SendSwapDialog({
             </Title>
           </RowContainer>
         )}
-        <RowContainer width="90%" justify="space-between" margin={!ethAccount && "2rem 0 0 0"}>
+        <RowContainer
+          width="90%"
+          justify="space-between"
+          margin={!ethAccount && '2rem 0 0 0'}
+        >
           <WhiteButton
             theme={theme}
             onClick={onClose}
@@ -599,7 +603,7 @@ function useForm(
   addressHelperText = '',
   passAddressValidation = true,
   tab = 'spl',
-  erc20Contract = true
+  erc20Contract = true,
 ) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');

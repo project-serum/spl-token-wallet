@@ -90,6 +90,12 @@ const AddTokens = () => {
     return resp[1];
   }
 
+  const cost =
+    (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
+    selectedTokens.length;
+
+  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost
+
   return (
     <>
       <Card width={'100rem'}>
@@ -166,7 +172,15 @@ const AddTokens = () => {
               </VioletButton>
               <span style={{ display: 'flex' }}>
                 <BoldTitle fontSize={'1.5rem'}>Your Balance:&nbsp;</BoldTitle>
-                <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
+                <BoldTitle
+                  fontSize={'1.5rem'}
+                  style={{
+                    color:
+                    isBalanceLowerCost
+                        ? theme.customPalette.red.main
+                        : theme.customPalette.green.light,
+                  }}
+                >
                   {formatNumberToUSFormat(
                     stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
                   )}{' '}
@@ -251,18 +265,14 @@ const AddTokens = () => {
                 <span style={{ display: 'flex' }}>
                   <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
                   <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
-                    {stripDigitPlaces(
-                      (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
-                        0.002039) * selectedTokens.length,
-                      8,
-                    )}{' '}
-                    SOL
+                    {stripDigitPlaces(cost, 8)} SOL
                   </BoldTitle>
                 </span>
               </Row>
               <VioletButton
                 theme={theme}
                 background={'#366CE5'}
+                disabled={isBalanceLowerCost}
                 onClick={() => onSubmit()}
               >
                 Finish
