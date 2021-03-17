@@ -26,7 +26,7 @@ const InputWithComponent = ({
   ComponentToShow,
   style = {},
   containerStyle,
-  autoComplete = "new-password",
+  autoComplete = "off",
   onKeyDown = () => {}
 }: {
   type?: string;
@@ -310,7 +310,7 @@ const TextareaWithCopy = ({
             } else {
               copy(props.value)
             }
-            
+
             enqueueSnackbar("Copied!", { variant: 'success' });
           }}
           src={Copy}

@@ -138,7 +138,7 @@ export const Card = styled.div`
 export const Input = styled(({ ...props }) => (
   <input
     {...props}
-    autoComplete="chrome-off"
+    autoComplete="off"
     onFocus={(e) => e.target.removeAttribute('readonly')}
     readOnly
   />
