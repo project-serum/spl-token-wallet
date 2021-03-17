@@ -117,7 +117,7 @@ export const Img = styled.div`
 export const Card = styled.div`
   width: ${(props) => props.width || '50rem'};
   height: ${(props) => props.height || '40rem'};
-  padding: ${props => props.padding || '0'};
+  padding: ${(props) => props.padding || '0'};
   background: #222429;
   border: 0.1rem solid #3a475c;
   box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
@@ -131,7 +131,12 @@ export const Card = styled.div`
 `;
 
 export const Input = styled(({ ...props }) => (
-  <input autoComplete="off" {...props} />
+  <input
+    autoComplete="off"
+    onFocus={(e) => e.target.removeAttribute('readonly')}
+    readOnly
+    {...props}
+  />
 ))`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};

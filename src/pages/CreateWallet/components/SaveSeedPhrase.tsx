@@ -17,6 +17,7 @@ import { TextareaWithCopy } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
 
 import Attention from '../../../images/attention.svg';
+import AttentionComponent from '../../../components/Attention';
 
 const CreatePassword = ({
   seedPhrase,
@@ -30,7 +31,7 @@ const CreatePassword = ({
 
   return (
     <>
-      <Card>
+      <Card width="53rem" height="45rem">
         <Row
           width={'90%'}
           height={'100%'}
@@ -43,27 +44,22 @@ const CreatePassword = ({
             </BoldTitle>
           </RowContainer>
           <RowContainer>
-            <ColorText background={'rgba(164, 231, 151, 0.5)'}>
+            <ColorText style={{ fontSize: '1.3rem' }} background={'rgba(164, 231, 151, 0.5)'}>
               Please write down the following seed phrase and keep it in a safe
               place:
             </ColorText>
           </RowContainer>
           <RowContainer style={{ position: 'relative' }}>
             <TextareaWithCopy
-              height={'8rem'}
+              height={'11.2rem'}
               value={seedPhrase}
             />
           </RowContainer>
-          <RowContainer>
-            <ColorText height={'10rem'} background={'rgba(242, 154, 54, 0.5)'}>
-              <img alt="Attention" src={Attention} />
-              <Title width={'70%'} textAlign={'inherit'}>
-                Your private keys are only stored on your current device. You
-                will need these words to restore your wallet if your browser’s
-                storage is cleared or your device is damaged or lost.
-              </Title>
-            </ColorText>
-          </RowContainer>
+          <AttentionComponent
+            text={'Your private keys are only stored on your current device. You will need these words to restore your wallet if your browser’s storage is cleared or your device is damaged or lost.'}
+            textStyle={{ fontSize: '1.4rem', paddingRight: '1rem' }}
+            iconStyle={{ margin: '0 3rem 0 3rem', height: '60%' }}
+          />
           <RowContainer>
             <Row width={'50%'}>
               <StyledCheckbox
@@ -74,8 +70,7 @@ const CreatePassword = ({
               />
               <StyledLabel
                 htmlFor="savedSeedPhrase"
-                style={{ whiteSpace: 'nowrap' }}
-                fontSize={'0.9rem'}
+                fontSize={'1.4rem'}
               >
                 I have saved these words in a safe place.
               </StyledLabel>
