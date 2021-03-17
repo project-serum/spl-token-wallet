@@ -1,3 +1,4 @@
+import React, { useContext, useState, useEffect } from 'react';
 import EventEmitter from 'events';
 import { useConnectionConfig } from '../connection';
 import { useListener } from '../utils';
@@ -6,14 +7,37 @@ import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
 import { TokenListProvider, Strategy } from '@solana/spl-token-registry';
 
-const tokenListProvider = new TokenListProvider();
-export function useTokenInfos() {
-  const [tokenListContainer] = useAsyncData(() => tokenListProvider.resolve(Strategy.Static), tokenListProvider.resolve, { refreshInterval: 120000});
-  const { endpoint } = useConnectionConfig();
-  const cluster = clusterForEndpoint(endpoint);
+const TokenListContext = React.createContext(null);
 
-  const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(cluster?.name);
-  return tokenListContainer !== filteredTokenListContainer ? filteredTokenListContainer?.getList(): null; // Workaround for filter return all on unknown slug
+export function useTokenInfos() {
+  const { tokenInfos } = useContext(TokenListContext);
+  return tokenInfos;
+}
+
+export function TokenRegistryProvider(props) {
+  const { endpoint } = useConnectionConfig();
+  const [tokenInfos, setTokenInfos] = useState(null);
+  useEffect(() => {
+    const tokenListProvider = new TokenListProvider();
+    tokenListProvider.resolve().then((tokenListContainer) => {
+      const cluster = clusterForEndpoint(endpoint);
+
+      const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
+        cluster?.name,
+      );
+      const tokenInfos =
+        tokenListContainer !== filteredTokenListContainer
+          ? filteredTokenListContainer?.getList()
+          : null; // Workaround for filter return all on unknown slug
+      setTokenInfos(tokenInfos);
+    });
+  }, [endpoint]);
+
+  return (
+    <TokenListContext.Provider value={{ tokenInfos }}>
+      {props.children}
+    </TokenListContext.Provider>
+  );
 }
 
 const customTokenNamesByNetwork = JSON.parse(
