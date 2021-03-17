@@ -63,18 +63,9 @@ export default function App() {
         <CssBaseline />
 
         <ConnectionProvider>
-          <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-            <WalletProvider>{appElement}</WalletProvider>
-          </SnackbarProvider>
           <TokenRegistryProvider>
             <SnackbarProvider maxSnack={5} autoHideDuration={8000}>
-              <WalletProvider>
-                <NavigationFrame>
-                  <Suspense fallback={<LoadingIndicator />}>
-                    <PageContents />
-                  </Suspense>
-                </NavigationFrame>
-              </WalletProvider>
+              <WalletProvider>{appElement}</WalletProvider>
             </SnackbarProvider>
           </TokenRegistryProvider>
         </ConnectionProvider>

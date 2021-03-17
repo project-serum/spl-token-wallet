@@ -6,7 +6,7 @@ import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
-const TokenListContext = React.createContext(null);
+const TokenListContext = React.createContext({});
 
 export function useTokenInfos() {
   const { tokenInfos } = useContext(TokenListContext);
