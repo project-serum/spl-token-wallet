@@ -4,12 +4,12 @@ const FakeInputs = () => {
   return (
     <>
       <input
-        style={{ display: 'none' }}
+        style={{ position: 'fixed', top:'-100px', left: '-100px',  width: '5px' }}
         type="text"
         name="fakeusernameremembered"
       />
       <input
-        style={{ display: 'none' }}
+        style={{ position: 'fixed', top:'-100px', left: '-100px',  width: '5px' }}
         type="password"
         name="fakepasswordremembered"
       />

@@ -20,6 +20,7 @@ import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
 import DerivableAccounts from './DerivableAccounts';
 import AttentionComponent from '../../components/Attention';
+import FakeInputs from '../../components/FakeInputs';
 
 export const RestorePage = () => {
   const [redirectToWallet, setRedirectToWallet] = useState(false);
@@ -48,6 +49,7 @@ export const RestorePage = () => {
 
   return (
     <Body>
+      <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
       <Logo />
       {showDerivation ? (
