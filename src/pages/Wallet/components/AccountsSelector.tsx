@@ -118,14 +118,15 @@ const AccountsSelector = ({
             }}
             direction="column"
             margin="0 0 1rem 0"
-            padding="0 1.6rem 1rem 1.6rem"
+            padding="0 1.6rem 0rem 1.6rem"
           >
             {accounts.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
-                  direction="column"
-                  align={'flex-start'}
-                  padding="1rem 1.6rem 1rem 0"
+                  direction="row"
+                  align={'center'}
+                  justify="space-between"
+                  padding=".5rem 1.6rem .5rem 0"
                   style={{
                     cursor: 'pointer',
                     borderBottom:
@@ -147,10 +148,12 @@ const AccountsSelector = ({
                         textOverflow: 'ellipsis ',
                       }}
                     >
-                      {name}
+                      {name && name.length > 14
+                        ? name.slice(0, 10) + '...'
+                        : name}
                     </Title>
                   </Row>
-                  <Row style={{ alignSelf: 'flex-end' }}>
+                  <Row>
                     <BtnCustom
                       btnWidth="auto"
                       textTransform="capitalize"

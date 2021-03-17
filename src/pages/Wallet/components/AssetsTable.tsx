@@ -33,7 +33,6 @@ export const TableContainer = styled(({ theme, ...props }) => (
   border: ${(props) => props.theme.customPalette.border.new};
   border-radius: 1.2rem;
   height: 100%;
-  overflow-y: auto;
 `;
 
 const StyledTable = styled.table`
@@ -269,8 +268,13 @@ const AssetsTable = ({
   }, [publicKeys, setUsdValuesCallback, theme, marketsData]);
 
   return (
-    <TableContainer theme={theme} width="calc(85% - 1rem)" direction="column" justify={'flex-start'}>
-      <RowContainer theme={theme}>
+    <TableContainer
+      theme={theme}
+      width="calc(85% - 1rem)"
+      direction="column"
+      justify={'flex-start'}
+    >
+      <RowContainer height="5rem" theme={theme}>
         <HeadRow
           theme={theme}
           justify="flex-start"
@@ -310,25 +314,30 @@ const AssetsTable = ({
           </BtnCustom>
         </HeadRow>
       </RowContainer>
-      <StyledTable theme={theme}>
-        {memoizedAssetsList.map((MemoizedAsset) => (
-          <MemoizedAsset />
-        ))}
-        <StyledTr disableHover theme={theme}>
-          <StyledTd style={{ paddingLeft: '0' }}>
-            <RowContainer
-              width="14rem"
-              justify="flex-start"
-              style={{ height: '5rem', paddingLeft: '2rem' }}
-            >
-              <AddTokenButton
-                setShowAddTokenDialog={setShowAddTokenDialog}
-                theme={theme}
-              />
-            </RowContainer>
-          </StyledTd>
-        </StyledTr>
-      </StyledTable>
+      <RowContainer
+        style={{ display: 'block', overflowY: 'auto' }}
+        height="calc(100% - 5rem)"
+      >
+        <StyledTable theme={theme}>
+          {memoizedAssetsList.map((MemoizedAsset) => (
+            <MemoizedAsset />
+          ))}
+          <StyledTr disableHover theme={theme}>
+            <StyledTd style={{ paddingLeft: '0' }}>
+              <RowContainer
+                width="14rem"
+                justify="flex-start"
+                style={{ height: '5rem', paddingLeft: '2rem' }}
+              >
+                <AddTokenButton
+                  setShowAddTokenDialog={setShowAddTokenDialog}
+                  theme={theme}
+                />
+              </RowContainer>
+            </StyledTd>
+          </StyledTr>
+        </StyledTable>
+      </RowContainer>
     </TableContainer>
   );
 };

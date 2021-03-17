@@ -68,7 +68,8 @@ input, textarea {
 }
 
 ::-webkit-scrollbar {
-  width: .1rem;
+  width: 1px;
+  height: 1px;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -11,7 +11,7 @@ const ActivityTable = () => {
       width="calc(15% - 1rem)"
       direction="column"
     >
-      <RowContainer theme={theme}>
+      <RowContainer height="5rem">
         <HeadRow
           theme={theme}
           justify="flex-start"
