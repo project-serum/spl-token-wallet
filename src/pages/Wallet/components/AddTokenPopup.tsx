@@ -148,6 +148,15 @@ export default function AddTokenDialog({ open, onClose }) {
       onClose={onClose}
       height={'auto'}
       padding={'2rem 0'}
+      onEnter={() => {
+        setSelectedTokens([]);
+        setErc20Address('');
+        setSearchValue('');
+        setMintAddress('');
+        setTokenName('');
+        setTokenSymbol('');
+        setTab(!!popularTokens ? 'popular' : 'manual');
+      }}
     >
       {!!popularTokens && (
         <RowContainer margin="0 0 2rem 0">
@@ -308,10 +317,16 @@ export default function AddTokenDialog({ open, onClose }) {
             Cost:{' '}
             <GreenText theme={theme}>
               {tab === 'popular'
-                ? (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
-                    0.002039) * selectedTokens.length
-                : +feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
-                  0.002039}{' '}
+                ? stripDigitPlaces(
+                    (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
+                      0.002039) * selectedTokens.length,
+                    8,
+                  )
+                : stripDigitPlaces(
+                    +feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
+                      0.002039,
+                    8,
+                  )}{' '}
               SOL
             </GreenText>
           </WhiteText>

@@ -196,6 +196,26 @@ const AssetsTable = ({
 
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
 
+  sortedPublicKeys.sort((a, b) => {
+    const aVal = usdValues[a.toString()];
+    const bVal = usdValues[b.toString()];
+
+    // SOL always fisrt
+    if (a.equals(wallet.publicKey)) return -1;
+    if (b.equals(wallet.publicKey)) return 1;
+
+    a = aVal === undefined || aVal === null ? -1 : aVal;
+    b = bVal === undefined || bVal === null ? -1 : bVal;
+
+    if (b < a) {
+      return -1;
+    } else if (b > a) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   // const selectedAccount = accounts.find((a) => a.isSelected);
   // const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
 
@@ -273,9 +293,7 @@ const AssetsTable = ({
             onClick={() => {
               try {
                 refreshWalletPublicKeys(wallet);
-                console.log('refreshWalletPublicKeys');
                 sortedPublicKeys.forEach((publicKey) => {
-                  console.log('refreshAccountInfo', publicKey);
                   refreshAccountInfo(wallet.connection, publicKey, true);
                 });
               } catch (e) {
@@ -344,7 +362,8 @@ const AssetItem = ({
   };
 
   let { closePrice: price, lastPriceDiff } = (!!marketsData &&
-    marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`)) || {
+    (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
+      marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };
@@ -356,11 +375,18 @@ const AssetItem = ({
   const prevClosePrice = price + lastPriceDiff * -1;
 
   const priceChangePercentage = !!price
-    ? (price - prevClosePrice) / (prevClosePrice / 100)
+    ? !!prevClosePrice
+      ? (price - prevClosePrice) / (prevClosePrice / 100)
+      : 100
     : 0;
-  const sign24hChange = +priceChangePercentage > 0 ? `+` : `-`;
+
+  const sign24hChange =
+    +priceChangePercentage === 0 ? '' : +priceChangePercentage > 0 ? `+` : `-`;
+
   const color =
-    +priceChangePercentage > 0
+    +priceChangePercentage === 0
+      ? '#ecf0f3'
+      : +priceChangePercentage > 0
       ? theme.customPalette.green.light
       : theme.customPalette.red.main;
 
@@ -435,7 +461,7 @@ const AssetItem = ({
               fontFamily="Avenir Next Demi"
             >
               {` ${sign24hChange}$${formatNumberToUSFormat(
-                stripDigitPlaces(Math.abs(lastPriceDiff), 4),
+                stripDigitPlaces(Math.abs(lastPriceDiff), 2),
               )}`}
             </Title>
           </RowContainer>

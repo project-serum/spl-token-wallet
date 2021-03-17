@@ -95,9 +95,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
     <DialogForm
       open={open}
       onClose={onClose}
-      height={
-        'auto'
-      }
+      height={'auto'}
       padding={'2rem 0'}
     >
       {swapInfo && (
@@ -170,17 +168,17 @@ export default function DepositDialog({ open, onClose, publicKey }) {
             swapInfo={swapInfo}
             ethAccount={ethAccount}
             onClose={onClose}
+            publicKey={publicKey}
           />
         )}
       </RowContainer>
-      {
-        (tab === 0 && (
-          <RowContainer margin="2rem 0 0 0">
-            <WhiteButton theme={theme} width={'calc(50%)'} onClick={onClose}>
-              Close
-            </WhiteButton>
-          </RowContainer>
-        ))}
+      {tab === 0 && (
+        <RowContainer margin="2rem 0 0 0">
+          <WhiteButton theme={theme} width={'calc(50%)'} onClick={onClose}>
+            Close
+          </WhiteButton>
+        </RowContainer>
+      )}
     </DialogForm>
   );
 }
@@ -190,7 +188,9 @@ function SolletSwapDepositAddress({
   swapInfo,
   ethAccount,
   onClose,
+  publicKey,
 }) {
+  const theme = useTheme()
   const [ethBalance] = useAsyncData(
     () => getErc20Balance(ethAccount),
     'ethBalance',
@@ -226,7 +226,7 @@ function SolletSwapDepositAddress({
     ethBalance < ethFeeEstimate;
 
   const { blockchain, address, memo, coin } = swapInfo;
-  const { mint, tokenName } = balanceInfo;
+  const { mint, tokenName, owner, tokenSymbol } = balanceInfo;
 
   if (blockchain === 'btc' && memo === null) {
     return (
@@ -240,13 +240,34 @@ function SolletSwapDepositAddress({
           height="5rem"
           // qrCode={`bitcoin:${address}`}
         />
+        <RowContainer padding="2rem 0">
+          <AttentionComponent
+            text={
+              !!owner && publicKey?.equals(owner)
+                ? 'This address can only be used to receive SOL. Do not send other tokens to this address.'
+                : `This address can only be used to receive ${
+                    tokenSymbol ?? abbreviateAddress(mint)
+                  }. Do not send SOL to this address.`
+            }
+            blockHeight={'8rem'}
+            iconStyle={{ margin: '0 2rem 0 3rem' }}
+            textStyle={{
+              fontSize: '1.4rem',
+            }}
+          />
+        </RowContainer>
+        <RowContainer margin="2rem 0 0 0">
+          <WhiteButton theme={theme} width={'calc(50%)'} onClick={onClose}>
+            Close
+          </WhiteButton>
+        </RowContainer>
       </RowContainer>
     );
   }
 
   if (blockchain === 'eth') {
     return (
-      <RowContainer direction="column">
+      <RowContainer width="90%" direction="column">
         <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
           {coin.erc20Contract ? 'ERC20' : 'Native'} {coin.ticker} can be
           converted to {mint ? 'SPL' : 'native'} {tokenName} via MetaMask.
@@ -384,9 +405,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         </RowContainer>
         <RowContainer width="90%" padding="2rem 0">
           <AttentionComponent
-            text={
-              `To convert ${swapInfo?.coin?.ticker} to SOL , your  SOL balance shouldn’t be empty.`
-            }
+            text={`To convert ${swapInfo?.coin?.ticker} to SOL , your  SOL balance shouldn’t be empty.`}
             blockHeight={'4rem'}
             iconStyle={{ margin: '0 2rem 0 3rem', height: '2.5rem' }}
             textStyle={{
@@ -405,7 +424,8 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         {insufficientEthBalance && (
           <RowContainer width="90%" margin="2rem 0 0 0">
             <Title color={theme.customPalette.red.main}>
-              Insufficient {swapInfo?.coin?.ticker} for withdrawal transaction fee
+              Insufficient {swapInfo?.coin?.ticker} for withdrawal transaction
+              fee
             </Title>
           </RowContainer>
         )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import {
   Card,
   Row,
@@ -16,11 +16,27 @@ import { InputWithSearch, TextareaWithCopy } from '../../../components/Input';
 import Attention from '../../../images/attention.svg';
 import BottomLink from '../../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
-import { refreshWalletPublicKeys, useBalanceInfo, useWallet, useWalletPublicKeys, useWalletTokenAccounts } from '../../../utils/wallet';
-import { refreshAccountInfo, useConnectionConfig } from '../../../utils/connection';
+import {
+  refreshWalletPublicKeys,
+  useBalanceInfo,
+  useWallet,
+  useWalletPublicKeys,
+  useWalletTokenAccounts,
+} from '../../../utils/wallet';
+import {
+  refreshAccountInfo,
+  useConnectionConfig,
+} from '../../../utils/connection';
 
-import { TokenListItem, feeFormat } from '../../Wallet/components/AddTokenPopup'
-import { abbreviateAddress, formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+import {
+  TokenListItem,
+  feeFormat,
+} from '../../Wallet/components/AddTokenPopup';
+import {
+  abbreviateAddress,
+  formatNumberToUSFormat,
+  stripDigitPlaces,
+} from '../../../utils/utils';
 import { TOKENS, useUpdateTokenName } from '../../../utils/tokens/names';
 import { useSendTransaction } from '../../../utils/notifications';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
@@ -28,11 +44,11 @@ import { useAsyncData } from '../../../utils/fetch-loop';
 
 const AddTokens = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [redirectToWallet, setRedirectToWallet] = useState(false)
+  const [redirectToWallet, setRedirectToWallet] = useState(false);
   const [selectedTokens, setSelectedTokens] = useState([]);
 
   const theme = useTheme();
-  const wallet = useWallet()
+  const wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
     wallet.tokenAccountCost,
@@ -57,21 +73,17 @@ const AddTokens = () => {
   };
 
   function onSubmit() {
-      Promise.all(
-        selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
-      ).then(async () => {
-        await refreshWalletPublicKeys(wallet);
-        await setRedirectToWallet(true)
-      });
+    Promise.all(
+      selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
+    ).then(async () => {
+      await refreshWalletPublicKeys(wallet);
+      await setRedirectToWallet(true);
+    });
 
-      return;
+    return;
   }
 
-  async function addToken({
-    mintAddress,
-    tokenName,
-    tokenSymbol,
-  }) {
+  async function addToken({ mintAddress, tokenName, tokenSymbol }) {
     let mint = new PublicKey(mintAddress);
     updateTokenName(mint, tokenName, tokenSymbol);
     const resp = await wallet.createAssociatedTokenAccount(mint);
@@ -156,8 +168,9 @@ const AddTokens = () => {
                 <BoldTitle fontSize={'1.5rem'}>Your Balance:&nbsp;</BoldTitle>
                 <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
                   {formatNumberToUSFormat(
-                stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
-              )} SOL
+                    stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
+                  )}{' '}
+                  SOL
                 </BoldTitle>
               </span>
             </Row>
@@ -195,7 +208,7 @@ const AddTokens = () => {
               />
             </Row>
             <Row width="85%">
-            <ListCard>
+              <ListCard>
                 {popularTokens
                   .filter(
                     (token) =>
@@ -238,12 +251,22 @@ const AddTokens = () => {
                 <span style={{ display: 'flex' }}>
                   <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
                   <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
-                   {(+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
-                selectedTokens.length} SOL
+                    {stripDigitPlaces(
+                      (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) ||
+                        0.002039) * selectedTokens.length,
+                      8,
+                    )}{' '}
+                    SOL
                   </BoldTitle>
                 </span>
               </Row>
-              <VioletButton theme={theme} background={'#366CE5'} onClick={() => onSubmit()}>Finish</VioletButton>
+              <VioletButton
+                theme={theme}
+                background={'#366CE5'}
+                onClick={() => onSubmit()}
+              >
+                Finish
+              </VioletButton>
             </Row>
           </RowContainer>
         </RowContainer>

@@ -27,7 +27,7 @@ export default function ExportAccountDialog({ open, onClose }) {
       }}
     >
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
-        <Title>Enter your password to unlock the private key</Title>
+        <Title>Enter your password to unlock the private key for this account</Title>
       </RowContainer>
 
       <RowContainer width="90%" justify={'space-between'} margin="0 0 2rem 0">
@@ -65,7 +65,7 @@ export default function ExportAccountDialog({ open, onClose }) {
       <RowContainer width="90%">
         <TextareaWithCopy
           value={keyOutput}
-          height={'11.5rem'}
+          height={'11.2rem'}
           placeholder={'***'}
         />
       </RowContainer>
@@ -93,7 +93,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
       }}
     >
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
-        <Title>Enter your password to unlock the seed phrase</Title>
+        <Title>Enter your password to unlock the seed phrase for this wallet</Title>
       </RowContainer>
 
       <RowContainer width="90%" justify={'space-between'} margin="0 0 2rem 0">
@@ -129,7 +129,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
       <RowContainer width="90%">
         <TextareaWithCopy
           value={mnemonic}
-          height={'11.5rem'}
+          height={'11.2rem'}
           placeholder={'***'}
         />
       </RowContainer>

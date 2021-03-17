@@ -75,6 +75,9 @@ export default function SendDialog({ open, onClose, publicKey }) {
         open={open}
         theme={theme}
         onClose={onClose}
+        onEnter={() => {
+          setTab('spl')
+        }}
         fullWidth
         height={'auto'}
         padding={'2rem 0'}
@@ -198,7 +201,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     destinationAddress,
     transferAmountString,
     validAmount,
-  } = useForm(balanceInfo, addressHelperText, passValidation, 'spl');
+  } = useForm(balanceInfo, addressHelperText, passValidation, 'spl', false);
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
 
@@ -340,7 +343,7 @@ function SendSwapDialog({
     transferAmountString,
     setDestinationAddress,
     validAmount,
-  } = useForm(balanceInfo, '', true, 'swap');
+  } = useForm(balanceInfo, '', true, 'swap', swapCoinInfo?.erc20Contract);
 
   const theme = useTheme();
 
@@ -596,6 +599,7 @@ function useForm(
   addressHelperText = '',
   passAddressValidation = true,
   tab = 'spl',
+  erc20Contract = true
 ) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
@@ -637,7 +641,7 @@ function useForm(
             fontSize: '1.4rem',
           }}
           text={`Please make sure that you sending funds to the ${tokenSymbol} address in the ${
-            tab === 'spl' ? 'SPL' : 'Native'
+            tab === 'spl' ? 'SPL' : erc20Contract ? 'ERC20' : 'Native'
           } network.`}
         />
       </RowContainer>

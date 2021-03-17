@@ -67,6 +67,10 @@ input, textarea {
   background: transparent;
 }
 
+::-webkit-scrollbar {
+  width: .1rem;
+}
+
 ::-webkit-scrollbar-thumb {
-  color: #366CE5;
+  background: #366CE5;
 }

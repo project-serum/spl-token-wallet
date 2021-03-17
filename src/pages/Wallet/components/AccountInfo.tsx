@@ -91,7 +91,7 @@ const AccountInfo = () => {
           </Title>
           <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
             {formatNumberToUSFormat(
-              stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
+              stripDigitPlaces(amount / Math.pow(10, decimals), 8),
             )}{' '}
             SOL
           </Title>

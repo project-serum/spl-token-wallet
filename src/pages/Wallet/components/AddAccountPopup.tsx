@@ -30,27 +30,27 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
       height="auto"
       padding="2rem 0"
       open={open}
-      // onEnter={() => {
-      //   setName('');
-      //   setIsImport(false);
-      //   setPrivateKey('');
-      // }}
+      onEnter={() => {
+        setName('');
+        setIsImport(false);
+        setPrivateKey('');
+      }}
       onClose={onClose}
       fullWidth
     >
       <RowContainer>
         <Title fontSize="2rem">Add account</Title>
       </RowContainer>
-      <RowContainer direction="column">
+      <RowContainer width="90%" direction="column">
         <RowContainer direction="column">
-          <RowContainer width="90%" margin="2rem 0">
+          <RowContainer margin="2rem 0">
             <Input
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </RowContainer>
-          <RowContainer>
+          <RowContainer justify="flex-start">
             <StyledCheckbox
               theme={theme}
               id={'isImport'}
@@ -65,8 +65,10 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
                 placeholder="Paste your private key here"
                 type="password"
                 value={importedPrivateKey}
+                containerStyle={{ width: '100%' }}
                 onChange={(e) => setPrivateKey(e.target.value)}
-                onPasteClick={() => navigator.clipboard
+                onPasteClick={() =>
+                  navigator.clipboard
                     .readText()
                     .then((clipText) => setPrivateKey(clipText))
                 }
@@ -74,7 +76,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
             </RowContainer>
           )}
         </RowContainer>
-        <RowContainer width="90%" justify="space-between" margin="2rem 0 0 0">
+        <RowContainer justify="space-between" margin="2rem 0 0 0">
           <WhiteButton theme={theme} onClick={onClose}>
             Close
           </WhiteButton>

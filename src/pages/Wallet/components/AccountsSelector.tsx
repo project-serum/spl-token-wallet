@@ -9,6 +9,7 @@ import {
   Title,
   StyledRadio,
   Row,
+  Legend,
 } from '../../commonStyles';
 import { GreyTitle } from './AssetsTable';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -44,6 +45,27 @@ const RowWithSelector = styled(Row)`
   }
 `;
 
+const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
+  return (
+    <BtnCustom
+      textTransform={'capitalize'}
+      borderWidth="0"
+      height={'100%'}
+      padding={'1.2rem 0 1.2rem 1rem'}
+      style={{ justifyContent: 'flex-start' }}
+      btnWidth="100%"
+      onClick={openPopup}
+    >
+      <img
+        src={icon}
+        alt={buttonText}
+        style={{ marginRight: '1rem', width: '2rem', height: '2rem' }}
+      />
+      <GreyTitle theme={theme}>{buttonText}</GreyTitle>
+    </BtnCustom>
+  );
+};
+
 const AccountsSelector = ({
   accountNameSize = '2.4rem',
   isFromPopup = false,
@@ -76,30 +98,41 @@ const AccountsSelector = ({
       <ExpandMoreIcon fontSize="large" />
 
       <StyledCard isFromPopup={isFromPopup} id="accountSelector">
-        <RowContainer
-          align="flex-start"
-          direction="column"
-          padding="1.6rem 1.6rem .5rem 1.6rem"
-        >
-          <Title
-            fontFamily="Avenir Next Demi"
-            fontSize="1.4rem"
-            style={{ marginBottom: '1rem' }}
-          >
-            Your Accounts
-          </Title>
+        <RowContainer align="flex-start" direction="column" padding="1.6rem 0">
+          <RowContainer padding="0 1.6rem" margin="1rem 0 0 0">
+            <Title
+              fontFamily="Avenir Next Demi"
+              fontSize="1.4rem"
+              style={{ whiteSpace: 'nowrap', paddingRight: '1rem' }}
+            >
+              Your Accounts
+            </Title>
+            <Legend />
+          </RowContainer>
           <RowContainer
-            style={{ borderBottom: theme.customPalette.border.new }}
+            style={{
+              display: 'block',
+              borderBottom: theme.customPalette.border.new,
+              maxHeight: '30rem',
+              overflowY: 'auto',
+            }}
             direction="column"
             margin="0 0 1rem 0"
-            padding="0 0 1rem 0"
+            padding="0 1.6rem 1rem 1.6rem"
           >
-            {accounts.map(({ isSelected, name, selector }) => {
+            {accounts.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
-                  justify="space-between"
-                  padding="0rem 1.6rem 0rem 0"
-                  style={{ cursor: 'pointer' }}
+                  direction="column"
+                  align={'flex-start'}
+                  padding="1rem 1.6rem 1rem 0"
+                  style={{
+                    cursor: 'pointer',
+                    borderBottom:
+                      accounts.length === i + 1
+                        ? 'none'
+                        : theme.customPalette.border.new,
+                  }}
                   onClick={() => {
                     setWalletSelector(selector);
                   }}
@@ -108,7 +141,7 @@ const AccountsSelector = ({
                     <StyledRadio theme={theme} checked={isSelected} />
                     <Title
                       style={{
-                        width: '60%',
+                        width: '100%',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
                         textOverflow: 'ellipsis ',
@@ -117,86 +150,48 @@ const AccountsSelector = ({
                       {name}
                     </Title>
                   </Row>
-                  <BtnCustom
-                    btnWidth="auto"
-                    textTransform="capitalize"
-                    color={theme.customPalette.blue.serum}
-                    borderWidth="0"
-                    fontFamily="Avenir Next Demi"
-                    fontSize="1rem"
-                    onClick={() => setIsExportAccountOpen(true)}
-                  >
-                    Export Private Key
-                  </BtnCustom>
+                  <Row style={{ alignSelf: 'flex-end' }}>
+                    <BtnCustom
+                      btnWidth="auto"
+                      textTransform="capitalize"
+                      color={theme.customPalette.blue.serum}
+                      borderWidth="0"
+                      fontFamily="Avenir Next Demi"
+                      fontSize="1rem"
+                      onClick={() => setIsExportAccountOpen(true)}
+                    >
+                      Export Private Key
+                    </BtnCustom>
+                  </Row>
                 </RowContainer>
               );
             })}
           </RowContainer>
-          <RowContainer direction="column">
-            <BtnCustom
-              textTransform={'capitalize'}
-              borderWidth="0"
-              height={'100%'}
-              padding={'1.2rem 0 1.2rem 1.6rem'}
-              style={{ justifyContent: 'flex-start' }}
-              btnWidth="100%"
-              onClick={() => setIsAddAccountOpen(true)}
-            >
-              <img
-                src={AddIcon}
-                alt="addIcon"
-                style={{ marginRight: '1rem' }}
-              />
-              <GreyTitle theme={theme}>Add account</GreyTitle>
-            </BtnCustom>
-            <BtnCustom
-              textTransform={'capitalize'}
-              borderWidth="0"
-              height={'100%'}
-              padding={'1.2rem 0 1.2rem 1.6rem'}
-              style={{ justifyContent: 'flex-start' }}
-              btnWidth="100%"
-              onClick={() => setIsAddHardwareWalletDialogOpen(true)}
-            >
-              <img
-                src={ImportHardwareIcon}
-                alt="import hardware"
-                style={{ marginRight: '1rem' }}
-              />
-              <GreyTitle theme={theme}>Import Hardware Wallet</GreyTitle>
-            </BtnCustom>
-            <BtnCustom
-              textTransform={'capitalize'}
-              borderWidth="0"
-              height={'100%'}
-              padding={'1.2rem 0 1.2rem 1.6rem'}
-              style={{ justifyContent: 'flex-start' }}
-              btnWidth="100%"
-              onClick={() => setIsExportMnemonicOpen(true)}
-            >
-              <img
-                src={ExportMnemonicIcon}
-                alt="export mnemonic"
-                style={{ marginRight: '1rem' }}
-              />
-              <GreyTitle theme={theme}>Export Mnemonic</GreyTitle>
-            </BtnCustom>
-            <BtnCustom
-              textTransform={'capitalize'}
-              borderWidth="0"
-              height={'100%'}
-              padding={'1.2rem 0 1.2rem 1.6rem'}
-              style={{ justifyContent: 'flex-start' }}
-              btnWidth="100%"
-              onClick={() => setIsDeleteAccountOpen(true)}
-            >
-              <img
-                src={DeleteAccountIcon}
-                alt="forget wallet"
-                style={{ marginRight: '1rem' }}
-              />
-              <GreyTitle theme={theme}>Forget wallet</GreyTitle>
-            </BtnCustom>
+          <RowContainer padding="0 1.6rem" direction="column">
+            <WalletActionButton
+              theme={theme}
+              icon={AddIcon}
+              buttonText={'Add Account'}
+              openPopup={() => setIsAddAccountOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ImportHardwareIcon}
+              buttonText={'Import Hardware Wallet'}
+              openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ExportMnemonicIcon}
+              buttonText={'Export Mnemonic'}
+              openPopup={() => setIsExportMnemonicOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={DeleteAccountIcon}
+              buttonText={'Forget wallet for this device'}
+              openPopup={() => setIsDeleteAccountOpen(true)}
+            />
           </RowContainer>
         </RowContainer>
       </StyledCard>

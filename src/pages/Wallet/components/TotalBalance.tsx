@@ -27,7 +27,8 @@ const Item = ({
   };
 
   let { closePrice: price } = (!!marketsData &&
-    marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`)) || {
+    (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
+      marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };

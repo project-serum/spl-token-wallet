@@ -132,10 +132,10 @@ export const Card = styled.div`
 
 export const Input = styled(({ ...props }) => (
   <input
+    {...props}
     autoComplete="off"
     onFocus={(e) => e.target.removeAttribute('readonly')}
     readOnly
-    {...props}
   />
 ))`
   width: ${(props) => props.width || '100%'};

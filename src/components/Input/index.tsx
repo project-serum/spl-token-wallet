@@ -26,7 +26,7 @@ const InputWithComponent = ({
   ComponentToShow,
   style = {},
   containerStyle,
-  autoComplete = "on"
+  autoComplete = "off"
 }: {
   type?: string;
   value: string;
@@ -219,6 +219,7 @@ const InputWithPaste = ({
   onPasteClick: () => void;
   style?: any
   autoComplete?: string
+  containerStyle?: any
 }) => {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
