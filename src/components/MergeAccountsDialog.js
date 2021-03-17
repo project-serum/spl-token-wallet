@@ -24,7 +24,7 @@ import {
   findAssociatedTokenAddress,
 } from '../utils/tokens';
 import { sleep } from '../utils/utils';
-import { getTokenName } from '../utils/tokens/names';
+import { useTokenInfos, getTokenInfo } from '../utils/tokens/names';
 
 export default function MergeAccountsDialog({ open, onClose }) {
   const [publicKeys] = useWalletPublicKeys();
@@ -33,6 +33,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
   const [isMerging, setIsMerging] = useState(false);
   const [mergeCheck, setMergeCheck] = useState('');
+  const tokenInfos = useTokenInfos();
 
   // Merging accounts is a destructive operation that, for each mint,
   //
@@ -98,8 +99,14 @@ export default function MergeAccountsDialog({ open, onClose }) {
               assocTokAddr.equals(mintGroup[0].publicKey)
             )
           ) {
-            const tokenInfo = { symbol: null, symbol: null }; // Will have to fix this//await getTokenInfo(mint, connection._rpcEndpoint, null);
-            const symbol = tokenInfo.symbol ? tokenInfo.symbol : mint.toString();
+            const tokenInfo = getTokenInfo(
+              mint,
+              connection._rpcEndpoint,
+              tokenInfos,
+            );
+            const symbol = tokenInfo.symbol
+              ? tokenInfo.symbol
+              : mint.toString();
             console.log(`Merging ${symbol}`);
             enqueueSnackbar(`Merging ${symbol}`, {
               variant: 'info',

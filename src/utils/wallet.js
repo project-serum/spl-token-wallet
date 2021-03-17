@@ -16,7 +16,7 @@ import {
   transferTokens,
   transferAndClose,
 } from './tokens';
-import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
+import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
   parseMintData,
