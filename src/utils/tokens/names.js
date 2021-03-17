@@ -62,7 +62,6 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
   let match = tokenInfos?.find(
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
-  console.log('match', match);
   if (match) {
     if (!info) {
       info = { name: match.name, symbol: match.symbol, logoUri: match.logoURI };
