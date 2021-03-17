@@ -410,8 +410,16 @@ const AssetItem = ({
           </Row>
           <Row direction="column">
             <RowContainer justify="flex-start">
-              <AssetSymbol>{tokenSymbol}</AssetSymbol>
-              <AssetName theme={theme}>{tokenName}</AssetName>
+              <AssetSymbol>
+                {tokenSymbol && tokenSymbol.length > 16
+                  ? tokenSymbol.slice(0, 16) + '...'
+                  : tokenSymbol}
+              </AssetSymbol>
+              <AssetName theme={theme}>
+                {tokenName && tokenName.length > 32
+                  ? tokenName.slice(0, 32) + '...'
+                  : tokenName}
+              </AssetName>
             </RowContainer>
             <RowContainer justify="flex-start">
               <AssetAmount theme={theme}>{`${stripDigitPlaces(

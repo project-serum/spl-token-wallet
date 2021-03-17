@@ -85,7 +85,12 @@ export default function AddTokenDialog({ open, onClose }) {
   if (tab === 'erc20') {
     valid = erc20Address.length === 42 && erc20Address.startsWith('0x');
   } else if (tab === 'manual') {
-    valid = mintAddress !== '' && tokenSymbol !== '' && tokenName !== '';
+    valid =
+      mintAddress !== '' &&
+      tokenSymbol !== '' &&
+      tokenSymbol.length > 8 &&
+      tokenName !== '' &&
+      tokenName.length > 16;
   } else {
     valid = selectedTokens.length > 0;
   }
@@ -228,13 +233,20 @@ export default function AddTokenDialog({ open, onClose }) {
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. Cryptocurrencies.Ai Token)'}
+                placeholder={'Token Name (e.g. CCAI Token)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}
                 disabled={sending}
               />
             </RowContainer>
+            {tokenName.length > 16 && (
+              <RowContainer width="90%" margin="2rem 0 0 0">
+                <Title color={theme.customPalette.red.main}>
+                  Sorry, token name shouldn't be longer than 16 symbols
+                </Title>
+              </RowContainer>
+            )}
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
                 placeholder={'Token Symbol (e.g. CCAI)'}
@@ -244,6 +256,13 @@ export default function AddTokenDialog({ open, onClose }) {
                 disabled={sending}
               />
             </RowContainer>
+            {tokenSymbol.length > 8 && (
+              <RowContainer width="90%" margin="2rem 0 0 0">
+                <Title color={theme.customPalette.red.main}>
+                  Sorry, token symbol shouldn't be longer than 8 symbols
+                </Title>
+              </RowContainer>
+            )}
           </>
         ) : tab === 'popular' ? (
           <RowContainer width="90%">
