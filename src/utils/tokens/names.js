@@ -2,10 +2,9 @@ import React, { useContext, useState, useEffect } from 'react';
 import EventEmitter from 'events';
 import { useConnectionConfig } from '../connection';
 import { useListener } from '../utils';
-import { useAsyncData } from '../fetch-loop';
 import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
-import { TokenListProvider, Strategy } from '@solana/spl-token-registry';
+import { TokenListProvider } from '@solana/spl-token-registry';
 
 const TokenListContext = React.createContext(null);
 
