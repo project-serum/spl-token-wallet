@@ -8,15 +8,12 @@ import {
   BoldTitle,
   RowContainer,
   ColorText,
-  Title,
   StyledCheckbox,
   StyledLabel,
 } from '../../commonStyles';
 
 import { TextareaWithCopy } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
-
-import Attention from '../../../images/attention.svg';
 import AttentionComponent from '../../../components/Attention';
 
 const CreatePassword = ({
