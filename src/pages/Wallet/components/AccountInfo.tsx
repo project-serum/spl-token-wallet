@@ -55,7 +55,7 @@ const AccountInfo = () => {
           justify="space-between"
           style={{
             background: 'linear-gradient(135deg, #1331AD 0%, #95363F 100%)',
-            borderRadius: '.6rem',
+            borderRadius: '1.2rem',
           }}
         >
           <Title
@@ -79,7 +79,7 @@ const AccountInfo = () => {
           justify="space-between"
           style={{
             background: 'linear-gradient(135deg, #1331AD 0%, #3B8D17 100%)',
-            borderRadius: '.6rem',
+            borderRadius: '1.2rem',
           }}
         >
           <Title

@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom'
 
 import AccountInfo from './components/AccountInfo';
 import AssetsTable from './components/AssetsTable';
+import ActivityTable from './components/ActivityTable'
 import SendDialog from './components/SendPopup';
 import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
@@ -27,12 +28,15 @@ const Wallet = () => {
       {window.opener && <Redirect to={'/connect_popup'} />}
 
       <AccountInfo />
-      <AssetsTable
-        selectPublicKey={selectPublicKey}
-        setSendDialogOpen={setSendDialogOpen}
-        setDepositDialogOpen={setDepositDialogOpen}
-        setShowAddTokenDialog={setShowAddTokenDialog}
-      />
+      <RowContainer style={{ maxHeight: '80%' }} height="100%" justify="space-between">
+        <AssetsTable
+          selectPublicKey={selectPublicKey}
+          setSendDialogOpen={setSendDialogOpen}
+          setDepositDialogOpen={setDepositDialogOpen}
+          setShowAddTokenDialog={setShowAddTokenDialog}
+        />
+        <ActivityTable />
+      </RowContainer>
 
       <SendDialog
         open={sendDialogOpen}

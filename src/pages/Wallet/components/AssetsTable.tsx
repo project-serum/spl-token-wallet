@@ -26,8 +26,8 @@ import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
 import { getMarketsData } from '../../../utils/ccai';
 
-const TableContainer = styled(({ theme, ...props }) => (
-  <RowContainer {...props} />
+export const TableContainer = styled(({ theme, ...props }) => (
+  <Row {...props} />
 ))`
   background: ${(props) => props.theme.customPalette.grey.background};
   border: ${(props) => props.theme.customPalette.border.new};
@@ -60,7 +60,7 @@ const StyledTable = styled.table`
   }
 `;
 
-const HeadRow = styled(Row)`
+export const HeadRow = styled(Row)`
   text-align: right;
   width: 10%;
   border-bottom: ${(props) => props.theme.customPalette.border.new};
@@ -269,7 +269,7 @@ const AssetsTable = ({
   }, [publicKeys, setUsdValuesCallback, theme, marketsData]);
 
   return (
-    <TableContainer theme={theme} direction="column" justify={'flex-start'}>
+    <TableContainer theme={theme} width="calc(85% - 1rem)" direction="column" justify={'flex-start'}>
       <RowContainer theme={theme}>
         <HeadRow
           theme={theme}
