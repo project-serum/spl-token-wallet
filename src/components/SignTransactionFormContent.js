@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import bs58 from 'bs58';
 import { Divider, Typography } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
@@ -120,6 +120,7 @@ export default function SignTransactionFormContent({
   messages,
   onApprove,
   autoApprove,
+  buttonRef,
 }) {
   const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
@@ -130,7 +131,6 @@ export default function SignTransactionFormContent({
   // An array of arrays, where each element is the set of instructions for a
   // single transaction.
   const [txInstructions, setTxInstructions] = useState(null);
-  const buttonRef = useRef();
 
   const isMultiTx = messages.length > 1;
 
