@@ -115,7 +115,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
               src={iconUrl}
               onError={() => setIconUrl(faviconUrl)}
               className={classes.listItemImage}
-              alt={origin}
+              alt=""
             />
           </div>
         </ListItemIcon>

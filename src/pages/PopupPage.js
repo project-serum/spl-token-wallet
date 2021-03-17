@@ -147,7 +147,7 @@ export default function PopupPage({ opener }) {
   const request = requests[0];
   const popRequest = () => setRequests((requests) => requests.slice(1));
 
-  if (requests.length === 0) {
+  if (hasConnectedAccount && requests.length === 0) {
     if (isExtension) {
       window.close();
     } else {
