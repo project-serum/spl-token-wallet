@@ -21,9 +21,17 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
   const importedAccount = isImport
     ? decodeAccount(importedPrivateKey)
     : undefined;
-  const isAddEnabled = isImport ? name && importedAccount !== undefined : name;
+
+  const isDisabled = isImport ? !name || !importedAccount : !name;
 
   const theme = useTheme();
+  const submit = () => onAdd({ name, importedAccount })
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter' && !isDisabled) {
+      submit();
+    }
+  };
 
   return (
     <DialogForm
@@ -47,6 +55,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
             <Input
               placeholder="Name"
               value={name}
+              onKeyDown={handleKeyDown}
               onChange={(e) => setName(e.target.value)}
             />
           </RowContainer>
@@ -65,6 +74,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
                 placeholder="Paste your private key here"
                 type="password"
                 value={importedPrivateKey}
+                onKeyDown={handleKeyDown}
                 containerStyle={{ width: '100%' }}
                 onChange={(e) => setPrivateKey(e.target.value)}
                 onPasteClick={() =>
@@ -84,8 +94,8 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
             theme={theme}
             type="submit"
             color="primary"
-            disabled={!isAddEnabled}
-            onClick={() => onAdd({ name, importedAccount })}
+            disabled={isDisabled}
+            onClick={() => submit()}
           >
             Add
           </VioletButton>

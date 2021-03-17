@@ -40,6 +40,12 @@ const WelcomeBack = () => {
     });
   };
 
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      submit()
+    }
+  }
+
   return (
     <Body>
       {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
@@ -75,6 +81,7 @@ const WelcomeBack = () => {
               onChange={e => setPassword(e.target.value)}
               showPassword={showPassword}
               onEyeClick={() => setShowPassword(!showPassword)}
+              onKeyDown={handleKeyDown}
             />
           </RowContainer>
           <RowContainer direction={'column'} height={'calc(50% - 2.5rem)'}>

@@ -6,10 +6,10 @@ import {
   VioletButton,
   BoldTitle,
   RowContainer,
-  Textarea,
   ColorText,
   Title,
   WhiteButton,
+  Input,
 } from '../../commonStyles';
 
 import BottomLink from '../../../components/BottomLink';
@@ -21,15 +21,42 @@ const ConfirmSeedPhrase = ({
   createWallet,
   setCurrentStep,
   setIsConfirmSeedPhrase,
+  randomNumbersOfSeedWords,
 }: {
   password: string;
   seedPhrase: string;
   createWallet: (password: string, onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
+  randomNumbersOfSeedWords: number[]
 }) => {
-  const [savedSeedPhrase, setSavedSeedPhrase] = useState('');
   const theme = useTheme();
+
+  const [firstWord, setFirstWord] = useState('');
+  const [secondWord, setSecondWord] = useState('');
+  const [thirdWord, setThirdWord] = useState('');
+  const [fourthWord, setFourthWord] = useState('');
+
+  const seedPhraseArray = seedPhrase.split(' ');
+
+  const submit = async () => {
+    await createWallet(password, async () => {
+      await sleep(1000);
+      await setCurrentStep(3);
+    });
+  }
+
+  const isDisabled =
+    firstWord !== seedPhraseArray[randomNumbersOfSeedWords[0] - 1] ||
+    secondWord !== seedPhraseArray[randomNumbersOfSeedWords[1] - 1] ||
+    thirdWord !== seedPhraseArray[randomNumbersOfSeedWords[2] - 1] ||
+    fourthWord !== seedPhraseArray[randomNumbersOfSeedWords[3] - 1];
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter' && !isDisabled) {
+      submit();
+    }
+  };
 
   return (
     <>
@@ -40,22 +67,43 @@ const ConfirmSeedPhrase = ({
         <Row width={'90%'}>
           <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
             <Title width={'100%'}>
-              Please manually enter the 12 or 24 seed phrase words you saved in
-              the previous step in the order in which they were presented to
-              you.
+              Please manually enter 4 words you saved in the previous step.
             </Title>
           </ColorText>
         </Row>
-        <Row width={'90%'}>
-          <Textarea
-            height={'11.2rem'}
-            value={savedSeedPhrase}
-            onChange={(e) => setSavedSeedPhrase(e.target.value)}
-            placeholder={
-              'Enter your 12 or 24 words in the correct order, separated by spaces here'
-            }
-            padding={'1rem 2rem 1rem 2rem'}
-          />
+        <Row width={'90%'} direction={'column'}>
+          <RowContainer justify="space-between">
+            <Input
+              width="calc(50% - .5rem)"
+              value={firstWord}
+              onChange={(e) => setFirstWord(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={`${randomNumbersOfSeedWords[0]}#:`}
+            />
+            <Input
+              width="calc(50% - .5rem)"
+              value={secondWord}
+              onChange={(e) => setSecondWord(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={`${randomNumbersOfSeedWords[1]}#:`}
+            />
+          </RowContainer>
+          <RowContainer margin="1rem 0 0 0" justify="space-between">
+            <Input
+              width="calc(50% - .5rem)"
+              value={thirdWord}
+              onChange={(e) => setThirdWord(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={`${randomNumbersOfSeedWords[2]}#:`}
+            />
+            <Input
+              width="calc(50% - .5rem)"
+              value={fourthWord}
+              onChange={(e) => setFourthWord(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={`${randomNumbersOfSeedWords[3]}#:`}
+            />
+          </RowContainer>
         </Row>
         <Row width={'90%'} justify={'space-between'}>
           <WhiteButton
@@ -69,14 +117,9 @@ const ConfirmSeedPhrase = ({
           </WhiteButton>
           <VioletButton
             theme={theme}
+            disabled={isDisabled}
             width={'calc(50% - .5rem)'}
-            disabled={seedPhrase !== savedSeedPhrase}
-            onClick={async () => {
-              await createWallet(password, async () => {
-                await sleep(1000);
-                await setCurrentStep(3);
-              });
-            }}
+            onClick={() => submit()}
           >
             Create wallet
           </VioletButton>

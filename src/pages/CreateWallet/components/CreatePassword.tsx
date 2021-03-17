@@ -25,6 +25,14 @@ const CreatePassword = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const theme = useTheme();
+  const isDisabled = password === ''
+  const submit = () => setCurrentStep(2);
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter' && !isDisabled) {
+      submit();
+    }
+  };
 
   return (
     <>
@@ -43,6 +51,7 @@ const CreatePassword = ({
               setPassword(e.target.value);
             }}
             placeholder={'Password'}
+            onKeyDown={handleKeyDown}
             showPassword={showPassword}
             onEyeClick={() => setShowPassword(!showPassword)}
           />
@@ -56,10 +65,8 @@ const CreatePassword = ({
           <VioletButton
             width={'calc(50% - .5rem)'}
             theme={theme}
-            disabled={password === ''}
-            onClick={() => {
-              setCurrentStep(2);
-            }}
+            disabled={isDisabled}
+            onClick={() => submit()}
           >
             Continue
           </VioletButton>

@@ -84,17 +84,22 @@ export const ColorText = styled.div`
 export const Textarea = styled.textarea`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
-  font-family: Avenir Next Medium;
-  border: 1px solid #3a475c;
-  font-size: 1.5rem;
-  letter-spacing: -0.457692px;
+  font-family: Avenir Next;
+  border: .1rem solid #3a475c;
+  font-size: 1.1rem;
+  letter-spacing: .01rem;
   color: #f8faff;
   border-radius: 1.5rem;
   background: #222429;
   outline: none;
-  padding: ${(props) => props.padding || '1rem 8rem 1rem 2rem'};
+  padding: ${(props) => props.padding || '1rem 7rem 1rem 2rem'};
   position: relative;
   line-height: 3rem;
+  overflow: hidden;
+
+  &::placeholder {
+    font-size: 1.4rem;
+  }
 `;
 
 export const ContainerForIcon = styled.div`
@@ -133,7 +138,7 @@ export const Card = styled.div`
 export const Input = styled(({ ...props }) => (
   <input
     {...props}
-    autoComplete="off"
+    autoComplete="chrome-off"
     onFocus={(e) => e.target.removeAttribute('readonly')}
     readOnly
   />

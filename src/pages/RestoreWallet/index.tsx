@@ -31,6 +31,20 @@ export const RestorePage = () => {
 
   const theme = useTheme();
   const isMnemonicCorrect = validateMnemonic(mnemonic);
+  const isDisabled = !isMnemonicCorrect || password === '';
+
+  const submit = () => {
+    mnemonicToSeed(mnemonic).then((seed) => {
+      setSeed(seed);
+      setShowDerivation(true);
+    });
+  };
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter' && !isDisabled) {
+      submit();
+    }
+  };
 
   return (
     <Body>
@@ -65,11 +79,11 @@ export const RestorePage = () => {
                 }
                 textStyle={{
                   fontSize: '1.4rem',
-                  lineHeight: "2rem",
-                  fontFamily: 'Avenir Next'
+                  lineHeight: '2rem',
+                  fontFamily: 'Avenir Next',
                 }}
                 iconStyle={{
-                  margin: '0 2rem 0 3rem'
+                  margin: '0 2rem 0 3rem',
                 }}
                 blockHeight="8rem"
               />
@@ -86,7 +100,7 @@ export const RestorePage = () => {
                 placeholder="Paste your seed phrase"
                 value={mnemonic}
                 onChange={(e) => setMnemonic(e.target.value)}
-                autoComplete="off"
+                onKeyDown={handleKeyDown}
                 onPasteClick={() =>
                   navigator.clipboard
                     .readText()
@@ -95,7 +109,7 @@ export const RestorePage = () => {
               />
               <InputWithEye
                 value={password}
-                autoComplete="off"
+                onKeyDown={handleKeyDown}
                 onChange={(e) => setPassword(e.target.value)}
                 showPassword={showPassword}
                 onEyeClick={() => setShowPassword(!showPassword)}
@@ -111,14 +125,9 @@ export const RestorePage = () => {
               </Link>
               <VioletButton
                 theme={theme}
-                disabled={!isMnemonicCorrect || password === ''}
+                disabled={isDisabled}
                 width={'calc(50% - .5rem)'}
-                onClick={() => {
-                  mnemonicToSeed(mnemonic).then((seed) => {
-                    setSeed(seed);
-                    setShowDerivation(true);
-                  });
-                }}
+                onClick={() => submit()}
               >
                 Restore
               </VioletButton>

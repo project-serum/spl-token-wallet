@@ -5,6 +5,22 @@ export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export const getRandomNumbers = ({
+  numberOfNumbers = 4,
+  maxNumber = 24,
+}: {
+  numberOfNumbers?: number;
+  maxNumber?: number;
+}): number[] => {
+  var arr: number[] = [];
+  while (arr.length < numberOfNumbers) {
+    var r = Math.floor(Math.random() * maxNumber) + 1;
+    if (arr.indexOf(r) === -1) arr.push(r);
+  }
+
+  return arr;
+};
+
 export function useLocalStorageState<T>(
   key: string,
   defaultState: T,
@@ -87,38 +103,38 @@ export async function confirmTransaction(
 }
 
 export const formatNumberToUSFormat = (
-  numberToFormat: number | string | null
+  numberToFormat: number | string | null,
 ) => {
-  const stringNumber = numberToFormat === null ? '' : numberToFormat.toString()
+  const stringNumber = numberToFormat === null ? '' : numberToFormat.toString();
 
   return stringNumber.match(/\./g)
     ? stringNumber.replace(/\d(?=(\d{3})+\.)/g, '$&,')
-    : stringNumber.replace(/\d(?=(\d{3})+$)/g, '$&,')
-}
+    : stringNumber.replace(/\d(?=(\d{3})+$)/g, '$&,');
+};
 
 export const stripDigitPlaces = (
   num: number | string,
-  stripToPlaces = 2
+  stripToPlaces = 2,
 ): string | number => {
   const reg = new RegExp(
-    `^((\\-|)[0-9]{1,21}\\.[0-9]{0,${stripToPlaces}})|[0-9]{1,21}`
-  )
-  const regWithE = /e/g
+    `^((\\-|)[0-9]{1,21}\\.[0-9]{0,${stripToPlaces}})|[0-9]{1,21}`,
+  );
+  const regWithE = /e/g;
 
-  const stringFromNumber = (+num).toString()
+  const stringFromNumber = (+num).toString();
   if (regWithE.test(stringFromNumber)) {
-    return parseFloat(stringFromNumber).toFixed(stripToPlaces)
+    return parseFloat(stringFromNumber).toFixed(stripToPlaces);
   }
 
-  const regResult = stringFromNumber.match(reg)
+  const regResult = stringFromNumber.match(reg);
 
-  let strippedNumber
+  let strippedNumber;
 
   if (regResult !== null && regResult[0].endsWith('.')) {
-    strippedNumber = regResult[0].slice(0, regResult[0].length - 1)
+    strippedNumber = regResult[0].slice(0, regResult[0].length - 1);
   } else {
-    strippedNumber = regResult !== null ? regResult[0] : num 
+    strippedNumber = regResult !== null ? regResult[0] : num;
   }
 
-  return strippedNumber
-}
+  return strippedNumber;
+};

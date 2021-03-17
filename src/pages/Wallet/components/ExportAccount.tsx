@@ -16,6 +16,25 @@ export default function ExportAccountDialog({ open, onClose }) {
   const [password, setPassword] = useState('');
   const [keyOutput, setKeyOutput] = useState('');
 
+  const submit = () => {
+    callAsync(loadMnemonicAndSeed(password, false), {
+      progressMessage: 'Unlocking wallet...',
+      successMessage: 'Wallet unlocked',
+      onSuccess: (res) => {
+        setKeyOutput(
+          `[${Array.from(wallet.provider.account.secretKey)}]`,
+        );
+      },
+      onError: () => {},
+    });
+  }
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      submit();
+    }
+  };
+
   return (
     <DialogForm
       open={open}
@@ -39,24 +58,14 @@ export default function ExportAccountDialog({ open, onClose }) {
             onEyeClick={() => setIsHidden(!isHidden)}
             type={isHidden ? 'password' : 'text'}
             showPassword={!isHidden}
+            onKeyDown={handleKeyDown}
             containerStyle={{ width: '100%' }}
           />
         </Row>
         <VioletButton
           theme={theme}
           width={'calc(30% - .5rem)'}
-          onClick={() => {
-            callAsync(loadMnemonicAndSeed(password, false), {
-              progressMessage: 'Unlocking wallet...',
-              successMessage: 'Wallet unlocked',
-              onSuccess: (res) => {
-                setKeyOutput(
-                  `[${Array.from(wallet.provider.account.secretKey)}]`,
-                );
-              },
-              onError: () => {},
-            });
-          }}
+          onClick={() => submit()}
         >
           Confirm
         </VioletButton>
@@ -81,6 +90,23 @@ export function ExportMnemonicDialog({ open, onClose }) {
   const theme = useTheme();
   const callAsync = useCallAsync();
 
+  const submit = () => {
+    callAsync(loadMnemonicAndSeed(password, false), {
+      progressMessage: 'Unlocking wallet...',
+      successMessage: 'Wallet unlocked',
+      onSuccess: (res) => {
+        setMnemonic(res.mnemonic);
+      },
+      onError: () => {},
+    });
+  }
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      submit();
+    }
+  };
+
   return (
     <DialogForm
       open={open}
@@ -103,6 +129,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
             onChange={(e) => setPassword(e.target.value)}
             placeholder={'Password'}
             onEyeClick={() => setIsHidden(!isHidden)}
+            onKeyDown={handleKeyDown}
             type={isHidden ? 'password' : 'text'}
             showPassword={!isHidden}
             containerStyle={{ width: '100%' }}
@@ -111,16 +138,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
         <VioletButton
           theme={theme}
           width={'calc(30% - .5rem)'}
-          onClick={() => {
-            callAsync(loadMnemonicAndSeed(password, false), {
-              progressMessage: 'Unlocking wallet...',
-              successMessage: 'Wallet unlocked',
-              onSuccess: (res) => {
-                setMnemonic(res.mnemonic);
-              },
-              onError: () => {},
-            });
-          }}
+          onClick={() => submit()}
         >
           Confirm
         </VioletButton>

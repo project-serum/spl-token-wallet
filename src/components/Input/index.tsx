@@ -26,7 +26,8 @@ const InputWithComponent = ({
   ComponentToShow,
   style = {},
   containerStyle,
-  autoComplete = "off"
+  autoComplete = "new-password",
+  onKeyDown = () => {}
 }: {
   type?: string;
   value: string;
@@ -38,6 +39,7 @@ const InputWithComponent = ({
   style?: any
   containerStyle?: any
   autoComplete?: string
+  onKeyDown?: (e: any) => void
 }) => {
   return (
     <RowContainer style={{ position: 'relative', width: '90%', ...containerStyle }}>
@@ -50,6 +52,7 @@ const InputWithComponent = ({
         style={style}
         autoComplete={autoComplete}
         disabled={disabled}
+        onKeyDown={onKeyDown}
       />
       <div
         style={{
@@ -62,112 +65,6 @@ const InputWithComponent = ({
         {ComponentToShow}
       </div>
     </RowContainer>
-  );
-};
-
-const SearchInputWithLoupe = ({
-  type,
-  value,
-  onChange,
-  placeholder,
-  ComponentToShow,
-}: {
-  type: string;
-  value: string;
-  onChange: any;
-  placeholder: string;
-  ComponentToShow: any;
-}) => {
-  return (
-    <RowContainer style={{ position: 'relative', width: '100%' }}>
-      <SearchInput
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          right: '2rem',
-          top: '50%',
-          transform: 'translateY(-40%)',
-        }}
-      >
-        {ComponentToShow}
-      </div>
-    </RowContainer>
-  );
-};
-
-const TextareaWithComponent = ({
-  type = 'text',
-  value,
-  onChange = () => {},
-  placeholder = '',
-  ComponentToShow,
-  height = '6rem',
-}: {
-  type?: string;
-  value: string;
-  onChange?: any;
-  placeholder?: string;
-  ComponentToShow: any;
-  height?: string;
-}) => {
-  return (
-    <RowContainer style={{ position: 'relative', width: '100%' }}>
-      <Textarea
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        height={height}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          right: '2rem',
-          top: '50%',
-          transform: 'translateY(-50%)',
-        }}
-      >
-        <ContainerForIcon>{ComponentToShow}</ContainerForIcon>
-      </div>
-    </RowContainer>
-  );
-};
-
-const TextareaWithCopy = ({
-  ...props
-}: {
-  height?: string;
-  type?: string;
-  value: string;
-  onChange?: any;
-  placeholder?: string;
-}) => {
-  const { enqueueSnackbar } = useSnackbar();
-
-  return (
-    <TextareaWithComponent
-      ComponentToShow={
-        <img
-          style={{
-            padding: '1.6rem 2rem 1.4rem 2rem',
-            cursor: 'pointer',
-            height: '4.5rem',
-          }}
-          onClick={() => {
-            copy(props.value)
-            enqueueSnackbar("Copied!", { variant: 'success' });
-          }}
-          src={Copy}
-          alt="copy"
-        />
-      }
-      {...props}
-    />
   );
 };
 
@@ -185,6 +82,7 @@ const InputWithEye = ({
   style?: any
   containerStyle?: any
   autoComplete?: string
+  onKeyDown?: (e: any) => void
 }) => {
   return (
     <InputWithComponent
@@ -220,6 +118,7 @@ const InputWithPaste = ({
   style?: any
   autoComplete?: string
   containerStyle?: any
+  onKeyDown?: (e: any) => void
 }) => {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
@@ -281,6 +180,40 @@ const InputWithMax = ({
   );
 };
 
+const SearchInputWithLoupe = ({
+  type,
+  value,
+  onChange,
+  placeholder,
+  ComponentToShow,
+}: {
+  type: string;
+  value: string;
+  onChange: any;
+  placeholder: string;
+  ComponentToShow: any;
+}) => {
+  return (
+    <RowContainer style={{ position: 'relative', width: '100%' }}>
+      <SearchInput
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          right: '2rem',
+          top: '50%',
+          transform: 'translateY(-40%)',
+        }}
+      >
+        {ComponentToShow}
+      </div>
+    </RowContainer>
+  );
+};
 
 const InputWithSearch = ({
   onSearchClick,
@@ -300,6 +233,88 @@ const InputWithSearch = ({
           onClick={onSearchClick}
           src={Loupe}
           alt="search icon"
+        />
+      }
+      {...props}
+    />
+  );
+};
+
+const TextareaWithComponent = ({
+  type = 'text',
+  value,
+  onChange = () => {},
+  placeholder = '',
+  ComponentToShow,
+  height = '6rem',
+  style = {}
+}: {
+  type?: string;
+  value: any;
+  onChange?: any;
+  placeholder?: string;
+  ComponentToShow: any;
+  height?: string;
+  style?: any
+}) => {
+  return (
+    <RowContainer style={{ position: 'relative', width: '100%' }}>
+      <Textarea
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        height={height}
+        style={style}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          right: '2rem',
+          top: '50%',
+          transform: 'translateY(-50%)',
+        }}
+      >
+        <ContainerForIcon>{ComponentToShow}</ContainerForIcon>
+      </div>
+    </RowContainer>
+  );
+};
+
+const TextareaWithCopy = ({
+  onCopy,
+  ...props
+}: {
+  height?: string;
+  type?: string;
+  value: any;
+  onChange?: any;
+  placeholder?: string;
+  style?: any
+  onCopy?: () => {}
+}) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  return (
+    <TextareaWithComponent
+      ComponentToShow={
+        <img
+          style={{
+            padding: '1.6rem 2rem 1.4rem 2rem',
+            cursor: 'pointer',
+            height: '4.5rem',
+          }}
+          onClick={() => {
+            if (!!onCopy) {
+              onCopy()
+            } else {
+              copy(props.value)
+            }
+            
+            enqueueSnackbar("Copied!", { variant: 'success' });
+          }}
+          src={Copy}
+          alt="copy"
         />
       }
       {...props}

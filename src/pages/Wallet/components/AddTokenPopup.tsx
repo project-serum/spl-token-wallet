@@ -81,13 +81,23 @@ export default function AddTokenDialog({ open, onClose }) {
     tokenSymbol: '--',
   };
 
+  let valid = true;
+  if (tab === 'erc20') {
+    valid = erc20Address.length === 42 && erc20Address.startsWith('0x');
+  } else if (tab === 'manual') {
+    valid = mintAddress !== '' && tokenSymbol !== '' && tokenName !== '';
+  } else {
+    valid = selectedTokens.length > 0;
+  }
+
   useEffect(() => {
     if (!popularTokens) {
       setTab('manual');
     }
   }, [popularTokens]);
 
-  function onSubmit(params) {
+  function onSubmit() {
+    let params;
     if (tab === 'manual') {
       params = { mintAddress, tokenName, tokenSymbol };
     } else if (tab === 'erc20') {
@@ -111,6 +121,14 @@ export default function AddTokenDialog({ open, onClose }) {
     });
   }
 
+  const isDisabled = sending || !valid;
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter' && !isDisabled) {
+      onSubmit();
+    }
+  };
+
   async function addToken({
     mintAddress,
     tokenName,
@@ -131,15 +149,6 @@ export default function AddTokenDialog({ open, onClose }) {
     updateTokenName(mint, tokenName, tokenSymbol);
     const resp = await wallet.createAssociatedTokenAccount(mint);
     return resp[1];
-  }
-
-  let valid = true;
-  if (tab === 'erc20') {
-    valid = erc20Address.length === 42 && erc20Address.startsWith('0x');
-  } else if (tab === 'manual') {
-    valid = mintAddress !== '' && tokenSymbol !== '' && tokenName !== '';
-  } else {
-    valid = selectedTokens.length > 0;
   }
 
   return (
@@ -196,6 +205,7 @@ export default function AddTokenDialog({ open, onClose }) {
               onChange={(e) => setMintAddress(e.target.value)}
               autoFocus
               disabled={sending}
+              onKeyDown={handleKeyDown}
               onPasteClick={() =>
                 navigator.clipboard
                   .readText()
@@ -206,6 +216,7 @@ export default function AddTokenDialog({ open, onClose }) {
               <Input
                 placeholder={'Token Name (e.g. Cryptocurrencies.Ai Token)'}
                 value={tokenName}
+                onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}
                 disabled={sending}
               />
@@ -214,6 +225,7 @@ export default function AddTokenDialog({ open, onClose }) {
               <Input
                 placeholder={'Token Symbol (e.g. CCAI)'}
                 value={tokenSymbol}
+                onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenSymbol(e.target.value)}
                 disabled={sending}
               />
@@ -342,8 +354,8 @@ export default function AddTokenDialog({ open, onClose }) {
           <VioletButton
             theme={theme}
             width="calc(50% - .5rem)"
-            disabled={sending || !valid}
-            onClick={() => onSubmit({ tokenName, tokenSymbol, mintAddress })}
+            disabled={isDisabled}
+            onClick={() => onSubmit()}
           >
             Add
           </VioletButton>
