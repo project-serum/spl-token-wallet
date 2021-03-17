@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Account, Connection, PublicKey } from '@solana/web3.js';
+import { useMediaQuery } from '@material-ui/core';
+import * as bs58 from 'bs58';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,4 +86,27 @@ export async function confirmTransaction(
     new Date().getTime() - startTime.getTime(),
   );
   return result.value;
+}
+
+// TODO consolidate popup dimensions
+export function useIsExtensionWidth() {
+  return useMediaQuery('(max-width:450px)');
+}
+
+export const isExtension = window.location.protocol === 'chrome-extension:';
+
+export const isExtensionPopup = isExtension && window.opener;
+/**
+ * Returns an account object when given the private key
+ */
+export const decodeAccount = (privateKey: string) => {
+  try {
+    return new Account(JSON.parse(privateKey));
+  } catch (_) {
+    try {
+      return new Account(bs58.decode(privateKey));
+    } catch (_) {
+      return undefined;
+    }
+  }
 }
