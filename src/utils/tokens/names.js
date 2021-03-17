@@ -7,112 +7,6 @@ import { useCallback } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
-const TokenListContext = React.createContext({});
-
-export function useTokenInfos() {
-  const { tokenInfos } = useContext(TokenListContext);
-  return tokenInfos;
-}
-
-export function TokenRegistryProvider(props) {
-  const { endpoint } = useConnectionConfig();
-  const [tokenInfos, setTokenInfos] = useState(null);
-  useEffect(() => {
-    const tokenListProvider = new TokenListProvider();
-    tokenListProvider.resolve().then((tokenListContainer) => {
-      const cluster = clusterForEndpoint(endpoint);
-
-      const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
-        cluster?.name,
-      );
-      const tokenInfos =
-        tokenListContainer !== filteredTokenListContainer
-          ? filteredTokenListContainer?.getList()
-          : null; // Workaround for filter return all on unknown slug
-      setTokenInfos(tokenInfos);
-    });
-  }, [endpoint]);
-
-  return (
-    <TokenListContext.Provider value={{ tokenInfos }}>
-      {props.children}
-    </TokenListContext.Provider>
-  );
-}
-
-const customTokenNamesByNetwork = JSON.parse(
-  localStorage.getItem('tokenNames') ?? '{}',
-);
-
-const nameUpdated = new EventEmitter();
-nameUpdated.setMaxListeners(100);
-
-export function useTokenInfo(mint) {
-  const { endpoint } = useConnectionConfig();
-  useListener(nameUpdated, 'update');
-  const tokenInfos = useTokenInfos();
-  return getTokenInfo(mint, endpoint, tokenInfos);
-}
-
-export function getTokenInfo(mint, endpoint, tokenInfos) {
-  if (!mint) {
-    return { name: null, symbol: null };
-  }
-
-  let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];
-  let match = tokenInfos?.find(
-    (tokenInfo) => tokenInfo.address === mint.toBase58(),
-  );
-  if (match) {
-    if (!info) {
-      info = { ...match, logoUri: match.logoURI };
-    }
-    // The user has overridden a name locally.
-    else {
-      info = { ...info, logoUri: match.logoURI };
-    }
-  }
-  return { ...info };
-}
-
-export function useUpdateTokenName() {
-  const { endpoint } = useConnectionConfig();
-  return useCallback(
-    function updateTokenName(mint, name, symbol) {
-      if (!name || !symbol) {
-        if (name) {
-          symbol = name;
-        } else if (symbol) {
-          name = symbol;
-        } else {
-          return;
-        }
-      }
-      if (!customTokenNamesByNetwork[endpoint]) {
-        customTokenNamesByNetwork[endpoint] = {};
-      }
-      customTokenNamesByNetwork[endpoint][mint.toBase58()] = { name, symbol };
-      localStorage.setItem(
-        'tokenNames',
-        JSON.stringify(customTokenNamesByNetwork),
-      );
-      nameUpdated.emit('update');
-    },
-    [endpoint],
-  );
-}
-// Returns tokenInfos for the popular tokens list.
-export function usePopularTokens() {
-  const tokenInfos = useTokenInfos();
-  const { endpoint } = useConnectionConfig();
-  return (!POPULAR_TOKENS[endpoint]
-    ? []
-    : POPULAR_TOKENS[endpoint]
-  ).map((tok) =>
-    getTokenInfo(new PublicKey(tok.mintAddress), endpoint, tokenInfos),
-  );
-}
-
 // This list is used for deciding what to display in the popular tokens list
 // in the `AddTokenDialog`.
 //
@@ -396,3 +290,109 @@ const POPULAR_TOKENS = {
     },
   ],
 };
+
+const TokenListContext = React.createContext({});
+
+export function useTokenInfos() {
+  const { tokenInfos } = useContext(TokenListContext);
+  return tokenInfos;
+}
+
+export function TokenRegistryProvider(props) {
+  const { endpoint } = useConnectionConfig();
+  const [tokenInfos, setTokenInfos] = useState(null);
+  useEffect(() => {
+    const tokenListProvider = new TokenListProvider();
+    tokenListProvider.resolve().then((tokenListContainer) => {
+      const cluster = clusterForEndpoint(endpoint);
+
+      const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
+        cluster?.name,
+      );
+      const tokenInfos =
+        tokenListContainer !== filteredTokenListContainer
+          ? filteredTokenListContainer?.getList()
+          : null; // Workaround for filter return all on unknown slug
+      setTokenInfos(tokenInfos);
+    });
+  }, [endpoint]);
+
+  return (
+    <TokenListContext.Provider value={{ tokenInfos }}>
+      {props.children}
+    </TokenListContext.Provider>
+  );
+}
+
+const customTokenNamesByNetwork = JSON.parse(
+  localStorage.getItem('tokenNames') ?? '{}',
+);
+
+const nameUpdated = new EventEmitter();
+nameUpdated.setMaxListeners(100);
+
+export function useTokenInfo(mint) {
+  const { endpoint } = useConnectionConfig();
+  useListener(nameUpdated, 'update');
+  const tokenInfos = useTokenInfos();
+  return getTokenInfo(mint, endpoint, tokenInfos);
+}
+
+export function getTokenInfo(mint, endpoint, tokenInfos) {
+  if (!mint) {
+    return { name: null, symbol: null };
+  }
+
+  let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];
+  let match = tokenInfos?.find(
+    (tokenInfo) => tokenInfo.address === mint.toBase58(),
+  );
+  if (match) {
+    if (!info) {
+      info = { ...match, logoUri: match.logoURI };
+    }
+    // The user has overridden a name locally.
+    else {
+      info = { ...info, logoUri: match.logoURI };
+    }
+  }
+  return { ...info };
+}
+
+export function useUpdateTokenName() {
+  const { endpoint } = useConnectionConfig();
+  return useCallback(
+    function updateTokenName(mint, name, symbol) {
+      if (!name || !symbol) {
+        if (name) {
+          symbol = name;
+        } else if (symbol) {
+          name = symbol;
+        } else {
+          return;
+        }
+      }
+      if (!customTokenNamesByNetwork[endpoint]) {
+        customTokenNamesByNetwork[endpoint] = {};
+      }
+      customTokenNamesByNetwork[endpoint][mint.toBase58()] = { name, symbol };
+      localStorage.setItem(
+        'tokenNames',
+        JSON.stringify(customTokenNamesByNetwork),
+      );
+      nameUpdated.emit('update');
+    },
+    [endpoint],
+  );
+}
+// Returns tokenInfos for the popular tokens list.
+export function usePopularTokens() {
+  const tokenInfos = useTokenInfos();
+  const { endpoint } = useConnectionConfig();
+  return (!POPULAR_TOKENS[endpoint]
+    ? []
+    : POPULAR_TOKENS[endpoint]
+  ).map((tok) =>
+    getTokenInfo(new PublicKey(tok.mintAddress), endpoint, tokenInfos),
+  );
+}
