@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '@material-ui/core';
 import {
   Card,
@@ -9,12 +10,46 @@ import {
   ColorText,
   Title,
   WhiteButton,
-  Input,
+  // Input,
 } from '../../commonStyles';
 
 import BottomLink from '../../../components/BottomLink';
 import { sleep } from '../../../utils/utils';
 import FakeInputs from '../../../components/FakeInputs';
+import { BtnCustom } from '../../../components/BtnCustom';
+
+const SmallButton = styled(({ theme, isSelected, ...props }) => (
+  <BtnCustom
+    theme={theme}
+    btnColor={
+      isSelected
+        ? theme.customPalette.white.main
+        : theme.customPalette.grey.dark
+    }
+    borderColor={
+      isSelected
+        ? theme.customPalette.blue.serum
+        : theme.customPalette.grey.dark
+    }
+    btnWidth="auto"
+    fontSize={'1.4rem'}
+    textTransform="lowercase"
+    padding="0 1rem"
+    margin={'0 1rem 1rem 0'}
+    borderRadius="2rem"
+    border={theme.customPalette.border.new}
+    {...props}
+  />
+))``;
+
+function shuffleArray(array): any[] {
+  let result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 const ConfirmSeedPhrase = ({
   password,
@@ -22,23 +57,26 @@ const ConfirmSeedPhrase = ({
   createWallet,
   setCurrentStep,
   setIsConfirmSeedPhrase,
-  randomNumbersOfSeedWords,
 }: {
   password: string;
   seedPhrase: string;
   createWallet: (password: string, onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
-  randomNumbersOfSeedWords: number[];
 }) => {
   const theme = useTheme();
 
-  const [firstWord, setFirstWord] = useState('');
-  const [secondWord, setSecondWord] = useState('');
-  const [thirdWord, setThirdWord] = useState('');
-  const [fourthWord, setFourthWord] = useState('');
+  const [savedSeedWords, setSavedSeedWords] = useState<string[]>([]);
+  const [randomlyPlacedSeedWords, updateRandomlyPlacedSeedWords] = useState<
+    string[]
+  >([]);
 
-  const seedPhraseArray = seedPhrase.split(' ');
+  useEffect(() => {
+    const seedPhraseArray = seedPhrase.split(' ');
+    
+    setSavedSeedWords([])
+    updateRandomlyPlacedSeedWords(shuffleArray(seedPhraseArray));
+  }, [seedPhrase]);
 
   const submit = async () => {
     await createWallet(password, async () => {
@@ -47,66 +85,82 @@ const ConfirmSeedPhrase = ({
     });
   };
 
-  const isDisabled =
-    firstWord !== seedPhraseArray[randomNumbersOfSeedWords[0] - 1] ||
-    secondWord !== seedPhraseArray[randomNumbersOfSeedWords[1] - 1] ||
-    thirdWord !== seedPhraseArray[randomNumbersOfSeedWords[2] - 1] ||
-    fourthWord !== seedPhraseArray[randomNumbersOfSeedWords[3] - 1];
+  const isDisabled = savedSeedWords.join(' ') !== seedPhrase;
 
-  const handleKeyDown = (event: any) => {
-    if (event.key === 'Enter' && !isDisabled) {
-      submit();
-    }
-  };
+  // const handleKeyDown = (event: any) => {
+  //   if (event.key === 'Enter' && !isDisabled) {
+  //     submit();
+  //   }
+  // };
 
   return (
     <>
       <FakeInputs />
-      <Card justify={'space-around'}>
+      <Card height="55rem" width="55rem" justify={'space-around'}>
         <RowContainer height={'auto'} padding="1rem 0 0 0">
           <BoldTitle>Confirm the seed phrase</BoldTitle>
         </RowContainer>
         <Row width={'90%'}>
           <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
-            <Title width={'100%'}>
-              Please manually enter 4 words you saved in the previous step.
+            <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
+              Place the words from your Seed Phrase in the correct order by
+              clicking on the words.
             </Title>
           </ColorText>
         </Row>
-        <Row width={'90%'} direction={'column'}>
-          <RowContainer justify="space-between">
-            <Input
-              width="calc(50% - .5rem)"
-              value={firstWord}
-              onChange={(e) => setFirstWord(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`${randomNumbersOfSeedWords[0]}#:`}
-            />
-            <Input
-              width="calc(50% - .5rem)"
-              value={secondWord}
-              onChange={(e) => setSecondWord(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`${randomNumbersOfSeedWords[1]}#:`}
-            />
-          </RowContainer>
-          <RowContainer margin="1rem 0 0 0" justify="space-between">
-            <Input
-              width="calc(50% - .5rem)"
-              value={thirdWord}
-              onChange={(e) => setThirdWord(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`${randomNumbersOfSeedWords[2]}#:`}
-            />
-            <Input
-              width="calc(50% - .5rem)"
-              value={fourthWord}
-              onChange={(e) => setFourthWord(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`${randomNumbersOfSeedWords[3]}#:`}
-            />
+        <Row width={'90%'} margin="2rem 0 0 0">
+          <RowContainer
+            wrap="wrap"
+            style={{
+              border: theme.customPalette.border.new,
+              padding: '1rem 1rem 0 1rem',
+              borderRadius: '2rem',
+              minHeight: '9rem',
+            }}
+          >
+            {savedSeedWords.map((word) => (
+              <SmallButton
+                isSelected
+                theme={theme}
+                onClick={() => {
+                  const newSavedSeedWords = savedSeedWords.filter(
+                    (w) => w !== word,
+                  );
+                  const newRandomlySavedWords = [
+                    ...randomlyPlacedSeedWords,
+                    word,
+                  ];
+                  setSavedSeedWords(newSavedSeedWords);
+                  updateRandomlyPlacedSeedWords(newRandomlySavedWords);
+                }}
+              >
+                {word}
+              </SmallButton>
+            ))}
           </RowContainer>
         </Row>
+        {randomlyPlacedSeedWords.length > 0 && (
+          <Row width={'90%'} margin="2rem 0 0 0">
+            <RowContainer wrap="wrap">
+              {randomlyPlacedSeedWords.map((word) => (
+                <SmallButton
+                  theme={theme}
+                  onClick={() => {
+                    const newRandomlySavedWords = randomlyPlacedSeedWords.filter(
+                      (w) => w !== word,
+                    );
+                    const newSavedSeedWords = [...savedSeedWords, word];
+
+                    setSavedSeedWords(newSavedSeedWords);
+                    updateRandomlyPlacedSeedWords(newRandomlySavedWords);
+                  }}
+                >
+                  {word}
+                </SmallButton>
+              ))}
+            </RowContainer>
+          </Row>
+        )}
         <Row width={'90%'} justify={'space-between'}>
           <WhiteButton
             theme={theme}

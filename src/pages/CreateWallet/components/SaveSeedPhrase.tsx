@@ -57,7 +57,7 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer>
             <ColorText
-              style={{ fontSize: '1.3rem' }}
+              style={{ fontSize: '1.3rem', fontFamily: 'Avenir Next Demi' }}
               background={'rgba(164, 231, 151, 0.5)'}
             >
               Please write down the following seed phrase and keep it in a safe
@@ -66,11 +66,8 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer style={{ position: 'relative' }}>
             <TextareaWithCopy
-              height={'17.2rem'}
-              value={seedPhrase
-                .split(' ')
-                .map((word, i) => `#${i + 1}: ${word};`)
-                .join(' ')}
+              height={'11.2rem'}
+              value={seedPhrase}
               style={{ fontSize: '1.3rem', overflowY: 'auto' }}
               onCopy={() => clipboardCopy(seedPhrase)}
             />
