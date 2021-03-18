@@ -71,7 +71,7 @@ const CreatePassword = ({
                 .split(' ')
                 .map((word, i) => `#${i + 1}: ${word};`)
                 .join(' ')}
-              style={{ fontSize: '1.4rem', overflowY: 'auto' }}
+              style={{ fontSize: '1.3rem', overflowY: 'auto' }}
               onCopy={() => clipboardCopy(seedPhrase)}
             />
           </RowContainer>
@@ -91,7 +91,7 @@ const CreatePassword = ({
                 theme={theme}
                 onKeyDown={handleKeyDown}
               />
-              <StyledLabel htmlFor="savedSeedPhrase" fontSize={'1.4rem'}>
+              <StyledLabel htmlFor="savedSeedPhrase" fontSize={'1.4rem'} style={{ paddingRight: '2rem' }}>
                 I have saved these words in a safe place.
               </StyledLabel>
             </Row>

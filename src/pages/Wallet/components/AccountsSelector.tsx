@@ -186,7 +186,7 @@ const AccountsSelector = ({
             <WalletActionButton
               theme={theme}
               icon={ExportMnemonicIcon}
-              buttonText={'Export Mnemonic'}
+              buttonText={'Export Seed Phrase'}
               openPopup={() => setIsExportMnemonicOpen(true)}
             />
             <WalletActionButton

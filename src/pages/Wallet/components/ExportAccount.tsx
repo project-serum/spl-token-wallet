@@ -43,6 +43,7 @@ export default function ExportAccountDialog({ open, onClose }) {
       padding="2rem 0"
       onEnter={() => {
         setPassword('');
+        setKeyOutput('');
       }}
     >
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
@@ -74,8 +75,9 @@ export default function ExportAccountDialog({ open, onClose }) {
       <RowContainer width="90%">
         <TextareaWithCopy
           value={keyOutput}
-          height={'11.2rem'}
+          height={'17.2rem'}
           placeholder={'***'}
+          style={{ fontSize: '1.3rem', overflowY: 'auto' }}
         />
       </RowContainer>
     </DialogForm>
@@ -149,6 +151,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
           value={mnemonic}
           height={'11.2rem'}
           placeholder={'***'}
+          style={{ fontSize: '1.3rem', overflowY: 'auto' }}
         />
       </RowContainer>
     </DialogForm>
