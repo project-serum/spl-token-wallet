@@ -3,6 +3,7 @@ import { randomBytes, secretbox } from 'tweetnacl';
 import * as bip32 from 'bip32';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
+import { isExtension } from './utils';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -170,5 +171,10 @@ export function forgetWallet() {
     importsEncryptionKey: null,
   };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
-  window.location.reload();
+  if (isExtension) {
+    // Must use wrapper function for window.location.reload
+    chrome.storage.local.clear(() => window.location.reload());
+  } else {
+    window.location.reload();
+  }
 }
