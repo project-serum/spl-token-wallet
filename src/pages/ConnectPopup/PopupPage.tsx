@@ -40,6 +40,7 @@ import {
 
 import AccountsSelector from '../Wallet/components/AccountsSelector';
 import AttentionComponent from '../../components/Attention';
+import { PublicKey } from '@solana/web3.js';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -67,9 +68,9 @@ export default function PopupPage({ origin }) {
     [opener, origin],
   );
 
-  const [connectedAccount, setConnectedAccount] = useState(null);
+  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(null);
   const hasConnectedAccount = !!connectedAccount;
-  const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState<any[]>([]);
   const [autoApprove, setAutoApprove] = useState(false);
 
   // Send a disconnect event if this window is closed, this component is
@@ -260,14 +261,14 @@ function ApproveConnectionForm({ origin, onApprove }) {
           className={classes.connection}
         >
           <RowContainer margin="6rem 0 0 0">
-            <Title className={classes.publicKey}>{origin}</Title>
+            <Title>{origin}</Title>
           </RowContainer>
           <img
             alt={'import export icon'}
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Title fontSize="1.6rem" className={classes.publicKey}>
+          <Title fontSize="1.6rem">
             {wallet?.publicKey?.toBase58()}
           </Title>
         </RowContainer>
@@ -412,7 +413,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
   // Check that all accounts are owned
   if (
     Object.values(accountStates).some(
-      (state) =>
+      (state: any) =>
         ![states.CLOSED_TO_OWNED_DESTINATION, states.OWNED].includes(state),
     )
   ) {
@@ -438,8 +439,9 @@ function ApproveSignatureForm({
   const [parsing, setParsing] = useState(true);
   // An array of arrays, where each element is the set of instructions for a
   // single transaction.
-  const [txInstructions, setTxInstructions] = useState(null);
-  const buttonRef = useRef();
+  const [txInstructions, setTxInstructions] = useState<any>(null);
+  const buttonRef: any = useRef();
+  const theme = useTheme()
 
   const isMultiTx = messages.length > 1;
 
@@ -473,8 +475,8 @@ function ApproveSignatureForm({
 
       // scroll to approve button and focus it to enable approve with enter
       if (buttonRef.current) {
-        buttonRef.current.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => buttonRef.current.focus(), 50);
+        buttonRef?.current?.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => buttonRef?.current?.focus(), 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -585,7 +587,7 @@ function ApproveSignatureForm({
                 fontFamily="Avenir Next Demi"
                 gutterBottom
               >
-                Parsing transaction{isMultiTx > 0 ? 's' : ''}:
+                Parsing transaction{isMultiTx ? 's' : ''}:
               </Title>
             </div>
             {messages.map((message, idx) => (
@@ -612,7 +614,7 @@ function ApproveSignatureForm({
                   fontFamily="Avenir Next Demi"
                   gutterBottom
                 >
-                  Unknown transaction{isMultiTx > 0 ? 's' : ''}:
+                  Unknown transaction{isMultiTx ? 's' : ''}:
                 </Title>
                 {messages.map((message) => (
                   <Title style={{ wordBreak: 'break-all' }}>
@@ -625,10 +627,10 @@ function ApproveSignatureForm({
         )}
       </CardContent>
       <RowContainer justify="space-between">
-        <WhiteButton width="calc(50% - .5rem)" onClick={onReject}>
+        <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
           Cancel
         </WhiteButton>
-        <VioletButton width="calc(50% - .5rem)" onClick={onApprove}>
+        <VioletButton theme={theme} width="calc(50% - .5rem)" onClick={onApprove}>
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
       </RowContainer>
