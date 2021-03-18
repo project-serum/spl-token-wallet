@@ -25,6 +25,7 @@ import bs58 from 'bs58';
 import WarningIcon from '@material-ui/icons/Warning';
 import { useLocalStorageState, isExtension } from '../utils/utils';
 import SignTransactionFormContent from '../components/SignTransactionFormContent';
+import SignFormContent from '../components/SignFormContent';
 
 function getInitialRequests() {
   if (!isExtension) {
@@ -120,7 +121,8 @@ export default function PopupPage({ opener }) {
       if (e.origin === origin && e.source === window.opener) {
         if (
           e.data.method !== 'signTransaction' &&
-          e.data.method !== 'signAllTransactions'
+          e.data.method !== 'signAllTransactions' &&
+          e.data.method !== 'sign'
         ) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
@@ -200,21 +202,44 @@ export default function PopupPage({ opener }) {
 
   assert(
     (request.method === 'signTransaction' ||
-      request.method === 'signAllTransactions') &&
+      request.method === 'signAllTransactions' ||
+      request.method === 'sign') &&
       wallet,
   );
 
-  let messages =
-    request.method === 'signTransaction'
-      ? [bs58.decode(request.params.message)]
-      : request.params.messages.map((m) => bs58.decode(m));
+  let messages, messageDisplay;
+  switch (request.method) {
+    case 'signTransaction':
+      messages = [bs58.decode(request.params.message)];
+      messageDisplay = 'tx';
+      break;
+    case 'signAllTransactions':
+      messages = request.params.messages.map((m) => bs58.decode(m));
+      messageDisplay = 'tx';
+      break;
+    case 'sign':
+      if (!(request.params.data instanceof Uint8Array)) {
+        throw new Error('Data must be an instance of Uint8Array');
+      }
+      messages = [request.params.data];
+      messageDisplay = request.params.display === 'utf8' ? 'utf8' : 'hex';
+      break;
+    default:
+      throw new Error('Unexpected method: ' + request.method);
+  }
 
   async function onApprove() {
     popRequest();
-    if (request.method === 'signTransaction') {
-      sendSignature(messages[0]);
-    } else {
-      sendAllSignatures(messages);
+    switch (request.method) {
+      case 'signTransaction':
+      case 'sign':
+        sendSignature(messages[0]);
+        break;
+      case 'signAllTransactions':
+        sendAllSignatures(messages);
+        break;
+      default:
+        throw new Error('Unexpected method: ' + request.method);
     }
   }
 
@@ -255,6 +280,7 @@ export default function PopupPage({ opener }) {
       autoApprove={autoApprove}
       origin={origin}
       messages={messages}
+      messageDisplay={messageDisplay}
       onApprove={onApprove}
       onReject={sendReject}
     />
@@ -391,6 +417,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
 function ApproveSignatureForm({
   origin,
   messages,
+  messageDisplay,
   onApprove,
   onReject,
   autoApprove,
@@ -398,18 +425,29 @@ function ApproveSignatureForm({
   const classes = useStyles();
   const buttonRef = useRef();
 
-  const isMultiTx = messages.length > 1;
+  const isMultiTx = messageDisplay === 'tx' && messages.length > 1;
 
   const renderFormContent = () => {
-    return (
-      <SignTransactionFormContent
-        autoApprove={autoApprove}
-        origin={origin}
-        messages={messages}
-        onApprove={onApprove}
-        buttonRef={buttonRef}
-      />
-    );
+    if (messageDisplay === 'tx') {
+      return (
+        <SignTransactionFormContent
+          autoApprove={autoApprove}
+          origin={origin}
+          messages={messages}
+          onApprove={onApprove}
+          buttonRef={buttonRef}
+        />
+      );
+    } else {
+      return (
+        <SignFormContent
+          origin={origin}
+          message={messages[0]}
+          messageDisplay={messageDisplay}
+          buttonRef={buttonRef}
+        />
+      );
+    }
   };
 
   return (
