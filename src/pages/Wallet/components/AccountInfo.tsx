@@ -109,7 +109,7 @@ const AccountInfo = () => {
               color={theme.customPalette.orange.dark}
               style={{ whiteSpace: 'nowrap' }}
             >
-              SOL is a fuel of Solana Network.
+              SOL is the fuel for transactions on Solana.
             </Title>
             <Title
               fontFamily="Avenir Next"
@@ -117,7 +117,7 @@ const AccountInfo = () => {
               color={theme.customPalette.orange.dark}
               style={{ whiteSpace: 'nowrap' }}
             >
-              You need to keep some SOL
+              You must have some SOL in your wallet for
             </Title>
             <Title
               fontFamily="Avenir Next"
@@ -125,7 +125,7 @@ const AccountInfo = () => {
               color={theme.customPalette.orange.dark}
               style={{ whiteSpace: 'nowrap' }}
             >
-              on your wallet to work properly with it.
+              DEX trading or other transactions.
             </Title>
           </Row>
           <ExclamationMark

@@ -272,7 +272,7 @@ const AddTokens = () => {
               <VioletButton
                 theme={theme}
                 background={'#366CE5'}
-                disabled={isBalanceLowerCost}
+                disabled={isBalanceLowerCost || selectedTokens.length === 0}
                 onClick={() => onSubmit()}
               >
                 Finish
