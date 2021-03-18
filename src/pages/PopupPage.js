@@ -407,6 +407,7 @@ function ApproveSignatureForm({
         origin={origin}
         messages={messages}
         onApprove={onApprove}
+        buttonRef={buttonRef}
       />
     );
   };
