@@ -20,30 +20,30 @@ const CloseButton = withStyles(canselStyeles)((props: any) => (
   </IconButton>
 ));
 
-const snackStyles: any = {
-  success: {
-    color: '#fff',
-    fontSize: '1.6rem',
-    fontWeight: 'bold',
-    // backgroundColor: theme.customPalette.green.main,
-    background: 'rgba(22, 37, 61, 0.95)',
-    boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
-    backdropFilter: 'blur(4px)',
-    borderRadius: '16px',
-    flexGrow: 0,
-  },
-  error: {
-    color: '#fff',
-    fontSize: '1.6rem',
-    fontWeight: 'bold',
-    // backgroundColor: theme.customPalette.red.main,
-    background: 'rgba(22, 37, 61, 0.95)',
-    boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
-    backdropFilter: 'blur(4px)',
-    borderRadius: '16px',
-    flexGrow: 0,
-  },
-};
+// const snackStyles: any = {
+//   success: {
+//     color: '#fff',
+//     fontSize: '1.6rem',
+//     fontWeight: 'bold',
+//     // backgroundColor: theme.customPalette.green.main,
+//     background: 'rgba(22, 37, 61, 0.95)',
+//     boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
+//     backdropFilter: 'blur(4px)',
+//     borderRadius: '16px',
+//     flexGrow: 0,
+//   },
+//   error: {
+//     color: '#fff',
+//     fontSize: '1.6rem',
+//     fontWeight: 'bold',
+//     // backgroundColor: theme.customPalette.red.main,
+//     background: 'rgba(22, 37, 61, 0.95)',
+//     boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
+//     backdropFilter: 'blur(4px)',
+//     borderRadius: '16px',
+//     flexGrow: 0,
+//   },
+// };
 
 const IntegrationNotistack = ({ ...props }) => {
   return (
@@ -90,11 +90,11 @@ const IntegrationNotistack = ({ ...props }) => {
         horizontal: 'left',
       }}
       action={<CloseButton />}
-      classes={{
-        variantSuccess: snackStyles.success,
-        variantError: snackStyles.error,
-        variantInfo: snackStyles.success,
-      }}
+      // classes={{
+      //   variantSuccess: snackStyles.success,
+      //   variantError: snackStyles.error,
+      //   variantInfo: snackStyles.success,
+      // }}
     >
       {props.children}
     </SnackbarProvider>
