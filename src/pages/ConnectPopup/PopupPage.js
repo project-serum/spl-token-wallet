@@ -18,7 +18,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import ImportExportIcon from '../../images/importExportIcon.svg';
 import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
@@ -29,7 +28,6 @@ import UnknownInstruction from '../../components/instructions/UnknownInstruction
 import SystemInstruction from '../../components/instructions/SystemInstruction';
 import DexInstruction from '../../components/instructions/DexInstruction';
 import TokenInstruction from '../../components/instructions/TokenInstruction';
-import { BtnCustom } from '../../components/BtnCustom';
 import {
   RowContainer,
   VioletButton,
@@ -37,7 +35,7 @@ import {
   Row,
   StyledLabel,
   Title,
-  StyledCheckbox
+  StyledCheckbox,
 } from '../commonStyles';
 
 import AccountsSelector from '../Wallet/components/AccountsSelector';
@@ -187,14 +185,16 @@ export default function PopupPage({ origin }) {
       }
     }
     return (
-      <ApproveSignatureForm
-        key={request.id}
-        autoApprove={autoApprove}
-        origin={origin}
-        messages={messages}
-        onApprove={onApprove}
-        onReject={sendReject}
-      />
+      <StyledCard>
+        <ApproveSignatureForm
+          key={request.id}
+          autoApprove={autoApprove}
+          origin={origin}
+          messages={messages}
+          onApprove={onApprove}
+          onReject={sendReject}
+        />
+      </StyledCard>
     );
   }
 
@@ -280,7 +280,11 @@ function ApproveConnectionForm({ origin, onApprove }) {
             onChange={() => setAutoApprove(!autoApprove)}
           />
           <Row style={{ textAlign: 'left' }}>
-            <StyledLabel theme={theme} htmlFor="autoApprove" style={{ fontSize: '1.6rem' }}>
+            <StyledLabel
+              theme={theme}
+              htmlFor="autoApprove"
+              style={{ fontSize: '1.6rem' }}
+            >
               Automatically approve transactions from{' '}
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
@@ -425,7 +429,7 @@ function ApproveSignatureForm({
   onReject,
   autoApprove,
 }) {
-  const classes = useStyles();
+  // const classes = useStyles();
   const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
   const wallet = useWallet();
@@ -564,7 +568,7 @@ function ApproveSignatureForm({
   };
 
   return (
-    <Card>
+    <>
       <CardContent>
         {parsing ? (
           <>
@@ -576,13 +580,13 @@ function ApproveSignatureForm({
               }}
             >
               <CircularProgress style={{ marginRight: 20 }} />
-              <Typography
-                variant="subtitle1"
-                style={{ fontWeight: 'bold' }}
+              <Title
+                fontSize="1.6rem"
+                fontFamily="Avenir Next Demi"
                 gutterBottom
               >
                 Parsing transaction{isMultiTx > 0 ? 's' : ''}:
-              </Typography>
+              </Title>
             </div>
             {messages.map((message, idx) => (
               <Typography key={idx} style={{ wordBreak: 'break-all' }}>
@@ -592,47 +596,42 @@ function ApproveSignatureForm({
           </>
         ) : (
           <>
-            <Typography variant="h6" gutterBottom>
+            <Title fontSize="1.6rem" gutterBottom>
               {txInstructions
                 ? `${origin} wants to:`
                 : `Unknown transaction data`}
-            </Typography>
+            </Title>
             {txInstructions ? (
               txInstructions.map((instructions, txIdx) =>
                 txListItem(instructions, txIdx),
               )
             ) : (
               <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
+                <Title
+                  fontSize="1.6rem"
+                  fontFamily="Avenir Next Demi"
                   gutterBottom
                 >
                   Unknown transaction{isMultiTx > 0 ? 's' : ''}:
-                </Typography>
+                </Title>
                 {messages.map((message) => (
-                  <Typography style={{ wordBreak: 'break-all' }}>
+                  <Title style={{ wordBreak: 'break-all' }}>
                     {bs58.encode(message)}
-                  </Typography>
+                  </Title>
                 ))}
               </>
             )}
           </>
         )}
       </CardContent>
-      <CardActions className={classes.actions}>
-        <BtnCustom btnColor={'#ECF0F3'} onClick={onReject}>
+      <RowContainer justify="space-between">
+        <WhiteButton width="calc(50% - .5rem)" onClick={onReject}>
           Cancel
-        </BtnCustom>
-        <BtnCustom
-          className={classes.approveButton}
-          variant="contained"
-          color="primary"
-          onClick={onApprove}
-        >
+        </WhiteButton>
+        <VioletButton width="calc(50% - .5rem)" onClick={onApprove}>
           Approve{isMultiTx ? ' All' : ''}
-        </BtnCustom>
-      </CardActions>
-    </Card>
+        </VioletButton>
+      </RowContainer>
+    </>
   );
 }

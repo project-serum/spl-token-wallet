@@ -92,6 +92,7 @@ const WelcomeBack = () => {
                 id={'keepUnlocked'}
                 theme={theme}
                 checked={stayLoggedIn}
+                onKeyDown={handleKeyDown}
                 onChange={(e) => setStayLoggedIn(e.target.checked)}
               />
               <StyledLabel htmlFor={'keepUnlocked'}>

@@ -283,7 +283,7 @@ const AddTokens = () => {
       </Card>{' '}
       <BottomLink
         needOr={false}
-        linkColor={theme.customPalette.red.main}
+        linkColor={theme.customPalette.green.light}
         toText={'Skip for now'}
         to={'/wallet'}
       />

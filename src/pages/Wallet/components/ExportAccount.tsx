@@ -5,7 +5,9 @@ import { loadMnemonicAndSeed } from '../../../utils/wallet-seed';
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 import { InputWithEye, TextareaWithCopy } from '../../../components/Input';
 import { useTheme } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { useCallAsync } from '../../../utils/notifications';
+import { BtnCustom } from '../../../components/BtnCustom';
 
 export default function ExportAccountDialog({ open, onClose }) {
   const wallet = useWallet();
@@ -21,13 +23,11 @@ export default function ExportAccountDialog({ open, onClose }) {
       progressMessage: 'Unlocking wallet...',
       successMessage: 'Wallet unlocked',
       onSuccess: (res) => {
-        setKeyOutput(
-          `[${Array.from(wallet.provider.account.secretKey)}]`,
-        );
+        setKeyOutput(`[${Array.from(wallet.provider.account.secretKey)}]`);
       },
       onError: () => {},
     });
-  }
+  };
 
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter') {
@@ -46,8 +46,24 @@ export default function ExportAccountDialog({ open, onClose }) {
         setKeyOutput('');
       }}
     >
+      <BtnCustom
+        borderRadius="50%"
+        style={{
+          position: 'absolute',
+          width: '3rem',
+          height: '3rem',
+          right: '2rem',
+          top: '2rem',
+          color: theme.customPalette.red.main,
+        }}
+        onClick={onClose}
+      >
+        <CloseIcon style={{ width: '100%', height: '100%' }} />
+      </BtnCustom>
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
-        <Title>Enter your password to unlock the private key for this account</Title>
+        <Title>
+          Enter your password to unlock the private key for this account
+        </Title>
       </RowContainer>
 
       <RowContainer width="90%" justify={'space-between'} margin="0 0 2rem 0">
@@ -101,7 +117,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
       },
       onError: () => {},
     });
-  }
+  };
 
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter') {
@@ -121,7 +137,9 @@ export function ExportMnemonicDialog({ open, onClose }) {
       }}
     >
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
-        <Title>Enter your password to unlock the seed phrase for this wallet</Title>
+        <Title>
+          Enter your password to unlock the seed phrase for this wallet
+        </Title>
       </RowContainer>
 
       <RowContainer width="90%" justify={'space-between'} margin="0 0 2rem 0">
