@@ -87,7 +87,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
         <>
           <FakeInputs />
           <RowContainer>
-            <Title>Send {tokenSymbol ? ` ${tokenSymbol} to` : null}</Title>
+            <Title fontSize="1.6rem">Send {tokenSymbol ? ` ${tokenSymbol} to` : null}</Title>
             {/* {ethAccount && (
               <div>
                 <Typography color="textSecondary" style={{ fontSize: '14px' }}>
@@ -96,7 +96,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               </div>
             )} */}
           </RowContainer>
-          {swapCoinInfo ? (
+          {/* {swapCoinInfo ? (
             <StyledTabs
               value={tab}
               theme={theme}
@@ -113,18 +113,18 @@ export default function SendDialog({ open, onClose, publicKey }) {
                       key="spl"
                       value="spl"
                     />,
-                    // <StyledTab
-                    //   theme={theme}
-                    //   label="SPL USDC"
-                    //   key="wusdcToSplUsdc"
-                    //   value="wusdcToSplUsdc"
-                    // />,
-                    // <StyledTab
-                    //   theme={theme}
-                    //   label="ERC20 USDC"
-                    //   key="swap"
-                    //   value="swap"
-                    // />,
+                    <StyledTab
+                      theme={theme}
+                      label="SPL USDC"
+                      key="wusdcToSplUsdc"
+                      value="wusdcToSplUsdc"
+                    />,
+                    <StyledTab
+                      theme={theme}
+                      label="ERC20 USDC"
+                      key="swap"
+                      value="swap"
+                    />,
                   ]
                 : [
                     <StyledTab
@@ -133,17 +133,17 @@ export default function SendDialog({ open, onClose, publicKey }) {
                       key="spl"
                       value="spl"
                     />,
-                    // <StyledTab
-                    //   theme={theme}
-                    //   label={`${
-                    //     swapCoinInfo?.erc20Contract ? 'ERC20' : 'Native'
-                    //   } ${swapCoinInfo?.ticker}`}
-                    //   key="swap"
-                    //   value="swap"
-                    // />,
+                    <StyledTab
+                      theme={theme}
+                      label={`${
+                        swapCoinInfo?.erc20Contract ? 'ERC20' : 'Native'
+                      } ${swapCoinInfo?.ticker}`}
+                      key="swap"
+                      value="swap"
+                    />,
                   ]}
             </StyledTabs>
-          ) : null}
+          ) : null} */}
           {tab === 'spl' ? (
             <SendSplDialog
               onClose={onClose}

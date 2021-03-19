@@ -91,7 +91,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
       } ${secondTab} to SOL`;
     }
   } else {
-    firstTab = `Deposit SPL ${tokenSymbol}`
+    firstTab = `Deposit SPL ${tokenSymbol}`;
   }
 
   return (
@@ -106,7 +106,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
     >
       <FakeInputs />
 
-      <RowContainer padding="1.6rem 0 2.4rem 0">
+      {/* <RowContainer padding="1.6rem 0 2.4rem 0">
         <StyledTabs
           theme={theme}
           value={tab}
@@ -114,8 +114,12 @@ export default function DepositDialog({ open, onClose, publicKey }) {
           onChange={(e, value) => setTab(value)}
         >
           <StyledTab theme={theme} label={firstTab} />
-          {/* {swapInfo && <StyledTab theme={theme} label={secondTab} />} */}
+          {swapInfo && <StyledTab theme={theme} label={secondTab} />}
         </StyledTabs>
+      </RowContainer> */}
+
+      <RowContainer padding="1.6rem 0 2.4rem 0">
+        <Title fontSize="1.6rem">{firstTab}</Title>
       </RowContainer>
 
       <RowContainer direction="column" padding="0">
@@ -169,7 +173,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
               />
             </RowContainer>
           </>
-         ) : (
+        ) : (
           <SolletSwapDepositAddress
             balanceInfo={balanceInfo}
             swapInfo={swapInfo}
