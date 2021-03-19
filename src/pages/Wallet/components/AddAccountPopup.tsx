@@ -23,7 +23,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
     ? decodeAccount(importedPrivateKey)
     : undefined;
 
-  const isDisabled = isImport ? !name || !importedAccount : !name;
+  const isDisabled = isImport ? !name || !importedAccount || name.length > 16 : !name || name.length > 16;
 
   const theme = useTheme();
   const submit = () => onAdd({ name, importedAccount })
@@ -61,6 +61,13 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
               onChange={(e) => setName(e.target.value)}
             />
           </RowContainer>
+          {name.length > 16 && (
+              <RowContainer width="90%" margin="2rem 0 0 0">
+                <Title color={theme.customPalette.red.main}>
+                  Sorry, your account name shouldn't be longer than 16 symbols
+                </Title>
+              </RowContainer>
+            )}
           <RowContainer justify="flex-start">
             <StyledCheckbox
               theme={theme}
