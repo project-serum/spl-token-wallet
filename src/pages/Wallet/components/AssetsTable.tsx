@@ -393,6 +393,13 @@ const AssetItem = ({
   }
 
   const prevClosePrice = price + lastPriceDiff * -1;
+  const quote = !!marketsData
+    ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
+      ? 'USDT'
+      : marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`)
+      ? 'USDC'
+      : 'USDT'
+    : 'USDT';
 
   const priceChangePercentage = !!price
     ? !!prevClosePrice
@@ -556,13 +563,13 @@ const AssetItem = ({
             />
             View Explorer
           </VioletButton>
-
           <VioletButton
             theme={theme}
             component="a"
             target="_blank"
+            disabled={!price}
             rel="noopener"
-            href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_USDT`}
+            href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}`}
             height="50%"
             width="7rem"
             margin="0 2rem 0 0"
