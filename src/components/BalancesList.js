@@ -507,7 +507,7 @@ function BalanceListItemDetails({
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
-  const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
+	const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   const [
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
@@ -665,7 +665,7 @@ function BalanceListItemDetails({
             onClick={() => setSendDialogOpen(true)}
           >
             Send
-          </Button>
+      </Button>
           {mint && amount === 0 ? (
             <Button
               variant="outlined"
@@ -705,7 +705,7 @@ function BalanceListItemDetails({
         onClose={() => setCloseTokenAccountDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
-      />
+			/>
     </>
   );
 }
