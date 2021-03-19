@@ -292,7 +292,11 @@ export default function PopupPage({ opener }) {
  * `window.name = 'parent'` before opening the popup.
  */
 function focusParent() {
-  window.open('', 'parent');
+  try {
+    window.open('', 'parent');
+  } catch (err) {
+    console.log('err', err);
+  }
 }
 
 const useStyles = makeStyles((theme) => ({
