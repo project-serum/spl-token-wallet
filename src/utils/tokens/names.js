@@ -74,8 +74,15 @@ const POPULAR_TOKENS = {
     },
     {
       tokenSymbol: 'USDT',
+      mintAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+      tokenName: 'USDT',
+      icon:
+        'https://cdn.jsdelivr.net/gh/solana-labs/explorer/public/tokens/usdt.svg',
+    },
+    {
+      tokenSymbol: 'WUSDT',
       mintAddress: 'BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4',
-      tokenName: 'Wrapped USDT',
+      tokenName: 'Wrapped USD Tether',
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/f3ffd0b9ae2165336279ce2f8db1981a55ce30f8/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
     },

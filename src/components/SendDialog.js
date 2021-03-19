@@ -42,6 +42,14 @@ const WUSDC_MINT = new PublicKey(
 );
 const USDC_MINT = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
 
+const WUSDT_MINT = new PublicKey(
+  'BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4'
+);
+
+const USDT_MINT = new PublicKey(
+  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'
+);
+
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const isProdNetwork = useIsProdNetwork();
   const [tab, setTab] = useState('spl');
@@ -55,6 +63,45 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const ethAccount = useEthAccount();
 
   const { mint, tokenName, tokenSymbol } = balanceInfo;
+
+  const getTabs = (mint) => {
+    if (mint?.equals(WUSDC_MINT)) {
+      return [
+        <Tab label="SPL WUSDC" key="spl" value="spl" />,
+        <Tab
+          label="SPL USDC"
+          key="wusdcToSplUsdc"
+          value="wusdcToSplUsdc"
+        />,
+        <Tab label="ERC20 USDC" key="swap" value="swap" />,
+      ]
+    } else if (mint?.equals(WUSDT_MINT)) {
+      return [
+        <Tab label="SPL WUSDT" key="spl" value="spl" />,
+        <Tab
+          label="SPL USDT"
+          key="wusdtToSplUsdt"
+          value="wusdtToSplUsdt"
+        />,
+        <Tab label="ERC20 USDT" key="swap" value="swap" />,
+      ]
+    } else {
+      return [
+        <Tab
+          label={`SPL ${swapCoinInfo.ticker}`}
+          key="spl"
+          value="spl"
+        />,
+        <Tab
+          label={`${
+            swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
+          } ${swapCoinInfo.ticker}`}
+          key="swap"
+          value="swap"
+        />,
+      ]
+    }
+  }
 
   return (
     <>
@@ -83,30 +130,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             textColor="primary"
             indicatorColor="primary"
           >
-            {mint?.equals(WUSDC_MINT)
-              ? [
-                  <Tab label="SPL WUSDC" key="spl" value="spl" />,
-                  <Tab
-                    label="SPL USDC"
-                    key="wusdcToSplUsdc"
-                    value="wusdcToSplUsdc"
-                  />,
-                  <Tab label="ERC20 USDC" key="swap" value="swap" />,
-                ]
-              : [
-                  <Tab
-                    label={`SPL ${swapCoinInfo.ticker}`}
-                    key="spl"
-                    value="spl"
-                  />,
-                  <Tab
-                    label={`${
-                      swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'
-                    } ${swapCoinInfo.ticker}`}
-                    key="swap"
-                    value="swap"
-                  />,
-                ]}
+            {getTabs(mint)}
           </Tabs>
         ) : null}
         {tab === 'spl' ? (
@@ -125,6 +149,16 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             swapCoinInfo={swapCoinInfo}
             onSubmitRef={onSubmitRef}
             wusdcToSplUsdc
+          />
+        ) : tab === 'wusdtToSplUsdt' ? (
+          <SendSwapDialog
+            key={tab}
+            onClose={onClose}
+            publicKey={publicKey}
+            balanceInfo={balanceInfo}
+            swapCoinInfo={swapCoinInfo}
+            onSubmitRef={onSubmitRef}
+            wusdtToSplUsdt
           />
         ) : (
           <SendSwapDialog
@@ -274,6 +308,7 @@ function SendSwapDialog({
   swapCoinInfo,
   ethAccount,
   wusdcToSplUsdc = false,
+  wusdtToSplUsdt = false,
   onSubmitRef,
 }) {
   const wallet = useWallet();
@@ -288,7 +323,7 @@ function SendSwapDialog({
   } = useForm(balanceInfo);
 
   const { tokenName, decimals, mint } = balanceInfo;
-  const blockchain = wusdcToSplUsdc
+  const blockchain = wusdcToSplUsdc || wusdtToSplUsdt
     ? 'sol'
     : swapCoinInfo.blockchain === 'sol'
     ? 'eth'
@@ -323,11 +358,16 @@ function SendSwapDialog({
   let splUsdcWalletAddress = useWalletAddressForMint(
     wusdcToSplUsdc ? USDC_MINT : null,
   );
+  let splUsdtWalletAddress = useWalletAddressForMint(
+    wusdtToSplUsdt ? USDT_MINT : null,
+  );
   useEffect(() => {
     if (wusdcToSplUsdc && splUsdcWalletAddress) {
       setDestinationAddress(splUsdcWalletAddress);
+    } else if (wusdtToSplUsdt && splUsdtWalletAddress) {
+      setDestinationAddress(splUsdtWalletAddress);
     }
-  }, [setDestinationAddress, wusdcToSplUsdc, splUsdcWalletAddress]);
+  }, [setDestinationAddress, wusdcToSplUsdc, splUsdcWalletAddress, wusdtToSplUsdt, splUsdtWalletAddress]);
 
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
@@ -346,6 +386,8 @@ function SendSwapDialog({
     }
     if (mint?.equals(WUSDC_MINT)) {
       params.wusdcToUsdc = true;
+    } else if (mint?.equals(WUSDT_MINT)) {
+      params.wusdtToUsdt = true;
     }
     const swapInfo = await swapApiRequest('POST', 'swap_to', params);
     if (swapInfo.blockchain !== 'sol') {
