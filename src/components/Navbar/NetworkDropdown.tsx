@@ -144,7 +144,7 @@ const NetworkDropdown = () => {
         theme={theme}
         isWalletConnected={false}
         customNotActiveRem={
-          !!wallet ? '37rem' : isUserHasLockedMnemonicAndSeed ? '1rem' : '38rem'
+          !!wallet ? '37rem' : isUserHasLockedMnemonicAndSeed ? '22rem' : '38rem'
         }
       >
         <MenuList style={{ padding: 0 }}>
