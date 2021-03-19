@@ -30,7 +30,7 @@ import {
 } from '../utils/connection';
 import Link from '@material-ui/core/Link';
 import CopyableDisplay from './CopyableDisplay';
-import DialogForm from './DialogForm';
+import DialogForm from '../pages/Wallet/components/DialogForm';
 import { showSwapAddress } from '../utils/config';
 import { swapApiRequest } from '../utils/swap/api';
 import TokenIcon from './TokenIcon';

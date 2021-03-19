@@ -4,14 +4,14 @@ import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@material-ui/core/Button';
 import { confirmTransaction } from './utils';
 
-export function useSendTransaction() {
+export function useSendTransaction(): [any, boolean] {
   const connection = useConnection();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [sending, setSending] = useState(false);
 
   async function sendTransaction(
     signaturePromise,
-    { onSuccess, onError } = {},
+    { onSuccess = (res) => {}, onError = (e) => { console.error(e) } } = {},
   ) {
     let id = enqueueSnackbar('Sending transaction...', {
       variant: 'info',
@@ -73,8 +73,8 @@ export function useCallAsync() {
     {
       progressMessage = 'Submitting...',
       successMessage = 'Success',
-      onSuccess,
-      onError,
+      onSuccess = (res) => {}, 
+      onError = (e) => { console.error(e) }
     } = {},
   ) {
     let id = enqueueSnackbar(progressMessage, {

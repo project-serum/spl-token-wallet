@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DialogForm from './DialogForm';
+import DialogForm from '../pages/Wallet/components/DialogForm';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';

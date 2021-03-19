@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import DialogForm from './DialogForm';
+import DialogForm from '../pages/Wallet/components/DialogForm';
 import { useWallet } from '../utils/wallet';
 import { getUnlockedMnemonicAndSeed } from '../utils/wallet-seed';
 

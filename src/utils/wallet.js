@@ -23,7 +23,7 @@ import {
   parseTokenAccountData,
 } from './tokens/data';
 import { useListener, useLocalStorageState, useRefEqual } from './utils';
-import { useTokenName } from './tokens/names';
+import { useTokenInfo } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 import { WalletProviderFactory } from './walletProvider/factory';
@@ -419,7 +419,7 @@ export function useBalanceInfo(publicKey) {
     ? parseTokenAccountData(accountInfo.data)
     : {};
   let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
-  let { name, symbol } = useTokenName(mint);
+  let { name, symbol } = useTokenInfo(mint);
 
   if (!accountInfoLoaded) {
     return null;

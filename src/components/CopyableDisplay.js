@@ -23,7 +23,7 @@ export default function CopyableDisplay({
   label,
   autoFocus,
   qrCode,
-  helperText,
+  helperText = '',
 }) {
   const { enqueueSnackbar } = useSnackbar();
   const textareaRef = useRef();

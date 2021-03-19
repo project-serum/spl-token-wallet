@@ -1,7 +1,7 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
+import { Title } from '../../pages/commonStyles';
 
 const TYPE_LABELS = {
   cancelOrder: 'Cancel order',
@@ -39,13 +39,13 @@ export default function DexInstruction({ instruction, onOpenAddress }) {
 
   return (
     <>
-      <Typography
+      <Title
         variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
+        style={{ fontWeight: 'bold', fontSize: '1.6rem' }}
         gutterBottom
       >
         {TYPE_LABELS[type]}
-      </Typography>
+      </Title>
       <LabelValue
         label="Market"
         value={marketLabel}

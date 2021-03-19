@@ -1,21 +1,19 @@
 import React from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Dialog } from '@material-ui/core';
+import { Card } from '../../commonStyles';
 
 export default function DialogForm({
   open,
   onClose,
-  onSubmit,
-  children,
+  onSubmit = () => {},
   ...rest
 }) {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  // const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
   return (
     <Dialog
       open={open}
+      PaperComponent={Card}
       PaperProps={{
         component: 'form',
         onSubmit: (e) => {
@@ -24,12 +22,14 @@ export default function DialogForm({
             onSubmit();
           }
         },
+        // @ts-ignore
+        height: rest.height,
+        width: rest.width,
+        padding: rest.padding,
       }}
       onClose={onClose}
-      fullScreen={fullScreen}
+      // fullScreen={fullScreen}
       {...rest}
-    >
-      {children}
-    </Dialog>
+    />
   );
 }

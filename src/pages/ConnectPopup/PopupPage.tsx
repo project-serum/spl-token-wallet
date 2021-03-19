@@ -5,41 +5,62 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useWallet, useWalletPublicKeys } from '../utils/wallet';
-import { decodeMessage } from '../utils/transactions';
-import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
+import styled from 'styled-components';
+import { Redirect } from 'react-router-dom';
+import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
+import { decodeMessage } from '../../utils/transactions';
 import {
-  Divider,
-  FormControlLabel,
-  SnackbarContent,
-  Switch,
-  Typography,
-} from '@material-ui/core';
+  useConnection,
+  useSolanaExplorerUrlSuffix,
+} from '../../utils/connection';
+import { Divider, Typography, useTheme } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
+import ImportExportIcon from '../../images/importExportIcon.svg';
+import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
-import NewOrder from '../components/instructions/NewOrder';
-import UnknownInstruction from '../components/instructions/UnknownInstruction';
-import WarningIcon from '@material-ui/icons/Warning';
-import SystemInstruction from '../components/instructions/SystemInstruction';
-import DexInstruction from '../components/instructions/DexInstruction';
-import TokenInstruction from '../components/instructions/TokenInstruction';
-import { useLocalStorageState } from '../utils/utils';
+import NewOrder from '../../components/instructions/NewOrder';
+import UnknownInstruction from '../../components/instructions/UnknownInstruction';
+import SystemInstruction from '../../components/instructions/SystemInstruction';
+import DexInstruction from '../../components/instructions/DexInstruction';
+import TokenInstruction from '../../components/instructions/TokenInstruction';
+import {
+  RowContainer,
+  VioletButton,
+  WhiteButton,
+  Row,
+  StyledLabel,
+  Title,
+  StyledCheckbox,
+} from '../commonStyles';
 
-export default function PopupPage({ opener }) {
+import AccountsSelector from '../Wallet/components/AccountsSelector';
+import AttentionComponent from '../../components/Attention';
+import { PublicKey } from '@solana/web3.js';
+
+const StyledCard = styled(Card)`
+  background: #17181a;
+  color: #ecf0f3;
+  text-align: center;
+  width: 50rem;
+  padding: 3rem;
+  margin: 0 auto;
+  box-shadow: none;
+`;
+
+export default function PopupPage({ origin }) {
+  const opener = window.opener;
   const wallet = useWallet();
 
-  const origin = useMemo(() => {
-    let params = new URLSearchParams(window.location.hash.slice(1));
-    return params.get('origin');
-  }, []);
+  // const origin = useMemo(() => {
+  //   let params = new URLSearchParams(window.location.hash.slice(1));
+  //   return params.get('origin');
+  // }, []);
+
   const postMessage = useCallback(
     (message) => {
       opener.postMessage({ jsonrpc: '2.0', ...message }, origin);
@@ -47,9 +68,9 @@ export default function PopupPage({ opener }) {
     [opener, origin],
   );
 
-  const [connectedAccount, setConnectedAccount] = useState(null);
+  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(null);
   const hasConnectedAccount = !!connectedAccount;
-  const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState<any[]>([]);
   const [autoApprove, setAutoApprove] = useState(false);
 
   // Send a disconnect event if this window is closed, this component is
@@ -165,19 +186,23 @@ export default function PopupPage({ opener }) {
       }
     }
     return (
-      <ApproveSignatureForm
-        key={request.id}
-        autoApprove={autoApprove}
-        origin={origin}
-        messages={messages}
-        onApprove={onApprove}
-        onReject={sendReject}
-      />
+      <StyledCard style={{ textAlign: 'left' }}>
+        <ApproveSignatureForm
+          key={request.id}
+          autoApprove={autoApprove}
+          origin={origin}
+          messages={messages}
+          onApprove={onApprove}
+          onReject={sendReject}
+        />
+      </StyledCard>
     );
   }
 
   return (
-    <Typography>Please keep this window open in the background.</Typography>
+    <RowContainer>
+      <Title>Please keep this window open in the background.</Title>
+    </RowContainer>
   );
 }
 
@@ -195,36 +220,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
     textAlign: 'center',
   },
-  transaction: {
-    wordBreak: 'break-all',
-  },
   approveButton: {
     backgroundColor: '#43a047',
     color: 'white',
   },
   actions: {
     justifyContent: 'space-between',
-  },
-  snackbarRoot: {
-    backgroundColor: theme.palette.background.paper,
-  },
-  warningMessage: {
-    margin: theme.spacing(1),
-    color: theme.palette.text.primary,
-  },
-  warningIcon: {
-    marginRight: theme.spacing(1),
-    fontSize: 24,
-  },
-  warningTitle: {
-    color: theme.palette.warning.light,
-    fontWeight: 600,
-    fontSize: 16,
-    alignItems: 'center',
-    display: 'flex',
-  },
-  warningContainer: {
-    marginTop: theme.spacing(1),
   },
   divider: {
     marginTop: theme.spacing(2),
@@ -235,68 +236,90 @@ const useStyles = makeStyles((theme) => ({
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
   const classes = useStyles();
-  const [autoApprove, setAutoApprove] = useState(false);
-  let [dismissed, setDismissed] = useLocalStorageState(
-    'dismissedAutoApproveWarning',
-    false,
-  );
+  const [autoApprove, setAutoApprove] = useState(true);
+
+  const theme = useTheme();
+
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" component="h1" gutterBottom>
-          Allow this site to access your Solana account?
-        </Typography>
-        <div className={classes.connection}>
-          <Typography>{origin}</Typography>
-          <ImportExportIcon fontSize="large" />
-          <Typography>{wallet.publicKey.toBase58()}</Typography>
-        </div>
-        <Typography>Only connect with sites you trust.</Typography>
-        <Divider className={classes.divider} />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={autoApprove}
-              onChange={() => setAutoApprove(!autoApprove)}
-              color="primary"
-            />
-          }
-          label={`Automatically approve transactions from ${origin}`}
-        />
-        {!dismissed && autoApprove && (
-          <SnackbarContent
-            className={classes.warningContainer}
-            message={
-              <div>
-                <span className={classes.warningTitle}>
-                  <WarningIcon className={classes.warningIcon} />
-                  Use at your own risk.
-                </span>
-                <Typography className={classes.warningMessage}>
-                  This setting allows sending some transactions on your behalf
-                  without requesting your permission for the remainder of this
-                  session.
-                </Typography>
-              </div>
-            }
-            action={[
-              <Button onClick={() => setDismissed('1')}>I understand</Button>,
-            ]}
-            classes={{ root: classes.snackbarRoot }}
+    <StyledCard>
+      {(!window.opener || !wallet) && <Redirect to="/" />}
+      <CardContent style={{ padding: 0 }}>
+        <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
+          <img style={{ width: '50%' }} alt={'logo'} src={Logo} />
+          <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
+        </RowContainer>
+        <Title
+          fontSize="2.4rem"
+          fontFamily="Avenir Next Demi"
+          style={{ marginBottom: '3rem' }}
+        >
+          Allow this site to access your Wallet™?
+        </Title>
+        <RowContainer
+          margin={'0 0 4rem 0'}
+          direction={'column'}
+          className={classes.connection}
+        >
+          <RowContainer margin="6rem 0 0 0">
+            <Title>{origin}</Title>
+          </RowContainer>
+          <img
+            alt={'import export icon'}
+            style={{ margin: '2rem 0' }}
+            src={ImportExportIcon}
           />
-        )}
+          <Title fontSize="1.6rem">
+            {wallet?.publicKey?.toBase58()}
+          </Title>
+        </RowContainer>
+
+        <RowContainer direction={'row'}>
+          <StyledCheckbox
+            id="autoApprove"
+            theme={theme}
+            checked={autoApprove}
+            onChange={() => setAutoApprove(!autoApprove)}
+          />
+          <Row style={{ textAlign: 'left' }}>
+            <StyledLabel
+              theme={theme}
+              htmlFor="autoApprove"
+              style={{ fontSize: '1.6rem' }}
+            >
+              Automatically approve transactions from{' '}
+              <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
+              This will allow you to use the auto-settle function.
+            </StyledLabel>
+          </Row>
+        </RowContainer>
+        <RowContainer margin="6rem 0 0 0">
+          <AttentionComponent
+            text={
+              'Only connect with sites you trust. Auto approve allows sending some transactions on your behalf without requesting your permission for the remainder of this session.'
+            }
+            textStyle={{ fontSize: '1.6rem', textAlign: 'left' }}
+            iconStyle={{ height: '7rem', margin: '0 2rem 0 3rem' }}
+          />
+        </RowContainer>
       </CardContent>
-      <CardActions className={classes.actions}>
-        <Button onClick={window.close}>Cancel</Button>
-        <Button
-          color="primary"
+      <RowContainer margin="6rem 0 0 0" justify={'space-between'}>
+        <WhiteButton
+          width={'calc(50% - .5rem)'}
+          theme={theme}
+          color={'#ECF0F3'}
+          onClick={window.close}
+        >
+          Cancel
+        </WhiteButton>
+        <VioletButton
+          theme={theme}
+          width={'calc(50% - .5rem)'}
           onClick={() => onApprove(autoApprove)}
-          disabled={!dismissed && autoApprove}
         >
           Connect
-        </Button>
-      </CardActions>
-    </Card>
+        </VioletButton>
+      </RowContainer>
+    </StyledCard>
   );
 }
 
@@ -330,7 +353,11 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
       } else {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
-        } else if (['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(instruction.type)) {
+        } else if (
+          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+            instruction.type,
+          )
+        ) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
           let { newAccountPubkey } = instruction.data;
@@ -386,7 +413,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
   // Check that all accounts are owned
   if (
     Object.values(accountStates).some(
-      (state) =>
+      (state: any) =>
         ![states.CLOSED_TO_OWNED_DESTINATION, states.OWNED].includes(state),
     )
   ) {
@@ -403,7 +430,7 @@ function ApproveSignatureForm({
   onReject,
   autoApprove,
 }) {
-  const classes = useStyles();
+  // const classes = useStyles();
   const explorerUrlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
   const wallet = useWallet();
@@ -412,8 +439,9 @@ function ApproveSignatureForm({
   const [parsing, setParsing] = useState(true);
   // An array of arrays, where each element is the set of instructions for a
   // single transaction.
-  const [txInstructions, setTxInstructions] = useState(null);
-  const buttonRef = useRef();
+  const [txInstructions, setTxInstructions] = useState<any>(null);
+  const buttonRef: any = useRef();
+  const theme = useTheme()
 
   const isMultiTx = messages.length > 1;
 
@@ -447,8 +475,8 @@ function ApproveSignatureForm({
 
       // scroll to approve button and focus it to enable approve with enter
       if (buttonRef.current) {
-        buttonRef.current.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => buttonRef.current.focus(), 50);
+        buttonRef?.current?.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => buttonRef?.current?.focus(), 50);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -499,7 +527,11 @@ function ApproveSignatureForm({
         );
       case 'newOrderV3':
         return (
-          <NewOrder instruction={instruction} onOpenAddress={onOpenAddress} v3={true} />
+          <NewOrder
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+            v3={true}
+          />
         );
       default:
         return <UnknownInstruction instruction={instruction} />;
@@ -538,7 +570,7 @@ function ApproveSignatureForm({
   };
 
   return (
-    <Card>
+    <>
       <CardContent>
         {parsing ? (
           <>
@@ -550,13 +582,13 @@ function ApproveSignatureForm({
               }}
             >
               <CircularProgress style={{ marginRight: 20 }} />
-              <Typography
-                variant="subtitle1"
-                style={{ fontWeight: 'bold' }}
+              <Title
+                fontSize="1.6rem"
+                fontFamily="Avenir Next Demi"
                 gutterBottom
               >
-                Parsing transaction{isMultiTx > 0 ? 's' : ''}:
-              </Typography>
+                Parsing transaction{isMultiTx ? 's' : ''}:
+              </Title>
             </div>
             {messages.map((message, idx) => (
               <Typography key={idx} style={{ wordBreak: 'break-all' }}>
@@ -566,46 +598,42 @@ function ApproveSignatureForm({
           </>
         ) : (
           <>
-            <Typography variant="h6" gutterBottom>
+            <Title fontSize="1.6rem" gutterBottom>
               {txInstructions
                 ? `${origin} wants to:`
                 : `Unknown transaction data`}
-            </Typography>
+            </Title>
             {txInstructions ? (
               txInstructions.map((instructions, txIdx) =>
                 txListItem(instructions, txIdx),
               )
             ) : (
               <>
-                <Typography
-                  variant="subtitle1"
-                  style={{ fontWeight: 'bold' }}
+                <Title
+                  fontSize="1.6rem"
+                  fontFamily="Avenir Next Demi"
                   gutterBottom
                 >
-                  Unknown transaction{isMultiTx > 0 ? 's' : ''}:
-                </Typography>
+                  Unknown transaction{isMultiTx ? 's' : ''}:
+                </Title>
                 {messages.map((message) => (
-                  <Typography style={{ wordBreak: 'break-all' }}>
+                  <Title style={{ wordBreak: 'break-all' }}>
                     {bs58.encode(message)}
-                  </Typography>
+                  </Title>
                 ))}
               </>
             )}
           </>
         )}
       </CardContent>
-      <CardActions className={classes.actions}>
-        <Button onClick={onReject}>Cancel</Button>
-        <Button
-          ref={buttonRef}
-          className={classes.approveButton}
-          variant="contained"
-          color="primary"
-          onClick={onApprove}
-        >
+      <RowContainer justify="space-between">
+        <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
+          Cancel
+        </WhiteButton>
+        <VioletButton theme={theme} width="calc(50% - .5rem)" onClick={onApprove}>
           Approve{isMultiTx ? ' All' : ''}
-        </Button>
-      </CardActions>
-    </Card>
+        </VioletButton>
+      </RowContainer>
+    </>
   );
 }

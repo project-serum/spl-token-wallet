@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
-import Button from '@material-ui/core/Button';
 import { useCallAsync } from '../notifications';
+import { VioletButton } from '../../pages/commonStyles';
+import { useTheme } from '@material-ui/core';
 
 const web3 = new Web3(window.ethereum);
 // Change to use estimated gas limit
@@ -20,7 +21,11 @@ export function useEthAccount() {
       setAccount(accounts.length > 0 ? accounts[0] : null);
     window.ethereum.request({ method: 'eth_accounts' }).then(onChange);
     window.ethereum.on('accountsChanged', onChange);
-    return () => window.ethereum.removeListener('accountsChanged', onChange);
+    return () => { 
+      if (!window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', onChange);
+      }
+    }
   }, []);
 
   return account;
@@ -227,19 +232,20 @@ function waitForConfirms(tx, onStatusChange) {
 
 export function ConnectToMetamaskButton() {
   const callAsync = useCallAsync();
+  const theme = useTheme()
 
   if (!window.ethereum) {
     return (
-      <Button
-        color="primary"
-        variant="outlined"
+      <VioletButton
+        theme={theme}
         component="a"
         href="https://metamask.io/"
         target="_blank"
         rel="noopener"
+        width={'calc(50% - .5rem)'}
       >
         Connect to MetaMask
-      </Button>
+      </VioletButton>
     );
   }
 
@@ -256,8 +262,8 @@ export function ConnectToMetamaskButton() {
   }
 
   return (
-    <Button color="primary" variant="outlined" onClick={connect}>
+    <VioletButton theme={theme} width={'calc(50% - .5rem)'} onClick={connect}>
       Connect to MetaMask
-    </Button>
+    </VioletButton>
   );
 }

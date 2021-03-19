@@ -1,7 +1,7 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
 import { useWallet } from '../../utils/wallet';
+import { Title } from '../../pages/commonStyles';
 
 export default function Neworder({ instruction, onOpenAddress, v3=false }) {
   const wallet = useWallet();
@@ -21,13 +21,13 @@ export default function Neworder({ instruction, onOpenAddress, v3=false }) {
   const maxQuantity = v3 ? data.maxBaseQuantity : data.maxQuantity;
   return (
     <>
-      <Typography
+      <Title
         variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
+        style={{ fontWeight: 'bold', fontSize: '1.6rem' }}
         gutterBottom
       >
         Place an order
-      </Typography>
+      </Title>
       <LabelValue
         label="Market"
         value={marketLabel}

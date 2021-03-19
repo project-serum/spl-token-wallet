@@ -1,6 +1,6 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
 import LabelValue from './LabelValue';
+import { Title } from '../../pages/commonStyles';
 
 const TYPE_LABELS = {
   systemCreate: 'Create account',
@@ -25,13 +25,13 @@ export default function SystemInstruction({ instruction, onOpenAddress }) {
 
   return (
     <>
-      <Typography
+      <Title
         variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
+        style={{ fontWeight: 'bold', fontSize: '1.6rem' }}
         gutterBottom
       >
         {TYPE_LABELS[type]}
-      </Typography>
+      </Title>
       {data &&
         Object.entries(data).map(([key, value]) => {
           const dataLabel = DATA_LABELS[key];

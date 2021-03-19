@@ -1,8 +1,19 @@
+import React, { useState } from 'react';
 import { useConnectionConfig } from '../utils/connection';
 import { TOKENS } from '../utils/tokens/names';
-import React, { useState } from 'react';
+import CoinPlaceholder from '../images/coinPlaceholder.svg'
 
-export default function TokenIcon({ mint, url, tokenName, size = 20 }) {
+export default function TokenIcon({
+  mint,
+  url,
+  tokenName,
+  size = '2rem',
+}: {
+  mint?: any;
+  url?: string;
+  tokenName: string;
+  size?: string;
+}) {
   const { endpoint } = useConnectionConfig();
 
   const [hasError, setHasError] = useState(false);
@@ -19,7 +30,7 @@ export default function TokenIcon({ mint, url, tokenName, size = 20 }) {
   }
 
   if (hasError || !url) {
-    return null;
+    url = CoinPlaceholder
   }
 
   return (
@@ -31,7 +42,7 @@ export default function TokenIcon({ mint, url, tokenName, size = 20 }) {
         width: size,
         height: size,
         backgroundColor: 'white',
-        borderRadius: size / 2,
+        borderRadius: `calc(${size} / 2)`,
       }}
       onError={() => setHasError(true)}
     />
