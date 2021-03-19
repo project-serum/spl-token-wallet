@@ -41,7 +41,7 @@ import {
 } from '../../commonStyles';
 import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
-import { StyledTab, StyledTabs } from '../styles';
+// import { StyledTab, StyledTabs } from '../styles';
 import FakeInputs from '../../../components/FakeInputs';
 
 const WUSDC_MINT = new PublicKey(
@@ -68,7 +68,9 @@ export default function SendDialog({ open, onClose, publicKey }) {
   );
   const ethAccount = useEthAccount();
 
-  const { mint, tokenSymbol } = balanceInfo;
+  const { 
+    // mint, 
+    tokenSymbol } = balanceInfo;
   const theme = useTheme();
 
   return (

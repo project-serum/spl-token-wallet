@@ -33,7 +33,9 @@ import {
 } from '../../commonStyles';
 import { InputWithMax, TextareaWithCopy } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
-import { StyledTab, StyledTabs, StyledStepLabel } from '../styles';
+import { 
+  // StyledTab, StyledTabs, 
+  StyledStepLabel } from '../styles';
 
 import MetamaskIcon from '../../../images/metamask.png';
 import FakeInputs from '../../../components/FakeInputs';
@@ -76,19 +78,19 @@ export default function DepositDialog({ open, onClose, publicKey }) {
   const theme = useTheme();
 
   let firstTab;
-  let secondTab;
+  // let secondTab;
 
   if (swapInfo) {
     firstTab = `Deposit SPL ${tokenSymbol ?? swapInfo.coin.ticker}`;
-    secondTab = !mint
-      ? `Convert ${swapInfo.coin.ticker} to SOL`
-      : swapInfo.coin.ticker;
+    // secondTab = !mint
+    //   ? `Convert ${swapInfo.coin.ticker} to SOL`
+    //   : swapInfo.coin.ticker;
     if (!mint) {
       firstTab = 'Deposit SOL';
     } else {
-      secondTab = ` Convert ${
-        swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
-      } ${secondTab} to SOL`;
+      // secondTab = ` Convert ${
+      //   swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
+      // } ${secondTab} to SOL`;
     }
   } else {
     firstTab = `Deposit SPL ${tokenSymbol}`;
