@@ -7,7 +7,7 @@ export default function LabelValue({ label, value, link = false, onClick }) {
   const theme = useTheme()
 
   return (
-    <Title fontSize="1.6rem">
+    <Title fontSize="1.6rem" style={{ display: 'block', textAlign: 'left' }}>
       {label}:{' '}
       {link ? (
         <Link style={{ fontSize: '1.6rem', color: theme.customPalette.blue.serum }} href="#" onClick={onClick}>

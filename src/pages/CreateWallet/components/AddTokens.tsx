@@ -122,7 +122,7 @@ const AddTokens = () => {
             <Row width={'85%'}>
               {' '}
               <TextareaWithCopy
-                height={'4.5rem'}
+                height={'5rem'}
                 value={wallet?.publicKey?.toBase58()}
               />
             </Row>
