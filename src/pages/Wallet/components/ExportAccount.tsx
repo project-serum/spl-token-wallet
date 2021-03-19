@@ -48,6 +48,7 @@ export default function ExportAccountDialog({ open, onClose }) {
     >
       <BtnCustom
         borderRadius="50%"
+        borderWidth="0"
         style={{
           position: 'absolute',
           width: '3rem',
@@ -136,6 +137,21 @@ export function ExportMnemonicDialog({ open, onClose }) {
         setPassword('');
       }}
     >
+      <BtnCustom
+        borderRadius="50%"
+        borderWidth="0"
+        style={{
+          position: 'absolute',
+          width: '3rem',
+          height: '3rem',
+          right: '2rem',
+          top: '2rem',
+          color: theme.customPalette.red.main,
+        }}
+        onClick={onClose}
+      >
+        <CloseIcon style={{ width: '100%', height: '100%' }} />
+      </BtnCustom>
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
         <Title>
           Enter your password to unlock the seed phrase for this wallet
