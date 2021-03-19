@@ -219,7 +219,6 @@ const AssetsTable = ({
     [publicKeys, wallet.publicKey],
   );
 
-  // sortedPublicKeys.forEach((s) => console.log('1', usdValues[s.toString()]));
   // const selectedAccount = accounts.find((a) => a.isSelected);
   // const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
 
@@ -253,8 +252,6 @@ const AssetsTable = ({
   );
 
   const memoizedAssetsList = useMemo(() => {
-    sortedPublicKeys.forEach((s) => console.log('2', usdValues[s.toString()]));
-
     return sortedPublicKeys.map((pk) => {
       return React.memo((props) => {
         return (

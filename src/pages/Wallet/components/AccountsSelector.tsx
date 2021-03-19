@@ -204,7 +204,10 @@ const AccountsSelector = ({
         onAdd={({ name, importedAccount }) => {
           addAccount({ name, importedAccount });
           setWalletSelector({
-            walletIndex: importedAccount ? undefined : accounts.length,
+            walletIndex: importedAccount
+              ? undefined
+              : accounts.filter((acc) => acc.selector.walletIndex !== undefined)
+                  .length,
             importedPubkey: importedAccount
               ? importedAccount.publicKey.toString()
               : undefined,
