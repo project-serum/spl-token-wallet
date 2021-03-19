@@ -113,18 +113,18 @@ export default function SendDialog({ open, onClose, publicKey }) {
                       key="spl"
                       value="spl"
                     />,
-                    <StyledTab
-                      theme={theme}
-                      label="SPL USDC"
-                      key="wusdcToSplUsdc"
-                      value="wusdcToSplUsdc"
-                    />,
-                    <StyledTab
-                      theme={theme}
-                      label="ERC20 USDC"
-                      key="swap"
-                      value="swap"
-                    />,
+                    // <StyledTab
+                    //   theme={theme}
+                    //   label="SPL USDC"
+                    //   key="wusdcToSplUsdc"
+                    //   value="wusdcToSplUsdc"
+                    // />,
+                    // <StyledTab
+                    //   theme={theme}
+                    //   label="ERC20 USDC"
+                    //   key="swap"
+                    //   value="swap"
+                    // />,
                   ]
                 : [
                     <StyledTab
@@ -133,14 +133,14 @@ export default function SendDialog({ open, onClose, publicKey }) {
                       key="spl"
                       value="spl"
                     />,
-                    <StyledTab
-                      theme={theme}
-                      label={`${
-                        swapCoinInfo?.erc20Contract ? 'ERC20' : 'Native'
-                      } ${swapCoinInfo?.ticker}`}
-                      key="swap"
-                      value="swap"
-                    />,
+                    // <StyledTab
+                    //   theme={theme}
+                    //   label={`${
+                    //     swapCoinInfo?.erc20Contract ? 'ERC20' : 'Native'
+                    //   } ${swapCoinInfo?.ticker}`}
+                    //   key="swap"
+                    //   value="swap"
+                    // />,
                   ]}
             </StyledTabs>
           ) : null}

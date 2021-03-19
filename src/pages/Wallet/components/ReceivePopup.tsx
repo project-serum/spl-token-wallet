@@ -114,7 +114,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
           onChange={(e, value) => setTab(value)}
         >
           <StyledTab theme={theme} label={firstTab} />
-          {swapInfo && <StyledTab theme={theme} label={secondTab} />}
+          {/* {swapInfo && <StyledTab theme={theme} label={secondTab} />} */}
         </StyledTabs>
       </RowContainer>
 
@@ -169,7 +169,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
               />
             </RowContainer>
           </>
-        ) : (
+         ) : (
           <SolletSwapDepositAddress
             balanceInfo={balanceInfo}
             swapInfo={swapInfo}
