@@ -90,6 +90,8 @@ export default function DepositDialog({ open, onClose, publicKey }) {
         swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
       } ${secondTab} to SOL`;
     }
+  } else {
+    firstTab = `Deposit SPL ${tokenSymbol}`
   }
 
   return (
@@ -98,21 +100,24 @@ export default function DepositDialog({ open, onClose, publicKey }) {
       onClose={onClose}
       height={'auto'}
       padding={'2rem 0'}
+      onEnter={() => {
+        setTab(0);
+      }}
     >
       <FakeInputs />
-      {swapInfo && (
-        <RowContainer padding="1.6rem 0 2.4rem 0">
-          <StyledTabs
-            theme={theme}
-            value={tab}
-            variant="fullWidth"
-            onChange={(e, value) => setTab(value)}
-          >
-            <StyledTab theme={theme} label={firstTab} />
-            <StyledTab theme={theme} label={secondTab} />
-          </StyledTabs>
-        </RowContainer>
-      )}
+
+      <RowContainer padding="1.6rem 0 2.4rem 0">
+        <StyledTabs
+          theme={theme}
+          value={tab}
+          variant="fullWidth"
+          onChange={(e, value) => setTab(value)}
+        >
+          <StyledTab theme={theme} label={firstTab} />
+          {swapInfo && <StyledTab theme={theme} label={secondTab} />}
+        </StyledTabs>
+      </RowContainer>
+
       <RowContainer direction="column" padding="0">
         {tab === 0 ? (
           <>
@@ -192,7 +197,7 @@ function SolletSwapDepositAddress({
   onClose,
   publicKey,
 }) {
-  const theme = useTheme()
+  const theme = useTheme();
   const [ethBalance] = useAsyncData(
     () => getErc20Balance(ethAccount),
     'ethBalance',
@@ -408,10 +413,10 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         <RowContainer width="90%" padding="2rem 0">
           <AttentionComponent
             text={`To convert ${swapInfo?.coin?.ticker} to SOL , your  SOL balance shouldn’t be empty.`}
-            blockHeight={'4rem'}
+            blockHeight={'6rem'}
             iconStyle={{ margin: '0 2rem 0 3rem', height: '2.5rem' }}
             textStyle={{
-              fontSize: '1.2rem',
+              fontSize: '1.4rem',
             }}
           />
         </RowContainer>

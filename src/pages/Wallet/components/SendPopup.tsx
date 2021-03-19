@@ -34,6 +34,7 @@ import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import {
   RowContainer,
   StyledCheckbox,
+  StyledLabel,
   Title,
   VioletButton,
   WhiteButton,
@@ -84,7 +85,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
         padding={'2rem 0'}
       >
         <>
-        <FakeInputs />
+          <FakeInputs />
           <RowContainer>
             <Title>Send {tokenSymbol ? ` ${tokenSymbol} to` : null}</Title>
             {/* {ethAccount && (
@@ -248,12 +249,6 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destinationAddress, wallet, mintString]);
 
-  useEffect(() => {
-    return () => {
-      setOverrideDestinationCheck(false);
-    };
-  }, [setOverrideDestinationCheck]);
-
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
     if (!amount || amount <= 0) {
@@ -289,18 +284,23 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
         {fields}
         {shouldShowOverride && (
           <RowContainer
-            margin={'0 0 1rem 0'}
+            margin={'0 0 2rem 0'}
             style={{
               alignItems: 'center',
               display: 'flex',
               textAlign: 'left',
             }}
           >
-            <Title>This address has no funds. Are you sure it's correct?</Title>
+            <StyledLabel theme={theme} htmlFor={'overrideDestinationCheck'}>
+              This address has no funds. Are you sure it's correct?
+            </StyledLabel>
             <StyledCheckbox
+              theme={theme}
+              id={'overrideDestinationCheck'}
               checked={overrideDestinationCheck}
-              onChange={(e) => setOverrideDestinationCheck(e.target.checked)}
-              color="primary"
+              onChange={() =>
+                setOverrideDestinationCheck(!overrideDestinationCheck)
+              }
             />
           </RowContainer>
         )}
@@ -376,11 +376,11 @@ function SendSwapDialog({
     typeof ethFeeEstimate === 'number' &&
     ethBalance < ethFeeEstimate;
 
-  useEffect(() => {
-    if (blockchain === 'eth' && ethAccount) {
-      setDestinationAddress(ethAccount);
-    }
-  }, [blockchain, ethAccount, setDestinationAddress]);
+  // useEffect(() => {
+  //   if (blockchain === 'eth' && ethAccount) {
+  //     setDestinationAddress(ethAccount);
+  //   }
+  // }, [blockchain, ethAccount, setDestinationAddress]);
 
   let splUsdcWalletAddress = useWalletAddressForMint(
     wusdcToSplUsdc ? USDC_MINT : null,
@@ -497,7 +497,7 @@ function SendSwapDialog({
         <RowContainer
           width="90%"
           justify="space-between"
-          margin={!ethAccount && '2rem 0 0 0'}
+          margin={(!ethAccount || insufficientEthBalance) && '2rem 0 0 0'}
         >
           <WhiteButton
             theme={theme}
@@ -621,6 +621,7 @@ function useForm(
         <InputWithPaste
           placeholder="Recipient Address"
           type="text"
+          style={{ fontSize: '1.2rem' }}
           onChange={(e) => setDestinationAddress(e.target.value)}
           value={destinationAddress}
           onPasteClick={() =>

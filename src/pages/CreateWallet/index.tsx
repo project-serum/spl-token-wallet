@@ -62,11 +62,11 @@ export const CreateWalletPage = () => {
     <Body>
       <FakeInputs />
       <RowContainer direction={'column'}>
-        <Logo margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 10rem 0'} />
+        <Logo margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} />
         {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
 
         {currentStep === 0 ? (
-          <Warning setCurrentStep={setCurrentStep} />
+          <Warning onSubmit={() => setCurrentStep(1)} />
         ) : currentStep === 1 ? (
           <CreatePassword
             password={password}

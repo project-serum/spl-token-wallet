@@ -17,18 +17,20 @@ import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
 const CreatePassword = ({
-  setCurrentStep,
+  onSubmit,
+  showBottomLink = true,
 }: {
-  setCurrentStep: (currentStep: number) => void;
+  onSubmit: () => void;
+  showBottomLink?: boolean;
 }) => {
   const [text, setText] = useState('');
 
   const theme = useTheme();
 
   const submit = async () => {
-    await forgetWallet()
-    await setCurrentStep(1);
-  }
+    await forgetWallet();
+    await onSubmit();
+  };
 
   const isDisabled = text !== 'CONFIRM';
 
@@ -67,6 +69,7 @@ const CreatePassword = ({
               'Type CONFIRM to forget your current wallet and create new one'
             }
             onKeyDown={handleKeyDown}
+            style={{ paddingRight: '0', fontSize: '1.2rem' }}
           />
         </RowContainer>
         <RowContainer justify="space-between" width="90%">
@@ -85,7 +88,9 @@ const CreatePassword = ({
           </VioletButton>
         </RowContainer>
       </Card>
-      <BottomLink toText={'Restore Existing Wallet Using Seed Phrase'} />
+      {showBottomLink && (
+        <BottomLink toText={'Restore Existing Wallet Using Seed Phrase'} />
+      )}
     </>
   );
 };

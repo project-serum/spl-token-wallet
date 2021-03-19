@@ -167,7 +167,12 @@ const Navbar = () => {
               pathname={location.pathname}
               page={'chart'}
               component={(props) => (
-                <a href={`https://dex.cryptocurrencies.ai/chart`} {...props}>
+                <a
+                  href={`https://dex.cryptocurrencies.ai/chart${
+                    !!wallet ? '#connect_wallet' : ''
+                  }`}
+                  {...props}
+                >
                   {props.children}
                 </a>
               )}
@@ -282,7 +287,9 @@ const Navbar = () => {
             </ButtonsContainer>
           ) : (
             <RowContainer padding="0 2rem">
-              <Title style={{ whiteSpace: 'nowrap' }}>Please, unlock your Wallet</Title>
+              <Title style={{ whiteSpace: 'nowrap' }}>
+                Please, unlock your Wallet
+              </Title>
             </RowContainer>
           )}
         </Row>

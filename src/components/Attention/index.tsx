@@ -1,15 +1,15 @@
 import React from 'react';
 
-import {
-  Title,
-  ColorText,
-  RowContainer,
-} from '../../pages/commonStyles';
+import { Title, ColorText, RowContainer } from '../../pages/commonStyles';
 
 import Attention from '../../images/attention.svg';
 
-
-const AttentionComponent = ({ blockHeight = '12rem', iconStyle = {}, textStyle = {}, text = '' }) => {
+const AttentionComponent = ({
+  blockHeight = '12rem',
+  iconStyle = {},
+  textStyle = {},
+  text = '',
+}) => {
   return (
     <RowContainer>
       <ColorText
@@ -24,16 +24,20 @@ const AttentionComponent = ({ blockHeight = '12rem', iconStyle = {}, textStyle =
             flexDirection: 'column',
             width: '87%',
             justifyContent: 'space-around',
-            padding: '.5rem 0'
+            padding: '.5rem 0',
           }}
         >
-          <Title fontSize={'1.2rem'} textAlign={'inherit'} style={textStyle}>
+          <Title
+            fontSize={'1.2rem'}
+            textAlign={'inherit'}
+            style={{ ...textStyle, paddingRight: '1rem' }}
+          >
             {text}
           </Title>
         </span>
       </ColorText>
     </RowContainer>
-  )
-}
+  );
+};
 
-export default AttentionComponent
+export default AttentionComponent;

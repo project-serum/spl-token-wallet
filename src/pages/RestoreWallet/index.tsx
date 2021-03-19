@@ -24,6 +24,7 @@ import { useTheme } from '@material-ui/core';
 import DerivableAccounts from './DerivableAccounts';
 import AttentionComponent from '../../components/Attention';
 import FakeInputs from '../../components/FakeInputs';
+import Warning from '../CreateWallet/components/Warning'
 
 export const RestorePage = () => {
   const [redirectToWallet, setRedirectToWallet] = useState(false);
@@ -55,7 +56,9 @@ export const RestorePage = () => {
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
       <Logo />
-      {showDerivation ? (
+      {hasLockedMnemonicAndSeed() ? (
+        <Warning onSubmit={() => {}} showBottomLink={false} />
+      ) : showDerivation ? (
         <DerivableAccounts
           goBack={() => setShowDerivation(false)}
           mnemonic={mnemonic}

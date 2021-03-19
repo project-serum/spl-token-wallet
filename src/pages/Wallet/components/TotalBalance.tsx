@@ -76,6 +76,7 @@ const TotalBalance = ({ isNavbar = true }) => {
           .filter((pk) => usdValues[pk.toString()])
           .map((pk) => usdValues[pk.toString()])
           .reduce((a, b) => a + b, 0.0);
+          
         setTotalUSD(totalUsdValue);
       }
     },
