@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 
-import { mnemonicToSeed } from '../../utils/wallet-seed';
+import {
+  hasLockedMnemonicAndSeed,
+  mnemonicToSeed,
+} from '../../utils/wallet-seed';
 import { validateMnemonic } from 'bip39';
 
 import {
@@ -70,26 +73,28 @@ export const RestorePage = () => {
             <RowContainer
               direction={'column'}
               justify={'space-around'}
-              height={'20%'}
+              height={hasLockedMnemonicAndSeed() ? '20%' : '30%'}
             >
               <Title>Restore your wallet using Seed Phrase.</Title>
             </RowContainer>
-            <RowContainer width="90%">
-              <AttentionComponent
-                text={
-                  'Note that this will delete any existing wallet on this device. Please unlock your current wallet and make sure you save the Seed Phrase before you restore another wallet.'
-                }
-                textStyle={{
-                  fontSize: '1.4rem',
-                  lineHeight: '2rem',
-                  fontFamily: 'Avenir Next',
-                }}
-                iconStyle={{
-                  margin: '0 2rem 0 3rem',
-                }}
-                blockHeight="8rem"
-              />
-            </RowContainer>
+            {hasLockedMnemonicAndSeed() && (
+              <RowContainer width="90%">
+                <AttentionComponent
+                  text={
+                    'Note that this will delete any existing wallet on this device. Please unlock your current wallet and make sure you save the Seed Phrase before you restore another wallet.'
+                  }
+                  textStyle={{
+                    fontSize: '1.4rem',
+                    lineHeight: '2rem',
+                    fontFamily: 'Avenir Next',
+                  }}
+                  iconStyle={{
+                    margin: '0 2rem 0 3rem',
+                  }}
+                  blockHeight="8rem"
+                />
+              </RowContainer>
+            )}
 
             <RowContainer
               direction={'column'}
@@ -138,7 +143,14 @@ export const RestorePage = () => {
         </Card>
       )}
 
-      <BottomLink to={'/create_wallet'} toText={'Create Wallet'} />
+      <BottomLink
+        to={'/create_wallet'}
+        toText={
+          hasLockedMnemonicAndSeed()
+            ? 'Create Another Wallet'
+            : 'Create New Wallet'
+        }
+      />
     </Body>
   );
 };

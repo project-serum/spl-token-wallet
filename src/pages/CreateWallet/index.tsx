@@ -8,8 +8,10 @@ import CreatePassword from './components/CreatePassword';
 import SaveSeedPhrase from './components/SaveSeedPhrase';
 import ConfirmSeedPhrase from './components/ConfirmSeedPhrase';
 import AddTokens from './components/AddTokens';
+import Warning from './components/Warning';
 import {
   generateMnemonicAndSeed,
+  hasLockedMnemonicAndSeed,
   storeMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
@@ -27,10 +29,13 @@ export const CreateWalletPage = () => {
   }>({ mnemonic: '', seed: '' });
 
   useEffect(() => {
-    generateMnemonicAndSeed().then((seedAndMnemonic) => {
-      setMnemonicAndSeed(seedAndMnemonic)
-    });
+    if (hasLockedMnemonicAndSeed()) {
+      setCurrentStep(0);
+    }
 
+    generateMnemonicAndSeed().then((seedAndMnemonic) => {
+      setMnemonicAndSeed(seedAndMnemonic);
+    });
   }, []);
 
   const callAsync = useCallAsync();
@@ -57,9 +62,12 @@ export const CreateWalletPage = () => {
     <Body>
       <FakeInputs />
       <RowContainer direction={'column'}>
-        <Logo margin={'0 0 3rem 0'} />
-        <ProgressBar currentStep={currentStep} />
-        {currentStep === 1 ? (
+        <Logo margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 10rem 0'} />
+        {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
+
+        {currentStep === 0 ? (
+          <Warning setCurrentStep={setCurrentStep} />
+        ) : currentStep === 1 ? (
           <CreatePassword
             password={password}
             setPassword={setPassword}

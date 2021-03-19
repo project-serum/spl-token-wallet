@@ -134,7 +134,6 @@ const NetworkDropdown = () => {
       style={{
         margin: '0 0rem 0 3rem',
         height: '100%',
-        borderRight: isUserHasLockedMnemonicAndSeed && !wallet && 'none',
       }}
     >
       <WalletStatusButton

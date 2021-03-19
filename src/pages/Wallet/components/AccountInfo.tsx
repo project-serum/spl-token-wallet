@@ -66,7 +66,7 @@ const AccountInfo = () => {
             Total Balance
           </Title>
           <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
-            <TotalBalance />
+            <TotalBalance key="navbarfalse" isNavbar={false} />
           </Title>
         </Row>
         <Row

@@ -24,7 +24,7 @@ import RefreshIcon from '../../../images/refresh.svg';
 import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
-import { getMarketsData } from '../../../utils/ccai';
+import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 
 export const TableContainer = styled(({ theme, ...props }) => (
   <Row {...props} />
@@ -151,7 +151,7 @@ export const totalUsdValue = Object.values(usdValues);
 // flickering for the associated token fingerprint icon.
 export const associatedTokensCache = {};
 
-export function fairsIsLoaded(publicKeys) {
+export function pairsIsLoaded(publicKeys, usdValues) {
   return (
     publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
     publicKeys.length
@@ -171,6 +171,7 @@ const AssetsTable = ({
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
+  const [, setTotalUSD] = useState(0);
 
   const [marketsData, setMarketsData] = useState<any>(null);
 
@@ -181,7 +182,7 @@ const AssetsTable = ({
 
   useEffect(() => {
     const getData = async () => {
-      const data = await getMarketsData();
+      const data = await MarketsDataSingleton.getData();
       setMarketsData(data);
     };
 
@@ -191,30 +192,34 @@ const AssetsTable = ({
   // const { accounts, setAccountName } = useWalletSelector();
 
   // Dummy var to force rerenders on demand.
-  const [, setForceUpdate] = useState(false);
 
-  const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
+  const sortedPublicKeys = useMemo(
+    () =>
+      Array.isArray(publicKeys)
+        ? [...publicKeys].sort((a, b) => {
+            const aVal = usdValues[a.toString()];
+            const bVal = usdValues[b.toString()];
 
-  sortedPublicKeys.sort((a, b) => {
-    const aVal = usdValues[a.toString()];
-    const bVal = usdValues[b.toString()];
+            // SOL always fisrt
+            if (a.equals(wallet.publicKey)) return -1;
+            if (b.equals(wallet.publicKey)) return 1;
 
-    // SOL always fisrt
-    if (a.equals(wallet.publicKey)) return -1;
-    if (b.equals(wallet.publicKey)) return 1;
+            a = aVal === undefined || aVal === null ? -1 : aVal;
+            b = bVal === undefined || bVal === null ? -1 : bVal;
 
-    a = aVal === undefined || aVal === null ? -1 : aVal;
-    b = bVal === undefined || bVal === null ? -1 : bVal;
+            if (b < a) {
+              return -1;
+            } else if (b > a) {
+              return 1;
+            } else {
+              return 0;
+            }
+          })
+        : [],
+    [publicKeys, wallet.publicKey],
+  );
 
-    if (b < a) {
-      return -1;
-    } else if (b > a) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-
+  // sortedPublicKeys.forEach((s) => console.log('1', usdValues[s.toString()]));
   // const selectedAccount = accounts.find((a) => a.isSelected);
   // const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
 
@@ -235,24 +240,26 @@ const AssetsTable = ({
 
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
-      if (usdValues[publicKey.toString()] !== usdValue) {
-        usdValues[publicKey.toString()] = usdValue;
-        if (fairsIsLoaded(publicKeys)) {
-          setForceUpdate((forceUpdate) => !forceUpdate);
-        }
+      usdValues[publicKey.toString()] = usdValue;
+      if (pairsIsLoaded(sortedPublicKeys, usdValues)) {
+        const totalUsdValue: any = sortedPublicKeys
+          .filter((pk) => usdValues[pk.toString()])
+          .map((pk) => usdValues[pk.toString()])
+          .reduce((a, b) => a + b, 0.0);
+        setTotalUSD(totalUsdValue);
       }
     },
-    [publicKeys],
+    [sortedPublicKeys],
   );
 
   const memoizedAssetsList = useMemo(() => {
-    const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
+    sortedPublicKeys.forEach((s) => console.log('2', usdValues[s.toString()]));
 
     return sortedPublicKeys.map((pk) => {
       return React.memo((props) => {
         return (
           <AssetItem
-            key={pk.toString()}
+            key={`${pk.toString()}-table`}
             publicKey={pk}
             theme={theme}
             marketsData={marketsData}
@@ -264,8 +271,15 @@ const AssetsTable = ({
         );
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKeys, setUsdValuesCallback, theme, marketsData]);
+  }, [
+    sortedPublicKeys,
+    setUsdValuesCallback,
+    theme,
+    marketsData,
+    selectPublicKey,
+    setSendDialogOpen,
+    setDepositDialogOpen,
+  ]);
 
   return (
     <TableContainer
@@ -319,7 +333,7 @@ const AssetsTable = ({
         height="calc(100% - 5rem)"
       >
         <StyledTable theme={theme}>
-          {memoizedAssetsList.map((MemoizedAsset) => (
+          {memoizedAssetsList.map((MemoizedAsset, i) => (
             <MemoizedAsset />
           ))}
           <StyledTr disableHover theme={theme}>
@@ -406,9 +420,11 @@ const AssetItem = ({
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
 
-  if (setUsdValue && usdValue !== undefined) {
-    setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
-  }
+  useEffect(() => {
+    if (setUsdValue && usdValue !== undefined) {
+      setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
+    }
+  }, [setUsdValue, usdValue, publicKey]);
 
   return (
     <StyledTr theme={theme}>

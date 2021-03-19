@@ -64,6 +64,12 @@ export default function DerivedAccounts({
     await setRedirectToWallet(true);
   }
 
+  // const handleKeyDown = (event: any) => {
+  //   if (event.key === 'Enter') {
+  //     submit();
+  //   }
+  // };
+
   return (
     <Card height="50rem">
       <RowContainer width="90%" direction="column">
@@ -87,9 +93,6 @@ export default function DerivedAccounts({
           </FormControl>
         </RowContainer>
         <div
-          // direction="column"
-          // height="30rem"
-          // margin="0 0 2rem 0"
           style={{
             overflowY: 'auto',
             height: '30rem',

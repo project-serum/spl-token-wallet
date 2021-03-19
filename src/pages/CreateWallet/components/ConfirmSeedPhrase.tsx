@@ -73,7 +73,7 @@ const ConfirmSeedPhrase = ({
 
   useEffect(() => {
     const seedPhraseArray = seedPhrase.split(' ');
-    
+
     setSavedSeedWords([])
     updateRandomlyPlacedSeedWords(shuffleArray(seedPhraseArray));
   }, [seedPhrase]);
@@ -86,12 +86,6 @@ const ConfirmSeedPhrase = ({
   };
 
   const isDisabled = savedSeedWords.join(' ') !== seedPhrase;
-
-  // const handleKeyDown = (event: any) => {
-  //   if (event.key === 'Enter' && !isDisabled) {
-  //     submit();
-  //   }
-  // };
 
   return (
     <>
@@ -124,12 +118,13 @@ const ConfirmSeedPhrase = ({
                 theme={theme}
                 onClick={() => {
                   const newSavedSeedWords = savedSeedWords.filter(
-                    (w) => w !== word,
+                    (w, i) => !(w === word && savedSeedWords.indexOf(word) === i),
                   );
                   const newRandomlySavedWords = [
                     ...randomlyPlacedSeedWords,
                     word,
                   ];
+
                   setSavedSeedWords(newSavedSeedWords);
                   updateRandomlyPlacedSeedWords(newRandomlySavedWords);
                 }}
@@ -147,7 +142,7 @@ const ConfirmSeedPhrase = ({
                   theme={theme}
                   onClick={() => {
                     const newRandomlySavedWords = randomlyPlacedSeedWords.filter(
-                      (w) => w !== word,
+                      (w, i) => !(w === word && randomlyPlacedSeedWords.indexOf(word) === i),
                     );
                     const newSavedSeedWords = [...savedSeedWords, word];
 

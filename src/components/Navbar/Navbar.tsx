@@ -16,7 +16,7 @@ import { CSSProperties } from '@material-ui/styles';
 import WalletLogo from '../../images/logo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
-import TotalBalance from '../../pages/Wallet/components/TotalBalance'
+import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
 import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
@@ -123,7 +123,7 @@ const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
-  const showButtons = !hasLockedMnemonicAndSeed() || !!wallet
+  const showButtons = !hasLockedMnemonicAndSeed() || !!wallet;
 
   return (
     <GridContainer theme={theme} style={{ paddingRight: !showButtons && '0' }}>
@@ -239,10 +239,15 @@ const Navbar = () => {
                 theme={theme}
                 fontSize="1.2rem"
                 onClick={() => {
-                  sessionStorage.removeItem('unlocked')
-                  window.location.reload()
+                  sessionStorage.removeItem('unlocked');
+                  window.location.reload();
                 }}
-                style={{ position: 'absolute', right: '0', bottom: '.5rem', fontFamily: 'Avenir Next Demi' }}
+                style={{
+                  position: 'absolute',
+                  right: '0',
+                  bottom: '.5rem',
+                  fontFamily: 'Avenir Next Demi',
+                }}
               >
                 Lock Wallet
               </RedButton>
@@ -275,7 +280,11 @@ const Navbar = () => {
                 </VioletButton>
               </Link>
             </ButtonsContainer>
-          ) : null}
+          ) : (
+            <RowContainer padding="0 2rem">
+              <Title style={{ whiteSpace: 'nowrap' }}>Please, unlock your Wallet</Title>
+            </RowContainer>
+          )}
         </Row>
       </RowContainer>
     </GridContainer>
