@@ -154,6 +154,7 @@ const InputWithMax = ({
   placeholder: string;
   onMaxClick: () => void;
   style?: any
+  containerStyle?: any
 }) => {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();

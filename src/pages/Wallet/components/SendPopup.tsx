@@ -280,7 +280,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
 
   return (
     <>
-      <RowContainer direction="column">
+      <RowContainer width="90%" direction="column">
         {fields}
         {shouldShowOverride && (
           <RowContainer
@@ -304,7 +304,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
             />
           </RowContainer>
         )}
-        <RowContainer width="90%" justify="space-between">
+        <RowContainer justify="space-between">
           <WhiteButton
             theme={theme}
             onClick={onClose}
@@ -466,7 +466,7 @@ function SendSwapDialog({
 
   return (
     <>
-      <RowContainer direction="column" margin="2rem 0 0 0">
+      <RowContainer width="90%" direction="column" margin="2rem 0 0 0">
         <Title>
           SPL {tokenName} can be converted to{' '}
           {blockchain === 'eth' && swapCoinInfo?.erc20Contract
@@ -488,14 +488,13 @@ function SendSwapDialog({
         )}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
         {insufficientEthBalance && (
-          <RowContainer width="90%" margin="2rem 0 0 0">
+          <RowContainer margin="2rem 0 0 0">
             <Title color={theme.customPalette.red.main}>
               Insufficient {swapCoinInfo?.ticker} for withdrawal transaction fee
             </Title>
           </RowContainer>
         )}
         <RowContainer
-          width="90%"
           justify="space-between"
           margin={(!ethAccount || insufficientEthBalance) && '2rem 0 0 0'}
         >
@@ -622,6 +621,7 @@ function useForm(
           placeholder="Recipient Address"
           type="text"
           style={{ fontSize: '1.2rem' }}
+          containerStyle={{ width: '100%' }}
           onChange={(e) => setDestinationAddress(e.target.value)}
           value={destinationAddress}
           onPasteClick={() =>
@@ -640,7 +640,7 @@ function useForm(
         </RowContainer>
       )}
 
-      <RowContainer width="90%">
+      <RowContainer>
         <AttentionComponent
           blockHeight="8rem"
           iconStyle={{ margin: '0 2rem 0 3rem' }}
@@ -657,6 +657,7 @@ function useForm(
         <InputWithMax
           placeholder="Amount"
           type="text"
+          containerStyle={{ width: '100%' }}
           onChange={(e) => setTransferAmountString(e.target.value)}
           value={transferAmountString}
           onMaxClick={() =>
