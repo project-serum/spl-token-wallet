@@ -80,7 +80,7 @@ const POPULAR_TOKENS = {
         'https://cdn.jsdelivr.net/gh/solana-labs/explorer/public/tokens/usdt.svg',
     },
     {
-      tokenSymbol: 'USDT',
+      tokenSymbol: 'WUSDT',
       mintAddress: 'BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4',
       tokenName: 'Wrapped USD Tether',
       icon:
