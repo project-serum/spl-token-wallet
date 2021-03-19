@@ -83,6 +83,7 @@ const AccountsSelector = ({
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
   const { accounts, addAccount, setWalletSelector } = useWalletSelector();
+  const accountsToShow = accounts.filter(acc => isFromPopup ? !acc.selector.ledger : true)
   const selectedAccount = accounts.find((a) => a.isSelected);
   const theme = useTheme();
 
@@ -120,7 +121,7 @@ const AccountsSelector = ({
             margin="0 0 1rem 0"
             padding="0 1.6rem 0rem 1.6rem"
           >
-            {accounts.map(({ isSelected, name, selector }, i) => {
+            {accountsToShow.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
                   direction="row"

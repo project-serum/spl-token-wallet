@@ -89,9 +89,9 @@ export default function AddTokenDialog({ open, onClose }) {
     valid =
       mintAddress !== '' &&
       tokenSymbol !== '' &&
-      tokenSymbol.length > 8 &&
+      tokenSymbol.length <= 8 &&
       tokenName !== '' &&
-      tokenName.length > 16;
+      tokenName.length <= 16;
   } else {
     valid = selectedTokens.length > 0;
   }
