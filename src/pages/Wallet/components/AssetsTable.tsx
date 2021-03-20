@@ -14,6 +14,7 @@ import {
 
 import {
   refreshAccountInfo,
+  useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../../utils/connection';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
@@ -25,6 +26,7 @@ import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
+import { priceStore, serumMarkets } from '../../../utils/markets';
 
 export const TableContainer = styled(({ theme, ...props }) => (
   <Row {...props} />
@@ -372,6 +374,7 @@ const AssetItem = ({
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
   const urlSuffix = useSolanaExplorerUrlSuffix();
+  const connection = useConnection();
 
   let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo || {
     amount: 0,
@@ -381,18 +384,53 @@ const AssetItem = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price, lastPriceDiff } = (!!marketsData &&
+  const [price, setPrice] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (balanceInfo) {
+      if (balanceInfo.tokenSymbol) {
+        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        // Don't fetch USD stable coins. Mark to 1 USD.
+        if (coin === 'USDT' || coin === 'USDC') {
+          setPrice(1);
+        }
+        // A Serum market exists. Fetch the price.
+        else if (serumMarkets[coin]) {
+          let m = serumMarkets[coin];
+          priceStore
+            .getPrice(connection, m.name)
+            .then((price) => {
+              setPrice(price || 0);
+            })
+            .catch((err) => {
+              console.error(err);
+              setPrice(null);
+            });
+        }
+        // No Serum market exists.
+        else {
+          setPrice(null);
+        }
+      }
+      // No token symbol so don't fetch market data.
+      else {
+        setPrice(null);
+      }
+    }
+  }, [price, balanceInfo, connection]);
+
+  let { lastPriceDiff } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
       marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };
 
-  if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
-    price = 1;
-  }
+  // if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
+  //   price = 1;
+  // }
 
-  const prevClosePrice = price + lastPriceDiff * -1;
+  const prevClosePrice = (price || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
     ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
       ? 'USDT'
