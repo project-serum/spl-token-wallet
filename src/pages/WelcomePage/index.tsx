@@ -22,7 +22,14 @@ const StyledContainer = styled(Row)`
   }
 `
 
-const CreateWalletButton = styled(CardButton)`
+const StyledCardButton = styled(CardButton)`
+  @media (max-width: 620px) {
+    width: 25rem;
+    height: 25rem;
+  }
+`
+
+const CreateWalletButton = styled(StyledCardButton)`
   margin: 0 2rem 0 0;
 
   @media (max-width: 620px) {
@@ -54,7 +61,7 @@ export const WelcomePage = () => {
 
         <Row direction={'column'} justify={'space-between'} height={'100%'}>
           <Link to={'/restore_wallet'}>
-            <CardButton width="35rem" height="35rem">
+            <StyledCardButton width="35rem" height="35rem">
               <Row justify={'space-around'} direction={'column'} height={'100%'}>
                 <Img width="12rem" height="12rem">
                   <img src={Restore} alt={'restore'}  width="100%" height="100%" />
@@ -64,7 +71,7 @@ export const WelcomePage = () => {
                   <Title>by seed phrase</Title>
                 </RowContainer>
               </Row>
-            </CardButton>
+            </StyledCardButton>
           </Link>
           {/* <a href={'/import_wallet'}>
             <CardButton width="35rem" height="16.5rem">
