@@ -75,7 +75,7 @@ export default function PopupPage({ origin }) {
 
   useEffect(() => {
     if (!wallet) {
-      postMessage({ error: 'Sorry, you need to create wallet first' });
+      postMessage({ method: 'redirect' });
     }
   }, [postMessage, wallet])
 
