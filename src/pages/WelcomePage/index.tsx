@@ -48,6 +48,7 @@ export const WelcomePage = () => {
               target="_blank"
               rel="noopener noreferrer"
               href={'https://wallet.cryptocurrencies.ai/create_wallet'}
+              onClick={() => window.close()}
             >
               <CreateWalletButton width="35rem" height="35rem">
                 <Row
