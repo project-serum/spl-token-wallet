@@ -2039,10 +2039,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@solana/spl-token-registry@^0.2.38":
-  version "0.2.38"
-  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.38.tgz#a31df78e9d76b4aa563e1865383dc232291e6d3c"
-  integrity sha512-L4rDPR2C39RO83nsvReWswjIqsH8KqFyYn0xGS7GXh/0uVYbSjeoHgxf71BTcAA/pGdIG+kyKYPuQOzAv4lvvA==
+"@solana/spl-token-registry@^0.2.1":
+  version "0.2.39"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.39.tgz#3837737ddf3300ebaff0546f20c29ce6eea09f90"
+  integrity sha512-kBK91kLe1tguew4pmp8aAxjdDnwF7wfLaTfE+FKjjrplc0S+VWc3Yklx3CXOf2ldChu5b6PsgfpQQ7aUMXvYGg==
   dependencies:
     cross-fetch "3.0.6"
 

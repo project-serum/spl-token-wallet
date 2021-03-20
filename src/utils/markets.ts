@@ -47,7 +47,8 @@ class PriceStore {
         return;
       }
       if (this.cache[marketName] === undefined) {
-        fetch(`https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
+        let CORS_PROXY = "https://ancient-peak-37978.herokuapp.com/"
+        fetch(`${CORS_PROXY}https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
           (resp) => {
             resp.json().then((resp) => {
               if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {

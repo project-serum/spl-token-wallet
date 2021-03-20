@@ -384,14 +384,14 @@ const AssetItem = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null>(null);
+  const [price, setPrice] = useState<number | null | undefined>(undefined);
 
   useEffect(() => {
     if (balanceInfo) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (coin === 'USDT' || coin === 'USDC') {
+        if (coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT') {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
@@ -514,7 +514,7 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Price</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            ${formatNumberToUSFormat(stripDigitPlaces(price || 0, 4))}
+            ${formatNumberToUSFormat(stripDigitPlaces(price || 0, decimals))}
           </Title>
         </RowContainer>
       </StyledTd>
@@ -605,7 +605,11 @@ const AssetItem = ({
             theme={theme}
             component="a"
             target="_blank"
-            disabled={!price}
+            disabled={
+              !marketsData ||
+              !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) ||
+              !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
+            }
             rel="noopener"
             href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
             height="50%"
