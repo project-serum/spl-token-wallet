@@ -119,6 +119,10 @@ export default function SendDialog({ open, onClose, publicKey }) {
 
   const { mint, tokenSymbol } = balanceInfo;
   const theme = useTheme();
+  const tokenSymbolForCheck =
+    tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
+      ? tokenSymbol.replace('w', 'Wrapped ')
+      : tokenSymbol;
 
   return (
     <>
@@ -137,7 +141,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
           <FakeInputs />
           <RowContainer>
             <Title fontSize="1.6rem">
-              Send {tokenSymbol ? ` ${tokenSymbol} to` : null}
+              Send {tokenSymbolForCheck ? ` ${tokenSymbolForCheck} to` : null}
             </Title>
             {/* {ethAccount && (
               <div>
@@ -169,6 +173,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
             <SendSwapDialog
               key={tab}
               ethAccount={''}
+              tab={tab}
               onClose={onClose}
               publicKey={publicKey}
               balanceInfo={balanceInfo}
@@ -180,6 +185,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               key={tab}
               onClose={onClose}
               ethAccount={''}
+              tab={tab}
               publicKey={publicKey}
               balanceInfo={balanceInfo}
               swapCoinInfo={swapCoinInfo}
@@ -188,6 +194,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
           ) : (
             <SendSwapDialog
               key={tab}
+              tab={tab}
               onClose={onClose}
               publicKey={publicKey}
               balanceInfo={balanceInfo}
@@ -354,6 +361,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
 }
 
 function SendSwapDialog({
+  tab,
   onClose,
   publicKey,
   balanceInfo,
@@ -371,7 +379,7 @@ function SendSwapDialog({
     transferAmountString,
     setDestinationAddress,
     validAmount,
-  } = useForm(balanceInfo, '', true, 'swap', swapCoinInfo?.erc20Contract);
+  } = useForm(balanceInfo, '', true, tab, swapCoinInfo?.erc20Contract);
 
   const theme = useTheme();
 
@@ -651,6 +659,12 @@ function useForm(
   const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
   const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
   const theme = useTheme();
+  const tokenSymbolForCheck =
+    tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
+      ? tokenSymbol.replace('w', 'Wrapped ')
+      : tokenSymbol;
+
+  const isConvertTab = tab === 'wusdcToSplUsdc' || tab === 'wusdtToSplUsdt';
 
   const fields = (
     <>
@@ -671,7 +685,7 @@ function useForm(
       </RowContainer>
 
       {!passAddressValidation && (
-        <RowContainer margin="0 0 1rem 0">
+        <RowContainer margin="0 0 2rem 0">
           <Title fontSize="1.4rem" color={theme.customPalette.red.main}>
             {addressHelperText}
           </Title>
@@ -685,7 +699,11 @@ function useForm(
           textStyle={{
             fontSize: '1.4rem',
           }}
-          text={`Please make sure that you sending funds to the ${tokenSymbol} address in the ${
+          text={`Please make sure that you sending funds to the ${
+            isConvertTab
+              ? ` Native ${tokenSymbol.replace('w', '')}`
+              : tokenSymbolForCheck
+          } address in the ${
             tab === 'spl' ? 'SPL' : erc20Contract ? 'ERC20' : 'Native'
           } network.`}
         />
@@ -704,7 +722,7 @@ function useForm(
             )
           }
           maxText={`${balanceAmountToUserAmount(balanceAmount, decimals)} ${
-            tokenSymbol ? tokenSymbol : null
+            tokenSymbol ? tokenSymbolForCheck : null
           }`}
         />
       </RowContainer>
