@@ -338,6 +338,8 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
   };
   const accountStates = {};
 
+  console.log('isSafeInstruction', publicKeys, owner, txInstructions)
+
   function isOwned(pubkey) {
     if (!pubkey) {
       return false;
@@ -497,6 +499,8 @@ function ApproveSignatureForm({
   };
 
   const getContent = (instruction) => {
+    console.log('instruction', instruction)
+
     switch (instruction?.type) {
       case 'cancelOrder':
       case 'cancelOrderV2':
