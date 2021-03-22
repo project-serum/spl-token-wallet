@@ -73,6 +73,12 @@ export default function PopupPage({ origin }) {
   const [requests, setRequests] = useState<any[]>([]);
   const [autoApprove, setAutoApprove] = useState(false);
 
+  useEffect(() => {
+    if (!wallet) {
+      postMessage({ method: 'redirect' });
+    }
+  }, [postMessage, wallet])
+
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
   useEffect(() => {

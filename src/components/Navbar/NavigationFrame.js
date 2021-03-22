@@ -45,7 +45,11 @@ const useStyles = makeStyles((theme) => ({
 
 
 const StyledMain = styled.main`
-  height: calc(100% - 6rem);
+  height: ${props => props.isConnectPopup ? '100%' : 'calc(100% - 6rem)'};
+
+  @media (max-width: 620px) {
+    height: 100%;
+  }
 `
 
 export default function NavigationFrame({ children }) {
@@ -53,7 +57,7 @@ export default function NavigationFrame({ children }) {
   
   return isConnectPopup ? (
     <>
-      <StyledMain haveNavbar>{children}</StyledMain>
+      <StyledMain isConnectPopup>{children}</StyledMain>
       <Footer />
     </>
   ) : (

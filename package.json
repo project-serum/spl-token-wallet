@@ -7,7 +7,7 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@project-serum/serum": "^0.13.24",
-    "@solana/spl-token-registry": "^0.2.38",
+    "@solana/spl-token-registry": "^0.2.1",
     "@solana/web3.js": "^0.87.2",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",

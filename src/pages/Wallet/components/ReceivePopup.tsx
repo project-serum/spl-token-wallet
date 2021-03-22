@@ -33,9 +33,10 @@ import {
 } from '../../commonStyles';
 import { InputWithMax, TextareaWithCopy } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
-import { 
-  // StyledTab, StyledTabs, 
-  StyledStepLabel } from '../styles';
+import {
+  // StyledTab, StyledTabs,
+  StyledStepLabel,
+} from '../styles';
 
 import MetamaskIcon from '../../../images/metamask.png';
 import FakeInputs from '../../../components/FakeInputs';
@@ -76,12 +77,17 @@ export default function DepositDialog({ open, onClose, publicKey }) {
   const { mint, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
   const theme = useTheme();
+  const tokenSymbolForCheck =
+    (tokenSymbol ?? abbreviateAddress(mint)) === 'wUSDT' ||
+    (tokenSymbol ?? abbreviateAddress(mint)) === 'wUSDC'
+      ? (tokenSymbol ?? abbreviateAddress(mint)).replace('w', 'Wrapped ')
+      : tokenSymbol ?? abbreviateAddress(mint);
 
   let firstTab;
   // let secondTab;
 
   if (swapInfo) {
-    firstTab = `Deposit SPL ${tokenSymbol ?? swapInfo.coin.ticker}`;
+    firstTab = `Deposit SPL ${tokenSymbolForCheck}`;
     // secondTab = !mint
     //   ? `Convert ${swapInfo.coin.ticker} to SOL`
     //   : swapInfo.coin.ticker;
@@ -93,7 +99,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
       // } ${secondTab} to SOL`;
     }
   } else {
-    firstTab = `Deposit SPL ${tokenSymbol}`;
+    firstTab = `Deposit SPL ${tokenSymbolForCheck}`;
   }
 
   return (
@@ -163,9 +169,15 @@ export default function DepositDialog({ open, onClose, publicKey }) {
                 text={
                   !!owner && publicKey?.equals(owner)
                     ? 'This address can only be used to receive SOL. Do not send other tokens to this address.'
-                    : `This address can only be used to receive ${
-                        tokenSymbol ?? abbreviateAddress(mint)
-                      }. Do not send SOL to this address.`
+                    : `This address can only be used to receive ${tokenSymbolForCheck} in Solana Network. Do not send SOL${
+                        tokenSymbolForCheck === 'wUSDT' ||
+                        tokenSymbolForCheck === 'wUSDC'
+                          ? `, Native ${tokenSymbolForCheck.replace(
+                              'Wrapped ',
+                              '',
+                            )}`
+                          : ''
+                      } or ERC-20 ${tokenSymbolForCheck} to this address.`
                 }
                 blockHeight={'8rem'}
                 iconStyle={{ margin: '0 2rem 0 3rem' }}

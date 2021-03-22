@@ -445,7 +445,7 @@ export function useBalanceInfo(publicKey) {
         decimals,
         mint,
         owner,
-        tokenName: name,
+        tokenName: name.replace(' (Sollet)', ''),
         tokenSymbol: symbol,
         valid: true,
       };

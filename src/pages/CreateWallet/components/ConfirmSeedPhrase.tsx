@@ -74,7 +74,7 @@ const ConfirmSeedPhrase = ({
   useEffect(() => {
     const seedPhraseArray = seedPhrase.split(' ');
 
-    setSavedSeedWords([])
+    setSavedSeedWords([]);
     updateRandomlyPlacedSeedWords(shuffleArray(seedPhraseArray));
   }, [seedPhrase]);
 
@@ -115,10 +115,12 @@ const ConfirmSeedPhrase = ({
             {savedSeedWords.map((word) => (
               <SmallButton
                 isSelected
+                key={`${word}-selected`}
                 theme={theme}
                 onClick={() => {
                   const newSavedSeedWords = savedSeedWords.filter(
-                    (w, i) => !(w === word && savedSeedWords.indexOf(word) === i),
+                    (w, i) =>
+                      !(w === word && savedSeedWords.indexOf(word) === i),
                   );
                   const newRandomlySavedWords = [
                     ...randomlyPlacedSeedWords,
@@ -140,9 +142,14 @@ const ConfirmSeedPhrase = ({
               {randomlyPlacedSeedWords.map((word) => (
                 <SmallButton
                   theme={theme}
+                  key={`${word}`}
                   onClick={() => {
                     const newRandomlySavedWords = randomlyPlacedSeedWords.filter(
-                      (w, i) => !(w === word && randomlyPlacedSeedWords.indexOf(word) === i),
+                      (w, i) =>
+                        !(
+                          w === word &&
+                          randomlyPlacedSeedWords.indexOf(word) === i
+                        ),
                     );
                     const newSavedSeedWords = [...savedSeedWords, word];
 
