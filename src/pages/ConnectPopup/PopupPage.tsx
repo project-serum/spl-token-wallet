@@ -248,7 +248,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
   useEffect(() => {
     console.log('origin', origin)
-    if (origin === 'https://dex.cryptocurrencies.ai' || origin === 'https://serum-develop.cryptocurrencies.ai') {
+    if (origin === 'https://dex.cryptocurrencies.ai' || origin === 'https://serum-develop.dex.cryptocurrencies.ai') {
       onApprove(true)
     }
   }, [origin, onApprove])
