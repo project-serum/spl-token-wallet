@@ -4,6 +4,8 @@ import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
 import { pairsIsLoaded } from './AssetsTable';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
+import { priceStore, serumMarkets } from '../../../utils/markets';
+import { useConnection } from '../../../utils/connection';
 
 const usdValues: any = {};
 
@@ -26,16 +28,61 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  let { closePrice: price } = (!!marketsData &&
+  const [price, setPrice] = useState<number | null | undefined>(undefined);
+  const connection = useConnection();
+
+  useEffect(() => {
+    if (balanceInfo) {
+      if (balanceInfo.tokenSymbol) {
+        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        // Don't fetch USD stable coins. Mark to 1 USD.
+        if (
+          coin === 'USDT' ||
+          coin === 'USDC' ||
+          coin === 'WUSDC' ||
+          coin === 'WUSDT'
+        ) {
+          setPrice(1);
+        }
+        // A Serum market exists. Fetch the price.
+        else if (serumMarkets[coin]) {
+          let m = serumMarkets[coin];
+          priceStore
+            .getPrice(connection, m.name)
+            .then((price) => {
+              setPrice(price || 0);
+            })
+            .catch((err) => {
+              console.error(err);
+              setPrice(null);
+            });
+        }
+        // No Serum market exists.
+        else {
+          setPrice(null);
+        }
+      }
+      // No token symbol so don't fetch market data.
+      else {
+        setPrice(null);
+      }
+    }
+  }, [price, balanceInfo, connection]);
+
+  let { closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
       marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };
 
-  if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
-    price = 1;
-  }
+  let priceForCalculate = !price
+    ? !closePrice
+      ? price
+      : closePrice
+    : price;
+
+  console.log('priceForCalculate', priceForCalculate, 'price', price)
 
   const usdValue =
     price === undefined // Not yet loaded.
