@@ -236,6 +236,7 @@ function Footer() {
         rel="noopener"
         href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
         startIcon={<CodeIcon />}
+        style={{ border: '0' }}
       >
         View Source
       </Button>

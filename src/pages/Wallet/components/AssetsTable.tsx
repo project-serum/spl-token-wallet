@@ -469,10 +469,10 @@ const AssetItem = ({
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
 
-  console.log('tokenSymbol', tokenSymbol, usdValue, priceForCalculate, amount, decimals)
+  // console.log('tokenSymbol', tokenSymbol, usdValue, priceForCalculate, amount, decimals)
 
   useEffect(() => {
-    if (setUsdValue && usdValue !== undefined && usdValues !== null) {
+    if (usdValue !== undefined && usdValues !== null) {
       setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
     }
   }, [setUsdValue, usdValue, publicKey]);
@@ -533,7 +533,7 @@ const AssetItem = ({
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
           <RowContainer justify="flex-start">
             <Title fontSize="1.4rem" color={color}>
-              {`${sign24hChange}${formatNumberToUSFormat(
+              {!priceChangePercentage ? '0%' : `${sign24hChange}${formatNumberToUSFormat(
                 stripDigitPlaces(Math.abs(priceChangePercentage), 2),
               )}% `}
               &nbsp;
