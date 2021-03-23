@@ -352,6 +352,8 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
+  console.log('txInstructions', txInstructions)
+
   txInstructions.forEach((instructions) => {
     instructions.forEach((instruction) => {
       if (!instruction) {
