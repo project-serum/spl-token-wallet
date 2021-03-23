@@ -246,13 +246,6 @@ function ApproveConnectionForm({ origin, onApprove }) {
 
   const theme = useTheme();
 
-  useEffect(() => {
-    console.log('origin', origin)
-    if (origin === 'https://dex.cryptocurrencies.ai' || origin === 'https://serum-develop.dex.cryptocurrencies.ai') {
-      onApprove(true)
-    }
-  }, [origin, onApprove])
-
   return (
     <StyledCard>
       {(!window.opener || !wallet) && <Redirect to="/" />}
