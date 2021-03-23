@@ -3,6 +3,8 @@ import { SnackbarProvider } from 'notistack';
 import { withStyles } from '@material-ui/styles';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { useSnackbar, VariantType, withSnackbarProps, OptionsObject } from 'notistack';
+
 
 import errorIcon from '../images/errorIcon.svg';
 import successIcon from '../images/successIcon.svg';
@@ -11,41 +13,36 @@ import infoIcon from '../images/infoIcon.svg';
 const canselStyeles = (theme) => ({
   icon: {
     fontSize: 20,
+    color: '#fff'
   },
 });
 
-const CloseButton = withStyles(canselStyeles)((props: any) => (
-  <IconButton key="close" aria-label="Close" color="inherit">
+const CloseButton = withStyles(canselStyeles)((props: any): any => {
+  return <IconButton key="close" aria-label="Close" color="inherit" {...props}>
     <CloseIcon className={props.classes.icon} />
   </IconButton>
-));
+});
+interface IProps {
+	setUseSnackbarRef: (showSnackbar: withSnackbarProps) => void;
+}
 
-// const snackStyles: any = {
-//   success: {
-//     color: '#fff',
-//     fontSize: '1.6rem',
-//     fontWeight: 'bold',
-//     // backgroundColor: theme.customPalette.green.main,
-//     background: 'rgba(22, 37, 61, 0.95)',
-//     boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
-//     backdropFilter: 'blur(4px)',
-//     borderRadius: '16px',
-//     flexGrow: 0,
-//   },
-//   error: {
-//     color: '#fff',
-//     fontSize: '1.6rem',
-//     fontWeight: 'bold',
-//     // backgroundColor: theme.customPalette.red.main,
-//     background: 'rgba(22, 37, 61, 0.95)',
-//     boxShadow: '0px 0px 32px rgba(8, 22, 58, 0.1)',
-//     backdropFilter: 'blur(4px)',
-//     borderRadius: '16px',
-//     flexGrow: 0,
-//   },
-// };
+const InnerSnackbarUtilsConfigurator: React.FC<IProps> = (props: IProps) => {
+	props.setUseSnackbarRef(useSnackbar());
+	return null;
+};
+
+let useSnackbarRef: withSnackbarProps;
+const setUseSnackbarRef = (useSnackbarRefProp: withSnackbarProps) => {
+	useSnackbarRef = useSnackbarRefProp;
+};
+
+export const SnackbarUtilsConfigurator = () => {
+	return <InnerSnackbarUtilsConfigurator setUseSnackbarRef={setUseSnackbarRef} />;
+};
 
 const IntegrationNotistack = ({ ...props }) => {
+  console.log('snackbar rerender', props);
+
   return (
     <SnackbarProvider
       iconVariant={{
@@ -89,6 +86,7 @@ const IntegrationNotistack = ({ ...props }) => {
         vertical: 'bottom',
         horizontal: 'left',
       }}
+      // @ts-ignore
       action={<CloseButton />}
       // classes={{
       //   variantSuccess: snackStyles.success,

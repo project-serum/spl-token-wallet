@@ -10,18 +10,21 @@ import NavigationFrame from './components/Navbar/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
-import SnackbarProvider from './components/SnackbarProvider';
+import SnackbarProvider, { SnackbarUtilsConfigurator } from './components/SnackbarProvider';
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 
+import ConnectPopup from './routes/ConnectPopup'
+import WelcomeBackPage from './routes/WelcomeBack'
+import Wallet from './routes/WalletRouter'
+
 // const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
-const Wallet = lazy(() => import('./routes/WalletRouter'));
+// const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
-const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
+// const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
 declare module '@material-ui/core/styles/createMuiTheme' {
   interface Theme {
@@ -150,6 +153,7 @@ export default function App() {
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
+                <SnackbarUtilsConfigurator />
                 <WalletProvider>
                   <NavigationFrame>
                     <Pages />
