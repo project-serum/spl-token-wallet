@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import Logo from '../../images/logo.svg';
+import Logo from '../../images/logo.png';
 
 const LogoContainer = styled.div`
   width: ${(props) => props.width || '30rem'};

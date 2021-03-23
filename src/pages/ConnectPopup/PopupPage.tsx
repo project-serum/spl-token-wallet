@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import Logo from '../../images/logo.svg';
+import Logo from '../../images/logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
