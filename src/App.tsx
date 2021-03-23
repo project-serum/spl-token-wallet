@@ -10,7 +10,7 @@ import NavigationFrame from './components/Navbar/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
-import SnackbarProvider, { SnackbarUtilsConfigurator } from './components/SnackbarProvider';
+import SnackbarProvider from './components/SnackbarProvider';
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 
@@ -153,7 +153,6 @@ export default function App() {
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
-                <SnackbarUtilsConfigurator />
                 <WalletProvider>
                   <NavigationFrame>
                     <Pages />

@@ -3,8 +3,6 @@ import { SnackbarProvider } from 'notistack';
 import { withStyles } from '@material-ui/styles';
 import { IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { useSnackbar, VariantType, withSnackbarProps, OptionsObject } from 'notistack';
-
 
 import errorIcon from '../images/errorIcon.svg';
 import successIcon from '../images/successIcon.svg';
@@ -22,27 +20,8 @@ const CloseButton = withStyles(canselStyeles)((props: any): any => {
     <CloseIcon className={props.classes.icon} />
   </IconButton>
 });
-interface IProps {
-	setUseSnackbarRef: (showSnackbar: withSnackbarProps) => void;
-}
-
-const InnerSnackbarUtilsConfigurator: React.FC<IProps> = (props: IProps) => {
-	props.setUseSnackbarRef(useSnackbar());
-	return null;
-};
-
-let useSnackbarRef: withSnackbarProps;
-const setUseSnackbarRef = (useSnackbarRefProp: withSnackbarProps) => {
-	useSnackbarRef = useSnackbarRefProp;
-};
-
-export const SnackbarUtilsConfigurator = () => {
-	return <InnerSnackbarUtilsConfigurator setUseSnackbarRef={setUseSnackbarRef} />;
-};
 
 const IntegrationNotistack = ({ ...props }) => {
-  console.log('snackbar rerender', props);
-
   return (
     <SnackbarProvider
       iconVariant={{
