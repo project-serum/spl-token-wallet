@@ -352,6 +352,8 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
+  console.log('txInstructions', txInstructions)
+
   txInstructions.forEach((instructions) => {
     instructions.forEach((instruction) => {
       if (!instruction) {
@@ -360,7 +362,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
         } else if (
-          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+          ['cancelOrder', 'cancelOrderV2', 'matchOrders', 'cancelOrderV3'].includes(
             instruction.type,
           )
         ) {

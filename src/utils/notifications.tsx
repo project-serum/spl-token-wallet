@@ -16,7 +16,7 @@ export function useSendTransaction(): [any, boolean] {
     let id = enqueueSnackbar('Sending transaction...', {
       variant: 'info',
       persist: true,
-    });
+    }) || '';
     setSending(true);
     try {
       let signature = await signaturePromise;
@@ -25,13 +25,13 @@ export function useSendTransaction(): [any, boolean] {
         variant: 'info',
         persist: true,
         action: <ViewTransactionOnExplorerButton signature={signature} />,
-      });
+      }) || '';
       await confirmTransaction(connection, signature);
       closeSnackbar(id);
       setSending(false);
       enqueueSnackbar('Transaction confirmed', {
         variant: 'success',
-        autoHideDuration: 15000,
+        autoHideDuration: 3000,
         action: <ViewTransactionOnExplorerButton signature={signature} />,
       });
       if (onSuccess) {
@@ -80,7 +80,7 @@ export function useCallAsync() {
     let id = enqueueSnackbar(progressMessage, {
       variant: 'info',
       persist: true,
-    });
+    }) || '';
     try {
       let result = await promise;
       closeSnackbar(id);

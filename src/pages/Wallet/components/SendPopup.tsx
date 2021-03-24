@@ -591,7 +591,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
 
   return (
     <>
-      <RowContainer>
+      <RowContainer direction="column">
         <Stepper activeStep={step}>
           <Step>
             <StepLabel>Send Request</StepLabel>

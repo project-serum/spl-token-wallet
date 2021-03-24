@@ -4,7 +4,7 @@ import Logo from '../../images/logo.png';
 
 const LogoContainer = styled.div`
   width: ${(props) => props.width || '30rem'};
-  height: ${(props) => props.width || '10rem'};
+  height: ${(props) => props.width || 'auto'};
   margin: ${props => props.margin || '0 0 8rem 0'};
 `
 

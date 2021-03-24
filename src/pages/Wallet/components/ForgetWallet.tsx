@@ -62,6 +62,7 @@ export default function DeleteMnemonicDialog({ open, onClose, openExportMnemonic
           </RowContainer>
           <RowContainer margin="2rem 0 0 0">
             <Input
+              type="text"
               placeholder={`Please, type FORGET to confirm`}
               value={deleteCheck}
               onChange={(e) => setDeleteCheck(e.target.value)}
