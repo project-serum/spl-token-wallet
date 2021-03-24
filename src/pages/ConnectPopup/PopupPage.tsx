@@ -362,7 +362,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
         } else if (
-          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+          ['cancelOrder', 'cancelOrderV2', 'matchOrders', 'cancelOrderV3'].includes(
             instruction.type,
           )
         ) {
