@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import Logo from '../../images/logo.svg';
+import Logo from '../../images/logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
@@ -68,7 +68,9 @@ export default function PopupPage({ origin }) {
     [opener, origin],
   );
 
-  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(null);
+  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(
+    null,
+  );
   const hasConnectedAccount = !!connectedAccount;
   const [requests, setRequests] = useState<any[]>([]);
   const [autoApprove, setAutoApprove] = useState(false);
@@ -77,7 +79,7 @@ export default function PopupPage({ origin }) {
     if (!wallet) {
       postMessage({ method: 'redirect' });
     }
-  }, [postMessage, wallet])
+  }, [postMessage, wallet]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -192,7 +194,7 @@ export default function PopupPage({ origin }) {
       }
     }
     return (
-      <StyledCard style={{ textAlign: 'left' }}>
+      <StyledCard style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}>
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
@@ -206,7 +208,7 @@ export default function PopupPage({ origin }) {
   }
 
   return (
-    <RowContainer>
+    <RowContainer height={'calc(100% - 6rem)'}>
       <Title>Please keep this window open in the background.</Title>
     </RowContainer>
   );
@@ -274,9 +276,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Title fontSize="1.6rem">
-            {wallet?.publicKey?.toBase58()}
-          </Title>
+          <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
         </RowContainer>
 
         <RowContainer direction={'row'}>
@@ -352,6 +352,8 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
+  console.log('txInstructions', txInstructions)
+
   txInstructions.forEach((instructions) => {
     instructions.forEach((instruction) => {
       if (!instruction) {
@@ -360,7 +362,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
         } else if (
-          ['cancelOrder', 'matchOrders', 'cancelOrderV3'].includes(
+          ['cancelOrder', 'cancelOrderV2', 'matchOrders', 'cancelOrderV3'].includes(
             instruction.type,
           )
         ) {
@@ -447,7 +449,7 @@ function ApproveSignatureForm({
   // single transaction.
   const [txInstructions, setTxInstructions] = useState<any>(null);
   const buttonRef: any = useRef();
-  const theme = useTheme()
+  const theme = useTheme();
 
   const isMultiTx = messages.length > 1;
 
@@ -636,7 +638,11 @@ function ApproveSignatureForm({
         <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
           Cancel
         </WhiteButton>
-        <VioletButton theme={theme} width="calc(50% - .5rem)" onClick={onApprove}>
+        <VioletButton
+          theme={theme}
+          width="calc(50% - .5rem)"
+          onClick={onApprove}
+        >
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
       </RowContainer>

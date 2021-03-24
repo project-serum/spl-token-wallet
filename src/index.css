@@ -76,6 +76,7 @@ input, textarea {
   background: #366CE5;
 }
 
-#notistack-snackbar {
+#client-snackbar {
   font-size: 1.6rem;
+  color: #fff;
 }

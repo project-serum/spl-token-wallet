@@ -27,7 +27,7 @@
     "ed25519-hd-key": "^1.2.0",
     "immutable-tuple": "^0.4.10",
     "mdi-material-ui": "^6.21.0",
-    "notistack": "^1.0.2",
+    "notistack": "^0.6.1",
     "qrcode.react": "^1.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

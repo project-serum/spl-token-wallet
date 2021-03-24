@@ -359,7 +359,7 @@ const AssetItem = ({
   publicKey,
   setUsdValue,
   theme,
-  marketsData,
+  marketsData = new Map(),
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
@@ -391,7 +391,12 @@ const AssetItem = ({
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT') {
+        if (
+          coin === 'USDT' ||
+          coin === 'USDC' ||
+          coin === 'WUSDC' ||
+          coin === 'WUSDT'
+        ) {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
@@ -419,18 +424,20 @@ const AssetItem = ({
     }
   }, [price, balanceInfo, connection]);
 
-  let { lastPriceDiff } = (!!marketsData &&
+  let { lastPriceDiff, closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
       marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };
 
-  // if (tokenSymbol === 'USDT' || tokenSymbol === 'USDC') {
-  //   price = 1;
-  // }
+  let priceForCalculate = !price
+    ? !closePrice
+      ? price
+      : closePrice
+    : price;
 
-  const prevClosePrice = (price || 0) + lastPriceDiff * -1;
+  const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
     ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
       ? 'USDT'
@@ -439,9 +446,9 @@ const AssetItem = ({
       : 'USDT'
     : 'USDT';
 
-  const priceChangePercentage = !!price
+  const priceChangePercentage = !!priceForCalculate
     ? !!prevClosePrice
-      ? (price - prevClosePrice) / (prevClosePrice / 100)
+      ? (priceForCalculate - prevClosePrice) / (prevClosePrice / 100)
       : 100
     : 0;
 
@@ -462,8 +469,10 @@ const AssetItem = ({
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
 
+  // console.log('tokenSymbol', tokenSymbol, usdValue, priceForCalculate, amount, decimals)
+
   useEffect(() => {
-    if (setUsdValue && usdValue !== undefined) {
+    if (usdValue !== undefined && usdValues !== null) {
       setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
     }
   }, [setUsdValue, usdValue, publicKey]);
@@ -514,7 +523,7 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Price</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            ${formatNumberToUSFormat(stripDigitPlaces(price || 0, decimals))}
+            ${formatNumberToUSFormat(stripDigitPlaces(priceForCalculate || 0, 8))}
           </Title>
         </RowContainer>
       </StyledTd>
@@ -524,7 +533,7 @@ const AssetItem = ({
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
           <RowContainer justify="flex-start">
             <Title fontSize="1.4rem" color={color}>
-              {`${sign24hChange}${formatNumberToUSFormat(
+              {!priceChangePercentage ? '0%' : `${sign24hChange}${formatNumberToUSFormat(
                 stripDigitPlaces(Math.abs(priceChangePercentage), 2),
               )}% `}
               &nbsp;

@@ -230,7 +230,7 @@ export const TOKENS = {
       mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
       tokenName: 'Raydium',
       icon:
-        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.svg',
+        'https://raw.githubusercontent.com/raydium-io/media-assets/master/logo.png',
     },
     {
       tokenSymbol: 'OXY',
