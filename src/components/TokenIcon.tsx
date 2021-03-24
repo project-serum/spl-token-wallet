@@ -21,7 +21,7 @@ export default function TokenIcon({
   if (!url) {
     if (mint === null) {
       url =
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/oldLogo.svg';
     } else {
       url = TOKENS?.[endpoint]?.find(
         (token) => token.mintAddress === mint?.toBase58(),

@@ -13,7 +13,7 @@ import {
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
-import WalletLogo from '../../images/logo.png';
+import WalletLogo from '../../images/oldLogo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
@@ -154,7 +154,7 @@ const Navbar = () => {
             }}
           >
             {' '}
-            <NavLinkButton
+            {/* <NavLinkButton
               theme={theme}
               data-tut="farming"
               pathname={location.pathname}
@@ -166,7 +166,7 @@ const Navbar = () => {
               )}
             >
               Home
-            </NavLinkButton>
+            </NavLinkButton> */}
             <NavLinkButton
               theme={theme}
               data-tut="farming"
