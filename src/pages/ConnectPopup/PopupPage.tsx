@@ -68,7 +68,9 @@ export default function PopupPage({ origin }) {
     [opener, origin],
   );
 
-  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(null);
+  const [connectedAccount, setConnectedAccount] = useState<PublicKey | null>(
+    null,
+  );
   const hasConnectedAccount = !!connectedAccount;
   const [requests, setRequests] = useState<any[]>([]);
   const [autoApprove, setAutoApprove] = useState(false);
@@ -77,7 +79,7 @@ export default function PopupPage({ origin }) {
     if (!wallet) {
       postMessage({ method: 'redirect' });
     }
-  }, [postMessage, wallet])
+  }, [postMessage, wallet]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -206,7 +208,7 @@ export default function PopupPage({ origin }) {
   }
 
   return (
-    <RowContainer>
+    <RowContainer height={'calc(100% - 6rem)'}>
       <Title>Please keep this window open in the background.</Title>
     </RowContainer>
   );
@@ -274,9 +276,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Title fontSize="1.6rem">
-            {wallet?.publicKey?.toBase58()}
-          </Title>
+          <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
         </RowContainer>
 
         <RowContainer direction={'row'}>
@@ -447,7 +447,7 @@ function ApproveSignatureForm({
   // single transaction.
   const [txInstructions, setTxInstructions] = useState<any>(null);
   const buttonRef: any = useRef();
-  const theme = useTheme()
+  const theme = useTheme();
 
   const isMultiTx = messages.length > 1;
 
@@ -636,7 +636,11 @@ function ApproveSignatureForm({
         <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
           Cancel
         </WhiteButton>
-        <VioletButton theme={theme} width="calc(50% - .5rem)" onClick={onApprove}>
+        <VioletButton
+          theme={theme}
+          width="calc(50% - .5rem)"
+          onClick={onApprove}
+        >
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
       </RowContainer>

@@ -153,6 +153,20 @@ const Navbar = () => {
               borderLeft: theme.customPalette.border.main,
             }}
           >
+            {' '}
+            <NavLinkButton
+              theme={theme}
+              data-tut="farming"
+              pathname={location.pathname}
+              page={'home'}
+              component={(props) => (
+                <a href={`https://dex.cryptocurrencies.ai/`} {...props}>
+                  {props.children}
+                </a>
+              )}
+            >
+              Home
+            </NavLinkButton>
             <NavLinkButton
               theme={theme}
               data-tut="farming"
