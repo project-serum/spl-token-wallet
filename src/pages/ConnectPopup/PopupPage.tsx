@@ -194,7 +194,7 @@ export default function PopupPage({ origin }) {
       }
     }
     return (
-      <StyledCard style={{ textAlign: 'left' }}>
+      <StyledCard style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}>
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
