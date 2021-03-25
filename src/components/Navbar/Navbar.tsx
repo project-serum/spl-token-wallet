@@ -154,7 +154,7 @@ const Navbar = () => {
             }}
           >
             {' '}
-            {/* <NavLinkButton
+            <NavLinkButton
               theme={theme}
               data-tut="farming"
               pathname={location.pathname}
@@ -166,7 +166,7 @@ const Navbar = () => {
               )}
             >
               Home
-            </NavLinkButton> */}
+            </NavLinkButton>
             <NavLinkButton
               theme={theme}
               data-tut="farming"
