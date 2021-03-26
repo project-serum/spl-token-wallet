@@ -128,7 +128,7 @@ const AccountsSelector = ({
                 <RowContainer
                   direction="row"
                   align={'center'}
-                  justify="space-between"
+                  justify={isFromPopup ? 'flex-start' : 'space-between'}
                   padding=".5rem 1.6rem .5rem 0"
                   style={{
                     cursor: 'pointer',
@@ -156,19 +156,21 @@ const AccountsSelector = ({
                         : name}
                     </Title>
                   </Row>
-                  <Row>
-                    <BtnCustom
-                      btnWidth="auto"
-                      textTransform="capitalize"
-                      color={theme.customPalette.blue.serum}
-                      borderWidth="0"
-                      fontFamily="Avenir Next Demi"
-                      fontSize="1rem"
-                      onClick={() => setIsExportAccountOpen(true)}
-                    >
-                      Export Private Key
-                    </BtnCustom>
-                  </Row>
+                  {!isFromPopup && (
+                    <Row>
+                      <BtnCustom
+                        btnWidth="auto"
+                        textTransform="capitalize"
+                        color={theme.customPalette.blue.serum}
+                        borderWidth="0"
+                        fontFamily="Avenir Next Demi"
+                        fontSize="1rem"
+                        onClick={() => setIsExportAccountOpen(true)}
+                      >
+                        Export Private Key
+                      </BtnCustom>
+                    </Row>
+                  )}
                 </RowContainer>
               );
             })}

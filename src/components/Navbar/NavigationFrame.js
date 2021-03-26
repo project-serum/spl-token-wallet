@@ -268,7 +268,7 @@ function Footer() {
       >
         View Source
       </Button>
-        <Socials justify={'space-around'} height="100%" width={'20%'}>
+        <Socials justify={'space-around'} height="100%" width={'auto'}>
           <StyledLink
             target="_blank"
             rel="noopener noreferrer"
