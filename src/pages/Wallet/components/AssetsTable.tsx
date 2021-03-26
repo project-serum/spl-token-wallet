@@ -643,4 +643,6 @@ const AssetItem = ({
   );
 };
 
-export default AssetsTable;
+export default React.memo(AssetsTable, (prev, next) => {
+  return true
+});

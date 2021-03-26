@@ -82,8 +82,6 @@ const Item = ({
       : closePrice
     : price;
 
-  console.log('priceForCalculate', priceForCalculate, 'price', price)
-
   const usdValue =
     priceForCalculate === undefined // Not yet loaded.
       ? undefined

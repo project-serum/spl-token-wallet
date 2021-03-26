@@ -12,25 +12,22 @@ import { showSwapAddress } from '../../../utils/config';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import {
   ConnectToMetamaskButton,
-  getErc20Balance,
+  // getErc20Balance,
   useEthAccount,
   withdrawEth,
 } from '../../../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../../../utils/connection';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+// import Link from '@material-ui/core/Link';
+// import Typography from '@material-ui/core/Typography';
 import { useAsyncData } from '../../../utils/fetch-loop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import {
   TOKEN_PROGRAM_ID,
   WRAPPED_SOL_MINT,
 } from '../../../utils/tokens/instructions';
 import { parseTokenAccountData } from '../../../utils/tokens/data';
 import { useTheme } from '@material-ui/core';
-import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
+// import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import {
   RowContainer,
   StyledCheckbox,
@@ -43,7 +40,10 @@ import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
 // import { StyledTab, StyledTabs } from '../styles';
 import FakeInputs from '../../../components/FakeInputs';
+import ProgressBar from '../../CreateWallet/components/ProgressBar';
 import { StyledTab, StyledTabs } from '../styles';
+import { useSnackbar } from 'notistack';
+import { stripDigitPlaces } from '../../../utils/utils';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -133,7 +133,6 @@ export default function SendDialog({ open, onClose, publicKey }) {
         onEnter={() => {
           setTab('spl');
         }}
-        fullWidth
         height={'auto'}
         padding={'2rem 0'}
       >
@@ -217,6 +216,9 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     !balanceInfo.mint || balanceInfo.mint.equals(WRAPPED_SOL_MINT)
       ? 'Enter Solana Address'
       : 'Enter SPL token or Solana address';
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [addressHelperText, setAddressHelperText] = useState(
@@ -392,24 +394,25 @@ function SendSwapDialog({
       : swapCoinInfo?.blockchain;
   const needMetamask = blockchain === 'eth';
 
-  const [ethBalance] = useAsyncData(
-    () => getErc20Balance(ethAccount),
-    'ethBalance',
-    {
-      refreshInterval: 2000,
-    },
-  );
-  const ethFeeData = useSwapApiGet(
-    blockchain === 'eth' &&
-      `fees/eth/${ethAccount}` +
-        (swapCoinInfo?.erc20Contract ? '/' + swapCoinInfo?.erc20Contract : ''),
-    { refreshInterval: 2000 },
-  );
-  const [ethFeeEstimate] = ethFeeData;
-  const insufficientEthBalance =
-    typeof ethBalance === 'number' &&
-    typeof ethFeeEstimate === 'number' &&
-    ethBalance < ethFeeEstimate;
+  // const [ethBalance] = useAsyncData(
+  //   () => getErc20Balance(ethAccount),
+  //   'ethBalance',
+  //   {
+  //     refreshInterval: 2000,
+  //   },
+  // );
+
+  // const ethFeeData = useSwapApiGet(
+  //   blockchain === 'eth' &&
+  //     `fees/eth/${ethAccount}` +
+  //       (swapCoinInfo?.erc20Contract ? '/' + swapCoinInfo?.erc20Contract : ''),
+  //   { refreshInterval: 2000 },
+  // );
+  // const [ethFeeEstimate] = ethFeeData;
+  // const insufficientEthBalance =
+  //   typeof ethBalance === 'number' &&
+  //   typeof ethFeeEstimate === 'number' &&
+  //   ethBalance < ethFeeEstimate;
 
   // useEffect(() => {
   //   if (blockchain === 'eth' && ethAccount) {
@@ -473,7 +476,9 @@ function SendSwapDialog({
       typeof sendTransaction === 'function' &&
       sendTransaction(makeTransaction(), {
         onSuccess: setSignature,
-        onError: () => {},
+        onError: (e) => {
+          console.log('error', e);
+        },
       })
     );
   }
@@ -498,10 +503,8 @@ function SendSwapDialog({
       width="calc(50% - .5rem)"
       disabled={
         !!(
-          sending ||
-          (needMetamask && !ethAccount) ||
-          !validAmount ||
-          insufficientEthBalance
+          (sending || (needMetamask && !ethAccount) || !validAmount)
+          // || insufficientEthBalance
         )
       }
       onClick={onSubmit}
@@ -523,7 +526,7 @@ function SendSwapDialog({
           {swapCoinInfo?.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </Title>
-        {blockchain === 'eth' && (
+        {/* {blockchain === 'eth' && (
           <Title>
             Estimated withdrawal transaction fee:
             <EthFeeEstimate
@@ -531,18 +534,22 @@ function SendSwapDialog({
               insufficientEthBalance={insufficientEthBalance}
             />
           </Title>
-        )}
+        )} */}
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
-        {insufficientEthBalance && (
+        {/* {insufficientEthBalance && (
           <RowContainer margin="2rem 0 0 0">
             <Title color={theme.customPalette.red.main}>
               Insufficient {swapCoinInfo?.ticker} for withdrawal transaction fee
             </Title>
           </RowContainer>
-        )}
+        )} */}
         <RowContainer
           justify="space-between"
-          margin={(!ethAccount || insufficientEthBalance) && '2rem 0 0 0'}
+          margin={
+            !ethAccount &&
+            // || insufficientEthBalance
+            '2rem 0 0 0'
+          }
         >
           <WhiteButton
             theme={theme}
@@ -559,6 +566,9 @@ function SendSwapDialog({
 }
 
 function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [showResult, setShowResult] = useState(false);
   const connection = useConnection();
   const theme = useTheme();
   const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
@@ -572,6 +582,12 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
     [connection.getSignatureStatus, signature],
     { refreshInterval: 2000 },
   );
+  useEffect(() => {
+    if (showResult) {
+      enqueueSnackbar('Success!', { variant: 'success' });
+      onClose();
+    }
+  }, [showResult, enqueueSnackbar, onClose]);
 
   let step = 1;
   let ethTxid = null;
@@ -581,64 +597,52 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
       if (withdrawal.txid?.startsWith('0x')) {
         step = 3;
         ethTxid = withdrawal.txid;
+        setShowResult(true);
       } else if (withdrawal.txid && blockchain !== 'eth') {
         step = 3;
+        setShowResult(true);
       } else {
         step = 2;
       }
     }
   }
 
+  const stepToShow =
+    confirms && confirms > 0 // we confirms - 2 step
+      ? 2
+      : confirms === null || step === 3 // null - done, show filled 3 step
+      ? 4
+      : step; // otherwise step 1
+
   return (
     <>
       <RowContainer direction="column">
-        <Stepper activeStep={step}>
-          <Step>
-            <StepLabel>Send Request</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Wait for Confirmations</StepLabel>
-          </Step>
-          <Step>
-            <StepLabel>Withdraw Funds</StepLabel>
-          </Step>
-        </Stepper>
-        {ethTxid ? (
-          <Typography variant="body2" align="center">
-            <Link
-              href={`https://etherscan.io/tx/${ethTxid}`}
-              target="_blank"
-              rel="noopener"
-            >
-              View on Etherscan
-            </Link>
-          </Typography>
-        ) : step < 3 ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ marginRight: 16 }}>
-              <CircularProgress />
-            </div>
-            {confirms ? (
-              <Typography>{confirms} / 35 Confirmations</Typography>
-            ) : (
-              <Typography>Transaction Pending</Typography>
-            )}
-          </div>
-        ) : null}
+        <ProgressBar
+          currentStep={stepToShow}
+          firstStepText={'Send Request'}
+          secondStepText={
+            confirms
+              ? `Wait for Confirmations (${confirms}/35)`
+              : 'Transaction Pending'
+          }
+          thirdStepText={'Withdraw Funds'}
+          style={{ padding: '7rem 0 10rem 0' }}
+        />
         {!ethTxid && blockchain === 'eth' ? (
           <DialogContentText style={{ marginTop: 16, marginBottom: 0 }}>
             Please keep this window open. You will need to approve the request
             on MetaMask to complete the transaction.
           </DialogContentText>
         ) : null}
-        <WhiteButton theme={theme} onClick={onClose}>
-          Close
+        <WhiteButton
+          theme={theme}
+          onClick={onClose}
+          style={{ display: 'flex', flexDirection: 'column' }}
+        >
+          Close Popup
+          <span style={{ fontSize: '.9rem' }}>
+            (the conversion process will not be stopped)
+          </span>
         </WhiteButton>
       </RowContainer>
     </>
@@ -665,6 +669,16 @@ function useForm(
       : tokenSymbol;
 
   const isConvertTab = tab === 'wusdcToSplUsdc' || tab === 'wusdtToSplUsdt';
+  let maxBalance = String(
+    stripDigitPlaces(balanceAmountToUserAmount(balanceAmount, decimals), 8),
+  );
+
+  // minus fee for transfering
+  if (tokenSymbol === 'SOL') {
+    maxBalance = String(
+      stripDigitPlaces(parseFloat(String(maxBalance)) - 0.000005, 8),
+    );
+  }
 
   const fields = (
     <>
@@ -716,14 +730,8 @@ function useForm(
           containerStyle={{ width: '100%' }}
           onChange={(e) => setTransferAmountString(e.target.value)}
           value={transferAmountString}
-          onMaxClick={() =>
-            setTransferAmountString(
-              balanceAmountToUserAmount(balanceAmount, decimals),
-            )
-          }
-          maxText={`${balanceAmountToUserAmount(balanceAmount, decimals)} ${
-            tokenSymbol ? tokenSymbolForCheck : null
-          }`}
+          onMaxClick={() => setTransferAmountString(maxBalance)}
+          maxText={`${maxBalance} ${tokenSymbol ? tokenSymbolForCheck : null}`}
         />
       </RowContainer>
     </>

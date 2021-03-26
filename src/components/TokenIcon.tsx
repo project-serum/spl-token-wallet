@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useConnectionConfig } from '../utils/connection';
 import CoinPlaceholder from '../images/coinPlaceholder.svg';
 
 export default function TokenIcon({
@@ -7,11 +6,13 @@ export default function TokenIcon({
   tokenLogoUri,
   tokenName,
   size = '2rem',
+  style = {}
 }: {
   mint?: any;
   tokenLogoUri?: string;
   tokenName: string;
   size?: string;
+  style?: any
 }) {
   const [hasError, setHasError] = useState(false);
 
@@ -32,8 +33,8 @@ export default function TokenIcon({
       style={{
         width: size,
         height: size,
-        backgroundColor: 'white',
         borderRadius: `calc(${size} / 2)`,
+        ...style,
       }}
       onError={() => setHasError(true)}
     />

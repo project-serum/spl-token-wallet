@@ -23,7 +23,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@material-ui/core/Link';
 
-import TokenIcon from '../../components/TokenIcon';
+import CubeLogo from '../../images/cubeLogo.png';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
@@ -75,18 +75,28 @@ export default function DerivedAccounts({
       <RowContainer width="90%" direction="column">
         <RowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
-          <FormControl variant="outlined">
+          <FormControl variant="outlined" style={{ borderColor: '#fff' }}>
             <Select
+              style={{ borderColor: '#fff', fontSize: '1.3rem' }}
               value={dPathMenuItem}
               onChange={(e: any) => setDPathMenuItem(e.target.value)}
             >
-              <MenuItem value={DerivationPathMenuItem.Bip44Change}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Bip44Change}
+              >
                 {`m/44'/501'/0'/0'`}
               </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Bip44}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Bip44}
+              >
                 {`m/44'/501'/0'`}
               </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Deprecated}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Deprecated}
+              >
                 {`m/501'/0'/0/0 (deprecated)`}
               </MenuItem>
             </Select>
@@ -99,6 +109,7 @@ export default function DerivedAccounts({
             margin: '0 0 2rem 0',
             width: '100%',
             padding: '0 2rem',
+            background: '#383B45',
           }}
         >
           {accounts.map((acc: any) => {
@@ -186,9 +197,13 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
 
   return (
     <RowContainer>
-      <TokenIcon mint={mint} tokenName={tokenName} size={'2.8rem'} />
+      <img
+        src={CubeLogo}
+        alt={'logo'}
+        style={{ borderRadius: '0', height: '100%' }}
+      />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
-        <Title color={theme.customPalette.blue.serum}>{`${stripDigitPlaces(
+        <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
           amount / Math.pow(10, decimals),
           decimals,
         )} ${tokenName ?? abbreviateAddress(mint)} ${

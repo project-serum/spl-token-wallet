@@ -24,7 +24,7 @@ import AddHardwareWalletPopup from './AddHardwareWalletPopup';
 import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
 import ForgetWallet from './ForgetWallet';
 
-const StyledCard = styled(Card)`
+const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
   position: absolute;
   top: 100%;
   ${(props) => (props.isFromPopup ? 'right: 0' : 'left: 0')};
@@ -34,7 +34,7 @@ const StyledCard = styled(Card)`
   z-index: 2;
 `;
 
-const RowWithSelector = styled(Row)`
+const RowWithSelector = styled(({ isFromPopup, ...props }) => <Row {...props} />)`
   position: relative;
   bottom: ${(props) => (props.isFromPopup ? '0' : '1rem')};
   padding: ${(props) => (props.isFromPopup ? '2rem' : '1rem 3rem 2rem 0')};

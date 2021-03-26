@@ -20,7 +20,7 @@ import {
 import { usePopularTokens } from '../../../utils/tokens/names';
 import Link from '@material-ui/core/Link';
 import DialogForm from '../../../pages/Wallet/components/DialogForm';
-import { showSwapAddress } from '../../../utils/config';
+// import { showSwapAddress } from '../../../utils/config';
 import { swapApiRequest } from '../../../utils/swap/api';
 import TokenIcon from '../../../components/TokenIcon';
 import { InputWithPaste, InputWithSearch } from '../../../components/Input';
@@ -196,9 +196,9 @@ export default function AddTokenDialog({ open, onClose }) {
             onChange={(e, value) => setTab(value)}
           >
             <StyledTab theme={theme} label="Popular Tokens" value="popular" />
-            {showSwapAddress ? (
+            {/* {showSwapAddress ? (
               <StyledTab theme={theme} label="ERC20 Token" value="erc20" />
-            ) : null}
+            ) : null} */}
             <StyledTab theme={theme} label="Manual Input" value="manual" />
           </StyledTabs>
         </RowContainer>

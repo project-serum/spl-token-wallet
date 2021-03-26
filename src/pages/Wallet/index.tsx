@@ -17,11 +17,12 @@ const Wallet = () => {
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
 
   // const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
-  // const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   // const [
   //   closeTokenAccountDialogOpen,
   //   setCloseTokenAccountDialogOpen,
   // ] = useState(false);
+
+  console.log('wallet rerender')
 
   return (
     <RowContainer direction="column" height="100%" padding="0 3rem 3rem 3rem">

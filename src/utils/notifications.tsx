@@ -40,8 +40,15 @@ export function useSendTransaction(): [any, boolean] {
     } catch (e) {
       closeSnackbar(id);
       setSending(false);
-      console.warn(e.message);
-      enqueueSnackbar(e.message, { variant: 'error' });
+
+      let message = e.message
+
+      if (message.includes('Error processing Instruction 0: custom program error: 0x1')) {
+        message = 'Insufficient SOL balance for this transaction'
+      }
+
+      console.warn(message);
+      enqueueSnackbar(message, { variant: 'error' });
       if (onError) {
         onError(e);
       }
@@ -55,7 +62,7 @@ function ViewTransactionOnExplorerButton({ signature }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
-      color="inherit"
+      style={{ color: '#fff' }}
       component="a"
       target="_blank"
       rel="noopener"
@@ -93,7 +100,13 @@ export function useCallAsync() {
     } catch (e) {
       console.warn(e);
       closeSnackbar(id);
-      enqueueSnackbar(e.message, { variant: 'error' });
+      let message = e.message
+
+      if (message.includes('Error processing Instruction 0: custom program error: 0x1')) {
+        message = 'Insufficient SOL balance for this transaction'
+      }
+
+      enqueueSnackbar(message, { variant: 'error' });
       if (onError) {
         onError(e);
       }

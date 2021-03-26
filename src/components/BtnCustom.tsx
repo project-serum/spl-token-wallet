@@ -81,4 +81,8 @@ export const BtnCustom = styled(
     background: ${(props: Props) => props.hoverBackground || props.backgroundColor};
     transition: ${(props: Props) => props.transition || 'all .3s ease-out'};
   }
+
+  & .MuiButton-label {
+    flex-direction: inherit;
+  }
 `
