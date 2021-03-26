@@ -19,7 +19,7 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import Logo from '../../images/oldLogo.svg';
+import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
@@ -194,7 +194,9 @@ export default function PopupPage({ origin }) {
       }
     }
     return (
-      <StyledCard style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}>
+      <StyledCard
+        style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}
+      >
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
@@ -352,7 +354,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
-  console.log('txInstructions', txInstructions)
+  console.log('txInstructions', txInstructions);
 
   txInstructions.forEach((instructions) => {
     instructions.forEach((instruction) => {
@@ -362,9 +364,12 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
         } else if (
-          ['cancelOrder', 'cancelOrderV2', 'matchOrders', 'cancelOrderV3'].includes(
-            instruction.type,
-          )
+          [
+            'cancelOrder',
+            'cancelOrderV2',
+            'matchOrders',
+            'cancelOrderV3',
+          ].includes(instruction.type)
         ) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {
