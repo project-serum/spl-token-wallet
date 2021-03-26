@@ -217,8 +217,6 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
       ? 'Enter Solana Address'
       : 'Enter SPL token or Solana address';
 
-  const { enqueueSnackbar } = useSnackbar();
-
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
   const [addressHelperText, setAddressHelperText] = useState(
