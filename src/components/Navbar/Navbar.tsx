@@ -13,7 +13,7 @@ import {
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
-import WalletLogo from '../../images/logo.png';
+import WalletLogo from '../../images/logo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
@@ -132,13 +132,15 @@ const Navbar = () => {
           <Link
             to={'/'}
             style={{
-              padding: '0.5rem 0',
+              display: 'flex',
+              alignItems: 'center',
               height: '100%',
             }}
           >
             <img
               style={{
-                height: '100%',
+                width: '85%',
+                height: 'auto',
               }}
               alt="logo"
               src={WalletLogo}
