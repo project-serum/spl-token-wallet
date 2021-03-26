@@ -376,12 +376,13 @@ const AssetItem = ({
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
 
-  let { amount, decimals, mint, tokenName, tokenSymbol } = balanceInfo || {
+  let { amount, decimals, mint, tokenName, tokenSymbol, tokenLogoUri } = balanceInfo || {
     amount: 0,
     decimals: 8,
     mint: null,
     tokenName: 'Loading...',
     tokenSymbol: '--',
+    tokenLogoUri: null
   };
 
   const [price, setPrice] = useState<number | null | undefined>(undefined);
@@ -431,7 +432,7 @@ const AssetItem = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = !price
+  let priceForCalculate = price === null
     ? !closePrice
       ? price
       : closePrice
@@ -463,11 +464,11 @@ const AssetItem = ({
       : theme.customPalette.red.main;
 
   const usdValue =
-    price === undefined // Not yet loaded.
+    priceForCalculate === undefined // Not yet loaded.
       ? undefined
-      : price === null // Loaded and empty.
+      : priceForCalculate === null // Loaded and empty.
       ? null
-      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+      : ((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   // console.log('tokenSymbol', tokenSymbol, usdValue, priceForCalculate, amount, decimals)
 
@@ -482,7 +483,7 @@ const AssetItem = ({
       <StyledTd>
         <RowContainer justify="flex-start">
           <Row margin="0 1rem 0 0">
-            <TokenIcon mint={mint} tokenName={tokenName} size={'3.6rem'} />
+            <TokenIcon tokenLogoUri={tokenLogoUri} mint={mint} tokenName={tokenName} size={'3.6rem'} />
           </Row>
           <Row direction="column">
             <RowContainer justify="flex-start">
@@ -504,7 +505,7 @@ const AssetItem = ({
               )} ${tokenSymbol} / `}</AssetAmount>
               &ensp;
               <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-                usdValue || 0,
+                (amount / Math.pow(10, decimals) * priceForCalculate) || 0,
                 2,
               )} `}</AssetAmountUSD>
             </RowContainer>
@@ -523,7 +524,7 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Price</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            ${formatNumberToUSFormat(stripDigitPlaces(priceForCalculate || 0, 8))}
+            ${formatNumberToUSFormat(stripDigitPlaces(priceForCalculate || 0, priceForCalculate < 1 ? 8 : 2))}
           </Title>
         </RowContainer>
       </StyledTd>
