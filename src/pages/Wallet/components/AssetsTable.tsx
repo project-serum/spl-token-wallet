@@ -133,6 +133,7 @@ const AssetAmount = styled(Title)`
 
 const AssetAmountUSD = styled(AssetAmount)`
   font-family: Avenir Next Demi;
+  color: #fff;
 `;
 
 // Aggregated $USD values of all child BalanceListItems child components.
@@ -376,13 +377,20 @@ const AssetItem = ({
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
 
-  let { amount, decimals, mint, tokenName, tokenSymbol, tokenLogoUri } = balanceInfo || {
+  let {
+    amount,
+    decimals,
+    mint,
+    tokenName,
+    tokenSymbol,
+    tokenLogoUri,
+  } = balanceInfo || {
     amount: 0,
     decimals: 8,
     mint: null,
     tokenName: 'Loading...',
     tokenSymbol: '--',
-    tokenLogoUri: null
+    tokenLogoUri: null,
   };
 
   const [price, setPrice] = useState<number | null | undefined>(undefined);
@@ -432,11 +440,8 @@ const AssetItem = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = price === null
-    ? !closePrice
-      ? price
-      : closePrice
-    : price;
+  let priceForCalculate =
+    price === null ? (!closePrice ? price : closePrice) : price;
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
@@ -483,7 +488,12 @@ const AssetItem = ({
       <StyledTd>
         <RowContainer justify="flex-start">
           <Row margin="0 1rem 0 0">
-            <TokenIcon tokenLogoUri={tokenLogoUri} mint={mint} tokenName={tokenName} size={'3.6rem'} />
+            <TokenIcon
+              tokenLogoUri={tokenLogoUri}
+              mint={mint}
+              tokenName={tokenName}
+              size={'3.6rem'}
+            />
           </Row>
           <Row direction="column">
             <RowContainer justify="flex-start">
@@ -502,14 +512,18 @@ const AssetItem = ({
               <AssetAmount theme={theme}>{`${stripDigitPlaces(
                 amount / Math.pow(10, decimals),
                 8,
-              )} ${tokenSymbol} / `}</AssetAmount>
-              &ensp;
-              <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-                (amount / Math.pow(10, decimals) * priceForCalculate) || 0,
-                2,
-              )} `}</AssetAmountUSD>
+              )} ${tokenSymbol}`}</AssetAmount>
             </RowContainer>
           </Row>
+        </RowContainer>
+      </StyledTd>
+      <StyledTd>
+        <RowContainer direction="column" align="flex-start">
+          <GreyTitle theme={theme}>Amount:</GreyTitle>
+          <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
+            (amount / Math.pow(10, decimals)) * priceForCalculate || 0,
+            2,
+          )}`}</AssetAmountUSD>
         </RowContainer>
       </StyledTd>
       <StyledTd>
@@ -524,7 +538,13 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Price</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            ${formatNumberToUSFormat(stripDigitPlaces(priceForCalculate || 0, priceForCalculate < 1 ? 8 : 2))}
+            $
+            {formatNumberToUSFormat(
+              stripDigitPlaces(
+                priceForCalculate || 0,
+                priceForCalculate < 1 ? 8 : 2,
+              ),
+            )}
           </Title>
         </RowContainer>
       </StyledTd>
@@ -534,9 +554,11 @@ const AssetItem = ({
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
           <RowContainer justify="flex-start">
             <Title fontSize="1.4rem" color={color}>
-              {!priceChangePercentage ? '0%' : `${sign24hChange}${formatNumberToUSFormat(
-                stripDigitPlaces(Math.abs(priceChangePercentage), 2),
-              )}% `}
+              {!priceChangePercentage
+                ? '0%'
+                : `${sign24hChange}${formatNumberToUSFormat(
+                    stripDigitPlaces(Math.abs(priceChangePercentage), 2),
+                  )}% `}
               &nbsp;
             </Title>
             <Title fontSize="1.4rem">/</Title>&nbsp;
@@ -644,5 +666,5 @@ const AssetItem = ({
 };
 
 export default React.memo(AssetsTable, (prev, next) => {
-  return true
+  return true;
 });
