@@ -134,12 +134,13 @@ const Navbar = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              height: '100%',
+              width: '15%',
+              padding: '0.5rem 0',
             }}
           >
             <img
               style={{
-                width: '85%',
+                width: '100%',
                 height: 'auto',
               }}
               alt="logo"
