@@ -419,7 +419,7 @@ export function useBalanceInfo(publicKey) {
     ? parseTokenAccountData(accountInfo.data)
     : {};
   let [mintInfo, mintInfoLoaded] = useAccountInfo(mint);
-  let { name, symbol } = useTokenInfo(mint);
+  let { name, symbol, logoUri } = useTokenInfo(mint);
 
   if (!accountInfoLoaded) {
     return null;
@@ -434,6 +434,7 @@ export function useBalanceInfo(publicKey) {
       tokenName: 'Wrapped SOL',
       tokenSymbol: 'SOL',
       valid: true,
+      tokenLogoUri: logoUri,
     };
   }
 
@@ -448,6 +449,7 @@ export function useBalanceInfo(publicKey) {
         tokenName: name.replace(' (Sollet)', ''),
         tokenSymbol: symbol,
         valid: true,
+        tokenLogoUri: logoUri,
       };
     } catch (e) {
       return {
@@ -458,6 +460,7 @@ export function useBalanceInfo(publicKey) {
         tokenName: 'Invalid',
         tokenSymbol: 'INVALID',
         valid: false,
+        tokenLogoUri: logoUri,
       };
     }
   }
@@ -471,6 +474,7 @@ export function useBalanceInfo(publicKey) {
       tokenName: 'SOL',
       tokenSymbol: 'SOL',
       valid: true,
+      tokenLogoUri: logoUri,
     };
   }
 
