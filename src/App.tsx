@@ -14,9 +14,9 @@ import SnackbarProvider from './components/SnackbarProvider';
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 
-import ConnectPopup from './routes/ConnectPopup'
-import WelcomeBackPage from './routes/WelcomeBack'
-import Wallet from './routes/WalletRouter'
+const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
+const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
+const Wallet = lazy(() => import('./routes/WalletRouter'));
 
 // const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
 // const Wallet = lazy(() => import('./routes/WalletRouter'));
