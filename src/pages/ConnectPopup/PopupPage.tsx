@@ -19,7 +19,6 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import Logo from '../../images/logo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
@@ -41,6 +40,7 @@ import {
 import AccountsSelector from '../Wallet/components/AccountsSelector';
 import AttentionComponent from '../../components/Attention';
 import { PublicKey } from '@solana/web3.js';
+import LogoComponent from '../../components/Logo';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -255,7 +255,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <img style={{ width: '50%' }} alt={'logo'} src={Logo} />
+          <LogoComponent width="50%" height="auto" margin="0" />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
         <Title
