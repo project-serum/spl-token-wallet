@@ -6,9 +6,3 @@
   for = "*.css" # css files too
   [headers.values]
     Cache-Control = "public, max-age=604800"
-[[redirects]]
-  from = "/*"
-  to = "/"
-  status = 200
-  force = true # COMMENT: ensure that we always redirect
-  headers = {X-From = "Netlify"}
