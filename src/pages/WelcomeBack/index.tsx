@@ -15,7 +15,6 @@ import {
 } from '../commonStyles';
 
 import Logo from '../../components/Logo';
-import LockIcon from '../../images/lock.svg';
 import { InputWithEye } from '../../components/Input';
 
 import { useTheme } from '@material-ui/core';

@@ -11,9 +11,7 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Plus from '../../images/AddButton.svg';
 // import Import from '../../images/ImportButton.svg';
-import Restore from '../../images/RestoreButton.svg';
 import Logo from '../../components/Logo';
 
 const StyledContainer = styled(Row)`
