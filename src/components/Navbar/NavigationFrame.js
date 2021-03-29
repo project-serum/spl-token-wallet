@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const StyledMain = styled.main`
   height: ${props => props.isConnectPopup ? 'calc(100% - 6rem)' : 'calc(100% - 12rem)'};
 
-  @media (max-width: 620px) {
+  @media (max-width: 850px) {
     height: calc(100% - 6rem);
   }
 `

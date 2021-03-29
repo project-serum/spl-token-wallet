@@ -27,6 +27,7 @@ import CubeLogo from '../../images/cubeLogo.png';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
+import AttentionComponent from '../../components/Attention';
 
 export default function DerivedAccounts({
   goBack,
@@ -71,7 +72,7 @@ export default function DerivedAccounts({
   // };
 
   return (
-    <Card height="50rem">
+    <Card height="auto" padding="2rem 0">
       <RowContainer width="90%" direction="column">
         <RowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
@@ -139,7 +140,16 @@ export default function DerivedAccounts({
           })}
         </div>
 
-        <RowContainer justify="space-between">
+        <AttentionComponent
+          blockHeight={'auto'}
+          iconStyle={{ margin: '0 3rem' }}
+          textStyle={{ padding: '1rem 1rem 1rem 0' }}
+          text={
+            'Only the first account in the list will be restored automatically. To restore the rest of the accounts - continue to create new accounts through the wallet interface. '
+          }
+        />
+
+        <RowContainer justify="space-between" margin="2rem 0 0 0">
           <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={goBack}>
             Back
           </WhiteButton>
