@@ -22,6 +22,11 @@ export async function mnemonicToSeed(mnemonic) {
 }
 
 let unlockedMnemonicAndSeed = (() => {
+  const unlockedExpiration = localStorage.getItem('unlockedExpiration');
+  if (unlockedExpiration && Number(unlockedExpiration) < Date.now()) {
+    localStorage.removeItem('unlocked');
+    localStorage.removeItem('unlockedExpiration');
+  }
   const stored = JSON.parse(
     sessionStorage.getItem('unlocked') ||
       localStorage.getItem('unlocked') ||
@@ -126,6 +131,11 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   const decodedPlaintext = Buffer.from(plaintext).toString();
   const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
   if (stayLoggedIn) {
+    if (isExtension) {
+      const expireMs = 1000 * 60 * 60 * 24;
+      localStorage.setItem('unlockedExpiration', Date.now() + expireMs);
+      localStorage.setItem('unlocked', decodedPlaintext);
+    }
     sessionStorage.setItem('unlocked', decodedPlaintext);
   }
   const importsEncryptionKey = deriveImportsEncryptionKey(seed);
