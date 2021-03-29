@@ -9,7 +9,7 @@ function launchPopup(message, sender, sendResponse) {
   // TODO consolidate popup dimensions
   chrome.windows.getLastFocused((focusedWindow) => {
     chrome.windows.create({
-      url: 'index.html/#' + searchParams.toString(),
+      url: 'index.html#' + searchParams.toString(),
       type: 'popup',
       width: 375,
       height: 600,
