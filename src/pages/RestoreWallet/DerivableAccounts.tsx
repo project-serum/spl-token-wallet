@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components'
 import { storeMnemonicAndSeed } from '../../utils/wallet-seed';
 import {
   getAccountFromSeed,
@@ -28,6 +29,12 @@ import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
 import AttentionComponent from '../../components/Attention';
+
+const StyledRowContainer = styled(RowContainer)`
+  & svg {
+    top: auto;
+  }
+`
 
 export default function DerivedAccounts({
   goBack,
@@ -74,7 +81,7 @@ export default function DerivedAccounts({
   return (
     <Card height="auto" padding="2rem 0">
       <RowContainer width="90%" direction="column">
-        <RowContainer justify="space-between" margin="0 0 2rem 0">
+        <StyledRowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
           <FormControl variant="outlined" style={{ borderColor: '#fff' }}>
             <Select
@@ -102,7 +109,7 @@ export default function DerivedAccounts({
               </MenuItem>
             </Select>
           </FormControl>
-        </RowContainer>
+        </StyledRowContainer>
         <div
           style={{
             overflowY: 'auto',
