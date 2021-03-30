@@ -174,6 +174,8 @@ const Pages = () => {
     return params.get('origin');
   }, []);
 
+  console.log('origin', origin)
+
   return (
     <Switch>
       {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
