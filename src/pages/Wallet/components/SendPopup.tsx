@@ -567,6 +567,8 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [showResult, setShowResult] = useState(false);
+  const [showedResult, setIsResultShowed] = useState(false)
+
   const connection = useConnection();
   const theme = useTheme();
   const [swaps] = useSwapApiGet(`swaps_from/sol/${publicKey.toBase58()}`, {
@@ -581,11 +583,12 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
     { refreshInterval: 2000 },
   );
   useEffect(() => {
-    if (showResult) {
+    if (showResult && !showedResult) {
+      setIsResultShowed(true)
       enqueueSnackbar('Success!', { variant: 'success' });
       onClose();
     }
-  }, [showResult, enqueueSnackbar, onClose]);
+  }, [showResult, enqueueSnackbar, onClose, showedResult]);
 
   let step = 1;
   let ethTxid = null;
@@ -595,10 +598,14 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
       if (withdrawal.txid?.startsWith('0x')) {
         step = 3;
         ethTxid = withdrawal.txid;
-        setShowResult(true);
+        if (!showResult) {
+          setShowResult(true);
+        }
       } else if (withdrawal.txid && blockchain !== 'eth') {
         step = 3;
-        setShowResult(true);
+        if (!showResult) {
+          setShowResult(true);
+        }
       } else {
         step = 2;
       }
@@ -659,7 +666,6 @@ function useForm(
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
 
   const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
-  const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
   const theme = useTheme();
   const tokenSymbolForCheck =
     tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
@@ -677,6 +683,9 @@ function useForm(
       stripDigitPlaces(parseFloat(String(maxBalance)) - 0.000005, 8),
     );
   }
+
+  const validAmount = parsedAmount > 0 && parsedAmount <= +maxBalance;
+
 
   const fields = (
     <>

@@ -159,7 +159,6 @@ const InputWithMax = ({
   containerStyle?: any
 }) => {
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <InputWithComponent
@@ -170,7 +169,6 @@ const InputWithMax = ({
           color={theme.customPalette.blue.new}
           onClick={() => {
             onMaxClick()
-            enqueueSnackbar("Set!", { variant: 'success' });
           }}
           style={{ padding: '1.2rem 2rem 1.2rem .5rem', whiteSpace: 'nowrap' }}
         >

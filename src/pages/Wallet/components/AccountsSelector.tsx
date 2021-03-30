@@ -138,7 +138,9 @@ const AccountsSelector = ({
                         : theme.customPalette.border.new,
                   }}
                   onClick={() => {
-                    setWalletSelector(selector);
+                    if (!isSelected) {
+                      setWalletSelector(selector);
+                    }
                   }}
                 >
                   <Row justify="flex-start">
