@@ -33,8 +33,8 @@ const WelcomeBack = () => {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
+      progressMessage: null,
+      successMessage: null,
       onSuccess: () => {},
       onError: () => {},
     });

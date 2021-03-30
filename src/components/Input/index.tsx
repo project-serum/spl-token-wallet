@@ -125,7 +125,6 @@ const InputWithPaste = ({
   onKeyDown?: (e: any) => void
 }) => {
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <InputWithComponent
@@ -134,7 +133,6 @@ const InputWithPaste = ({
           color={theme.customPalette.blue.new}
           onClick={() => {
             onPasteClick()
-            enqueueSnackbar("Pasted!", { variant: 'success' });
           }}
           style={{ padding: '1.2rem 2rem' }}
         >

@@ -20,8 +20,8 @@ export default function ExportAccountDialog({ open, onClose }) {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, false), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
+      progressMessage: null,
+      successMessage: null,
       onSuccess: (res) => {
         setKeyOutput(`[${Array.from(wallet.provider.account.secretKey)}]`);
       },
@@ -111,8 +111,6 @@ export function ExportMnemonicDialog({ open, onClose }) {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, false), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
       onSuccess: (res) => {
         setMnemonic(res.mnemonic);
       },
