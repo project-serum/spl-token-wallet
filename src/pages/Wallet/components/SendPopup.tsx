@@ -424,6 +424,7 @@ function SendSwapDialog({
   let splUsdtWalletAddress = useWalletAddressForMint(
     wusdtToSplUsdt ? USDT_MINT : null,
   );
+
   useEffect(() => {
     if (wusdcToSplUsdc && splUsdcWalletAddress) {
       setDestinationAddress(splUsdcWalletAddress);
@@ -501,8 +502,8 @@ function SendSwapDialog({
       width="calc(50% - .5rem)"
       disabled={
         !!(
-          (sending || (needMetamask && !ethAccount) || !validAmount)
-          // || insufficientEthBalance
+          (sending || !validAmount)
+          // || insufficientEthBalance || (needMetamask && !ethAccount)
         )
       }
       onClick={onSubmit}
@@ -567,7 +568,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [showResult, setShowResult] = useState(false);
-  const [showedResult, setIsResultShowed] = useState(false)
+  const [showedResult, setIsResultShowed] = useState(false);
 
   const connection = useConnection();
   const theme = useTheme();
@@ -584,7 +585,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
   );
   useEffect(() => {
     if (showResult && !showedResult) {
-      setIsResultShowed(true)
+      setIsResultShowed(true);
       enqueueSnackbar('Success!', { variant: 'success' });
       onClose();
     }
@@ -666,6 +667,7 @@ function useForm(
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
 
   const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
+  const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
   const theme = useTheme();
   const tokenSymbolForCheck =
     tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
@@ -683,9 +685,6 @@ function useForm(
       stripDigitPlaces(parseFloat(String(maxBalance)) - 0.000005, 8),
     );
   }
-
-  const validAmount = parsedAmount > 0 && parsedAmount <= +maxBalance;
-
 
   const fields = (
     <>
