@@ -13,13 +13,13 @@ import {
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
-import WalletLogo from '../../images/oldLogo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
 import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import LogoComponent from '../Logo';
 
 const ButtonsContainer = styled(Row)`
   @media (max-width: 1200px) {
@@ -132,17 +132,13 @@ const Navbar = () => {
           <Link
             to={'/'}
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              width: '15%',
               padding: '0.5rem 0',
-              height: '100%',
             }}
           >
-            <img
-              style={{
-                height: '100%',
-              }}
-              alt="logo"
-              src={WalletLogo}
-            />
+            <LogoComponent width="100%" height="auto" margin="0" />
           </Link>
           <RowContainer
             padding={'1rem 4rem 1rem 4rem'}
@@ -154,7 +150,7 @@ const Navbar = () => {
             }}
           >
             {' '}
-            {/* <NavLinkButton
+            <NavLinkButton
               theme={theme}
               data-tut="farming"
               pathname={location.pathname}
@@ -166,7 +162,7 @@ const Navbar = () => {
               )}
             >
               Home
-            </NavLinkButton> */}
+            </NavLinkButton>
             <NavLinkButton
               theme={theme}
               data-tut="farming"

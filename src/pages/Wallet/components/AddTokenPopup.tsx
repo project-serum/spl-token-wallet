@@ -7,7 +7,7 @@ import {
   useWalletTokenAccounts,
 } from '../../../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { TOKENS, useUpdateTokenName } from '../../../utils/tokens/names';
+import { useUpdateTokenName } from '../../../utils/tokens/names';
 import { useAsyncData } from '../../../utils/fetch-loop';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { useTheme } from '@material-ui/core';
@@ -17,10 +17,10 @@ import {
   formatNumberToUSFormat,
   stripDigitPlaces,
 } from '../../../utils/utils';
-import { useConnectionConfig } from '../../../utils/connection';
+import { usePopularTokens } from '../../../utils/tokens/names';
 import Link from '@material-ui/core/Link';
 import DialogForm from '../../../pages/Wallet/components/DialogForm';
-import { showSwapAddress } from '../../../utils/config';
+// import { showSwapAddress } from '../../../utils/config';
 import { swapApiRequest } from '../../../utils/swap/api';
 import TokenIcon from '../../../components/TokenIcon';
 import { InputWithPaste, InputWithSearch } from '../../../components/Input';
@@ -61,8 +61,7 @@ export default function AddTokenDialog({ open, onClose }) {
   const [walletAccounts] = useWalletTokenAccounts();
 
   const [sendTransaction, sending] = useSendTransaction();
-  const { endpoint } = useConnectionConfig();
-  const popularTokens = TOKENS[endpoint];
+  const popularTokens = usePopularTokens();
 
   const [tab, setTab] = useState(!!popularTokens ? 'popular' : 'manual');
   const [searchValue, setSearchValue] = useState('');
@@ -80,6 +79,7 @@ export default function AddTokenDialog({ open, onClose }) {
     mint: null,
     tokenName: 'Loading...',
     tokenSymbol: '--',
+    tokenLogoUri: null,
   };
 
   let valid = true;
@@ -196,9 +196,9 @@ export default function AddTokenDialog({ open, onClose }) {
             onChange={(e, value) => setTab(value)}
           >
             <StyledTab theme={theme} label="Popular Tokens" value="popular" />
-            {showSwapAddress ? (
+            {/* {showSwapAddress ? (
               <StyledTab theme={theme} label="ERC20 Token" value="erc20" />
-            ) : null}
+            ) : null} */}
             <StyledTab theme={theme} label="Manual Input" value="manual" />
           </StyledTabs>
         </RowContainer>
@@ -293,28 +293,28 @@ export default function AddTokenDialog({ open, onClose }) {
               <ListCard>
                 {popularTokens
                   .filter(
-                    (token) =>
-                      !token.deprecated &&
+                    (tokenInfo) =>
+                      !tokenInfo.deprecated &&
                       (searchValue !== ''
                         ? (
-                            token.tokenName ??
-                            abbreviateAddress(token.mintAddress)
+                            tokenInfo.name ??
+                            abbreviateAddress(tokenInfo.address)
                           )
                             .toLowerCase()
                             .includes(searchValue.toLowerCase()) ||
-                          token.tokenSymbol
+                          tokenInfo.symbol
                             .toLowerCase()
                             .includes(searchValue.toLowerCase())
                         : true),
                   )
-
-                  .map((token) => (
+                  .map((tokenInfo) => (
                     <TokenListItem
-                      key={token.mintAddress}
-                      {...token}
+                      key={tokenInfo.address}
+                      {...tokenInfo}
+                      mintAddress={tokenInfo.address}
                       existingAccount={(walletAccounts || []).find(
                         (account) =>
-                          account.parsed.mint.toBase58() === token.mintAddress,
+                          account.parsed.mint.toBase58() === tokenInfo.address,
                       )}
                       onSubmit={onSubmit}
                       disalbed={sending}
@@ -394,9 +394,9 @@ export default function AddTokenDialog({ open, onClose }) {
 }
 
 export function TokenListItem({
-  tokenName,
-  icon,
-  tokenSymbol,
+  name: tokenName,
+  logoUri,
+  symbol: tokenSymbol,
   mintAddress,
   disabled,
   existingAccount,
@@ -411,6 +411,7 @@ export function TokenListItem({
   );
   const checked = selectedTokenIndex !== -1;
   const isDisabled = disabled || alreadyExists;
+  const address = new PublicKey(mintAddress)
 
   return (
     <>
@@ -438,9 +439,13 @@ export function TokenListItem({
         }}
       >
         <Row>
-          <TokenIcon url={icon} tokenName={tokenName} size={'2rem'} />
+          <TokenIcon
+            tokenLogoUri={logoUri}
+            tokenName={tokenName}
+            size={'2rem'}
+          />
           <WhiteText theme={theme} style={{ marginLeft: '1rem' }}>
-            {tokenName ?? abbreviateAddress(mintAddress)}
+            {tokenName ?? abbreviateAddress(address)}
             {tokenSymbol ? ` (${tokenSymbol})` : null}
           </WhiteText>
         </Row>

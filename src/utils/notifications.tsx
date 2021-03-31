@@ -11,21 +11,28 @@ export function useSendTransaction(): [any, boolean] {
 
   async function sendTransaction(
     signaturePromise,
-    { onSuccess = (res) => {}, onError = (e) => { console.error(e) } } = {},
+    {
+      onSuccess = (res) => {},
+      onError = (e) => {
+        console.error(e);
+      },
+    } = {},
   ) {
-    let id = enqueueSnackbar('Sending transaction...', {
-      variant: 'info',
-      persist: true,
-    }) || '';
+    let id =
+      enqueueSnackbar('Sending transaction...', {
+        variant: 'info',
+        persist: true,
+      }) || '';
     setSending(true);
     try {
       let signature = await signaturePromise;
       closeSnackbar(id);
-      id = enqueueSnackbar('Confirming transaction...', {
-        variant: 'info',
-        persist: true,
-        action: <ViewTransactionOnExplorerButton signature={signature} />,
-      }) || '';
+      id =
+        enqueueSnackbar('Confirming transaction...', {
+          variant: 'info',
+          persist: true,
+          action: <ViewTransactionOnExplorerButton signature={signature} />,
+        }) || '';
       await confirmTransaction(connection, signature);
       closeSnackbar(id);
       setSending(false);
@@ -40,8 +47,19 @@ export function useSendTransaction(): [any, boolean] {
     } catch (e) {
       closeSnackbar(id);
       setSending(false);
-      console.warn(e.message);
-      enqueueSnackbar(e.message, { variant: 'error' });
+
+      let message = e.message;
+
+      if (
+        message.includes(
+          'Error processing Instruction 0: custom program error: 0x1',
+        )
+      ) {
+        message = 'Insufficient SOL balance for this transaction';
+      }
+
+      console.warn(message);
+      enqueueSnackbar(message, { variant: 'error' });
       if (onError) {
         onError(e);
       }
@@ -55,7 +73,7 @@ function ViewTransactionOnExplorerButton({ signature }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
-      color="inherit"
+      style={{ color: '#fff' }}
       component="a"
       target="_blank"
       rel="noopener"
@@ -68,19 +86,27 @@ function ViewTransactionOnExplorerButton({ signature }) {
 
 export function useCallAsync() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  return async function callAsync(
-    promise,
-    {
+
+  return async function callAsync(promise: any, notificationObj?: any) {
+    const {
       progressMessage = 'Submitting...',
       successMessage = 'Success',
-      onSuccess = (res) => {}, 
-      onError = (e) => { console.error(e) }
-    } = {},
-  ) {
-    let id = enqueueSnackbar(progressMessage, {
-      variant: 'info',
-      persist: true,
-    }) || '';
+      onSuccess = () => {},
+      onError = (e) => {
+        console.error(e);
+      },
+    } = notificationObj || {};
+
+    let id = '';
+
+    if (progressMessage) {
+      id =
+        String(enqueueSnackbar(progressMessage, {
+          variant: 'info',
+          persist: true,
+        })) || '';
+    }
+
     try {
       let result = await promise;
       closeSnackbar(id);
@@ -93,7 +119,17 @@ export function useCallAsync() {
     } catch (e) {
       console.warn(e);
       closeSnackbar(id);
-      enqueueSnackbar(e.message, { variant: 'error' });
+      let message = e.message;
+
+      if (
+        message.includes(
+          'Error processing Instruction 0: custom program error: 0x1',
+        )
+      ) {
+        message = 'Insufficient SOL balance for this transaction';
+      }
+
+      enqueueSnackbar(message, { variant: 'error' });
       if (onError) {
         onError(e);
       }

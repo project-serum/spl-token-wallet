@@ -15,7 +15,6 @@ import {
 } from '../commonStyles';
 
 import Logo from '../../components/Logo';
-import LockIcon from '../../images/lock.svg';
 import { InputWithEye } from '../../components/Input';
 
 import { useTheme } from '@material-ui/core';
@@ -34,8 +33,8 @@ const WelcomeBack = () => {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
+      progressMessage: null,
+      successMessage: null,
       onSuccess: () => {},
       onError: () => {},
     });
@@ -62,7 +61,7 @@ const WelcomeBack = () => {
           height={'100%'}
         >
           <RowContainer margin="2rem 0 0 0">
-            <img style={{ height: '7rem' }} alt="lock" src={LockIcon} />
+            <img style={{ height: '7rem' }} alt="lock" src={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCA3MCA3MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTU1LjMgMjhINDlWMTkuNkM0OSA5LjQ2MDUgNDQuMzI3NSAzLjUgMzUgMy41QzI1LjY2OSAzLjUgMjEgOS40NjA1IDIxIDE5LjZWMjhIMTRDMTIuMDY0NSAyOCAxMC41IDMwLjI2MSAxMC41IDMyLjE5NjVWNTkuNUMxMC41IDYxLjQyMTUgMTEuOTk4IDYzLjQ4NjUgMTMuODI4NSA2NC4wNzQ1TDE4LjAxOCA2NS40MjlDMjAuMjQwMiA2Ni4wNzY3IDIyLjUzNjIgNjYuNDM2NyAyNC44NSA2Ni41SDQ1LjE1QzQ3LjQ2MjkgNjYuNDM3MiA0OS43NTgxIDY2LjA3NjEgNTEuOTc4NSA2NS40MjU1TDU2LjE2NDUgNjQuMDcxQzU3Ljk5ODUgNjMuNDg2NSA1OS41IDYxLjQyMTUgNTkuNSA1OS41VjMyLjE5NjVDNTkuNSAzMC4yNjEgNTcuMjMyIDI4IDU1LjMgMjhaTTQyIDI4SDI4VjE4LjE5NjVDMjggMTMuMTM5IDMwLjc4OTUgMTAuNSAzNSAxMC41QzM5LjIxMDUgMTAuNSA0MiAxMy4xMzkgNDIgMTguMTk2NVYyOFoiIGZpbGw9IiMzNjZDRTUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zOSA0Ni40NzIyQzQwLjIyNzUgNDUuMzczNiA0MSA0My43NzcgNDEgNDJDNDEgMzguNjg2MyAzOC4zMTM3IDM2IDM1IDM2QzMxLjY4NjMgMzYgMjkgMzguNjg2MyAyOSA0MkMyOSA0My43NzcgMjkuNzcyNSA0NS4zNzM2IDMxIDQ2LjQ3MjJWNTRDMzEgNTYuMjA5MSAzMi43OTA5IDU4IDM1IDU4QzM3LjIwOTEgNTggMzkgNTYuMjA5MSAzOSA1NFY0Ni40NzIyWiIgZmlsbD0iIzIyMjQyOSIvPgo8L3N2Zz4K"} />
           </RowContainer>
           <RowContainer direction={'column'} height={'calc(30%)'}>
             <Title fontSize={'2rem'} fontFamily={'Avenir Next Demi'}>

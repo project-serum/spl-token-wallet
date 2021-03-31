@@ -19,7 +19,6 @@ import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import Logo from '../../images/oldLogo.svg';
 import { makeStyles } from '@material-ui/core/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
@@ -41,6 +40,7 @@ import {
 import AccountsSelector from '../Wallet/components/AccountsSelector';
 import AttentionComponent from '../../components/Attention';
 import { PublicKey } from '@solana/web3.js';
+import LogoComponent from '../../components/Logo';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -194,7 +194,9 @@ export default function PopupPage({ origin }) {
       }
     }
     return (
-      <StyledCard style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}>
+      <StyledCard
+        style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}
+      >
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
@@ -209,7 +211,9 @@ export default function PopupPage({ origin }) {
 
   return (
     <RowContainer height={'calc(100% - 6rem)'}>
-      <Title>Please keep this window open in the background.</Title>
+      <Title style={{ fontSize: '2rem' }}>
+        Please keep this window open in the background.
+      </Title>
     </RowContainer>
   );
 }
@@ -253,7 +257,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <img style={{ width: '50%' }} alt={'logo'} src={Logo} />
+          <LogoComponent width="50%" height="auto" margin="0" />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
         <Title
@@ -352,7 +356,7 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
     return accountStates[pubkey.toBase58()] === states.OWNED;
   }
 
-  console.log('txInstructions', txInstructions)
+  console.log('txInstructions', txInstructions);
 
   txInstructions.forEach((instructions) => {
     instructions.forEach((instruction) => {
@@ -362,9 +366,12 @@ function isSafeInstruction(publicKeys, owner, txInstructions) {
         if (instruction.type === 'raydium') {
           // Whitelist raydium for now.
         } else if (
-          ['cancelOrder', 'cancelOrderV2', 'matchOrders', 'cancelOrderV3'].includes(
-            instruction.type,
-          )
+          [
+            'cancelOrder',
+            'cancelOrderV2',
+            'matchOrders',
+            'cancelOrderV3',
+          ].includes(instruction.type)
         ) {
           // It is always considered safe to cancel orders, match orders
         } else if (instruction.type === 'systemCreate') {

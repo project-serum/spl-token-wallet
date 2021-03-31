@@ -22,9 +22,8 @@ import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
 import DerivableAccounts from './DerivableAccounts';
-import AttentionComponent from '../../components/Attention';
 import FakeInputs from '../../components/FakeInputs';
-import Warning from '../CreateWallet/components/Warning'
+import Warning from '../CreateWallet/components/Warning';
 
 export const RestorePage = () => {
   const [redirectToWallet, setRedirectToWallet] = useState(false);
@@ -55,7 +54,7 @@ export const RestorePage = () => {
     <Body>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
-      <Logo />
+      <Logo margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} />
       {hasLockedMnemonicAndSeed() ? (
         <Warning onSubmit={() => {}} showBottomLink={false} />
       ) : showDerivation ? (
@@ -76,28 +75,10 @@ export const RestorePage = () => {
             <RowContainer
               direction={'column'}
               justify={'space-around'}
-              height={hasLockedMnemonicAndSeed() ? '20%' : '30%'}
+              height={'30%'}
             >
               <Title>Restore your wallet using Seed Phrase.</Title>
             </RowContainer>
-            {hasLockedMnemonicAndSeed() && (
-              <RowContainer width="90%">
-                <AttentionComponent
-                  text={
-                    'Note that this will delete any existing wallet on this device. Please unlock your current wallet and make sure you save the Seed Phrase before you restore another wallet.'
-                  }
-                  textStyle={{
-                    fontSize: '1.4rem',
-                    lineHeight: '2rem',
-                    fontFamily: 'Avenir Next',
-                  }}
-                  iconStyle={{
-                    margin: '0 2rem 0 3rem',
-                  }}
-                  blockHeight="8rem"
-                />
-              </RowContainer>
-            )}
 
             <RowContainer
               direction={'column'}
@@ -146,14 +127,7 @@ export const RestorePage = () => {
         </Card>
       )}
 
-      <BottomLink
-        to={'/create_wallet'}
-        toText={
-          hasLockedMnemonicAndSeed()
-            ? 'Create Another Wallet'
-            : 'Create New Wallet'
-        }
-      />
+      <BottomLink to={'/create_wallet'} toText={'Create New Wallet'} />
     </Body>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DialogForm from './DialogForm';
 import { useWallet } from '../../../utils/wallet';
-import { loadMnemonicAndSeed } from '../../../utils/wallet-seed';
+import { checkIsCorrectPassword } from '../../../utils/wallet-seed';
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 import { InputWithEye, TextareaWithCopy } from '../../../components/Input';
 import { useTheme } from '@material-ui/core';
@@ -19,10 +19,10 @@ export default function ExportAccountDialog({ open, onClose }) {
   const [keyOutput, setKeyOutput] = useState('');
 
   const submit = () => {
-    callAsync(loadMnemonicAndSeed(password, false), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
-      onSuccess: (res) => {
+    callAsync(checkIsCorrectPassword(password), {
+      progressMessage: null,
+      successMessage: null,
+      onSuccess: () => {
         setKeyOutput(`[${Array.from(wallet.provider.account.secretKey)}]`);
       },
       onError: () => {},
@@ -110,13 +110,13 @@ export function ExportMnemonicDialog({ open, onClose }) {
   const callAsync = useCallAsync();
 
   const submit = () => {
-    callAsync(loadMnemonicAndSeed(password, false), {
-      progressMessage: 'Unlocking wallet...',
-      successMessage: 'Wallet unlocked',
+    callAsync(checkIsCorrectPassword(password), {
       onSuccess: (res) => {
         setMnemonic(res.mnemonic);
       },
       onError: () => {},
+      progressMessage: null,
+      successMessage: null,
     });
   };
 

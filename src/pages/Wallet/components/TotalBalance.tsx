@@ -76,20 +76,18 @@ const Item = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = !price
+  let priceForCalculate = price === null
     ? !closePrice
       ? price
       : closePrice
     : price;
 
-  console.log('priceForCalculate', priceForCalculate, 'price', price)
-
   const usdValue =
-    price === undefined // Not yet loaded.
+    priceForCalculate === undefined // Not yet loaded.
       ? undefined
-      : price === null // Loaded and empty.
+      : priceForCalculate === null // Loaded and empty.
       ? null
-      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+      : ((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   useEffect(() => {
     if (setUsdValue && usdValue !== undefined) {

@@ -85,9 +85,9 @@ export const Textarea = styled.textarea`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
   font-family: Avenir Next;
-  border: .1rem solid #3a475c;
+  border: 0.1rem solid #3a475c;
   font-size: 1.1rem;
-  letter-spacing: .01rem;
+  letter-spacing: 0.01rem;
   color: #f8faff;
   border-radius: 1.5rem;
   background: #222429;
@@ -131,8 +131,8 @@ export const Card = styled.div`
   justify-content: ${(props) => props.justify || 'center'};
   flex-direction: column;
   align-items: center;
-
   transition: 0.3s all ease-out;
+  
 `;
 
 export const Input = styled(({ ...props }) => (
