@@ -291,7 +291,7 @@ export function useTokenInfo(mint) {
 
 export function getTokenInfo(mint, endpoint, tokenInfos) {
   if (!mint) {
-    return { name: null, symbol: null };
+    return { name: null, symbol: null, logoUri: null };
   }
 
   let info = customTokenNamesByNetwork?.[endpoint]?.[mint.toBase58()];

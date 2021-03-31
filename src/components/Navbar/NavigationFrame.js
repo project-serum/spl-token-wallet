@@ -23,10 +23,11 @@ import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
 import AddHardwareWalletDialog from '../AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
 import Navbar from './Navbar'
-import DiscordIcon from '../../images/newDiscord.svg'
-import TelegramIcon from '../../images/newTg.svg'
-import TwitterIcon from '../../images/newTwitter.svg'
+import TwitterIcon from './TwitterIcon'
+import TelegramIcon from './TelegramIcon'
+import DiscordIcon from './DiscordIcon'
 import { Row } from '../../pages/commonStyles';
+
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const StyledMain = styled.main`
   height: ${props => props.isConnectPopup ? 'calc(100% - 6rem)' : 'calc(100% - 12rem)'};
 
-  @media (max-width: 620px) {
+  @media (max-width: 850px) {
     height: calc(100% - 6rem);
   }
 `
@@ -60,7 +61,7 @@ const StyledLink = styled.a`
   height: 100%;
 `
 
-const StyledImg = styled.img`
+export const StyledImg = styled.img`
   height: 100%;
 `
 
@@ -274,21 +275,21 @@ function Footer() {
             rel="noopener noreferrer"
             href="https://twitter.com/CCAI_Official"
           >
-            <StyledImg src={TwitterIcon} alt="twitter" />
+            <TwitterIcon />
           </StyledLink>
           <StyledLink
             target="_blank"
             rel="noopener noreferrer"
             href="https://t.me/CryptocurrenciesAi"
           >
-            <StyledImg src={TelegramIcon} alt="telegram" />
+            <TelegramIcon />
           </StyledLink>
           <StyledLink
             target="_blank"
             rel="noopener noreferrer"
             href="https://discord.gg/2EaKvrs"
           >
-            <StyledImg src={DiscordIcon} alt="discord" />
+            <DiscordIcon />
           </StyledLink>
         </Socials>
     </footer>

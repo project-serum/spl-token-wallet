@@ -1,6 +1,13 @@
 import React from 'react';
+import styled from 'styled-components'
 import { Dialog } from '@material-ui/core';
 import { Card } from '../../commonStyles';
+
+const StyledCard = styled(Card)`
+  && {
+    max-width: 100%;
+  }
+`
 
 export default function DialogForm({
   open,
@@ -13,7 +20,7 @@ export default function DialogForm({
   return (
     <Dialog
       open={open}
-      PaperComponent={Card}
+      PaperComponent={StyledCard}
       PaperProps={{
         component: 'form',
         onSubmit: (e) => {
@@ -26,6 +33,7 @@ export default function DialogForm({
         height: rest.height,
         width: rest.width,
         padding: rest.padding,
+        maxWidth: '100%'
       }}
       onClose={onClose}
       // fullScreen={fullScreen}

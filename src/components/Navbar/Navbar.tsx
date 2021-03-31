@@ -13,13 +13,13 @@ import {
 import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
-import WalletLogo from '../../images/logo.svg';
 import WalletIcon from '../../images/walletIcon.svg';
 import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
 import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import LogoComponent from '../Logo';
 
 const ButtonsContainer = styled(Row)`
   @media (max-width: 1200px) {
@@ -138,14 +138,7 @@ const Navbar = () => {
               padding: '0.5rem 0',
             }}
           >
-            <img
-              style={{
-                width: '100%',
-                height: 'auto',
-              }}
-              alt="logo"
-              src={WalletLogo}
-            />
+            <LogoComponent width="100%" height="auto" margin="0" />
           </Link>
           <RowContainer
             padding={'1rem 4rem 1rem 4rem'}

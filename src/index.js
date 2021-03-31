@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { hot } from 'react-hot-loader';
-import './index.css';
 import App from './App.tsx';
 import * as serviceWorker from './serviceWorker';
 

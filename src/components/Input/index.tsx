@@ -9,12 +9,16 @@ import {
   ContainerForIcon,
   Title,
 } from '../../pages/commonStyles';
-import Eye from '../../images/Eye.svg';
-import ClosedEye from '../../images/ClosedEye.svg';
+import Image from './Image'
 import Loupe from '../../images/Loupe.svg';
 import Copy from '../../images/copy.svg';
 import { useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
+
+const ImagesPath = {
+  closedEye: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxOCAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjUgNi41QzExLjUgNy4xNjMwNCAxMS4yMzY2IDcuNzk4OTMgMTAuNzY3OCA4LjI2Nzc3QzEwLjI5ODkgOC43MzY2MSA5LjY2MzA0IDkgOSA5QzguMzM2OTYgOSA3LjcwMTA3IDguNzM2NjEgNy4yMzIyMyA4LjI2Nzc3QzYuNzYzMzkgNy43OTg5MyA2LjUgNy4xNjMwNCA2LjUgNi41QzYuNSA1LjgzNjk2IDYuNzYzMzkgNS4yMDEwNyA3LjIzMjIzIDQuNzMyMjNDNy43MDEwNyA0LjI2MzM5IDguMzM2OTYgNCA5IDRDOS42NjMwNCA0IDEwLjI5ODkgNC4yNjMzOSAxMC43Njc4IDQuNzMyMjNDMTEuMjM2NiA1LjIwMTA3IDExLjUgNS44MzY5NiAxMS41IDYuNVoiIGZpbGw9IiM5Njk5OUMiLz4KPHBhdGggZD0iTTEgNi41QzEgNi41IDQgMSA5IDFDMTQgMSAxNyA2LjUgMTcgNi41QzE3IDYuNSAxNCAxMiA5IDEyQzQgMTIgMSA2LjUgMSA2LjVaTTkgMTBDOS45MjgyNiAxMCAxMC44MTg1IDkuNjMxMjUgMTEuNDc0OSA4Ljk3NDg3QzEyLjEzMTMgOC4zMTg1IDEyLjUgNy40MjgyNiAxMi41IDYuNUMxMi41IDUuNTcxNzQgMTIuMTMxMyA0LjY4MTUgMTEuNDc0OSA0LjAyNTEzQzEwLjgxODUgMy4zNjg3NSA5LjkyODI2IDMgOSAzQzguMDcxNzQgMyA3LjE4MTUgMy4zNjg3NSA2LjUyNTEzIDQuMDI1MTNDNS44Njg3NSA0LjY4MTUgNS41IDUuNTcxNzQgNS41IDYuNUM1LjUgNy40MjgyNiA1Ljg2ODc1IDguMzE4NSA2LjUyNTEzIDguOTc0ODdDNy4xODE1IDkuNjMxMjUgOC4wNzE3NCAxMCA5IDEwWiIgZmlsbD0iIzk2OTk5QyIvPgo8cGF0aCBkPSJNMSAxMkwxNyAxIiBzdHJva2U9IiMzQTQ3NUMiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K",
+  eye: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTEiIHZpZXdCb3g9IjAgMCAxNiAxMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwLjUgNS41QzEwLjUgNi4xNjMwNCAxMC4yMzY2IDYuNzk4OTMgOS43Njc3NyA3LjI2Nzc3QzkuMjk4OTMgNy43MzY2MSA4LjY2MzA0IDggOCA4QzcuMzM2OTYgOCA2LjcwMTA3IDcuNzM2NjEgNi4yMzIyMyA3LjI2Nzc3QzUuNzYzMzkgNi43OTg5MyA1LjUgNi4xNjMwNCA1LjUgNS41QzUuNSA0LjgzNjk2IDUuNzYzMzkgNC4yMDEwNyA2LjIzMjIzIDMuNzMyMjNDNi43MDEwNyAzLjI2MzM5IDcuMzM2OTYgMyA4IDNDOC42NjMwNCAzIDkuMjk4OTMgMy4yNjMzOSA5Ljc2Nzc3IDMuNzMyMjNDMTAuMjM2NiA0LjIwMTA3IDEwLjUgNC44MzY5NiAxMC41IDUuNVoiIGZpbGw9IiM5Njk5OUMiLz4KPHBhdGggZD0iTTAgNS41QzAgNS41IDMgMCA4IDBDMTMgMCAxNiA1LjUgMTYgNS41QzE2IDUuNSAxMyAxMSA4IDExQzMgMTEgMCA1LjUgMCA1LjVaTTggOUM4LjkyODI2IDkgOS44MTg1IDguNjMxMjUgMTAuNDc0OSA3Ljk3NDg3QzExLjEzMTMgNy4zMTg1IDExLjUgNi40MjgyNiAxMS41IDUuNUMxMS41IDQuNTcxNzQgMTEuMTMxMyAzLjY4MTUgMTAuNDc0OSAzLjAyNTEzQzkuODE4NSAyLjM2ODc1IDguOTI4MjYgMiA4IDJDNy4wNzE3NCAyIDYuMTgxNSAyLjM2ODc1IDUuNTI1MTMgMy4wMjUxM0M0Ljg2ODc1IDMuNjgxNSA0LjUgNC41NzE3NCA0LjUgNS41QzQuNSA2LjQyODI2IDQuODY4NzUgNy4zMTg1IDUuNTI1MTMgNy45NzQ4N0M2LjE4MTUgOC42MzEyNSA3LjA3MTc0IDkgOCA5WiIgZmlsbD0iIzk2OTk5QyIvPgo8L3N2Zz4K",
+}
 
 const InputWithComponent = ({
   type = 'text',
@@ -88,14 +92,14 @@ const InputWithEye = ({
     <InputWithComponent
       autoFocus={true}
       ComponentToShow={
-        <img
+        <Image
           style={{
             padding: '1.6rem 2rem 1.4rem 2rem',
             cursor: 'pointer',
             height: '4.5rem',
           }}
           onClick={onEyeClick}
-          src={showPassword ? ClosedEye : Eye}
+          src={showPassword ? ImagesPath.closedEye : ImagesPath.eye}
           alt="eye"
         />
       }
@@ -121,7 +125,6 @@ const InputWithPaste = ({
   onKeyDown?: (e: any) => void
 }) => {
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <InputWithComponent
@@ -130,7 +133,6 @@ const InputWithPaste = ({
           color={theme.customPalette.blue.new}
           onClick={() => {
             onPasteClick()
-            enqueueSnackbar("Pasted!", { variant: 'success' });
           }}
           style={{ padding: '1.2rem 2rem' }}
         >
@@ -157,7 +159,6 @@ const InputWithMax = ({
   containerStyle?: any
 }) => {
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <InputWithComponent
@@ -168,7 +169,6 @@ const InputWithMax = ({
           color={theme.customPalette.blue.new}
           onClick={() => {
             onMaxClick()
-            enqueueSnackbar("Set!", { variant: 'success' });
           }}
           style={{ padding: '1.2rem 2rem 1.2rem .5rem', whiteSpace: 'nowrap' }}
         >

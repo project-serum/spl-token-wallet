@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components'
 import { storeMnemonicAndSeed } from '../../utils/wallet-seed';
 import {
   getAccountFromSeed,
@@ -23,10 +24,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@material-ui/core/Link';
 
-import TokenIcon from '../../components/TokenIcon';
+import CubeLogo from '../../images/cubeLogo.png';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
+import AttentionComponent from '../../components/Attention';
+
+const StyledRowContainer = styled(RowContainer)`
+  & svg {
+    top: auto;
+  }
+`
 
 export default function DerivedAccounts({
   goBack,
@@ -71,27 +79,37 @@ export default function DerivedAccounts({
   // };
 
   return (
-    <Card height="50rem">
+    <Card height="auto" padding="2rem 0">
       <RowContainer width="90%" direction="column">
-        <RowContainer justify="space-between" margin="0 0 2rem 0">
+        <StyledRowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
-          <FormControl variant="outlined">
+          <FormControl variant="outlined" style={{ borderColor: '#fff' }}>
             <Select
+              style={{ borderColor: '#fff', fontSize: '1.3rem' }}
               value={dPathMenuItem}
               onChange={(e: any) => setDPathMenuItem(e.target.value)}
             >
-              <MenuItem value={DerivationPathMenuItem.Bip44Change}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Bip44Change}
+              >
                 {`m/44'/501'/0'/0'`}
               </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Bip44}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Bip44}
+              >
                 {`m/44'/501'/0'`}
               </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Deprecated}>
+              <MenuItem
+                style={{ fontSize: '1.3rem' }}
+                value={DerivationPathMenuItem.Deprecated}
+              >
                 {`m/501'/0'/0/0 (deprecated)`}
               </MenuItem>
             </Select>
           </FormControl>
-        </RowContainer>
+        </StyledRowContainer>
         <div
           style={{
             overflowY: 'auto',
@@ -99,6 +117,7 @@ export default function DerivedAccounts({
             margin: '0 0 2rem 0',
             width: '100%',
             padding: '0 2rem',
+            background: '#383B45',
           }}
         >
           {accounts.map((acc: any) => {
@@ -128,7 +147,16 @@ export default function DerivedAccounts({
           })}
         </div>
 
-        <RowContainer justify="space-between">
+        <AttentionComponent
+          blockHeight={'auto'}
+          iconStyle={{ margin: '0 3rem' }}
+          textStyle={{ padding: '1rem 1rem 1rem 0' }}
+          text={
+            'Only the first account in the list will be restored automatically. To restore the rest of the accounts - continue to create new accounts through the wallet interface. '
+          }
+        />
+
+        <RowContainer justify="space-between" margin="2rem 0 0 0">
           <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={goBack}>
             Back
           </WhiteButton>
@@ -186,9 +214,13 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
 
   return (
     <RowContainer>
-      <TokenIcon mint={mint} tokenName={tokenName} size={'2.8rem'} />
+      <img
+        src={CubeLogo}
+        alt={'logo'}
+        style={{ borderRadius: '0', height: '100%' }}
+      />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
-        <Title color={theme.customPalette.blue.serum}>{`${stripDigitPlaces(
+        <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
           amount / Math.pow(10, decimals),
           decimals,
         )} ${tokenName ?? abbreviateAddress(mint)} ${

@@ -37,9 +37,7 @@ const ProgressBar = styled.div`
       ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
       : props.currentStep === 2
       ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
-      : props.currentStep === 3
-      ? '#366CE5'
-      : '#93A0B2'};
+      : 'linear-gradient(90deg, #366CE5, #366CE5 51%, #366CE5 90%)'};
   border-image-slice: 1;
   z-index: -1;
 `;
@@ -71,13 +69,38 @@ const Steps = styled.div`
   background: ${(props) => (props.isCompleted ? '#366CE5' : 'none')};
 `;
 
-const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
+const StepContainer = styled.div`
+  position: relative;
+`;
+
+const AlignedTitle = styled(Title)`
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 1rem);
+  transform: translateX(-50%);
+  white-space: nowrap;
+`;
+
+const ProgressBarComponent = ({
+  currentStep,
+  firstStepText = 'Create Password',
+  secondStepText = 'Confirm Seed Phrase',
+  thirdStepText = 'Add Tokens',
+  style = {},
+}: {
+  currentStep: number;
+  firstStepText?: string;
+  secondStepText?: string;
+  thirdStepText?: string;
+  style?: any;
+}) => {
   return (
     <RowContainer
       direction={'row'}
       justify={'flex-start'}
       align={'baseline'}
-      margin={'0 0 7rem 0'}
+      padding={'0 0 7rem 0'}
+      style={{ ...style }}
     >
       <ProgressBarContainer>
         <ProgressBar currentStep={currentStep}>
@@ -85,7 +108,7 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
         </ProgressBar>
 
         <Steps isCompleted={currentStep === 3}>
-          <div>
+          <StepContainer>
             {' '}
             <Step
               isCompleted={currentStep > 1}
@@ -94,19 +117,9 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
             >
               1
             </Step>
-            <Title
-              style={{
-                position: 'absolute',
-                width: '11rem',
-                right: '33rem',
-                top: '2.5rem',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Create Password
-            </Title>
-          </div>
-          <div>
+            <AlignedTitle>{firstStepText}</AlignedTitle>
+          </StepContainer>
+          <StepContainer>
             <Step
               isCompleted={currentStep > 2}
               isSelected={currentStep === 2}
@@ -114,34 +127,18 @@ const ProgressBarComponent = ({ currentStep }: { currentStep: number }) => {
             >
               2
             </Step>
-            <Title
-              style={{
-                position: 'absolute',
-                width: '14rem',
-                right: '13rem',
-                top: '2.5rem',
-                whiteSpace: 'nowrap',
-              }}
+            <AlignedTitle>{secondStepText}</AlignedTitle>
+          </StepContainer>
+          <StepContainer>
+            <Step
+              isCompleted={currentStep > 3}
+              isSelected={currentStep === 3}
+              id="3"
             >
-              Confirm Seed Phrase
-            </Title>
-          </div>
-          <div>
-            <Step isSelected={currentStep === 3} id="3">
               3
             </Step>
-            <Title
-              style={{
-                position: 'absolute',
-                width: '8rem',
-                left: '34rem',
-                top: '2.5rem',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Add Tokens
-            </Title>
-          </div>
+            <AlignedTitle>{thirdStepText}</AlignedTitle>
+          </StepContainer>
         </Steps>
       </ProgressBarContainer>
     </RowContainer>

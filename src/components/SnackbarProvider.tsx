@@ -8,15 +8,15 @@ import errorIcon from '../images/errorIcon.svg';
 import successIcon from '../images/successIcon.svg';
 import infoIcon from '../images/infoIcon.svg';
 
-const canselStyeles = (theme) => ({
+const cancelStyles = (theme) => ({
   icon: {
     fontSize: 20,
     color: '#fff'
   },
 });
 
-const CloseButton = withStyles(canselStyeles)((props: any): any => {
-  return <IconButton key="close" aria-label="Close" color="inherit" {...props}>
+const CloseButton = withStyles(cancelStyles)((props: any): any => {
+  return <IconButton key="close" aria-label="Close" {...props}>
     <CloseIcon className={props.classes.icon} />
   </IconButton>
 });

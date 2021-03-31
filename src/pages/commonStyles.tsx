@@ -132,6 +132,7 @@ export const Card = styled.div`
   flex-direction: column;
   align-items: center;
   transition: 0.3s all ease-out;
+  
 `;
 
 export const Input = styled(({ ...props }) => (

@@ -139,4 +139,7 @@ const AccountInfo = () => {
   );
 };
 
-export default AccountInfo;
+export default React.memo(AccountInfo, (prev, next) => {
+  return true
+});
+

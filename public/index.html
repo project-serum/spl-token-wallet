@@ -38,30 +38,28 @@
     />
 
     <link
-    rel="preload"
-    as="font"
-    href="/fonts/AvenirNextCyr-Bold.woff2"
-    type="font/woff2"
-    crossorigin="anonymous"
-  />
+      rel="preload"
+      as="font"
+      href="/fonts/AvenirNextCyr-Bold.woff2"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
 
     <link
-    rel="preload"
-    as="font"
-    href="/fonts/AvenirNextCyr-Medium.woff2"
-    type="font/woff2"
-    crossorigin="anonymous"
-  />
+      rel="preload"
+      as="font"
+      href="/fonts/AvenirNextCyr-Medium.woff2"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
 
-  <link
-  rel="preload"
-  as="font"
-  href="/fonts/AvenirNextCyr-Regular.woff2"
-  type="font/woff2"
-  crossorigin="anonymous"
-/>
-
-
+    <link
+      rel="preload"
+      as="font"
+      href="/fonts/AvenirNextCyr-Regular.woff2"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
 
     <title>Wallet by Cryptocurrencies.Ai</title>
     <style>
@@ -111,6 +109,89 @@
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
           U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
           U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      html {
+        font-size: 10px;
+      }
+
+      @media screen and (max-width: 1600px) {
+        html {
+          font-size: 9px;
+        }
+      }
+
+      @media screen and (max-width: 1440px) {
+        html {
+          font-size: 8px;
+        }
+      }
+
+
+      @media screen and (min-width: 1920px) {
+        html {
+          font-size: 11px;
+        }
+      }
+
+      @media screen and (min-width: 2200px) {
+        html {
+          font-size: 13px;
+        }
+      }
+
+      @media screen and (min-width: 2400px) {
+        html {
+          font-size: 14px;
+        }
+      }
+
+      @media screen and (min-width: 2560px) {
+        html {
+          font-size: 15px;
+        }
+      }
+
+
+
+      body {
+        margin: 0;
+        font-family: 'Avenir Next Medium';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: #17181a !important;
+      }
+
+      html,
+      body,
+      #root {
+        height: 100%;
+      }
+
+      a, a:hover {
+        text-decoration: none;
+      }
+
+      input, textarea {
+        resize: none;
+      }
+
+      .MuiTabs-indicator.MuiTabs-indicator  {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar {
+        width: 1px;
+        height: 1px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #366CE5;
+      }
+
+      #client-snackbar {
+        font-size: 1.6rem;
+        color: #fff;
       }
     
     </style>
