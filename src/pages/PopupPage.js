@@ -80,7 +80,7 @@ export default function PopupPage({ opener }) {
         }
       });
     }
-  }, [origin, setWalletSelector, selectedWallet]);
+  }, [origin]);
 
   // (Extension only) Set wallet once connectedWallet is retrieved.
   useEffect(() => {
@@ -136,6 +136,35 @@ export default function PopupPage({ opener }) {
 
   const request = requests[0];
   const popRequest = () => setRequests((requests) => requests.slice(1));
+
+  // TODO TEST ON SOLLET.IO VERSION
+  const { messages, messageDisplay } = useMemo(() => {
+    if (!request || request.method === 'connect') {
+      return { messages: [], messageDisplay: 'tx' }
+    }
+    switch (request.method) {
+      case 'signTransaction':
+        return {
+          messages: [bs58.decode(request.params.message)],
+          messageDisplay: 'tx',
+        };
+      case 'signAllTransactions':
+        return {
+          messages: request.params.messages.map((m) => bs58.decode(m)),
+          messageDisplay: 'tx',
+        };
+      case 'sign':
+        if (!(request.params.data instanceof Uint8Array)) {
+          throw new Error('Data must be an instance of Uint8Array');
+        }
+        return {
+          messages: [request.params.data],
+          messageDisplay: request.params.display === 'utf8' ? 'utf8' : 'hex',
+        }
+      default:
+        throw new Error('Unexpected method: ' + request.method);
+    }
+  }, [request]);
 
   if (hasConnectedAccount && requests.length === 0) {
     if (isExtension) {
@@ -206,27 +235,6 @@ export default function PopupPage({ opener }) {
       request.method === 'sign') &&
       wallet,
   );
-
-  let messages, messageDisplay;
-  switch (request.method) {
-    case 'signTransaction':
-      messages = [bs58.decode(request.params.message)];
-      messageDisplay = 'tx';
-      break;
-    case 'signAllTransactions':
-      messages = request.params.messages.map((m) => bs58.decode(m));
-      messageDisplay = 'tx';
-      break;
-    case 'sign':
-      if (!(request.params.data instanceof Uint8Array)) {
-        throw new Error('Data must be an instance of Uint8Array');
-      }
-      messages = [request.params.data];
-      messageDisplay = request.params.display === 'utf8' ? 'utf8' : 'hex';
-      break;
-    default:
-      throw new Error('Unexpected method: ' + request.method);
-  }
 
   async function onApprove() {
     popRequest();
