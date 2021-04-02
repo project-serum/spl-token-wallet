@@ -39,7 +39,7 @@ const StyledButton = styled(Button)`
 `;
 
 const StyledLink = styled.a`
-  height: 100%:
+  height: 100%;
 `;
 
 const SButton = styled(
