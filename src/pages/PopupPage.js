@@ -49,7 +49,6 @@ export default function PopupPage({ opener }) {
 
   const [connectedAccount, setConnectedAccount] = useState(null);
   const hasConnectedAccount = !!connectedAccount;
-
   const [requests, setRequests] = useState(getInitialRequests);
   const [autoApprove, setAutoApprove] = useState(false);
   const postMessage = useCallback(
@@ -65,6 +64,22 @@ export default function PopupPage({ opener }) {
     },
     [opener, origin],
   );
+
+  // Hack to keep selectedWallet and wallet in sync. TODO: remove this block.
+  useEffect(() => {
+    if (!isExtension) {
+      if (!wallet) {
+        setWallet(selectedWallet);
+      } else if (!wallet.publicKey.equals(selectedWallet.publicKey)) {
+        setWallet(selectedWallet);
+      }
+    }
+  }, [
+    wallet,
+    wallet.publicKey,
+    selectedWallet,
+    selectedWallet.publicKey,
+  ]);
 
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
@@ -254,9 +269,19 @@ export default function PopupPage({ opener }) {
   }
 
   async function sendAllSignatures(messages) {
-    const signatures = await Promise.all(
-      messages.map((m) => wallet.createSignature(m)),
-    );
+    console.log('wallet', wallet);
+    let signatures;
+    // Ledger must sign one by one.
+    if (wallet.type === 'ledger') {
+      signatures = [];
+      for (let k = 0; k < messages.length; k += 1) {
+        signatures.push(await wallet.createSignature(messages[k]));
+      }
+    } else {
+      signatures = await Promise.all(
+        messages.map((m) => wallet.createSignature(m)),
+      );
+    }
     postMessage({
       result: {
         signatures,
@@ -344,11 +369,11 @@ const useStyles = makeStyles((theme) => ({
 
 function ApproveConnectionForm({ origin, onApprove }) {
   const wallet = useWallet();
-  const { accounts } = useWalletSelector();
+  const { accounts, hardwareWalletAccount } = useWalletSelector();
   // TODO better way to do this
-  const account = accounts.find((account) =>
-    account.address.equals(wallet.publicKey),
-  );
+  const account = accounts
+    .concat([hardwareWalletAccount])
+    .find((account) => account && account.address.equals(wallet.publicKey));
   const classes = useStyles();
   const [autoApprove, setAutoApprove] = useState(false);
   let [dismissed, setDismissed] = useLocalStorageState(
