@@ -363,7 +363,14 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { amount, decimals, mint, tokenName, tokenSymbol, tokenLogoUri } = balanceInfo;
+  let {
+    amount,
+    decimals,
+    mint,
+    tokenName,
+    tokenSymbol,
+    tokenLogoUri,
+  } = balanceInfo;
   tokenName = tokenName ?? abbreviateAddress(mint);
   let displayName;
   if (isExtensionWidth) {
@@ -450,7 +457,12 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     <>
       <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
-          <TokenIcon mint={mint} tokenName={tokenName} url={tokenLogoUri} size={28} />
+          <TokenIcon
+            mint={mint}
+            tokenName={tokenName}
+            url={tokenLogoUri}
+            size={28}
+          />
         </ListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
           <ListItemText
@@ -479,13 +491,15 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
         </div>
         {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <BalanceListItemDetails
-          publicKey={publicKey}
-          serumMarkets={serumMarkets}
-          balanceInfo={balanceInfo}
-        />
-      </Collapse>
+      {expandable && (
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <BalanceListItemDetails
+            publicKey={publicKey}
+            serumMarkets={serumMarkets}
+            balanceInfo={balanceInfo}
+          />
+        </Collapse>
+      )}
     </>
   );
 }
