@@ -211,7 +211,9 @@ export default function PopupPage({ origin }) {
 
   return (
     <RowContainer height={'calc(100% - 6rem)'}>
-      <Title>Please keep this window open in the background.</Title>
+      <Title style={{ fontSize: '2rem' }}>
+        Please keep this window open in the background.
+      </Title>
     </RowContainer>
   );
 }
