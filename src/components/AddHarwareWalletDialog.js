@@ -15,23 +15,86 @@ import {
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useSnackbar } from 'notistack';
 
+const AddHardwareView = {
+  Splash: 0,
+  Accounts: 1,
+  Confirm: 2,
+};
+
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
-  const [showAccounts, setShowAccounts] = useState(false);
+  const [view, setView] = useState(AddHardwareView.Splash);
+  const [hardwareAccount, setHardwareAccount] = useState(null);
   return (
     <DialogForm onClose={onClose} open={open} onEnter={() => {}} fullWidth>
-      {showAccounts ? (
-        <LedgerAccounts onAdd={onAdd} open={open} onClose={onClose} />
-      ) : (
+      {view === AddHardwareView.Splash ? (
         <AddHardwareWalletSplash
           onClose={onClose}
-          onAccept={() => setShowAccounts(true)}
+          onContinue={() => setView(AddHardwareView.Accounts)}
+        />
+      ) : view === AddHardwareView.Accounts ? (
+        <LedgerAccounts
+          onContinue={(account) => {
+            setHardwareAccount(account);
+            setView(AddHardwareView.Confirm);
+          }}
+          open={open}
+          onClose={onClose}
+        />
+      ) : (
+        <ConfirmHardwareWallet
+          account={hardwareAccount}
+          onDone={() => {
+            onAdd(hardwareAccount);
+            onClose();
+            setView(AddHardwareView.Splash);
+          }}
+          onBack={() => {
+            setView(AddHardwareView.Accounts);
+          }}
         />
       )}
     </DialogForm>
   );
 }
 
-function AddHardwareWalletSplash({ onAccept, onClose }) {
+function ConfirmHardwareWallet({ account, onDone, onBack }) {
+  const [didConfirm, setDidConfirm] = useState(false);
+  useEffect(() => {
+    if (!didConfirm) {
+      account.provider
+        .confirmPublicKey()
+        .then(() => setDidConfirm(true))
+        .catch((err) => {
+          console.error('Error confirming', err);
+          onBack();
+        });
+    }
+  });
+  return (
+    <>
+      <DialogTitle>Confirm your wallet address</DialogTitle>
+      <DialogContent style={{ paddingTop: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography fontWeight="fontWeightBold">
+            Check your ledger and confirm the address displayed is the address
+            chosen. Then click "done".
+          </Typography>
+          <Typography>{account.publicKey.toString()}</Typography>
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button color="primary" onClick={onBack}>
+          Back
+        </Button>
+        <Button color="primary" onClick={onDone} disabled={!didConfirm}>
+          Done
+        </Button>
+      </DialogActions>
+    </>
+  );
+}
+
+function AddHardwareWalletSplash({ onContinue, onClose }) {
   return (
     <>
       <DialogTitle>Add hardware wallet</DialogTitle>
@@ -52,7 +115,7 @@ function AddHardwareWalletSplash({ onAccept, onClose }) {
         <Button color="primary" onClick={onClose}>
           Cancel
         </Button>
-        <Button color="primary" onClick={onAccept}>
+        <Button color="primary" onClick={onContinue}>
           Continue
         </Button>
       </DialogActions>
@@ -60,20 +123,20 @@ function AddHardwareWalletSplash({ onAccept, onClose }) {
   );
 }
 
-function LedgerAccounts({ onAdd, onClose, open }) {
+function LedgerAccounts({ onContinue, onClose, open }) {
   const [dPathMenuItem, setDPathMenuItem] = useState(
     DerivationPathMenuItem.Bip44Root,
   );
   const { enqueueSnackbar } = useSnackbar();
   const [accounts, setAccounts] = useState(null);
   const onClick = (provider) => {
-    onAdd({
+    onContinue({
+      provider,
       publicKey: provider.pubKey,
       derivationPath: provider.derivationPath,
       account: provider.account,
       change: provider.change,
     });
-    onClose();
   };
   useEffect(() => {
     if (open) {

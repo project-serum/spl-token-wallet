@@ -4,6 +4,7 @@ import {
   solana_derivation_path,
   solana_ledger_sign_bytes,
   solana_ledger_sign_transaction,
+  solana_ledger_confirm_public_key,
 } from './ledger-core';
 import { DERIVATION_PATH } from './localStorage';
 import bs58 from 'bs58';
@@ -39,10 +40,9 @@ export class LedgerWalletProvider {
   }
 
   signTransaction = async (transaction) => {
-    const from_derivation_path = this.solanaDerivationPath;
     const sig_bytes = await solana_ledger_sign_transaction(
       this.transport,
-      from_derivation_path,
+      this.solanaDerivationPath,
       transaction,
     );
     transaction.addSignature(this.publicKey, sig_bytes);
@@ -50,12 +50,18 @@ export class LedgerWalletProvider {
   };
 
   createSignature = async (message) => {
-    const from_derivation_path = solana_derivation_path();
     const sig_bytes = await solana_ledger_sign_bytes(
       this.transport,
-      from_derivation_path,
+      this.solanaDerivationpath,
       message,
     );
     return bs58.encode(sig_bytes);
+  };
+
+  confirmPublicKey = async () => {
+    return await solana_ledger_confirm_public_key(
+      this.transport,
+      this.solanaDerivationPath,
+    );
   };
 }

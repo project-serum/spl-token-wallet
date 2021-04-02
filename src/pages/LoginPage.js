@@ -275,9 +275,10 @@ function RestoreWalletForm({ goBack }) {
               Restore your wallet using your twelve or twenty-four seed words.
               Note that this will delete any existing wallet on this device.
             </Typography>
+            <br />
             <Typography fontWeight="fontWeightBold">
-              Do not enter your hardware wallet seedphrase here. Hardware
-              wallets must be configured after a web wallet is created.
+              <b>Do not enter your hardware wallet seedphrase here.</b> Hardware
+              wallets can be optionally connected after a web wallet is created.
             </Typography>
             <TextField
               variant="outlined"
