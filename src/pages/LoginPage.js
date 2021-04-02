@@ -10,7 +10,6 @@ import {
   getAccountFromSeed,
   DERIVATION_PATH,
 } from '../utils/walletProvider/localStorage.js';
-import { useSolanaExplorerUrlSuffix } from '../utils/connection';
 import Container from '@material-ui/core/Container';
 import LoadingIndicator from '../components/LoadingIndicator';
 import { BalanceListItem } from '../components/BalancesList.js';
@@ -276,6 +275,11 @@ function RestoreWalletForm({ goBack }) {
               Restore your wallet using your twelve or twenty-four seed words.
               Note that this will delete any existing wallet on this device.
             </Typography>
+            <br />
+            <Typography fontWeight="fontWeightBold">
+              <b>Do not enter your hardware wallet seedphrase here.</b> Hardware
+              wallets can be optionally connected after a web wallet is created.
+            </Typography>
             <TextField
               variant="outlined"
               fullWidth
@@ -330,11 +334,9 @@ function RestoreWalletForm({ goBack }) {
 
 function DerivedAccounts({ goBack, mnemonic, seed, password }) {
   const callAsync = useCallAsync();
-  const urlSuffix = useSolanaExplorerUrlSuffix();
   const [dPathMenuItem, setDPathMenuItem] = useState(
     DerivationPathMenuItem.Bip44Change,
   );
-
   const accounts = [...Array(10)].map((_, idx) => {
     return getAccountFromSeed(
       Buffer.from(seed, 'hex'),
@@ -356,52 +358,12 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
 
   return (
     <Card>
-      <CardContent>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            Derivable Accounts
-          </Typography>
-          <FormControl variant="outlined">
-            <Select
-              value={dPathMenuItem}
-              onChange={(e) => setDPathMenuItem(e.target.value)}
-            >
-              <MenuItem value={DerivationPathMenuItem.Bip44Change}>
-                {`m/44'/501'/0'/0'`}
-              </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Bip44}>
-                {`m/44'/501'/0'`}
-              </MenuItem>
-              <MenuItem value={DerivationPathMenuItem.Deprecated}>
-                {`m/501'/0'/0/0 (deprecated)`}
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </div>
-        {accounts.map((acc) => {
-          return (
-            <Link
-              href={
-                `https://explorer.solana.com/account/${acc.publicKey.toBase58()}` +
-                urlSuffix
-              }
-              target="_blank"
-              rel="noopener"
-            >
-              <BalanceListItem
-                publicKey={acc.publicKey}
-                walletAccount={acc}
-                expandable={false}
-              />
-            </Link>
-          );
-        })}
-      </CardContent>
+      <AccountsSelector
+        showDeprecated={true}
+        accounts={accounts}
+        dPathMenuItem={dPathMenuItem}
+        setDPathMenuItem={setDPathMenuItem}
+      />
       <CardActions style={{ justifyContent: 'space-between' }}>
         <Button onClick={goBack}>Back</Button>
         <Button color="primary" onClick={submit}>
@@ -412,18 +374,80 @@ function DerivedAccounts({ goBack, mnemonic, seed, password }) {
   );
 }
 
+export function AccountsSelector({
+  showRoot,
+  showDeprecated,
+  accounts,
+  dPathMenuItem,
+  setDPathMenuItem,
+  onClick,
+}) {
+  return (
+    <CardContent>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          Derivable Accounts
+        </Typography>
+        <FormControl variant="outlined">
+          <Select
+            value={dPathMenuItem}
+            onChange={(e) => {
+              setDPathMenuItem(e.target.value);
+            }}
+          >
+            {showRoot && (
+              <MenuItem value={DerivationPathMenuItem.Bip44Root}>
+                {`m/44'/501'`}
+              </MenuItem>
+            )}
+            <MenuItem value={DerivationPathMenuItem.Bip44}>
+              {`m/44'/501'/0'`}
+            </MenuItem>
+            <MenuItem value={DerivationPathMenuItem.Bip44Change}>
+              {`m/44'/501'/0'/0'`}
+            </MenuItem>
+            {showDeprecated && (
+              <MenuItem value={DerivationPathMenuItem.Deprecated}>
+                {`m/501'/0'/0/0 (deprecated)`}
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
+      </div>
+      {accounts.map((acc) => {
+        return (
+          <div onClick={onClick ? () => onClick(acc) : {}}>
+            <BalanceListItem
+              key={acc.publicKey.toString()}
+              onClick={onClick}
+              publicKey={acc.publicKey}
+              expandable={false}
+            />
+          </div>
+        );
+      })}
+    </CardContent>
+  );
+}
+
 // Material UI's Select doesn't render properly when using an `undefined` value,
 // so we define this type and the subsequent `toDerivationPath` translator as a
 // workaround.
 //
 // DERIVATION_PATH.deprecated is always undefined.
-const DerivationPathMenuItem = {
+export const DerivationPathMenuItem = {
   Deprecated: 0,
   Bip44: 1,
   Bip44Change: 2,
+  Bip44Root: 3, // Ledger only.
 };
 
-function toDerivationPath(dPathMenuItem) {
+export function toDerivationPath(dPathMenuItem) {
   switch (dPathMenuItem) {
     case DerivationPathMenuItem.Deprecated:
       return DERIVATION_PATH.deprecated;
@@ -431,6 +455,8 @@ function toDerivationPath(dPathMenuItem) {
       return DERIVATION_PATH.bip44;
     case DerivationPathMenuItem.Bip44Change:
       return DERIVATION_PATH.bip44Change;
+    case DerivationPathMenuItem.Bip44Root:
+      return DERIVATION_PATH.bip44Root;
     default:
       throw new Error(`invalid derivation path: ${dPathMenuItem}`);
   }

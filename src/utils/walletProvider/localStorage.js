@@ -9,6 +9,7 @@ export const DERIVATION_PATH = {
   deprecated: undefined,
   bip44: 'bip44',
   bip44Change: 'bip44Change',
+  bip44Root: 'bip44Root', // Ledger only.
 };
 
 export function getAccountFromSeed(
