@@ -164,7 +164,7 @@ const Navbar = () => {
               </NavLinkButton>
             </StyledLink>
 
-            <Link to={`/`}>
+            <Link to={`/`} style={{ height: '100%' }}>
               <NavLinkButton
                 theme={theme}
                 pathname={location.pathname}
