@@ -172,7 +172,7 @@ export function WalletProvider({ children }) {
     {},
   );
   // `walletSelector` identifies which wallet to use.
-  const [walletSelector, setWalletSelector] = useLocalStorageState(
+  let [walletSelector, setWalletSelector] = useLocalStorageState(
     'walletSelector',
     DEFAULT_WALLET_SELECTOR,
   );
@@ -180,6 +180,11 @@ export function WalletProvider({ children }) {
 
   // `walletCount` is the number of HD wallets.
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
+
+  if (walletSelector.ledger && !_hardwareWalletAccount) {
+    walletSelector = DEFAULT_WALLET_SELECTOR;
+    setWalletSelector(DEFAULT_WALLET_SELECTOR);
+  }
 
   useEffect(() => {
     (async () => {
@@ -191,7 +196,7 @@ export function WalletProvider({ children }) {
         try {
           const onDisconnect = () => {
             setWalletSelector(DEFAULT_WALLET_SELECTOR);
-            setHardwareWalletAccount(undefined);
+            setHardwareWalletAccount(null);
           };
           const args = {
             onDisconnect,
@@ -208,7 +213,7 @@ export function WalletProvider({ children }) {
           }
           enqueueSnackbar(message, { variant: 'error' });
           setWalletSelector(DEFAULT_WALLET_SELECTOR);
-          setHardwareWalletAccount(undefined);
+          setHardwareWalletAccount(null);
           return;
         }
       }
@@ -246,7 +251,6 @@ export function WalletProvider({ children }) {
     enqueueSnackbar,
     derivationPath,
   ]);
-
   function addAccount({ name, importedAccount, ledger }) {
     if (importedAccount === undefined) {
       name && localStorage.setItem(`name${walletCount}`, name);

@@ -52,7 +52,7 @@ export class LedgerWalletProvider {
   createSignature = async (message) => {
     const sig_bytes = await solana_ledger_sign_bytes(
       this.transport,
-      this.solanaDerivationpath,
+      this.solanaDerivationPath,
       message,
     );
     return bs58.encode(sig_bytes);

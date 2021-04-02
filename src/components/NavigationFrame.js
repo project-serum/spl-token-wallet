@@ -244,6 +244,7 @@ function WalletSelector() {
     hardwareWalletAccount,
     setHardwareWalletAccount,
     setWalletSelector,
+    addAccount,
   } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -287,6 +288,7 @@ function WalletSelector() {
         open={addAccountOpen}
         onClose={() => setAddAccountOpen(false)}
         onAdd={({ name, importedAccount }) => {
+          addAccount({ name, importedAccount });
           setWalletSelector({
             walletIndex: importedAccount ? undefined : accounts.length,
             importedPubkey: importedAccount
