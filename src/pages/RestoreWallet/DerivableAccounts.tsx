@@ -24,7 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@material-ui/core/Link';
 
-import CubeLogo from '../../images/cubeLogo.png';
+import CubeLogo from '../../images/oldCubeLogo.svg';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';

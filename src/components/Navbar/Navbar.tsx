@@ -38,6 +38,10 @@ const StyledButton = styled(Button)`
   }
 `;
 
+const StyledLink = styled.a`
+  height: 100%:
+`;
+
 const SButton = styled(
   ({
     isActivePage,
@@ -88,7 +92,7 @@ const NavLinkButton = ({
   style,
   onClick,
 }: {
-  component: any;
+  component?: any;
   children: React.ReactChild;
   pathname: string;
   theme: Theme;
@@ -149,76 +153,57 @@ const Navbar = () => {
               borderLeft: theme.customPalette.border.main,
             }}
           >
-            {' '}
-            <NavLinkButton
-              theme={theme}
-              data-tut="farming"
-              pathname={location.pathname}
-              page={'home'}
-              component={(props) => (
-                <a href={`https://dex.cryptocurrencies.ai/`} {...props}>
-                  {props.children}
-                </a>
-              )}
+            <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
+              <NavLinkButton
+                theme={theme}
+                data-tut="farming"
+                pathname={location.pathname}
+                page={'home'}
+              >
+                Home
+              </NavLinkButton>
+            </StyledLink>
+
+            <Link to={`/`}>
+              <NavLinkButton
+                theme={theme}
+                pathname={location.pathname}
+                page={''}
+              >
+                Wallet
+              </NavLinkButton>
+            </Link>
+            <StyledLink
+              href={`https://dex.cryptocurrencies.ai/chart${
+                !!wallet ? '#connect_wallet' : ''
+              }`}
             >
-              Home
-            </NavLinkButton>
-            <NavLinkButton
-              theme={theme}
-              data-tut="farming"
-              pathname={location.pathname}
-              page={''}
-              component={(props) => <Link to={`/`} {...props} />}
-            >
-              Wallet
-            </NavLinkButton>
-            <NavLinkButton
-              theme={theme}
-              pathname={location.pathname}
-              page={'chart'}
-              component={(props) => (
-                <a
-                  href={`https://dex.cryptocurrencies.ai/chart${
-                    !!wallet ? '#connect_wallet' : ''
-                  }`}
-                  {...props}
-                >
-                  {props.children}
-                </a>
-              )}
-            >
-              Trading
-            </NavLinkButton>
-            <NavLinkButton
-              theme={theme}
-              page={'analytics'}
-              pathname={location.pathname}
-              component={(props) => (
-                <a
-                  href={`https://dex.cryptocurrencies.ai/analytics`}
-                  {...props}
-                >
-                  {props.children}
-                </a>
-              )}
-            >
-              Analytics
-            </NavLinkButton>
-            <NavLinkButton
-              theme={theme}
-              page={'addressbook'}
-              pathname={location.pathname}
-              component={(props) => (
-                <a
-                  href={`https://dex.cryptocurrencies.ai/addressbook`}
-                  {...props}
-                >
-                  {props.children}
-                </a>
-              )}
-            >
-              Addressbook
-            </NavLinkButton>
+              <NavLinkButton
+                theme={theme}
+                pathname={location.pathname}
+                page={'chart'}
+              >
+                Trading
+              </NavLinkButton>
+            </StyledLink>
+            <StyledLink href={`https://dex.cryptocurrencies.ai/analytics`}>
+              <NavLinkButton
+                theme={theme}
+                page={'analytics'}
+                pathname={location.pathname}
+              >
+                Analytics
+              </NavLinkButton>
+            </StyledLink>
+            <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
+              <NavLinkButton
+                theme={theme}
+                page={'addressbook'}
+                pathname={location.pathname}
+              >
+                Addressbook
+              </NavLinkButton>
+            </StyledLink>
           </RowContainer>
         </RowContainer>
         <Row height={'100%'}>
@@ -234,7 +219,7 @@ const Navbar = () => {
                 <Title fontSize="1rem" fontFamily="Avenir Next">
                   <span style={{ fontFamily: 'Avenir Next Demi' }}>
                     Wallet™
-                  </span>{' '}
+                  </span>
                   by Cryptocurrencies.Ai
                 </Title>
                 <Title

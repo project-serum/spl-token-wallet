@@ -34,16 +34,20 @@ export const serumMarkets = (() => {
 
 // Create a cached API wrapper to avoid rate limits.
 class PriceStore {
-  cache: {}
+  public cache: {}
 
   constructor() {
     this.cache = {};
   }
 
-  async getPrice(connection, marketName): Promise<number | undefined> {
+  public getFromCache(marketName: string) {
+    return this.cache[marketName]
+  }
+
+  public async getPrice(connection, marketName): Promise<number | undefined | null> {
     return new Promise((resolve, reject) => {
       if (connection._rpcEndpoint !== MAINNET_URL) {
-        resolve(undefined);
+        resolve(null);
         return;
       }
       if (this.cache[marketName] === undefined) {
@@ -51,8 +55,13 @@ class PriceStore {
         fetch(`${CORS_PROXY}https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
           (resp) => {
             resp.json().then((resp) => {
+              console.log('marketName', marketName, resp)
+              if (!resp || !resp.data || !resp.data.asks || !resp.data.bids) {
+                resolve(null)
+              }
+
               if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
-                resolve(undefined);
+                resolve(null);
               } else if (resp.data.asks.length === 0) {
                 resolve(resp.data.bids[0].price);
               } else if (resp.data.bids.length === 0) {
@@ -65,7 +74,9 @@ class PriceStore {
               }
             });
           },
-        );
+        ).catch(e => {
+          resolve(null)
+        });
       } else {
         return resolve(this.cache[marketName]);
       }

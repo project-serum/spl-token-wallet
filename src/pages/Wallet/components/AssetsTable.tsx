@@ -147,8 +147,6 @@ const AssetAmountUSD = styled(AssetAmount)`
 // all of their values in this object are not `undefined`.
 export const usdValues: any = {};
 
-export const totalUsdValue = Object.values(usdValues);
-
 // Calculating associated token addresses is an asynchronous operation, so we cache
 // the values so that we can quickly render components using them. This prevents
 // flickering for the associated token fingerprint icon.
@@ -243,13 +241,11 @@ const AssetsTable = ({
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
       usdValues[publicKey.toString()] = usdValue;
-      if (pairsIsLoaded(sortedPublicKeys, usdValues)) {
-        const totalUsdValue: any = sortedPublicKeys
-          .filter((pk) => usdValues[pk.toString()])
-          .map((pk) => usdValues[pk.toString()])
-          .reduce((a, b) => a + b, 0.0);
-        setTotalUSD(totalUsdValue);
-      }
+      const totalUsdValue: any = sortedPublicKeys
+        .filter((pk) => usdValues[pk.toString()])
+        .map((pk) => usdValues[pk.toString()])
+        .reduce((a, b) => a + b, 0.0);
+      setTotalUSD(totalUsdValue);
     },
     [sortedPublicKeys],
   );
@@ -333,23 +329,25 @@ const AssetsTable = ({
         height="calc(100% - 5rem)"
       >
         <StyledTable theme={theme}>
-          {memoizedAssetsList.map((MemoizedAsset, i) => (
-            <MemoizedAsset />
-          ))}
-          <StyledTr disableHover theme={theme}>
-            <StyledTd style={{ paddingLeft: '0' }}>
-              <RowContainer
-                width="14rem"
-                justify="flex-start"
-                style={{ height: '5rem', paddingLeft: '2rem' }}
-              >
-                <AddTokenButton
-                  setShowAddTokenDialog={setShowAddTokenDialog}
-                  theme={theme}
-                />
-              </RowContainer>
-            </StyledTd>
-          </StyledTr>
+          <tbody>
+            {memoizedAssetsList.map((MemoizedAsset, i) => (
+              <MemoizedAsset />
+            ))}
+            <StyledTr disableHover theme={theme}>
+              <StyledTd style={{ paddingLeft: '0' }}>
+                <RowContainer
+                  width="14rem"
+                  justify="flex-start"
+                  style={{ height: '5rem', paddingLeft: '2rem' }}
+                >
+                  <AddTokenButton
+                    setShowAddTokenDialog={setShowAddTokenDialog}
+                    theme={theme}
+                  />
+                </RowContainer>
+              </StyledTd>
+            </StyledTr>
+          </tbody>
         </StyledTable>
       </RowContainer>
     </TableContainer>
@@ -393,10 +391,10 @@ const AssetItem = ({
     tokenLogoUri: null,
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(undefined);
+  const [price, setPrice] = useState<number | null | undefined>(null);
 
   useEffect(() => {
-    if (balanceInfo) {
+    if (balanceInfo && !price) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
@@ -411,6 +409,7 @@ const AssetItem = ({
         // A Serum market exists. Fetch the price.
         else if (serumMarkets[coin]) {
           let m = serumMarkets[coin];
+
           priceStore
             .getPrice(connection, m.name)
             .then((price) => {
@@ -431,6 +430,8 @@ const AssetItem = ({
         setPrice(null);
       }
     }
+
+    return () => {};
   }, [price, balanceInfo, connection]);
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
@@ -441,7 +442,14 @@ const AssetItem = ({
   };
 
   let priceForCalculate =
-    price === null ? (!closePrice ? price : closePrice) : price;
+    price === null &&
+    !priceStore.getFromCache(
+      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
+    )
+      ? !closePrice
+        ? price
+        : closePrice
+      : price;
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
@@ -473,15 +481,20 @@ const AssetItem = ({
       ? undefined
       : priceForCalculate === null // Loaded and empty.
       ? null
-      : ((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
+      : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
-  // console.log('tokenSymbol', tokenSymbol, usdValue, priceForCalculate, amount, decimals)
-
+  // add saved usd value
   useEffect(() => {
-    if (usdValue !== undefined && usdValues !== null) {
-      setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
+    if (
+      usdValue !== undefined &&
+      usdValue !== null &&
+      usdValue !== usdValues[publicKey]
+    ) {
+      setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
-  }, [setUsdValue, usdValue, publicKey]);
+
+    return () => {};
+  }, [setUsdValue, publicKey, usdValue]);
 
   return (
     <StyledTr theme={theme}>
@@ -639,8 +652,8 @@ const AssetItem = ({
             target="_blank"
             disabled={
               !marketsData ||
-              !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) ||
-              !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
+              (!marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) &&
+                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`))
             }
             rel="noopener"
             href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}

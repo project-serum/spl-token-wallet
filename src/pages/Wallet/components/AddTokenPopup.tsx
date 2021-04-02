@@ -416,7 +416,7 @@ export function TokenListItem({
   return (
     <>
       <RowContainer
-        key={tokenName}
+        key={`${tokenName}${tokenSymbol}${mintAddress}`}
         justify="space-between"
         style={{
           borderBottom: theme.customPalette.border.new,
