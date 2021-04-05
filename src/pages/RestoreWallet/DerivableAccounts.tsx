@@ -217,7 +217,7 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
       <img
         src={CubeLogo}
         alt={'logo'}
-        style={{ borderRadius: '0', height: '100%' }}
+        style={{ borderRadius: '0', height: '6rem', padding: '1rem 0.5rem 1rem 2rem' }}
       />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
         <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
