@@ -244,7 +244,7 @@ const POPULAR_TOKENS = {
       mintAddress: '8PMHT4swUMtBzgHnh5U564N5sjPSiUz2cjEQzFnnP1Fo',
       tokenName: 'ROPE Token',
       icon:
-        'https://svgshare.com/i/Vqh.svg',
+        'https://ropesolana.com/content/files/rope_33_1.svg',
     },
   ],
 };
