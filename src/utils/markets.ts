@@ -55,9 +55,9 @@ class PriceStore {
         fetch(`${CORS_PROXY}https://serum-api.bonfida.com/orderbooks/${marketName}`).then(
           (resp) => {
             resp.json().then((resp) => {
-              console.log('marketName', marketName, resp)
               if (!resp || !resp.data || !resp.data.asks || !resp.data.bids) {
                 resolve(null)
+                return
               }
 
               if (resp.data.asks.length === 0 && resp.data.bids.length === 0) {
