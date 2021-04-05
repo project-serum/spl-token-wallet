@@ -18,7 +18,7 @@ import { useCallAsync } from '../../utils/notifications';
 import { DERIVATION_PATH } from '../../utils/walletProvider/localStorage';
 import FakeInputs from '../../components/FakeInputs';
 
-export const CreateWalletPage = () => {
+export const CreateWalletPage = ({ origin }: { origin?: string }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [password, setPassword] = useState('');
   const [isConfirmSeedPhrase, setIsConfirmSeedPhrase] = useState(false);
@@ -66,7 +66,7 @@ export const CreateWalletPage = () => {
         {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
 
         {currentStep === 0 ? (
-          <Warning onSubmit={() => setCurrentStep(1)} />
+          <Warning origin={origin} onSubmit={() => setCurrentStep(1)} />
         ) : currentStep === 1 ? (
           <CreatePassword
             password={password}

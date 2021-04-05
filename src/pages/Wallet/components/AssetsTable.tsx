@@ -530,7 +530,7 @@ const AssetItem = ({
           </Row>
         </RowContainer>
       </StyledTd>
-      <StyledTd>
+      <StyledTd style={{ paddingRight: '2rem' }}>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Amount:</GreyTitle>
           <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
@@ -539,7 +539,7 @@ const AssetItem = ({
           )}`}</AssetAmountUSD>
         </RowContainer>
       </StyledTd>
-      <StyledTd>
+      <StyledTd style={{ paddingRight: '2rem' }}>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>P&L 24h:</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">

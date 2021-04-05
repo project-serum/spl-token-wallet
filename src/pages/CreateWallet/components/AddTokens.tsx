@@ -25,7 +25,6 @@ import {
 } from '../../../utils/wallet';
 import {
   refreshAccountInfo,
-  useConnectionConfig,
 } from '../../../utils/connection';
 
 import {
@@ -37,7 +36,7 @@ import {
   formatNumberToUSFormat,
   stripDigitPlaces,
 } from '../../../utils/utils';
-import { TOKENS, useUpdateTokenName } from '../../../utils/tokens/names';
+import { usePopularTokens, useUpdateTokenName } from '../../../utils/tokens/names';
 import { useSendTransaction } from '../../../utils/notifications';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useAsyncData } from '../../../utils/fetch-loop';
@@ -57,11 +56,10 @@ const AddTokens = () => {
   const [walletAccounts] = useWalletTokenAccounts();
 
   const [sendTransaction, sending] = useSendTransaction();
-  const { endpoint } = useConnectionConfig();
 
   const [publicKeys] = useWalletPublicKeys();
   const sortedPublicKeys = Array.isArray(publicKeys) ? publicKeys : [];
-  const popularTokens = TOKENS[endpoint];
+  const popularTokens = usePopularTokens();
 
   const balanceInfo = useBalanceInfo(wallet.publicKey);
   let { amount, decimals } = balanceInfo || {
@@ -194,7 +192,6 @@ const AddTokens = () => {
             height={'96%'}
             direction={'column'}
           >
-            {' '}
             <Row margin={'1.5rem 0 0 0 '} width={'85%'} justify={'end'}>
               <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
                 Step 2:
@@ -230,7 +227,7 @@ const AddTokens = () => {
                       (searchValue !== ''
                         ? (
                             token.tokenName ??
-                            abbreviateAddress(token.mintAddress)
+                            abbreviateAddress(token.address)
                           )
                             .toLowerCase()
                             .includes(searchValue.toLowerCase()) ||
@@ -239,14 +236,14 @@ const AddTokens = () => {
                             .includes(searchValue.toLowerCase())
                         : true),
                   )
-
                   .map((token) => (
                     <TokenListItem
-                      key={token.mintAddress}
+                      key={token.address}
                       {...token}
+                      mintAddress={token.address}
                       existingAccount={(walletAccounts || []).find(
                         (account) =>
-                          account.parsed.mint.toBase58() === token.mintAddress,
+                          account.parsed.mint.toBase58() === token.address,
                       )}
                       onSubmit={onSubmit}
                       disalbed={sending}

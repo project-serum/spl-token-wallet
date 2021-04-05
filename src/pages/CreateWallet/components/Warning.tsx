@@ -17,9 +17,11 @@ import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
 const CreatePassword = ({
+  origin,
   onSubmit,
   showBottomLink = true,
 }: {
+  origin?: string;
   onSubmit: () => void;
   showBottomLink?: boolean;
 }) => {
@@ -28,6 +30,10 @@ const CreatePassword = ({
   const theme = useTheme();
 
   const submit = async () => {
+    if (!!origin) {
+      window.location.href += `#origin=${origin}`;
+    }
+
     await forgetWallet();
     await onSubmit();
   };

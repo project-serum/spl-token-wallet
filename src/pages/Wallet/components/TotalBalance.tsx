@@ -30,7 +30,7 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(undefined);
+  const [price, setPrice] = useState<number | null | undefined>(null);
   const connection = useConnection();
   const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
 

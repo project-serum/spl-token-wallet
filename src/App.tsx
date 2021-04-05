@@ -23,7 +23,7 @@ const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
-const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
+// const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 // const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
 declare module '@material-ui/core/styles/createMuiTheme' {
@@ -180,10 +180,15 @@ const Pages = () => {
     <Switch>
       {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
       <Route path="/wallet" component={Wallet} />
-      <Route path="/restore_wallet" component={RestorePage} />
+      <Route 
+        path="/restore_wallet" 
+        component={(props) => <RestorePage origin={origin} {...props} />}
+      />
       <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" component={CreateWalletPage} />
-      <Route path="/import_wallet" component={ImportWalletPage} />
+      <Route path="/create_wallet" 
+        component={(props) => <CreateWalletPage origin={origin} {...props} />}
+      />
+      {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
       <Route exact path="/welcome_back" component={WelcomeBackPage} />
       <Route
         path="/connect_popup"
