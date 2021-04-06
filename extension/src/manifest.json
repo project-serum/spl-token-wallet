@@ -16,9 +16,25 @@
     "persistent": false,
     "scripts": ["background.js"]
   },
-  "permissions": [
-    "storage"
-  ],
+		"permissions": [
+				"notifications",
+		"activeTab",
+		"contextMenus",
+		"storage",
+		"usb",
+    {
+		  "usbDevices": [
+		    {
+			    "vendorId": 11415,
+				  "productId": 1
+			  },
+			  {
+			    "vendorId": 11415,
+				  "productId": 4
+			  }
+		  ]
+		}
+	],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
@@ -32,4 +48,3 @@
   "web_accessible_resources": ["script.js"],
   "content_security_policy": "script-src 'self' 'sha256-ek+jXksbUr00x+EdLLqiv69t8hATh5rPjHVvVVGA9ms='; object-src 'self'"
 }
-  
