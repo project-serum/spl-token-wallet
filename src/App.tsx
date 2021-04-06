@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
@@ -183,12 +183,17 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  const origin = useMemo(() => {
+  
+  useEffect(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
-    return params.get('origin');
+    const origin = params.get('origin')
+    if (origin) {
+      localStorage.setItem('origin', origin)
+    } else {
+      localStorage.removeItem('origin')
+    }
+    return () => {};
   }, []);
-
-  console.log('origin', origin)
 
   return (
     <Switch>
@@ -196,17 +201,17 @@ const Pages = () => {
       <Route path="/wallet" component={Wallet} />
       <Route 
         path="/restore_wallet" 
-        component={(props) => <RestorePage origin={origin} {...props} />}
+        component={RestorePage}
       />
       <Route path="/welcome" component={WelcomePage} />
       <Route path="/create_wallet" 
-        component={(props) => <CreateWalletPage origin={origin} {...props} />}
+        component={CreateWalletPage}
       />
       {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
       <Route exact path="/welcome_back" component={WelcomeBackPage} />
       <Route
         path="/connect_popup"
-        component={(props) => <ConnectPopup origin={origin} {...props} />}
+        component={ConnectPopup}
       />
 
       {/* popup if connecting from dex UI */}

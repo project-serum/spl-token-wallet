@@ -25,7 +25,7 @@ import DerivableAccounts from './DerivableAccounts';
 import FakeInputs from '../../components/FakeInputs';
 import Warning from '../CreateWallet/components/Warning';
 
-export const RestorePage = ({ origin }: { origin?: string }) => {
+export const RestorePage = () => {
   const [redirectToWallet, setRedirectToWallet] = useState(false);
   const [showDerivation, setShowDerivation] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -50,13 +50,15 @@ export const RestorePage = ({ origin }: { origin?: string }) => {
     }
   };
 
+  console.log('restore re-render', redirectToWallet, origin)
+
   return (
     <Body>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
       <Logo margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} />
       {hasLockedMnemonicAndSeed() ? (
-        <Warning origin={origin} onSubmit={() => {}} showBottomLink={false} />
+        <Warning onSubmit={() => {}} showBottomLink={false} />
       ) : showDerivation ? (
         <DerivableAccounts
           goBack={() => setShowDerivation(false)}
