@@ -7,7 +7,7 @@ export default function ConnectPopupRoute({ match, origin }) {
     <Switch>
       <Route
         path={match.url}
-        component={(props) => <ConnectPopup origin={origin} {...props} />}
+        component={ConnectPopup}
       />
     </Switch>
   );

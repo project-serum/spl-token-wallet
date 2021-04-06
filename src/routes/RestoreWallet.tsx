@@ -1,11 +1,14 @@
-import * as React from 'react';
+import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { RestorePage } from '../pages/RestoreWallet/index';
 
-export default function LoginRoutes({ match, location }) {
+export default function RestoreWalletRoute({ match }) {
   return (
     <Switch>
-      <Route path={match.url} component={RestorePage} />
+      <Route
+        path={match.url}
+        component={RestorePage}
+      />
     </Switch>
   );
 }

@@ -16,12 +16,10 @@ import FakeInputs from '../../../components/FakeInputs';
 import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
-const CreatePassword = ({
-  origin,
+const Warning = ({
   onSubmit,
   showBottomLink = true,
 }: {
-  origin?: string;
   onSubmit: () => void;
   showBottomLink?: boolean;
 }) => {
@@ -30,7 +28,10 @@ const CreatePassword = ({
   const theme = useTheme();
 
   const submit = async () => {
+    const origin = localStorage.getItem('origin');
+    
     if (!!origin) {
+      console.log('add to location')
       window.location.href += `#origin=${origin}`;
     }
 
@@ -101,4 +102,4 @@ const CreatePassword = ({
   );
 };
 
-export default CreatePassword;
+export default Warning;
