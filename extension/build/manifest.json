@@ -1,6 +1,6 @@
 {
-  "name": "Sollet",
-  "description": "Solana SPL Token Wallet",
+  "name": "Cryptocurrencies.Ai",
+  "description": "Cryptocurrencies.Ai Wallet",
   "version": "0.1",
   "browser_action": {
     "default_popup": "index.html",
@@ -30,6 +30,6 @@
     }
   ],
   "web_accessible_resources": ["script.js"],
-  "content_security_policy": "script-src 'self' 'sha256-ek+jXksbUr00x+EdLLqiv69t8hATh5rPjHVvVVGA9ms='; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'sha256-U9RDYvtID6+AEcPXHjfR1dCKDHFrA1eAWcQ21us2qg4='; object-src 'self'"
 }
   
