@@ -30,6 +30,6 @@
     }
   ],
   "web_accessible_resources": ["script.js"],
-  "content_security_policy": "script-src 'self' 'sha256-U9RDYvtID6+AEcPXHjfR1dCKDHFrA1eAWcQ21us2qg4='; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'sha256-q5XKdSewfC//nmOZCEZcd+fR4ThVnOGNPXoJFnext20='; object-src 'self'"
 }
   

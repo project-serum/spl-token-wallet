@@ -127,6 +127,12 @@
         }
       }
 
+      @media screen and (max-width: 450px) {
+        html {
+          font-size: 7px;
+        }
+      }
+
 
       @media screen and (min-width: 1920px) {
         html {
@@ -152,8 +158,6 @@
         }
       }
 
-
-
       body {
         margin: 0;
         font-family: 'Avenir Next Medium';
@@ -166,6 +170,7 @@
       body,
       #root {
         height: 100%;
+        min-width: 375px;
       }
 
       a, a:hover {

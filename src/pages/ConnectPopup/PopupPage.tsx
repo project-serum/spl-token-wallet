@@ -34,6 +34,7 @@ import LogoComponent from '../../components/Logo';
 import { isExtension } from '../../utils/utils';
 import SignTransactionFormContent from './SignTransactionFormContent';
 import SignFormContent from './SignFormContent';
+import { footerHeight } from '../../components/Navbar/NavigationFrame';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -48,7 +49,7 @@ const StyledCard = styled(Card)`
 export default function PopupPage() {
   const opener = window.opener;
 
-  const origin = localStorage.getItem('origin');
+  const origin: any = localStorage.getItem('origin');
 
   const selectedWallet = useWallet();
   const { accounts, setWalletSelector } = useWalletSelector();
@@ -160,7 +161,7 @@ export default function PopupPage() {
     }
 
     return (
-      <RowContainer height={'calc(100% - 6rem)'}>
+      <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
         <Title style={{ fontSize: '2rem' }}>
           {isExtension
             ? 'Submitting...'
@@ -172,7 +173,7 @@ export default function PopupPage() {
 
   if (!wallet) {
     return (
-      <RowContainer height={'calc(100% - 6rem)'}>
+      <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
         <Title style={{ fontSize: '2rem' }}>Loading wallet...</Title>
       </RowContainer>
     );
