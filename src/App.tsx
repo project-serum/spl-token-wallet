@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
@@ -170,15 +170,15 @@ export default function App() {
 const Pages = () => {
   const wallet = useWallet();
   
-  useEffect(() => {
+  useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
     const origin = params.get('origin')
+
     if (origin) {
       localStorage.setItem('origin', origin)
     } else {
       localStorage.removeItem('origin')
     }
-    return () => {};
   }, []);
 
   return (
