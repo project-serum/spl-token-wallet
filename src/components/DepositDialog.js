@@ -36,6 +36,7 @@ export default function DepositDialog({
   publicKey,
   balanceInfo,
   swapInfo,
+  isAssociatedToken,
 }) {
   const ethAccount = useEthAccount();
   const urlSuffix = useSolanaExplorerUrlSuffix();
@@ -66,9 +67,12 @@ export default function DepositDialog({
       </Tabs>
     );
   }
-
+  const displaySolAddress = publicKey.equals(owner) || isAssociatedToken;
+  const depositAddressStr = displaySolAddress
+    ? owner.toBase58()
+    : publicKey.toBase58();
   return (
-    <DialogForm open={open} onClose={onClose}>
+    <DialogForm open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         Deposit {tokenName ?? mint.toBase58()}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
@@ -84,20 +88,20 @@ export default function DepositDialog({
       <DialogContent style={{ paddingTop: 16 }}>
         {tab === 0 ? (
           <>
-            {publicKey.equals(owner) ? (
-              <DialogContentText>
-                This address can only be used to receive SOL. Do not send other
-                tokens to this address.
-              </DialogContentText>
-            ) : (
+            {!displaySolAddress && isAssociatedToken === false ? (
               <DialogContentText>
                 This address can only be used to receive{' '}
                 {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
                 this address.
               </DialogContentText>
+            ) : (
+              <DialogContentText>
+                This address can be used to receive{' '}
+                {tokenSymbol ?? abbreviateAddress(mint)}.
+              </DialogContentText>
             )}
             <CopyableDisplay
-              value={publicKey.toBase58()}
+              value={depositAddressStr}
               label={'Deposit Address'}
               autoFocus
               qrCode
@@ -105,7 +109,7 @@ export default function DepositDialog({
             <DialogContentText variant="body2">
               <Link
                 href={
-                  `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+                  `https://explorer.solana.com/account/${depositAddressStr}` +
                   urlSuffix
                 }
                 target="_blank"
