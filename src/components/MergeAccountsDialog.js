@@ -168,11 +168,11 @@ export default function MergeAccountsDialog({ open, onClose }) {
         </DialogContent>
       ) : (
         <>
-          <DialogTitle>Are you sure you want to merge accounts?</DialogTitle>
+          <DialogTitle>Are you sure you want to merge tokens?</DialogTitle>
           <DialogContent>
             <DialogContentText>
               <b>WARNING</b>: This action may break apps that depend on your
-              existing accounts.
+              existing token accounts.
             </DialogContentText>
             <DialogContentText>
               Merging sends all tokens to{' '}

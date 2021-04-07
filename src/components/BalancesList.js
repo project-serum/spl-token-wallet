@@ -34,7 +34,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -212,7 +211,7 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Merge Accounts" arrow>
+          <Tooltip title="Merge Tokens" arrow>
             <IconButton
               size={iconSize}
               onClick={() => setShowMergeAccounts(true)}
@@ -228,7 +227,7 @@ export default function BalancesList() {
               <AddIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Sort Accounts" arrow>
+          <Tooltip title="Sort Tokens" arrow>
             <IconButton
               size={iconSize}
               onClick={() => {
@@ -401,47 +400,39 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     }
   }
 
-  const isAssociatedToken = (() => {
-    if (
-      wallet &&
-      wallet.publicKey &&
-      mint &&
-      associatedTokensCache[wallet.publicKey.toString()]
-    ) {
-      let acc =
-        associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
-      if (acc && acc.equals(publicKey)) {
-        return true;
+  // undefined => not loaded.
+  let isAssociatedToken = mint ? undefined : false;
+  if (
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+  ) {
+    let acc =
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
+    if (acc) {
+      if (acc.equals(publicKey)) {
+        isAssociatedToken = true;
+      } else {
+        isAssociatedToken = false;
       }
     }
-    return false;
-  })();
+  }
 
-  const subtitle = isExtensionWidth ? undefined : (
-    <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
-      {isAssociatedToken && (
+  const subtitle =
+    isExtensionWidth || !publicKey.equals(balanceInfo.owner) ? undefined : (
+      <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             flexDirection: 'column',
-            marginRight: '5px',
           }}
         >
-          <FingerprintIcon style={{ width: '20px' }} />
+          {publicKey.toBase58()}
         </div>
-      )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        {publicKey.toBase58()}
       </div>
-    </div>
-  );
+    );
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -494,6 +485,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
       {expandable && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <BalanceListItemDetails
+            isAssociatedToken={isAssociatedToken}
             publicKey={publicKey}
             serumMarkets={serumMarkets}
             balanceInfo={balanceInfo}
@@ -504,7 +496,12 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   );
 }
 
-function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
+function BalanceListItemDetails({
+  publicKey,
+  serumMarkets,
+  balanceInfo,
+  isAssociatedToken,
+}) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -554,12 +551,9 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
       ? serumMarkets[tokenSymbol.toUpperCase()].publicKey
       : undefined
     : undefined;
-
+  const isSolAddress = publicKey.equals(owner);
   const additionalInfo = isExtensionWidth ? undefined : (
     <>
-      <Typography variant="body2" className={classes.address}>
-        Deposit Address: {publicKey.toBase58()}
-      </Typography>
       <Typography variant="body2">
         Token Name: {tokenName ?? 'Unknown'}
       </Typography>
@@ -571,6 +565,18 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           Token Address: {mint.toBase58()}
         </Typography>
       ) : null}
+      {!isSolAddress && (
+        <Typography variant="body2" className={classes.address}>
+          {isAssociatedToken ? 'Associated' : ''} Token Metadata:{' '}
+          {publicKey.toBase58()}
+        </Typography>
+      )}
+      {!isSolAddress && isAssociatedToken === false && (
+        <div style={{ display: 'flex' }}>
+          This is an auxiliary token account. It is recommend you merge{' '}
+          <MergeType /> your tokens using the balances toolbar.
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
           <Typography variant="body2">
@@ -686,6 +692,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
         balanceInfo={balanceInfo}
         publicKey={publicKey}
         swapInfo={swapInfo}
+        isAssociatedToken={isAssociatedToken}
       />
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
