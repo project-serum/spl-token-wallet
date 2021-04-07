@@ -1,19 +1,21 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
-import { pairsIsLoaded } from './AssetsTable';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
 
-const usdValues: any = {};
+const usdValuesNavbar: any = {};
+const usdValuesTotal: any = {}
 
 const Item = ({
+  isNavbar,
   publicKey,
   setUsdValue,
   marketsData,
 }: {
+  isNavbar: boolean,
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
   marketsData: any;
@@ -28,11 +30,12 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(undefined);
+  const [price, setPrice] = useState<number | null | undefined>(null);
   const connection = useConnection();
+  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
 
   useEffect(() => {
-    if (balanceInfo) {
+    if (balanceInfo && !price) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
@@ -67,6 +70,8 @@ const Item = ({
         setPrice(null);
       }
     }
+
+    return () => {}
   }, [price, balanceInfo, connection]);
 
   let { closePrice } = (!!marketsData &&
@@ -76,24 +81,34 @@ const Item = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = price === null
-    ? !closePrice
-      ? price
-      : closePrice
-    : price;
+  let priceForCalculate =
+    price === null &&
+    !priceStore.getFromCache(
+      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
+    )
+      ? !closePrice
+        ? price
+        : closePrice
+      : price;
 
   const usdValue =
     priceForCalculate === undefined // Not yet loaded.
       ? undefined
       : priceForCalculate === null // Loaded and empty.
       ? null
-      : ((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
+      : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   useEffect(() => {
-    if (setUsdValue && usdValue !== undefined) {
-      setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
+    if (
+      usdValue !== undefined &&
+      usdValue !== null &&
+      usdValue !== usdValues[publicKey]
+    ) {
+      setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
-  }, [setUsdValue, usdValue, publicKey]);
+
+    return () => {}
+  }, [setUsdValue, usdValue, publicKey, usdValues]);
 
   return null;
 };
@@ -102,7 +117,12 @@ const TotalBalance = ({ isNavbar = true }) => {
   const [marketsData, setMarketsData] = useState<any>(null);
   const [totalUSD, setTotalUSD] = useState(0);
   const [publicKeys] = useWalletPublicKeys();
-  const sortedPublicKeys = useMemo(() => Array.isArray(publicKeys) ? [...publicKeys] : [], [publicKeys]);
+  const sortedPublicKeys = useMemo(
+    () => (Array.isArray(publicKeys) ? [...publicKeys] : []),
+    [publicKeys],
+  );
+
+  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
 
   useEffect(() => {
     const getData = async () => {
@@ -116,16 +136,14 @@ const TotalBalance = ({ isNavbar = true }) => {
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
       usdValues[publicKey.toString()] = usdValue;
-      if (pairsIsLoaded(sortedPublicKeys, usdValues)) {
-        const totalUsdValue: any = sortedPublicKeys
-          .filter((pk) => usdValues[pk.toString()])
-          .map((pk) => usdValues[pk.toString()])
-          .reduce((a, b) => a + b, 0.0);
-          
-        setTotalUSD(totalUsdValue);
-      }
+      const totalUsdValue: any = sortedPublicKeys
+        .filter((pk) => usdValues[pk.toString()])
+        .map((pk) => usdValues[pk.toString()])
+        .reduce((a, b) => a + b, 0.0);
+
+      setTotalUSD(totalUsdValue);
     },
-    [sortedPublicKeys],
+    [sortedPublicKeys, usdValues],
   );
 
   const memoizedAssetsList = useMemo(() => {
@@ -135,6 +153,7 @@ const TotalBalance = ({ isNavbar = true }) => {
           <Item
             key={`${pk.toString()}${isNavbar}`}
             publicKey={pk}
+            isNavbar={isNavbar}
             setUsdValue={setUsdValuesCallback}
             marketsData={marketsData}
           />
@@ -148,7 +167,7 @@ const TotalBalance = ({ isNavbar = true }) => {
       {memoizedAssetsList.map((Memoized) => (
         <Memoized />
       ))}
-      <span>${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}</span>
+      <span key={`${isNavbar}-total-balance`}>${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}</span>
     </>
   );
 };

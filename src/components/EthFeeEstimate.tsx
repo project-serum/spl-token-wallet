@@ -23,7 +23,7 @@ function FeeContentText({ ethFee, ethPrice, warning = false, prefix = "", bold =
 
 export function EthFeeEstimate({ ethFeeData, insufficientEthBalance }) {
   let [ethFeeEstimate, loaded, error] = ethFeeData;
-  const [ethPrice, setEthPrice] = useState<number | undefined>(undefined);
+  const [ethPrice, setEthPrice] = useState<number | undefined |null>(undefined);
   const connection = useConnection();
   useEffect(() => {
     if (ethPrice === undefined) {

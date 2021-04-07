@@ -52,14 +52,11 @@ const StyledCard = styled(Card)`
   box-shadow: none;
 `;
 
-export default function PopupPage({ origin }) {
+export default function PopupPage() {
   const opener = window.opener;
   const wallet = useWallet();
 
-  // const origin = useMemo(() => {
-  //   let params = new URLSearchParams(window.location.hash.slice(1));
-  //   return params.get('origin');
-  // }, []);
+  const origin = localStorage.getItem('origin');
 
   const postMessage = useCallback(
     (message) => {

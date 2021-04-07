@@ -50,6 +50,8 @@ export const RestorePage = () => {
     }
   };
 
+  console.log('restore re-render', redirectToWallet, origin)
+
   return (
     <Body>
       <FakeInputs />
