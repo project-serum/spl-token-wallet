@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useBalanceInfo, useWalletPublicKeys } from '../../../utils/wallet';
+import { useBalanceInfo, useWalletPublicKeys, useWalletSelector } from '../../../utils/wallet';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
 
-const usdValuesNavbar: any = {};
-const usdValuesTotal: any = {}
+let usdValuesNavbar: any = {};
+let usdValuesTotal: any = {}
 
 const Item = ({
   isNavbar,
@@ -116,13 +116,23 @@ const Item = ({
 const TotalBalance = ({ isNavbar = true }) => {
   const [marketsData, setMarketsData] = useState<any>(null);
   const [totalUSD, setTotalUSD] = useState(0);
+
+  const { accounts } = useWalletSelector();
+  const selectedAccount = accounts.find((a) => a.isSelected);
   const [publicKeys] = useWalletPublicKeys();
   const sortedPublicKeys = useMemo(
     () => (Array.isArray(publicKeys) ? [...publicKeys] : []),
     [publicKeys],
   );
 
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
+  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal;
+
+  useEffect(() => {
+    if (isNavbar) usdValuesNavbar = {};
+    else {
+      usdValuesTotal = {}
+    }
+  }, [selectedAccount, isNavbar])
 
   useEffect(() => {
     const getData = async () => {

@@ -82,12 +82,13 @@ const AccountsSelector = ({
   const [isExportAccountOpen, setIsExportAccountOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
+  const theme = useTheme();
   const { accounts, addAccount, setWalletSelector } = useWalletSelector();
+
   const accountsToShow = accounts.filter((acc) =>
     isFromPopup ? !acc.selector.ledger : true,
   );
   const selectedAccount = accounts.find((a) => a.isSelected);
-  const theme = useTheme();
 
   return (
     <RowWithSelector isFromPopup={isFromPopup}>
