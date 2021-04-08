@@ -23,7 +23,6 @@ import { abbreviateAddress, useIsExtensionWidth } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
@@ -32,7 +31,6 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
-import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -211,14 +209,6 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Merge Tokens" arrow>
-            <IconButton
-              size={iconSize}
-              onClick={() => setShowMergeAccounts(true)}
-            >
-              <MergeType />
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Add Token" arrow>
             <IconButton
               size={iconSize}
@@ -540,7 +530,7 @@ function BalanceListItemDetails({
     return <LoadingIndicator delay={0} />;
   }
 
-  let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
+  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
 
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
@@ -573,8 +563,7 @@ function BalanceListItemDetails({
       )}
       {!isSolAddress && isAssociatedToken === false && (
         <div style={{ display: 'flex' }}>
-          This is an auxiliary token account. It is recommend you merge{' '}
-          <MergeType /> your tokens using the balances toolbar.
+          This is an auxiliary token account.
         </div>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -666,17 +655,6 @@ function BalanceListItemDetails({
           >
             Send
           </Button>
-          {mint && amount === 0 ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={() => setCloseTokenAccountDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          ) : null}
         </div>
         {additionalInfo}
       </div>
