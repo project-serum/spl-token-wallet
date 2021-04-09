@@ -184,7 +184,7 @@ function ConnectionsButton() {
 
 function NetworkSelector() {
   const { endpoint, setEndpoint } = useConnectionConfig();
-  const cluster = useMemo(() => clusterForEndpoint(endpoint), [endpoint])
+  const cluster = useMemo(() => clusterForEndpoint(endpoint), [endpoint]);
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
 
@@ -226,7 +226,9 @@ function NetworkSelector() {
             selected={cluster.apiUrl === endpoint}
           >
             <ListItemIcon className={classes.menuItemIcon}>
-              {cluster.apiUrl === endpoint ? <CheckIcon fontSize="small" /> : null}
+              {cluster.apiUrl === endpoint ? (
+                <CheckIcon fontSize="small" />
+              ) : null}
             </ListItemIcon>
             {cluster.apiUrl}
           </MenuItem>
@@ -237,7 +239,13 @@ function NetworkSelector() {
 }
 
 function WalletSelector() {
-  const { accounts, setWalletSelector, addAccount } = useWalletSelector();
+  const {
+    accounts,
+    hardwareWalletAccount,
+    setHardwareWalletAccount,
+    setWalletSelector,
+    addAccount,
+  } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [
@@ -251,22 +259,28 @@ function WalletSelector() {
   if (accounts.length === 0) {
     return null;
   }
-
   return (
     <>
       <AddHardwareWalletDialog
         open={addHardwareWalletDialogOpen}
         onClose={() => setAddHardwareWalletDialogOpen(false)}
-        onAdd={(pubKey) => {
-          addAccount({
+        onAdd={({ publicKey, derivationPath, account, change }) => {
+          setHardwareWalletAccount({
             name: 'Hardware wallet',
-            importedAccount: pubKey.toString(),
+            publicKey,
+            importedAccount: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
           setWalletSelector({
             walletIndex: undefined,
-            importedPubkey: pubKey.toString(),
+            importedPubkey: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
         }}
       />
@@ -319,27 +333,25 @@ function WalletSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {accounts.map(({ isSelected, selector, address, name, label }) => (
-          <MenuItem
-            key={address.toBase58()}
-            onClick={() => {
-              setAnchorEl(null);
-              setWalletSelector(selector);
-            }}
-            selected={isSelected}
-            component="div"
-          >
-            <ListItemIcon className={classes.menuItemIcon}>
-              {isSelected ? <CheckIcon fontSize="small" /> : null}
-            </ListItemIcon>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography>{name}</Typography>
-              <Typography color="textSecondary">
-                {address.toBase58()}
-              </Typography>
-            </div>
-          </MenuItem>
+        {accounts.map((account) => (
+          <AccountListItem
+            account={account}
+            classes={classes}
+            setAnchorEl={setAnchorEl}
+            setWalletSelector={setWalletSelector}
+          />
         ))}
+        {hardwareWalletAccount && (
+          <>
+            <Divider />
+            <AccountListItem
+              account={hardwareWalletAccount}
+              classes={classes}
+              setAnchorEl={setAnchorEl}
+              setWalletSelector={setWalletSelector}
+            />
+          </>
+        )}
         <Divider />
         <MenuItem onClick={() => setAddHardwareWalletDialogOpen(true)}>
           <ListItemIcon className={classes.menuItemIcon}>
@@ -409,5 +421,29 @@ function Footer() {
         View Source
       </Button>
     </footer>
+  );
+}
+
+function AccountListItem({ account, classes, setAnchorEl, setWalletSelector }) {
+  return (
+    <MenuItem
+      key={account.address.toBase58()}
+      onClick={() => {
+        setAnchorEl(null);
+        setWalletSelector(account.selector);
+      }}
+      selected={account.isSelected}
+      component="div"
+    >
+      <ListItemIcon className={classes.menuItemIcon}>
+        {account.isSelected ? <CheckIcon fontSize="small" /> : null}
+      </ListItemIcon>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography>{account.name}</Typography>
+        <Typography color="textSecondary">
+          {account.address.toBase58()}
+        </Typography>
+      </div>
+    </MenuItem>
   );
 }

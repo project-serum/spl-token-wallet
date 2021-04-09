@@ -172,16 +172,19 @@ export function WalletProvider({ children }) {
     {},
   );
   // `walletSelector` identifies which wallet to use.
-  const [walletSelector, setWalletSelector] = useLocalStorageState(
+  let [walletSelector, setWalletSelector] = useLocalStorageState(
     'walletSelector',
     DEFAULT_WALLET_SELECTOR,
   );
-  const [ledgerPubKey, setLedgerPubKey] = useState(
-    walletSelector.ledger ? walletSelector.importedPubkey : undefined,
-  );
+  const [_hardwareWalletAccount, setHardwareWalletAccount] = useState(null);
 
   // `walletCount` is the number of HD wallets.
   const [walletCount, setWalletCount] = useLocalStorageState('walletCount', 1);
+
+  if (walletSelector.ledger && !_hardwareWalletAccount) {
+    walletSelector = DEFAULT_WALLET_SELECTOR;
+    setWalletSelector(DEFAULT_WALLET_SELECTOR);
+  }
 
   useEffect(() => {
     (async () => {
@@ -193,9 +196,15 @@ export function WalletProvider({ children }) {
         try {
           const onDisconnect = () => {
             setWalletSelector(DEFAULT_WALLET_SELECTOR);
-            setLedgerPubKey(undefined);
+            setHardwareWalletAccount(null);
           };
-          wallet = await Wallet.create(connection, 'ledger', { onDisconnect });
+          const args = {
+            onDisconnect,
+            derivationPath: walletSelector.derivationPath,
+            account: walletSelector.account,
+            change: walletSelector.change,
+          };
+          wallet = await Wallet.create(connection, 'ledger', args);
         } catch (e) {
           console.log(`received error using ledger wallet: ${e}`);
           let message = 'Received error unlocking ledger';
@@ -204,7 +213,7 @@ export function WalletProvider({ children }) {
           }
           enqueueSnackbar(message, { variant: 'error' });
           setWalletSelector(DEFAULT_WALLET_SELECTOR);
-          setLedgerPubKey(undefined);
+          setHardwareWalletAccount(null);
           return;
         }
       }
@@ -242,11 +251,8 @@ export function WalletProvider({ children }) {
     enqueueSnackbar,
     derivationPath,
   ]);
-
   function addAccount({ name, importedAccount, ledger }) {
-    if (ledger) {
-      setLedgerPubKey(importedAccount);
-    } else if (importedAccount === undefined) {
+    if (importedAccount === undefined) {
       name && localStorage.setItem(`name${walletCount}`, name);
       setWalletCount(walletCount + 1);
     } else {
@@ -319,29 +325,26 @@ export function WalletProvider({ children }) {
       };
     });
 
-    if (ledgerPubKey) {
-      derivedAccounts.push({
-        selector: {
-          walletIndex: undefined,
-          importedPubkey: ledgerPubKey,
-          ledger: true,
-        },
-        address: new PublicKey(ledgerPubKey), // todo: get the ledger address
-        name: 'Hardware wallet',
-        isSelected: walletSelector.ledger,
-      });
-    }
-
     return derivedAccounts.concat(importedAccounts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    seed,
-    walletCount,
-    walletSelector,
-    privateKeyImports,
-    walletNames,
-    ledgerPubKey,
-  ]);
+  }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
+
+  let hardwareWalletAccount;
+  if (_hardwareWalletAccount) {
+    hardwareWalletAccount = {
+      ..._hardwareWalletAccount,
+      selector: {
+        walletIndex: undefined,
+        ledger: true,
+        importedPubkey: _hardwareWalletAccount.publicKey,
+        derivationPath: _hardwareWalletAccount.derivationPath,
+        account: _hardwareWalletAccount.account,
+        change: _hardwareWalletAccount.change,
+      },
+      address: _hardwareWalletAccount.publicKey,
+      isSelected: walletSelector.ledger,
+    };
+  }
 
   return (
     <WalletContext.Provider
@@ -358,6 +361,8 @@ export function WalletProvider({ children }) {
         addAccount,
         setAccountName,
         derivationPath,
+        hardwareWalletAccount,
+        setHardwareWalletAccount,
       }}
     >
       {children}
@@ -473,7 +478,16 @@ export function useWalletSelector() {
     addAccount,
     setWalletSelector,
     setAccountName,
+    hardwareWalletAccount,
+    setHardwareWalletAccount,
   } = useContext(WalletContext);
 
-  return { accounts, setWalletSelector, addAccount, setAccountName };
+  return {
+    accounts,
+    setWalletSelector,
+    addAccount,
+    setAccountName,
+    hardwareWalletAccount,
+    setHardwareWalletAccount,
+  };
 }

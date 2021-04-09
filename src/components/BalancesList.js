@@ -23,7 +23,6 @@ import { abbreviateAddress, useIsExtensionWidth } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
@@ -32,9 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
-import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -212,14 +209,6 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
-          <Tooltip title="Merge Accounts" arrow>
-            <IconButton
-              size={iconSize}
-              onClick={() => setShowMergeAccounts(true)}
-            >
-              <MergeType />
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Add Token" arrow>
             <IconButton
               size={iconSize}
@@ -228,7 +217,7 @@ export default function BalancesList() {
               <AddIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Sort Accounts" arrow>
+          <Tooltip title="Sort Tokens" arrow>
             <IconButton
               size={iconSize}
               onClick={() => {
@@ -363,7 +352,14 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { amount, decimals, mint, tokenName, tokenSymbol, tokenLogoUri } = balanceInfo;
+  let {
+    amount,
+    decimals,
+    mint,
+    tokenName,
+    tokenSymbol,
+    tokenLogoUri,
+  } = balanceInfo;
   tokenName = tokenName ?? abbreviateAddress(mint);
   let displayName;
   if (isExtensionWidth) {
@@ -394,47 +390,39 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     }
   }
 
-  const isAssociatedToken = (() => {
-    if (
-      wallet &&
-      wallet.publicKey &&
-      mint &&
-      associatedTokensCache[wallet.publicKey.toString()]
-    ) {
-      let acc =
-        associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
-      if (acc && acc.equals(publicKey)) {
-        return true;
+  // undefined => not loaded.
+  let isAssociatedToken = mint ? undefined : false;
+  if (
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+  ) {
+    let acc =
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
+    if (acc) {
+      if (acc.equals(publicKey)) {
+        isAssociatedToken = true;
+      } else {
+        isAssociatedToken = false;
       }
     }
-    return false;
-  })();
+  }
 
-  const subtitle = isExtensionWidth ? undefined : (
-    <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
-      {isAssociatedToken && (
+  const subtitle =
+    isExtensionWidth || !publicKey.equals(balanceInfo.owner) ? undefined : (
+      <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             flexDirection: 'column',
-            marginRight: '5px',
           }}
         >
-          <FingerprintIcon style={{ width: '20px' }} />
+          {publicKey.toBase58()}
         </div>
-      )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        {publicKey.toBase58()}
       </div>
-    </div>
-  );
+    );
 
   const usdValue =
     price === undefined // Not yet loaded.
@@ -450,7 +438,12 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     <>
       <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
-          <TokenIcon mint={mint} tokenName={tokenName} url={tokenLogoUri} size={28} />
+          <TokenIcon
+            mint={mint}
+            tokenName={tokenName}
+            url={tokenLogoUri}
+            size={28}
+          />
         </ListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
           <ListItemText
@@ -479,18 +472,26 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
         </div>
         {expandable ? open ? <ExpandLess /> : <ExpandMore /> : <></>}
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <BalanceListItemDetails
-          publicKey={publicKey}
-          serumMarkets={serumMarkets}
-          balanceInfo={balanceInfo}
-        />
-      </Collapse>
+      {expandable && (
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <BalanceListItemDetails
+            isAssociatedToken={isAssociatedToken}
+            publicKey={publicKey}
+            serumMarkets={serumMarkets}
+            balanceInfo={balanceInfo}
+          />
+        </Collapse>
+      )}
     </>
   );
 }
 
-function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
+function BalanceListItemDetails({
+  publicKey,
+  serumMarkets,
+  balanceInfo,
+  isAssociatedToken,
+}) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -529,7 +530,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
+  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
 
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
@@ -540,12 +541,9 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
       ? serumMarkets[tokenSymbol.toUpperCase()].publicKey
       : undefined
     : undefined;
-
+  const isSolAddress = publicKey.equals(owner);
   const additionalInfo = isExtensionWidth ? undefined : (
     <>
-      <Typography variant="body2" className={classes.address}>
-        Deposit Address: {publicKey.toBase58()}
-      </Typography>
       <Typography variant="body2">
         Token Name: {tokenName ?? 'Unknown'}
       </Typography>
@@ -557,6 +555,17 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           Token Address: {mint.toBase58()}
         </Typography>
       ) : null}
+      {!isSolAddress && (
+        <Typography variant="body2" className={classes.address}>
+          {isAssociatedToken ? 'Associated' : ''} Token Metadata:{' '}
+          {publicKey.toBase58()}
+        </Typography>
+      )}
+      {!isSolAddress && isAssociatedToken === false && (
+        <div style={{ display: 'flex' }}>
+          This is an auxiliary token account.
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
           <Typography variant="body2">
@@ -646,17 +655,6 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           >
             Send
           </Button>
-          {mint && amount === 0 ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={() => setCloseTokenAccountDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          ) : null}
         </div>
         {additionalInfo}
       </div>
@@ -672,6 +670,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
         balanceInfo={balanceInfo}
         publicKey={publicKey}
         swapInfo={swapInfo}
+        isAssociatedToken={isAssociatedToken}
       />
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
