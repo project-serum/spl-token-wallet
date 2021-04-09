@@ -44,6 +44,7 @@ export default function PopupPage({ opener }) {
     return params.get('origin');
   }, []);
   const selectedWallet = useWallet();
+  const selectedWalletAddress = selectedWallet && selectedWallet.publicKey.toBase58();
   const { accounts, setWalletSelector } = useWalletSelector();
   const [wallet, setWallet] = useState(isExtension ? null : selectedWallet);
 
@@ -65,21 +66,13 @@ export default function PopupPage({ opener }) {
     [opener, origin],
   );
 
-  // Hack to keep selectedWallet and wallet in sync. TODO: remove this block.
+  // Keep selectedWallet and wallet in sync.
   useEffect(() => {
     if (!isExtension) {
-      if (!wallet) {
-        setWallet(selectedWallet);
-      } else if (!wallet.publicKey.equals(selectedWallet.publicKey)) {
-        setWallet(selectedWallet);
-      }
+      setWallet(selectedWallet);
     }
-  }, [
-    wallet,
-    wallet.publicKey,
-    selectedWallet,
-    selectedWallet.publicKey,
-  ]);
+  }, [selectedWalletAddress]);
+
 
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
@@ -102,7 +95,7 @@ export default function PopupPage({ opener }) {
     if (isExtension && connectedAccount) {
       setWallet(selectedWallet);
     }
-  }, [connectedAccount, selectedWallet]);
+  }, [connectedAccount, selectedWalletAddress]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -122,6 +115,7 @@ export default function PopupPage({ opener }) {
   // Disconnect if the user switches to a different wallet.
   useEffect(() => {
     if (
+      !isExtension &&
       wallet &&
       connectedAccount &&
       !connectedAccount.equals(wallet.publicKey)
@@ -152,7 +146,6 @@ export default function PopupPage({ opener }) {
   const request = requests[0];
   const popRequest = () => setRequests((requests) => requests.slice(1));
 
-  // TODO TEST ON SOLLET.IO VERSION
   const { messages, messageDisplay } = useMemo(() => {
     if (!request || request.method === 'connect') {
       return { messages: [], messageDisplay: 'tx' }
@@ -277,7 +270,6 @@ export default function PopupPage({ opener }) {
   }
 
   async function sendAllSignatures(messages) {
-    console.log('wallet', wallet);
     let signatures;
     // Ledger must sign one by one.
     if (wallet.type === 'ledger') {
