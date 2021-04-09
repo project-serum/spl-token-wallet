@@ -31,6 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -209,6 +210,14 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
+          <Tooltip title="Merge Tokens" arrow>
+            <IconButton
+              size={iconSize}
+              onClick={() => setShowMergeAccounts(true)}
+            >
+              <MergeType />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Add Token" arrow>
             <IconButton
               size={iconSize}
