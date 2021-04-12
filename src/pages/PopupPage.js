@@ -87,6 +87,8 @@ export default function PopupPage({ opener }) {
     if (!isExtension) {
       setWallet(selectedWallet);
     }
+  // using stronger condition here
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWalletAddress]);
 
 
@@ -104,6 +106,7 @@ export default function PopupPage({ opener }) {
         }
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [origin]);
 
   // (Extension only) Set wallet once connectedWallet is retrieved.
@@ -111,6 +114,8 @@ export default function PopupPage({ opener }) {
     if (isExtension && connectedAccount) {
       setWallet(selectedWallet);
     }
+  // using stronger condition here
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedAccount, selectedWalletAddress]);
 
   // Send a disconnect event if this window is closed, this component is
