@@ -50,9 +50,9 @@ let unlockedMnemonicAndSeed = (async () => {
     localStorage.removeItem('unlockedExpiration');
   }
   const stored = JSON.parse(
+    (await getExtensionUnlockedMnemonic()) ||
     sessionStorage.getItem('unlocked') ||
       localStorage.getItem('unlocked') ||
-      (await getExtensionUnlockedMnemonic()) ||
       'null',
   );
   if (stored === null) {
@@ -176,8 +176,9 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
         method: 'set',
         data: decodedPlaintext,
       });
+    } else {
+      sessionStorage.setItem('unlocked', decodedPlaintext);
     }
-    sessionStorage.setItem('unlocked', decodedPlaintext);
   }
   const importsEncryptionKey = deriveImportsEncryptionKey(seed);
   setUnlockedMnemonicAndSeed(
