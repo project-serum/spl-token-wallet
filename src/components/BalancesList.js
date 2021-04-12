@@ -169,14 +169,13 @@ export default function BalancesList() {
   );
   const balanceListItemsMemo = useMemo(() => {
     return sortedPublicKeys.map((pk) => {
-      const key = pk.toString();
       const Memoized = React.memo(() => (
         <BalanceListItem
           publicKey={pk}
           setUsdValue={setUsdValuesCallback}
         />
       ));
-      return {key, Memoized};
+      return <Memoized key={pk.toString()}/>;
     });
   }, [sortedPublicKeys, setUsdValuesCallback]);
 
@@ -264,9 +263,7 @@ export default function BalancesList() {
         </Toolbar>
       </AppBar>
       <List disablePadding>
-        {balanceListItemsMemo.map(({key, Memoized}) => (
-          <Memoized key={key}/>
-        ))}
+        {balanceListItemsMemo}
         {loaded ? null : <LoadingIndicator />}
       </List>
       <AddTokenDialog
