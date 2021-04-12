@@ -94,16 +94,16 @@ function NavigationButtons() {
   let elements = [];
   if (page === 'wallet') {
     elements = [
-      isExtension && <ConnectionsButton />,
-      <WalletSelector />,
-      <NetworkSelector />,
+      isExtension && <ConnectionsButton key="connections" />,
+      <WalletSelector key="wallet" />,
+      <NetworkSelector key="network" />,
     ];
   } else if (page === 'connections') {
-    elements = [<WalletButton />];
+    elements = [<WalletButton key="wallet" />];
   }
 
   if (isExtension && isExtensionWidth) {
-    elements.push(<ExpandButton />);
+    elements.push(<ExpandButton key="expand" />);
   }
 
   return elements;
