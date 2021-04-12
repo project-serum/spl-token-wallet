@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   generateMnemonicAndSeed,
-  hasLockedMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
   loadMnemonicAndSeed,
   mnemonicToSeed,
   storeMnemonicAndSeed,
@@ -30,13 +30,19 @@ import { validateMnemonic } from 'bip39';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
+  const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
+  
+  if (loading) {
+    return null;
+  }
+
   return (
     <Container maxWidth="sm">
       {restore ? (
         <RestoreWalletForm goBack={() => setRestore(false)} />
       ) : (
         <>
-          {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
+          {hasLockedMnemonicAndSeed ? <LoginForm /> : <CreateWalletForm />}
           <br />
           <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
             Restore existing wallet

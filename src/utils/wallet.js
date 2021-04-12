@@ -25,7 +25,7 @@ import {
 import { useListener, useLocalStorageState, useRefEqual } from './utils';
 import { useTokenInfo } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
-import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
+import { useUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 import { WalletProviderFactory } from './walletProvider/factory';
 import { getAccountFromSeed } from './walletProvider/localStorage';
 import { useSnackbar } from 'notistack';
@@ -156,12 +156,12 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const {
+  const [{
     mnemonic,
     seed,
     importsEncryptionKey,
     derivationPath,
-  } = getUnlockedMnemonicAndSeed();
+  }] = useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();

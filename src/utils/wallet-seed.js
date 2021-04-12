@@ -4,6 +4,7 @@ import * as bip32 from 'bip32';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
 import { isExtension } from './utils';
+import { useEffect, useState } from 'react';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -21,8 +22,29 @@ export async function mnemonicToSeed(mnemonic) {
   return Buffer.from(seed).toString('hex');
 }
 
-let unlockedMnemonicAndSeed = (() => {
+async function getExtensionUnlockedMnemonic() {
+  if (!isExtension) {
+    return null;
+  }
+
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({
+      channel: 'sollet_extension_mnemonic_channel',
+      method: 'get',
+    }, resolve);
+  })
+}
+
+const EMPTY_MNEMONIC = {
+  mnemonic: null,
+  seed: null,
+  importsEncryptionKey: null,
+  derivationPath: null,
+};
+
+let unlockedMnemonicAndSeed = (async () => {
   const unlockedExpiration = localStorage.getItem('unlockedExpiration');
+  // Left here to clean up stored mnemonics from previous method
   if (unlockedExpiration && Number(unlockedExpiration) < Date.now()) {
     localStorage.removeItem('unlocked');
     localStorage.removeItem('unlockedExpiration');
@@ -30,29 +52,45 @@ let unlockedMnemonicAndSeed = (() => {
   const stored = JSON.parse(
     sessionStorage.getItem('unlocked') ||
       localStorage.getItem('unlocked') ||
+      (await getExtensionUnlockedMnemonic()) ||
       'null',
   );
   if (stored === null) {
-    return {
-      mnemonic: null,
-      seed: null,
-      importsEncryptionKey: null,
-      derivationPath: null,
-    };
+    return EMPTY_MNEMONIC;
   }
   return {
     importsEncryptionKey: deriveImportsEncryptionKey(stored.seed),
     ...stored,
   };
 })();
+
 export const walletSeedChanged = new EventEmitter();
 
 export function getUnlockedMnemonicAndSeed() {
   return unlockedMnemonicAndSeed;
 }
 
-export function hasLockedMnemonicAndSeed() {
-  return !!localStorage.getItem('locked');
+// returns [mnemonic, loading]
+export function useUnlockedMnemonicAndSeed() {
+  const [currentUnlockedMnemonic, setCurrentUnlockedMnemonic] = useState(null);
+  
+  useEffect(() => {
+    walletSeedChanged.addListener('change', setCurrentUnlockedMnemonic);
+    unlockedMnemonicAndSeed.then(setCurrentUnlockedMnemonic);
+    return () => {
+      walletSeedChanged.removeListener('change', setCurrentUnlockedMnemonic);
+    }
+  }, []);
+
+  return !currentUnlockedMnemonic
+    ? [EMPTY_MNEMONIC, true]
+    : [currentUnlockedMnemonic, false];
+}
+
+export function useHasLockedMnemonicAndSeed() {
+  const [unlockedMnemonic, loading] = useUnlockedMnemonicAndSeed();
+
+  return [!unlockedMnemonic.seed && !!localStorage.getItem('locked'), loading];
 }
 
 function setUnlockedMnemonicAndSeed(
@@ -61,13 +99,14 @@ function setUnlockedMnemonicAndSeed(
   importsEncryptionKey,
   derivationPath,
 ) {
-  unlockedMnemonicAndSeed = {
+  const data = {
     mnemonic,
     seed,
     importsEncryptionKey,
     derivationPath,
   };
-  walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
+  unlockedMnemonicAndSeed = Promise.resolve(data);
+  walletSeedChanged.emit('change', data);
 }
 
 export async function storeMnemonicAndSeed(
@@ -132,9 +171,11 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
   if (stayLoggedIn) {
     if (isExtension) {
-      const expireMs = 1000 * 60 * 60 * 24;
-      localStorage.setItem('unlockedExpiration', Date.now() + expireMs);
-      localStorage.setItem('unlocked', decodedPlaintext);
+      chrome.runtime.sendMessage({
+        channel: 'sollet_extension_mnemonic_channel',
+        method: 'set',
+        data: decodedPlaintext,
+      });
     }
     sessionStorage.setItem('unlocked', decodedPlaintext);
   }

@@ -1,4 +1,5 @@
 const responseHandlers = new Map();
+let unlockedMnemonic = '';
 
 function launchPopup(message, sender, sendResponse) {
   const searchParams = new URLSearchParams();
@@ -66,5 +67,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const responseHandler = responseHandlers.get(message.data.id);
     responseHandlers.delete(message.data.id);
     responseHandler(message.data);
+  } else if (message.channel === 'sollet_extension_mnemonic_channel') {
+    if (message.method === 'set') {
+      unlockedMnemonic = message.data;
+    } else if (message.method === 'get') {
+      sendResponse(unlockedMnemonic);
+    }
   }
 });
