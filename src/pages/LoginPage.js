@@ -233,6 +233,13 @@ function LoginForm() {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.code === "Enter" || e.code === "NumpadEnter") {
+              e.preventDefault();
+              e.stopPropagation();
+              submit();
+            }
+          }}
         />
         <FormControlLabel
           control={
