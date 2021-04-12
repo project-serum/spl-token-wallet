@@ -335,6 +335,7 @@ function WalletSelector() {
       >
         {accounts.map((account) => (
           <AccountListItem
+            key={account.address.toBase58()}
             account={account}
             classes={classes}
             setAnchorEl={setAnchorEl}
@@ -427,7 +428,6 @@ function Footer() {
 function AccountListItem({ account, classes, setAnchorEl, setWalletSelector }) {
   return (
     <MenuItem
-      key={account.address.toBase58()}
       onClick={() => {
         setAnchorEl(null);
         setWalletSelector(account.selector);
