@@ -217,7 +217,19 @@ function LoginForm() {
       successMessage: 'Wallet unlocked',
     });
   }
-
+  const onEnter_submit = { 
+    onKeyDown: e => {
+      if (e.code === "Enter" || e.code === "NumpadEnter") {
+        e.preventDefault();
+        e.stopPropagation();
+        submit();
+      }
+    }
+  }
+  const onChange_setPassword = {
+    onChange: e => setPassword(e.target.value)
+  }
+  
   return (
     <Card>
       <CardContent>
@@ -232,14 +244,8 @@ function LoginForm() {
           type="password"
           autoComplete="current-password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.code === "Enter" || e.code === "NumpadEnter") {
-              e.preventDefault();
-              e.stopPropagation();
-              submit();
-            }
-          }}
+          {...onChange_setPassword}
+          {...onEnter_submit}
         />
         <FormControlLabel
           control={
