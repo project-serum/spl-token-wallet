@@ -390,7 +390,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          Delete Mnemonic
+          {'Log Out & Delete Mnemonic'}
         </MenuItem>
       </Menu>
     </>

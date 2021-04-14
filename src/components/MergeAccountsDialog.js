@@ -114,6 +114,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
             await mergeMint(
               assocTokAddr,
               mintGroup,
+              mint,
               wallet,
               connection,
               enqueueSnackbar,
@@ -183,10 +184,8 @@ export default function MergeAccountsDialog({ open, onClose }) {
               >
                 associated token accounts
               </Link>{' '}
-              <FingerprintIcon style={{ marginBottom: '-7px' }} />,{' '}
-              deduplicating and closing any accounts that share the same mint.
-              If associated token accounts do not exist, then they will be
-              created.
+              <FingerprintIcon style={{ marginBottom: '-7px' }} />. If
+              associated token accounts do not exist, then they will be created.
             </DialogContentText>
             <DialogContentText>
               If merging fails during a period of high network load, you will
@@ -242,10 +241,12 @@ export default function MergeAccountsDialog({ open, onClose }) {
 async function mergeMint(
   assocTokAddr,
   mintAccountSet,
+  mint,
   wallet,
   connection,
   enqueueSnackbar,
 ) {
+  console.log('mint', mint, mint.toString());
   if (mintAccountSet.length === 0) {
     return;
   }
@@ -286,13 +287,12 @@ async function mergeMint(
     const tokenAccount = mintAccountSet[k];
     if (tokenAccount.publicKey.equals(associatedTokenAccount) === false) {
       if (tokenAccount.account.amount > 0) {
-        await wallet.transferAndClose(
+        await wallet.transferToken(
           tokenAccount.publicKey,
           associatedTokenAccount,
           tokenAccount.account.amount,
+          mint,
         );
-      } else {
-        await wallet.closeTokenAccount(tokenAccount.publicKey, true);
       }
     }
   }

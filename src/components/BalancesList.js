@@ -23,7 +23,6 @@ import { abbreviateAddress, useIsExtensionWidth } from '../utils/utils';
 import Button from '@material-ui/core/Button';
 import SendIcon from '@material-ui/icons/Send';
 import ReceiveIcon from '@material-ui/icons/WorkOutline';
-import DeleteIcon from '@material-ui/icons/Delete';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import AddIcon from '@material-ui/icons/Add';
@@ -507,7 +506,7 @@ function BalanceListItemDetails({
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
-	const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
+  const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
   const [
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
@@ -540,7 +539,7 @@ function BalanceListItemDetails({
     return <LoadingIndicator delay={0} />;
   }
 
-  let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
+  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
 
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
@@ -573,8 +572,7 @@ function BalanceListItemDetails({
       )}
       {!isSolAddress && isAssociatedToken === false && (
         <div style={{ display: 'flex' }}>
-          This is an auxiliary token account. It is recommend you merge{' '}
-          <MergeType /> your tokens using the balances toolbar.
+          This is an auxiliary token account.
         </div>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -665,18 +663,7 @@ function BalanceListItemDetails({
             onClick={() => setSendDialogOpen(true)}
           >
             Send
-      </Button>
-          {mint && amount === 0 ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="small"
-              startIcon={<DeleteIcon />}
-              onClick={() => setCloseTokenAccountDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          ) : null}
+          </Button>
         </div>
         {additionalInfo}
       </div>
@@ -705,7 +692,7 @@ function BalanceListItemDetails({
         onClose={() => setCloseTokenAccountDialogOpen(false)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
-			/>
+      />
     </>
   );
 }

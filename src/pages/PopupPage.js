@@ -35,7 +35,23 @@ function getInitialRequests() {
   // TODO CHECK OPENER (?)
 
   const urlParams = new URLSearchParams(window.location.hash.slice(1));
-  return [JSON.parse(urlParams.get('request'))];
+  const request = JSON.parse(urlParams.get('request'));
+  
+  if (request.method === 'sign') {
+    const dataObj = request.params.data;
+    // Deserialize `data` into a Uint8Array
+    if (!dataObj) {
+      throw new Error('Missing "data" params for "sign" request');
+    }
+
+    const data = new Uint8Array(Object.keys(dataObj).length);
+    for (const [index, value] of Object.entries(dataObj)) {
+      data[index] = value;
+    }
+    request.params.data = data;
+  }
+
+  return [request];
 }
 
 export default function PopupPage({ opener }) {
@@ -44,6 +60,7 @@ export default function PopupPage({ opener }) {
     return params.get('origin');
   }, []);
   const selectedWallet = useWallet();
+  const selectedWalletAddress = selectedWallet && selectedWallet.publicKey.toBase58();
   const { accounts, setWalletSelector } = useWalletSelector();
   const [wallet, setWallet] = useState(isExtension ? null : selectedWallet);
 
@@ -65,21 +82,15 @@ export default function PopupPage({ opener }) {
     [opener, origin],
   );
 
-  // Hack to keep selectedWallet and wallet in sync. TODO: remove this block.
+  // Keep selectedWallet and wallet in sync.
   useEffect(() => {
     if (!isExtension) {
-      if (!wallet) {
-        setWallet(selectedWallet);
-      } else if (!wallet.publicKey.equals(selectedWallet.publicKey)) {
-        setWallet(selectedWallet);
-      }
+      setWallet(selectedWallet);
     }
-  }, [
-    wallet,
-    wallet.publicKey,
-    selectedWallet,
-    selectedWallet.publicKey,
-  ]);
+  // using stronger condition here
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedWalletAddress]);
+
 
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
@@ -95,14 +106,17 @@ export default function PopupPage({ opener }) {
         }
       });
     }
-  }, [origin, setWalletSelector, selectedWallet]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [origin]);
 
   // (Extension only) Set wallet once connectedWallet is retrieved.
   useEffect(() => {
     if (isExtension && connectedAccount) {
       setWallet(selectedWallet);
     }
-  }, [connectedAccount, selectedWallet]);
+  // using stronger condition here
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedAccount, selectedWalletAddress]);
 
   // Send a disconnect event if this window is closed, this component is
   // unmounted, or setConnectedAccount(null) is called.
@@ -122,6 +136,7 @@ export default function PopupPage({ opener }) {
   // Disconnect if the user switches to a different wallet.
   useEffect(() => {
     if (
+      !isExtension &&
       wallet &&
       connectedAccount &&
       !connectedAccount.equals(wallet.publicKey)
@@ -151,6 +166,34 @@ export default function PopupPage({ opener }) {
 
   const request = requests[0];
   const popRequest = () => setRequests((requests) => requests.slice(1));
+
+  const { messages, messageDisplay } = useMemo(() => {
+    if (!request || request.method === 'connect') {
+      return { messages: [], messageDisplay: 'tx' }
+    }
+    switch (request.method) {
+      case 'signTransaction':
+        return {
+          messages: [bs58.decode(request.params.message)],
+          messageDisplay: 'tx',
+        };
+      case 'signAllTransactions':
+        return {
+          messages: request.params.messages.map((m) => bs58.decode(m)),
+          messageDisplay: 'tx',
+        };
+      case 'sign':
+        if (!(request.params.data instanceof Uint8Array)) {
+          throw new Error('Data must be an instance of Uint8Array');
+        }
+        return {
+          messages: [request.params.data],
+          messageDisplay: request.params.display === 'utf8' ? 'utf8' : 'hex',
+        }
+      default:
+        throw new Error('Unexpected method: ' + request.method);
+    }
+  }, [request]);
 
   if (hasConnectedAccount && requests.length === 0) {
     if (isExtension) {
@@ -222,27 +265,6 @@ export default function PopupPage({ opener }) {
       wallet,
   );
 
-  let messages, messageDisplay;
-  switch (request.method) {
-    case 'signTransaction':
-      messages = [bs58.decode(request.params.message)];
-      messageDisplay = 'tx';
-      break;
-    case 'signAllTransactions':
-      messages = request.params.messages.map((m) => bs58.decode(m));
-      messageDisplay = 'tx';
-      break;
-    case 'sign':
-      if (!(request.params.data instanceof Uint8Array)) {
-        throw new Error('Data must be an instance of Uint8Array');
-      }
-      messages = [request.params.data];
-      messageDisplay = request.params.display === 'utf8' ? 'utf8' : 'hex';
-      break;
-    default:
-      throw new Error('Unexpected method: ' + request.method);
-  }
-
   async function onApprove() {
     popRequest();
     switch (request.method) {
@@ -269,7 +291,6 @@ export default function PopupPage({ opener }) {
   }
 
   async function sendAllSignatures(messages) {
-    console.log('wallet', wallet);
     let signatures;
     // Ledger must sign one by one.
     if (wallet.type === 'ledger') {
