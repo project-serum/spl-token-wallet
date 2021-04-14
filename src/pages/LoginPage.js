@@ -205,13 +205,22 @@ function LoginForm() {
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const callAsync = useCallAsync();
 
-  function submit() {
+  const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
       progressMessage: 'Unlocking wallet...',
       successMessage: 'Wallet unlocked',
     });
   }
-
+  const submitOnEnter = (e) => {
+    if (e.code === "Enter" || e.code === "NumpadEnter") {
+      e.preventDefault();
+      e.stopPropagation();
+      submit();
+    }
+  }
+  const setPasswordOnChange = (e) => setPassword(e.target.value);
+  const toggleStayLoggedIn = (e) => setStayLoggedIn(e.target.checked);
+  
   return (
     <Card>
       <CardContent>
@@ -226,20 +235,14 @@ function LoginForm() {
           type="password"
           autoComplete="current-password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.code === "Enter" || e.code === "NumpadEnter") {
-              e.preventDefault();
-              e.stopPropagation();
-              submit();
-            }
-          }}
+          onChange={setPasswordOnChange}
+          onKeyDown={submitOnEnter}
         />
         <FormControlLabel
           control={
             <Checkbox
               checked={stayLoggedIn}
-              onChange={(e) => setStayLoggedIn(e.target.checked)}
+              onChange={toggleStayLoggedIn}
             />
           }
           label="Keep wallet unlocked"
