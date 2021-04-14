@@ -239,6 +239,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
+    {
+      tokenSymbol: 'QUEST',
+      mintAddress: '6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1',
+      tokenName: 'QUEST',
+      icon:
+        'https://questcoin.org/logo500x500.png',
+    }
   ],
 };
 
