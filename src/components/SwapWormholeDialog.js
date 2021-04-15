@@ -21,11 +21,8 @@ import { Chip } from '@material-ui/core';
 const SWAP_PROGRAM_ID = new PublicKey(
   'SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8',
 );
-// const POOL_BASE = new PublicKey(
-//   'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
-// );
 const POOL_BASE = new PublicKey(
-  'BX4Y3jfmWwERaoNSonNpS4tRnBvUTgtRbbQra7D3DZSU',
+  'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
 );
 
 export default function SwapWormholeDialog({
