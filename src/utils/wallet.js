@@ -14,7 +14,6 @@ import {
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
-  transferAndClose,
 } from './tokens';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
@@ -99,6 +98,7 @@ export class Wallet {
     destination,
     amount,
     mint,
+    decimals,
     memo = null,
     overrideDestinationCheck = false,
   ) => {
@@ -116,6 +116,7 @@ export class Wallet {
       amount,
       memo,
       mint,
+      decimals,
       overrideDestinationCheck,
     });
   };
@@ -130,16 +131,6 @@ export class Wallet {
       owner: this,
       sourcePublicKey: publicKey,
       skipPreflight,
-    });
-  };
-
-  transferAndClose = async (source, destination, amount) => {
-    return await transferAndClose({
-      connection: this.connection,
-      owner: this,
-      sourcePublicKey: source,
-      destinationPublicKey: destination,
-      amount,
     });
   };
 
