@@ -115,6 +115,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
               assocTokAddr,
               mintGroup,
               mint,
+              tokenInfo.decimals,
               wallet,
               connection,
               enqueueSnackbar,
@@ -242,11 +243,11 @@ async function mergeMint(
   assocTokAddr,
   mintAccountSet,
   mint,
+  decimals,
   wallet,
   connection,
   enqueueSnackbar,
 ) {
-  console.log('mint', mint, mint.toString());
   if (mintAccountSet.length === 0) {
     return;
   }
@@ -292,6 +293,7 @@ async function mergeMint(
           associatedTokenAccount,
           tokenAccount.account.amount,
           mint,
+          decimals,
         );
       }
     }
