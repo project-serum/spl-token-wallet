@@ -14,12 +14,18 @@ import { swapApiRequest } from '../utils/swap/api';
 import { getErc20Decimals } from '../utils/swap/eth.js';
 import { useSendTransaction } from '../utils/notifications';
 import { signAndSendTransaction } from '../utils/tokens';
+import { divideBnToNumber } from "@project-serum/swap/lib";
+import BN from 'bn.js'
+import { Chip } from '@material-ui/core';
 
 const SWAP_PROGRAM_ID = new PublicKey(
   'SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8',
 );
+// const POOL_BASE = new PublicKey(
+//   'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
+// );
 const POOL_BASE = new PublicKey(
-  'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
+  'BX4Y3jfmWwERaoNSonNpS4tRnBvUTgtRbbQra7D3DZSU',
 );
 
 export default function SwapWormholeDialog({
@@ -36,6 +42,7 @@ export default function SwapWormholeDialog({
   // * pool.accountInfo !== null => pool exists.
   const [pool, setPool] = useState(undefined);
   const [wormholeMintAddr, setWormholeMintAddr] = useState(null);
+  const [swapPoolWormholeTokenHolding, setSwapPoolWormholeTokenHolding] = useState(0)
   const [transferAmountString, setTransferAmountString] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const wallet = useWallet();
@@ -132,6 +139,48 @@ export default function SwapWormholeDialog({
     balanceAmount,
     balanceInfo.mint,
     swapCoinInfo.ticker,
+  ]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (
+        pool &&
+        pool.publicKey &&
+        wormholeMintAddr &&
+        balanceAmount > 0
+      ) {
+        let poolClient;
+        try {
+          poolClient = await Pool.load(wallet.connection, pool.publicKey, SWAP_PROGRAM_ID);
+        } catch (e) {
+          console.log(`Received error loading pool: ${pool.publicKey}`);
+          setSwapPoolWormholeTokenHolding(0);
+          return;
+        }
+        const holdings = await poolClient.getHoldings(wallet.connection);
+        const whMint = await poolClient.getCachedMintAccount(wallet.connection, wormholeMintAddr, 100000);
+        const poolWhHoldingAccount = holdings.find(holding => holding.mint.toString() === wormholeMintAddr.toString());
+        if (!poolWhHoldingAccount) {
+          setSwapPoolWormholeTokenHolding(0);
+          return;
+        }
+        const poolWhTokenAmount = divideBnToNumber(
+          new BN(poolWhHoldingAccount.holding),
+          new BN(Math.pow(10, whMint.decimals))
+        );
+        setSwapPoolWormholeTokenHolding(poolWhTokenAmount);
+      } else {
+        setSwapPoolWormholeTokenHolding(0);
+      }
+    }
+    fetch();
+  }, [
+    pool,
+    wormholeMintAddr,
+    balanceAmount,
+    balanceInfo.mint,
+    swapCoinInfo.ticker,
+    wallet.connection
   ]);
 
   // Converts the sollet wrapped token into the wormhole wrapped token
@@ -232,7 +281,22 @@ export default function SwapWormholeDialog({
         ) : (
           <>
             <DialogContentText>
-              {`Convert your tokens into wormhole-wrapped tokens.`}
+              {`Convert your tokens into wormhole-wrapped tokens using a constant price swap pool. 
+              Assets will be converted one-to-one with a 5 basis point fee paid to the swap program owner.`}
+              <br/>
+              <br/>
+              {`Swap pool: `}
+              <a
+                href={`https://explorer.solana.com/address/${pool.publicKey}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Chip
+                  label={pool.publicKey.toString()}
+                />
+              </a>
+              <br/>
+              {`Available wormhole balances in pool: ${swapPoolWormholeTokenHolding.toFixed(4)}`}
             </DialogContentText>
             <TextField
               label="Amount"
@@ -246,7 +310,7 @@ export default function SwapWormholeDialog({
                     <Button
                       onClick={() =>
                         setTransferAmountString(
-                          balanceAmountToUserAmount(balanceAmount, decimals),
+                          Math.min(balanceAmountToUserAmount(balanceAmount, decimals), swapPoolWormholeTokenHolding),
                         )
                       }
                     >
@@ -265,11 +329,11 @@ export default function SwapWormholeDialog({
                 <span
                   onClick={() =>
                     setTransferAmountString(
-                      balanceAmountToUserAmount(balanceAmount, decimals),
+                      Math.min(balanceAmountToUserAmount(balanceAmount, decimals), swapPoolWormholeTokenHolding),
                     )
                   }
                 >
-                  Max: {balanceAmountToUserAmount(balanceAmount, decimals)}
+                  Max: {Math.min(balanceAmountToUserAmount(balanceAmount, decimals), swapPoolWormholeTokenHolding)}
                 </span>
               }
             />

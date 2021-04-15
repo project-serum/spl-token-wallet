@@ -1878,10 +1878,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/swap@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@project-serum/swap/-/swap-0.0.11.tgz#f606b73fbdcd152d7835068f168cb8ad172d8414"
-  integrity sha512-DxvNL81LnBcE62oENr0LOqIAen9/LNb7gEcDbNlIHr02PckUCZTDIngIsbDY09ld1+V7STy+pLPnstt6ZZElsg==
+"@project-serum/swap@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@project-serum/swap/-/swap-0.0.13.tgz#a9fd66daecb4f5843c13abc870ba5ef673c7d449"
+  integrity sha512-VKwPrzkiKOEv4U85ZnxP29rUfyT3tvvKBDyYSEjAkpqOm3LkRhHvmcm6h/0gOS8waSFiYe2nC80t5tWZOrLbGg==
   dependencies:
     "@project-serum/serum" "^0.13.21"
     "@solana/spl-token" "^0.0.13"
