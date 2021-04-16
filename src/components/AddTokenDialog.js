@@ -167,7 +167,7 @@ export default function AddTokenDialog({ open, onClose }) {
           </React.Fragment>
         ) : tab === 'popular' ? (
           <List disablePadding>
-            {popularTokens.map((tokenInfo) => (
+            {popularTokens.filter(tokenInfo => tokenInfo.address).map((tokenInfo) => (
               <TokenListItem
                 key={tokenInfo.address}
                 tokenInfo={tokenInfo}
