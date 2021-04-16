@@ -298,7 +298,7 @@ export default function AddTokenDialog({ open, onClose }) {
                       (searchValue !== ''
                         ? (
                             tokenInfo.name ??
-                            abbreviateAddress(tokenInfo.address)
+                            abbreviateAddress(new PublicKey(tokenInfo.address))
                           )
                             .toLowerCase()
                             .includes(searchValue.toLowerCase()) ||

@@ -226,12 +226,12 @@ const AddTokens = () => {
                       !token.deprecated &&
                       (searchValue !== ''
                         ? (
-                            token.tokenName ??
-                            abbreviateAddress(token.address)
+                            token.name ??
+                            abbreviateAddress(new PublicKey(token.address))
                           )
                             .toLowerCase()
                             .includes(searchValue.toLowerCase()) ||
-                          token.tokenSymbol
+                          token.symbol
                             .toLowerCase()
                             .includes(searchValue.toLowerCase())
                         : true),
