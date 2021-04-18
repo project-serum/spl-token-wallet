@@ -239,6 +239,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
+    {
+      tokenSymbol: 'STNK',
+      mintAddress: '43VWkd99HjqkhFTZbWBpMpRhjG469nWa7x7uEsgSH7We',
+      tokenName: 'STONKS',
+      icon:
+        'https://raw.githubusercontent.com/StonksDev/Resource/main/stonks.svg',
+    },
   ],
 };
 
