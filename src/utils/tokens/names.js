@@ -239,6 +239,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
+    {
+      tokenSymbol: 'ROPE',
+      mintAddress: '8PMHT4swUMtBzgHnh5U564N5sjPSiUz2cjEQzFnnP1Fo',
+      tokenName: 'ROPE Token',
+      icon:
+        'https://ropesolana.com/content/files/rope_33_1.svg',
+    },
   ],
 };
 
