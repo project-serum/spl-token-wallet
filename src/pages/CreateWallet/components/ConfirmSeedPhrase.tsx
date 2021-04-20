@@ -97,7 +97,7 @@ const ConfirmSeedPhrase = ({
         <Row width={'90%'}>
           <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
-              Place the words from your Seed Phrase in the correct order by
+              Place 12 words from your Seed Phrase in the correct order by
               clicking on the words.
             </Title>
           </ColorText>

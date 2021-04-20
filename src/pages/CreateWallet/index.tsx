@@ -81,7 +81,7 @@ export const CreateWalletPage = () => {
         ) : currentStep === 2 && isConfirmSeedPhrase ? (
           <ConfirmSeedPhrase
             password={password}
-            seedPhrase={mnemonicAndSeed.mnemonic}
+            seedPhrase={mnemonicAndSeed.mnemonic.split(' ').slice(0, 12).join(' ')}
             setCurrentStep={setCurrentStep}
             setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
             createWallet={submit}
