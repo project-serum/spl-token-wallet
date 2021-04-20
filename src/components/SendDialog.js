@@ -383,6 +383,7 @@ function SendSwapDialog({
     splUsdcWalletAddress,
     wusdtToSplUsdt,
     splUsdtWalletAddress,
+    usdcToSplWUsdc,
     splWUsdcWalletAddress,
   ]);
 
