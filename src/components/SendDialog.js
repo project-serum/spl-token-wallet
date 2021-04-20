@@ -261,7 +261,6 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
-      decimals,
       null,
       overrideDestinationCheck,
     );

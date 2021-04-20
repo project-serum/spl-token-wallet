@@ -14,7 +14,7 @@ import {
   memoInstruction,
   mintTo,
   TOKEN_PROGRAM_ID,
-  transferChecked,
+  transfer,
 } from './instructions';
 import {
   ACCOUNT_LAYOUT,
@@ -300,7 +300,6 @@ export async function transferTokens({
   amount,
   memo,
   mint,
-  decimals,
   overrideDestinationCheck,
 }) {
   const destinationAccountInfo = await connection.getAccountInfo(
@@ -313,8 +312,6 @@ export async function transferTokens({
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
-      mint,
-      decimals,
       sourcePublicKey,
       destinationPublicKey,
       amount,
@@ -342,8 +339,6 @@ export async function transferTokens({
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
-      mint,
-      decimals,
       sourcePublicKey,
       destinationPublicKey: destinationSplTokenAccount.publicKey,
       amount,
@@ -358,24 +353,44 @@ export async function transferTokens({
     amount,
     memo,
     mint,
-    decimals,
   });
+}
+
+// SPL tokens only.
+export async function transferAndClose({
+  connection,
+  owner,
+  sourcePublicKey,
+  destinationPublicKey,
+  amount,
+}) {
+  const tx = createTransferBetweenSplTokenAccountsInstruction({
+    ownerPublicKey: owner.publicKey,
+    sourcePublicKey,
+    destinationPublicKey,
+    amount,
+  });
+  tx.add(
+    closeAccount({
+      source: sourcePublicKey,
+      destination: owner.publicKey,
+      owner: owner.publicKey,
+    }),
+  );
+  let signers = [];
+  return await signAndSendTransaction(connection, tx, owner, signers);
 }
 
 function createTransferBetweenSplTokenAccountsInstruction({
   ownerPublicKey,
-  mint,
-  decimals,
   sourcePublicKey,
   destinationPublicKey,
   amount,
   memo,
 }) {
   let transaction = new Transaction().add(
-    transferChecked({
+    transfer({
       source: sourcePublicKey,
-      mint,
-      decimals,
       destination: destinationPublicKey,
       owner: ownerPublicKey,
       amount,
@@ -390,8 +405,6 @@ function createTransferBetweenSplTokenAccountsInstruction({
 async function transferBetweenSplTokenAccounts({
   connection,
   owner,
-  mint,
-  decimals,
   sourcePublicKey,
   destinationPublicKey,
   amount,
@@ -399,8 +412,6 @@ async function transferBetweenSplTokenAccounts({
 }) {
   const transaction = createTransferBetweenSplTokenAccountsInstruction({
     ownerPublicKey: owner.publicKey,
-    mint,
-    decimals,
     sourcePublicKey,
     destinationPublicKey,
     amount,
@@ -418,7 +429,6 @@ async function createAndTransferToAccount({
   amount,
   memo,
   mint,
-  decimals,
 }) {
   const [
     createAccountInstruction,
@@ -439,8 +449,6 @@ async function createAndTransferToAccount({
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
     {
       ownerPublicKey: owner.publicKey,
-      mint,
-      decimals,
       sourcePublicKey,
       destinationPublicKey: newAddress,
       amount,
