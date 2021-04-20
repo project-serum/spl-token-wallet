@@ -420,7 +420,6 @@ function SendSwapDialog({
       new PublicKey(swapInfo.address),
       amount,
       balanceInfo.mint,
-      decimals,
       swapInfo.memo,
     );
   }
