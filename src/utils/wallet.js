@@ -282,7 +282,7 @@ export function WalletProvider({ children }) {
 
   const [accounts, derivedAccounts] = useMemo(() => {
     if (!seed) {
-      return [];
+      return [[], []];
     }
 
     const seedBuffer = Buffer.from(seed, 'hex');
