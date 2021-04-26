@@ -251,7 +251,7 @@ const AssetsTable = ({
   );
 
   const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.slice(1, 13).map((pk, i) => {
+    return sortedPublicKeys.map((pk, i) => {
       return React.memo((props) => {
         return (
           <AssetItem
