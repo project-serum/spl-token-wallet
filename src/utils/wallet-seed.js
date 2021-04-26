@@ -6,6 +6,10 @@ import { EventEmitter } from 'events';
 import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 
+export function normalizeMnemonic(mnemonic) {
+  return mnemonic.trim().split(/\s+/g).join(" ");
+}
+
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
   const mnemonic = bip39.generateMnemonic(256);
