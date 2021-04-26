@@ -239,6 +239,27 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg',
     },
+    {
+      tokenSymbol: 'COPE',
+      mintAddress: '3K6rftdAaQYMPunrtNRHgnK2UAtjm2JwyT2oCiTDouYE',
+      tokenName: 'COPE',
+      icon:
+        'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/3K6rftdAaQYMPunrtNRHgnK2UAtjm2JwyT2oCiTDouYE/logo.jpg',
+    },
+    {
+      tokenSymbol: 'BRZ',
+      mintAddress: 'FtgGSFADXBtroxq8VCausXRr2of47QBf5AS1NtZCu4GD',
+      tokenName: 'Brazilian Digital Token',
+      icon:
+        'https://cdn.jsdelivr.net/gh/solana-labs/explorer/public/tokens/brz.png',
+    },
+    {
+      tokenSymbol: 'STEP',
+      mintAddress: 'StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT',
+      tokenName: 'Step',
+      icon:
+        'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
+    },
   ],
 };
 
