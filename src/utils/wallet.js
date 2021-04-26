@@ -14,7 +14,6 @@ import {
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
-  transferAndClose,
 } from './tokens';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
@@ -99,6 +98,7 @@ export class Wallet {
     destination,
     amount,
     mint,
+    decimals,
     memo = null,
     overrideDestinationCheck = false,
   ) => {
@@ -116,6 +116,7 @@ export class Wallet {
       amount,
       memo,
       mint,
+      decimals,
       overrideDestinationCheck,
     });
   };
@@ -130,16 +131,6 @@ export class Wallet {
       owner: this,
       sourcePublicKey: publicKey,
       skipPreflight,
-    });
-  };
-
-  transferAndClose = async (source, destination, amount) => {
-    return await transferAndClose({
-      connection: this.connection,
-      owner: this,
-      sourcePublicKey: source,
-      destinationPublicKey: destination,
-      amount,
     });
   };
 
@@ -289,9 +280,9 @@ export function WalletProvider({ children }) {
     }
   }
 
-  const accounts = useMemo(() => {
+  const [accounts, derivedAccounts] = useMemo(() => {
     if (!seed) {
-      return [];
+      return [[], []];
     }
 
     const seedBuffer = Buffer.from(seed, 'hex');
@@ -325,7 +316,8 @@ export function WalletProvider({ children }) {
       };
     });
 
-    return derivedAccounts.concat(importedAccounts);
+    const accounts = derivedAccounts.concat(importedAccounts);
+    return [accounts, derivedAccounts];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
 
@@ -358,6 +350,7 @@ export function WalletProvider({ children }) {
         privateKeyImports,
         setPrivateKeyImports,
         accounts,
+        derivedAccounts,
         addAccount,
         setAccountName,
         derivationPath,
@@ -475,6 +468,7 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const {
     accounts,
+    derivedAccounts,
     addAccount,
     setWalletSelector,
     setAccountName,
@@ -484,6 +478,7 @@ export function useWalletSelector() {
 
   return {
     accounts,
+    derivedAccounts,
     setWalletSelector,
     addAccount,
     setAccountName,
