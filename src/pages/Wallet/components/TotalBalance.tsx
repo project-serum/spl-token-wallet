@@ -1,13 +1,17 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useBalanceInfo, useWalletPublicKeys, useWalletSelector } from '../../../utils/wallet';
+import {
+  useBalanceInfo,
+  useWalletPublicKeys,
+  useWalletSelector,
+} from '../../../utils/wallet';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
 
 let usdValuesNavbar: any = {};
-let usdValuesTotal: any = {}
+let usdValuesTotal: any = {};
 
 const Item = ({
   isNavbar,
@@ -15,7 +19,7 @@ const Item = ({
   setUsdValue,
   marketsData,
 }: {
-  isNavbar: boolean,
+  isNavbar: boolean;
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
   marketsData: any;
@@ -31,20 +35,18 @@ const Item = ({
   };
 
   const [price, setPrice] = useState<number | null | undefined>(null);
+  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const isUSDT =
+    coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
   const connection = useConnection();
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
+  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal;
 
   useEffect(() => {
     if (balanceInfo && !price) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (
-          coin === 'USDT' ||
-          coin === 'USDC' ||
-          coin === 'WUSDC' ||
-          coin === 'WUSDT'
-        ) {
+        if (isUSDT) {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
@@ -71,8 +73,8 @@ const Item = ({
       }
     }
 
-    return () => {}
-  }, [price, balanceInfo, connection]);
+    return () => {};
+  }, [price, balanceInfo, connection, coin, isUSDT]);
 
   let { closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -81,15 +83,16 @@ const Item = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate =
-    price === null &&
-    !priceStore.getFromCache(
-      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-    )
-      ? !closePrice
-        ? price
-        : closePrice
-      : price;
+  let priceForCalculate = isUSDT
+    ? 1
+    : price === null &&
+      !priceStore.getFromCache(
+        serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
+      )
+    ? !closePrice
+      ? price
+      : closePrice
+    : price;
 
   const usdValue =
     priceForCalculate === undefined // Not yet loaded.
@@ -107,7 +110,7 @@ const Item = ({
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
 
-    return () => {}
+    return () => {};
   }, [setUsdValue, usdValue, publicKey, usdValues]);
 
   return null;
@@ -130,9 +133,9 @@ const TotalBalance = ({ isNavbar = true }) => {
   useEffect(() => {
     if (isNavbar) usdValuesNavbar = {};
     else {
-      usdValuesTotal = {}
+      usdValuesTotal = {};
     }
-  }, [selectedAccount, isNavbar])
+  }, [selectedAccount, isNavbar]);
 
   useEffect(() => {
     const getData = async () => {
@@ -157,11 +160,12 @@ const TotalBalance = ({ isNavbar = true }) => {
   );
 
   const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.map((pk) => {
+    return sortedPublicKeys.map((pk, i) => {
+      console.log('pk', pk.toString(), i);
       return React.memo((props) => {
         return (
           <Item
-            key={`${pk.toString()}${isNavbar}`}
+            key={`${pk.toString()}${isNavbar}${i}`}
             publicKey={pk}
             isNavbar={isNavbar}
             setUsdValue={setUsdValuesCallback}
@@ -177,7 +181,9 @@ const TotalBalance = ({ isNavbar = true }) => {
       {memoizedAssetsList.map((Memoized) => (
         <Memoized />
       ))}
-      <span key={`${isNavbar}-total-balance`}>${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}</span>
+      <span key={`${isNavbar}-total-balance`}>
+        ${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}
+      </span>
     </>
   );
 };

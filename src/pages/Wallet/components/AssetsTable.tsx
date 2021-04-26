@@ -251,11 +251,11 @@ const AssetsTable = ({
   );
 
   const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.map((pk) => {
+    return sortedPublicKeys.slice(1, 13).map((pk, i) => {
       return React.memo((props) => {
         return (
           <AssetItem
-            key={`${pk.toString()}-table`}
+            key={`${pk.toString()}-${i}-table`}
             publicKey={pk}
             theme={theme}
             marketsData={marketsData}
@@ -392,18 +392,15 @@ const AssetItem = ({
   };
 
   const [price, setPrice] = useState<number | null | undefined>(null);
+  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const isUSDT =
+    coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
 
   useEffect(() => {
     if (balanceInfo && !price) {
       if (balanceInfo.tokenSymbol) {
-        const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (
-          coin === 'USDT' ||
-          coin === 'USDC' ||
-          coin === 'WUSDC' ||
-          coin === 'WUSDT'
-        ) {
+        if (isUSDT) {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
@@ -432,7 +429,7 @@ const AssetItem = ({
     }
 
     return () => {};
-  }, [price, balanceInfo, connection]);
+  }, [price, balanceInfo, connection, coin, isUSDT]);
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -441,15 +438,16 @@ const AssetItem = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate =
-    price === null &&
-    !priceStore.getFromCache(
-      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-    )
-      ? !closePrice
-        ? price
-        : closePrice
-      : price;
+  let priceForCalculate = isUSDT
+    ? 1
+    : price === null &&
+      !priceStore.getFromCache(
+        serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
+      )
+    ? !closePrice
+      ? price
+      : closePrice
+    : price;
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
