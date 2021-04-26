@@ -136,11 +136,17 @@ export async function storeMnemonicAndSeed(
       }),
     );
     localStorage.removeItem('unlocked');
-    sessionStorage.removeItem('unlocked');
   } else {
     localStorage.setItem('unlocked', plaintext);
     localStorage.removeItem('locked');
-    sessionStorage.removeItem('unlocked');
+  }
+  sessionStorage.removeItem('unlocked');
+  if (isExtension) {
+    chrome.runtime.sendMessage({
+      channel: 'sollet_extension_mnemonic_channel',
+      method: 'set',
+      data: '',
+    });
   }
   const importsEncryptionKey = deriveImportsEncryptionKey(seed);
   setUnlockedMnemonicAndSeed(
@@ -217,6 +223,13 @@ function deriveImportsEncryptionKey(seed) {
 export function forgetWallet() {
   localStorage.clear();
   sessionStorage.removeItem('unlocked');
+  if (isExtension) {
+    chrome.runtime.sendMessage({
+      channel: 'sollet_extension_mnemonic_channel',
+      method: 'set',
+      data: '',
+    });
+  }
   unlockedMnemonicAndSeed = {
     mnemonic: null,
     seed: null,
