@@ -97,7 +97,7 @@ const ConfirmSeedPhrase = ({
         <Row width={'90%'}>
           <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
-              Place the words from your Seed Phrase in the correct order by
+              Place 12 words from your Seed Phrase in the correct order by
               clicking on the words.
             </Title>
           </ColorText>
@@ -112,10 +112,10 @@ const ConfirmSeedPhrase = ({
               minHeight: '9rem',
             }}
           >
-            {savedSeedWords.map((word) => (
+            {savedSeedWords.map((word, i) => (
               <SmallButton
                 isSelected
-                key={`${word}-selected`}
+                key={`${word}-selected-${i}`}
                 theme={theme}
                 onClick={() => {
                   const newSavedSeedWords = savedSeedWords.filter(
@@ -139,10 +139,10 @@ const ConfirmSeedPhrase = ({
         {randomlyPlacedSeedWords.length > 0 && (
           <Row width={'90%'} margin="2rem 0 0 0">
             <RowContainer wrap="wrap">
-              {randomlyPlacedSeedWords.map((word) => (
+              {randomlyPlacedSeedWords.map((word, i) => (
                 <SmallButton
                   theme={theme}
-                  key={`${word}`}
+                  key={`${word}-${i}`}
                   onClick={() => {
                     const newRandomlySavedWords = randomlyPlacedSeedWords.filter(
                       (w, i) =>
