@@ -38,7 +38,7 @@ const CreatePassword = ({
   return (
     <>
       <FakeInputs />
-      <Card justify={'space-evenly'}>
+      <Card minHeight={'48rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
           <BoldTitle style={{ marginBottom: '1.5rem' }}>
             Create a password or type your addressbook

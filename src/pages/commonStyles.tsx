@@ -132,7 +132,12 @@ export const Card = styled.div`
   flex-direction: column;
   align-items: center;
   transition: 0.3s all ease-out;
-  
+  @media (max-width: 400px) {
+    background: #17181a;
+    border: none;
+    box-shadow: none;
+    height: ${(props) => props.minHeight || '40rem'};
+  }
 `;
 
 export const Input = styled(({ ...props }) => (

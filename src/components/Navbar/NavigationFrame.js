@@ -29,7 +29,7 @@ import DiscordIcon from './DiscordIcon';
 import { Row } from '../../pages/commonStyles';
 import { isExtension } from '../../utils/utils';
 
-export const footerHeight = isExtension ? 8 : 6
+export const footerHeight = isExtension ? 8 : 6;
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -52,7 +52,9 @@ const useStyles = makeStyles((theme) => ({
 
 const StyledMain = styled.main`
   height: ${(props) =>
-    props.isConnectPopup ? `calc(100% - ${footerHeight}rem)` : 'calc(100% - 12rem)'};
+    props.isConnectPopup
+      ? `calc(100% - ${footerHeight}rem)`
+      : 'calc(100% - 12rem)'};
 
   @media (max-width: 850px) {
     height: calc(100% - ${footerHeight}rem);
@@ -256,10 +258,11 @@ const Socials = styled(Row)`
 function Footer() {
   const classes = useFooterStyles();
   const theme = useTheme();
-
+  console.log('isExtension', isExtension);
   return (
     <footer
       style={{
+        display: isExtension ? 'none' : 'auto',
         height: isExtension ? '8rem' : '6rem',
         padding: isExtension ? '1rem 0 1rem 3rem' : '0 0 0 3rem',
       }}

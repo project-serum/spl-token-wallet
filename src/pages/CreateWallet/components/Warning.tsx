@@ -29,9 +29,9 @@ const Warning = ({
 
   const submit = async () => {
     const origin = localStorage.getItem('origin');
-    
+
     if (!!origin) {
-      console.log('add to location')
+      console.log('add to location');
       window.location.href += `#origin=${origin}`;
     }
 
@@ -50,7 +50,7 @@ const Warning = ({
   return (
     <>
       <FakeInputs />
-      <Card justify={'space-evenly'}>
+      <Card minHeight={'55rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
           <BoldTitle style={{ fontSize: '2.4rem', marginBottom: '1.5rem' }}>
             Warning
