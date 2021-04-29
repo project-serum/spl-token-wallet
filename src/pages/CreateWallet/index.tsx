@@ -61,34 +61,44 @@ export const CreateWalletPage = () => {
   return (
     <Body>
       <FakeInputs />
-      <RowContainer direction={'column'}>
-        <Logo margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} />
-        {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
+      <RowContainer height={'100%'} direction={'column'}>
+        <Logo />
+        <RowContainer
+          style={{ overflowX: 'auto', paddingBottom: '3rem' }}
+          height={'80%'}
+          direction={'column'}
+        >
+          {/* margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} */}
+          {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
 
-        {currentStep === 0 ? (
-          <Warning onSubmit={() => setCurrentStep(1)} />
-        ) : currentStep === 1 ? (
-          <CreatePassword
-            password={password}
-            setPassword={setPassword}
-            setCurrentStep={setCurrentStep}
-          />
-        ) : currentStep === 2 && !isConfirmSeedPhrase ? (
-          <SaveSeedPhrase
-            seedPhrase={mnemonicAndSeed.mnemonic}
-            setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
-          />
-        ) : currentStep === 2 && isConfirmSeedPhrase ? (
-          <ConfirmSeedPhrase
-            password={password}
-            seedPhrase={mnemonicAndSeed.mnemonic.split(' ').slice(0, 12).join(' ')}
-            setCurrentStep={setCurrentStep}
-            setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
-            createWallet={submit}
-          />
-        ) : (
-          <AddTokens />
-        )}
+          {currentStep === 0 ? (
+            <Warning onSubmit={() => setCurrentStep(1)} />
+          ) : currentStep === 1 ? (
+            <CreatePassword
+              password={password}
+              setPassword={setPassword}
+              setCurrentStep={setCurrentStep}
+            />
+          ) : currentStep === 2 && !isConfirmSeedPhrase ? (
+            <SaveSeedPhrase
+              seedPhrase={mnemonicAndSeed.mnemonic}
+              setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
+            />
+          ) : currentStep === 2 && isConfirmSeedPhrase ? (
+            <ConfirmSeedPhrase
+              password={password}
+              seedPhrase={mnemonicAndSeed.mnemonic
+                .split(' ')
+                .slice(0, 12)
+                .join(' ')}
+              setCurrentStep={setCurrentStep}
+              setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
+              createWallet={submit}
+            />
+          ) : (
+            <AddTokens />
+          )}
+        </RowContainer>
       </RowContainer>
     </Body>
   );

@@ -20,6 +20,9 @@ export const StyledDropdown = styled.div`
   }
   padding: 1rem 3rem 1rem 0;
   border-right: ${(props) => props.theme.customPalette.border.new};
+  @media (max-width: 400px) {
+    border: none;
+  }
 `;
 
 export const StyledPaper = styled(
@@ -54,6 +57,11 @@ export const StyledPaper = styled(
     border-top-right-radius: 0; */
     /* padding-left: 8px;
     padding-right: 8px; */
+
+    @media (max-width: 400px) {
+      right: 8rem;
+      top: calc(10rem - 0.1rem);
+    }
   }
 `;
 
@@ -104,6 +112,7 @@ const WalletStatusButton = ({
     height={'3.5rem'}
     padding={'1.25rem 0'}
     fontSize={'1.2rem'}
+    style={{ whiteSpace: 'nowrap' }}
   >
     {connection}
     <ExpandMoreIcon fontSize="small" style={{ marginLeft: '.5rem' }} />
@@ -144,7 +153,11 @@ const NetworkDropdown = () => {
         theme={theme}
         isWalletConnected={false}
         customNotActiveRem={
-          !!wallet ? '37rem' : isUserHasLockedMnemonicAndSeed ? '22rem' : '38rem'
+          !!wallet
+            ? '37rem'
+            : isUserHasLockedMnemonicAndSeed
+            ? '22rem'
+            : '38rem'
         }
       >
         <MenuList style={{ padding: 0 }}>

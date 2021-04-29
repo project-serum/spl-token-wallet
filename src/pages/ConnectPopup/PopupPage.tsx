@@ -1,15 +1,7 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
-import {
-  useWallet,
-  useWalletSelector,
-} from '../../utils/wallet';
+import { useWallet, useWalletSelector } from '../../utils/wallet';
 import { useTheme } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';

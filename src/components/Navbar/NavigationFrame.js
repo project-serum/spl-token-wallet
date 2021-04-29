@@ -5,7 +5,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { useWalletSelector } from '../../utils/wallet';
+import { useWallet, useWalletSelector } from '../../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,7 +29,7 @@ import DiscordIcon from './DiscordIcon';
 import { Row } from '../../pages/commonStyles';
 import { isExtension } from '../../utils/utils';
 
-export const footerHeight = isExtension ? 8 : 6;
+export const footerHeight = isExtension ? 0 : 0; //не забудь иземнить на 6 ...
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -59,6 +59,9 @@ const StyledMain = styled.main`
   @media (max-width: 850px) {
     height: calc(100% - ${footerHeight}rem);
   }
+  @media (max-width: 400px) {
+    height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
+  }
 `;
 
 const StyledLink = styled.a`
@@ -71,16 +74,17 @@ export const StyledImg = styled.img`
 
 export default function NavigationFrame({ children }) {
   const isConnectPopup = window.opener;
+  const wallet = useWallet();
 
   return isConnectPopup ? (
     <>
-      <StyledMain isConnectPopup>{children}</StyledMain>
+      <StyledMain isWalletConnected={false} isConnectPopup>{children}</StyledMain>
       <Footer />
     </>
   ) : (
     <>
       <Navbar />
-      <StyledMain>{children}</StyledMain>
+      <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
     </>
   );
@@ -255,19 +259,22 @@ const Socials = styled(Row)`
   }
 `;
 
+const FooterComponent = styled.footer`
+  height: 6rem;
+  padding: 0 0 0 3rem;
+  @media (max-width: 400px) {
+    padding: 0;
+    height: 0;
+    display: none;
+  }
+`;
+
 function Footer() {
   const classes = useFooterStyles();
   const theme = useTheme();
   console.log('isExtension', isExtension);
   return (
-    <footer
-      style={{
-        display: isExtension ? 'none' : 'auto',
-        height: isExtension ? '8rem' : '6rem',
-        padding: isExtension ? '1rem 0 1rem 3rem' : '0 0 0 3rem',
-      }}
-      className={classes.footer}
-    >
+    <FooterComponent className={classes.footer}>
       <Button
         variant="outlined"
         color="primary"
@@ -307,6 +314,6 @@ function Footer() {
           <DiscordIcon />
         </StyledLink>
       </Socials>
-    </footer>
+    </FooterComponent>
   );
 }

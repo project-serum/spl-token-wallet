@@ -44,7 +44,9 @@ export const RowContainer = styled((props) => <Row {...props} />)`
   width: ${(props: RowProps) => props.width || '100%'};
 `;
 
-export const GridContainer = styled(({ theme, ...rest }) => <Grid {...rest} />)`
+export const GridContainer = styled(({ wallet, theme, ...rest }) => (
+  <Grid {...rest} />
+))`
   position: relative;
   display: flex;
   flex: auto;
@@ -58,7 +60,9 @@ export const GridContainer = styled(({ theme, ...rest }) => <Grid {...rest} />)`
   background: ${(props) => props.theme.customPalette.dark.background};
 
   @media (max-width: 850px) {
-    display: none;
+    display: ${(props) => (props.wallet ? 'flex' : 'none')};
+    height: 10rem;
+    background: #222429;
   }
 `;
 
@@ -79,9 +83,17 @@ export const ColorText = styled.div`
   justify-content: ${(props) => props.justify || 'space-evenly'};
   flex-direction: ${(props) => props.direction || 'row'};
   align-items: ${(props) => props.align || 'center'};
+
+  @media (max-width: 400px) {
+    padding: ${(props) => (props.needBackground ? '0 2rem 0 2rem' : 'auto')};
+    background: ${(props) => (props.needBackground ? 'transparent' : 'auto')};
+    font-size: 1.5rem;
+  }
 `;
 
-export const Textarea = styled.textarea`
+export const Textarea = styled(({ style, ...props }) => (
+  <textarea {...props} />
+))`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
   font-family: Avenir Next;
@@ -100,6 +112,13 @@ export const Textarea = styled.textarea`
   &::placeholder {
     font-size: 1.4rem;
   }
+
+  ${(props) => props.style};
+
+  @media (max-width: 400px) {
+    font-size: 1.4rem;
+    line-height: 3rem;
+  }
 `;
 
 export const ContainerForIcon = styled.div`
@@ -111,6 +130,10 @@ export const ContainerForIcon = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 400px) {
+    height: 4.5rem;
+  }
 `;
 
 export const Img = styled.div`
@@ -137,10 +160,11 @@ export const Card = styled.div`
     border: none;
     box-shadow: none;
     height: ${(props) => props.minHeight || '40rem'};
+    width: ${(props) => props.minWidth || '100%'};
   }
 `;
 
-export const Input = styled(({ ...props }) => (
+export const Input = styled(({ style, ...props }) => (
   <input
     {...props}
     autoComplete="off"
@@ -171,6 +195,11 @@ export const Input = styled(({ ...props }) => (
   }
 
   ${(props) => props.style};
+
+  @media (max-width: 400px) {
+    font-size: 1.4rem;
+    height: 6rem;
+  }
 `;
 
 export const Body = styled.div`
@@ -199,9 +228,16 @@ export const TextButton = styled.button`
 `;
 
 export const Title = styled(
-  ({ width, fontFamily, fontSize, color, textAlign, margin, ...props }) => (
-    <span {...props} />
-  ),
+  ({
+    width,
+    fontFamily,
+    fontSize,
+    color,
+    textAlign,
+    margin,
+    style,
+    ...props
+  }) => <span {...props} />,
 )`
   width: ${(props) => props.width || 'auto'};
   font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
@@ -212,6 +248,11 @@ export const Title = styled(
   color: ${(props) => props.color || '#ecf0f3'};
   text-align: ${(props) => props.textAlign || 'center'};
   margin: ${(props) => props.margin || '0'};
+  ${(props) => props.style};
+
+  @media (max-width: 400px) {
+    font-size: 1.6rem;
+  }
 `;
 
 export const VioletButton = styled((props) => (
@@ -237,6 +278,10 @@ export const VioletButton = styled((props) => (
   />
 ))`
   outline: none;
+
+  @media (max-width: 400px) {
+    height: 6rem;
+  }
 `;
 
 export const RedButton = styled((props) => (
@@ -254,6 +299,10 @@ export const RedButton = styled((props) => (
   />
 ))`
   outline: none;
+
+  @media (max-width: 400px) {
+    height: 6rem;
+  }
 `;
 
 export const RedFilledButton = styled((props) => (
@@ -279,6 +328,10 @@ export const RedFilledButton = styled((props) => (
   />
 ))`
   outline: none;
+
+  @media (max-width: 400px) {
+    height: 6rem;
+  }
 `;
 
 export const WhiteButton = styled((props) => (
@@ -296,6 +349,10 @@ export const WhiteButton = styled((props) => (
   />
 ))`
   outline: none;
+
+  @media (max-width: 400px) {
+    height: 6rem;
+  }
 `;
 
 export const CardButton = styled.div`
@@ -382,6 +439,10 @@ export const SearchInput = styled.input`
   height: 3.5rem;
   color: #fff;
   padding: 0 2rem;
+
+  @media (max-width: 400px) {
+    height: 4.5rem;
+  }
 `;
 
 export const ListCard = styled.div`

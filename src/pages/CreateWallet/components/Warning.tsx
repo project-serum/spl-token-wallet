@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@material-ui/core';
 
@@ -15,6 +16,12 @@ import BottomLink from '../../../components/BottomLink';
 import FakeInputs from '../../../components/FakeInputs';
 import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
+
+const StyledTitle = styled(BoldTitle)`
+  @media (max-width: 400px) {
+    font-size: 4.5rem;
+  }
+`;
 
 const Warning = ({
   onSubmit,
@@ -50,11 +57,11 @@ const Warning = ({
   return (
     <>
       <FakeInputs />
-      <Card minHeight={'55rem'} justify={'space-evenly'}>
+      <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
-          <BoldTitle style={{ fontSize: '2.4rem', marginBottom: '1.5rem' }}>
+          <StyledTitle fontSize={'2.4rem'} style={{ marginBottom: '1.5rem' }}>
             Warning
-          </BoldTitle>
+          </StyledTitle>
         </RowContainer>
         <RowContainer width="90%">
           <AttentionComponent

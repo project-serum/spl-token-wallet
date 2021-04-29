@@ -1,13 +1,20 @@
 import React from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { Dialog } from '@material-ui/core';
 import { Card } from '../../commonStyles';
 
 const StyledCard = styled(Card)`
   && {
     max-width: 100%;
+    max-height: 100%;
+    @media (max-width: 400px) {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border-radius: 0;
+    }
   }
-`
+`;
 
 export default function DialogForm({
   open,
@@ -33,7 +40,7 @@ export default function DialogForm({
         height: rest.height,
         width: rest.width,
         padding: rest.padding,
-        maxWidth: '100%'
+        maxWidth: '100%',
       }}
       onClose={onClose}
       // fullScreen={fullScreen}

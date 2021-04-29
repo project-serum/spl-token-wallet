@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { storeMnemonicAndSeed } from '../../utils/wallet-seed';
 import {
   getAccountFromSeed,
@@ -34,7 +34,7 @@ const StyledRowContainer = styled(RowContainer)`
   & svg {
     top: auto;
   }
-`
+`;
 
 export default function DerivedAccounts({
   goBack,
@@ -79,7 +79,7 @@ export default function DerivedAccounts({
   // };
 
   return (
-    <Card height="auto" padding="2rem 0">
+    <Card minHeight={'60rem'} height="auto" padding="2rem 0">
       <RowContainer width="90%" direction="column">
         <StyledRowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
@@ -217,7 +217,11 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
       <img
         src={CubeLogo}
         alt={'logo'}
-        style={{ borderRadius: '0', height: '6rem', padding: '1rem 0.5rem 1rem 1rem' }}
+        style={{
+          borderRadius: '0',
+          height: '6rem',
+          padding: '1rem 0.5rem 1rem 1rem',
+        }}
       />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
         <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
