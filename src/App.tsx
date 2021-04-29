@@ -13,6 +13,8 @@ import LoadingIndicator from './components/LoadingIndicator';
 import SnackbarProvider from './components/SnackbarProvider';
 import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
+import { isExtension } from './utils/utils';
+import { ConnectedWalletsProvider } from './utils/connected-wallets';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -145,6 +147,20 @@ export default function App() {
     return null;
   }
 
+  let appElement = (
+    <NavigationFrame>
+      <Pages />
+    </NavigationFrame>
+  );
+
+  if (isExtension) {
+    appElement = (
+      <ConnectedWalletsProvider>
+        {appElement}
+      </ConnectedWalletsProvider>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingIndicator />}>
@@ -154,9 +170,7 @@ export default function App() {
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
                 <WalletProvider>
-                  <NavigationFrame>
-                    <Pages />
-                  </NavigationFrame>
+                  {appElement}
                 </WalletProvider>
               </SnackbarProvider>
             </TokenRegistryProvider>

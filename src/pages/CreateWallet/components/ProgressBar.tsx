@@ -81,6 +81,17 @@ const AlignedTitle = styled(Title)`
   white-space: nowrap;
 `;
 
+const ProgressBarRow = styled(RowContainer)`
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  padding: 0 0 7rem 0;
+  @media (max-width: 400px) {
+    margin-top: ${(props) => (props.currentStep === 3 ? '45rem' : 'none')};
+  }
+  ${(props) => props.style}
+`;
+
 const ProgressBarComponent = ({
   currentStep,
   firstStepText = 'Create Password',
@@ -95,13 +106,7 @@ const ProgressBarComponent = ({
   style?: any;
 }) => {
   return (
-    <RowContainer
-      direction={'row'}
-      justify={'flex-start'}
-      align={'baseline'}
-      padding={'0 0 7rem 0'}
-      style={{ ...style }}
-    >
+    <ProgressBarRow currentStep={currentStep} style={style}>
       <ProgressBarContainer>
         <ProgressBar currentStep={currentStep}>
           <Percent />
@@ -141,7 +146,7 @@ const ProgressBarComponent = ({
           </StepContainer>
         </Steps>
       </ProgressBarContainer>
-    </RowContainer>
+    </ProgressBarRow>
   );
 };
 

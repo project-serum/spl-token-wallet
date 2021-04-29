@@ -19,7 +19,7 @@ import {
 } from '../../../utils/utils';
 import { usePopularTokens } from '../../../utils/tokens/names';
 import Link from '@material-ui/core/Link';
-import DialogForm from '../../../pages/Wallet/components/DialogForm';
+import DialogForm from './DialogForm';
 // import { showSwapAddress } from '../../../utils/config';
 import { swapApiRequest } from '../../../utils/swap/api';
 import TokenIcon from '../../../components/TokenIcon';
@@ -411,7 +411,7 @@ export function TokenListItem({
   );
   const checked = selectedTokenIndex !== -1;
   const isDisabled = disabled || alreadyExists;
-  const address = new PublicKey(mintAddress)
+  const address = new PublicKey(mintAddress);
 
   return (
     <>

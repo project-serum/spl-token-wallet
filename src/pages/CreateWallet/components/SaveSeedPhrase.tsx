@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '@material-ui/core';
 
 import {
@@ -17,6 +18,27 @@ import BottomLink from '../../../components/BottomLink';
 import AttentionComponent from '../../../components/Attention';
 import clipboardCopy from 'clipboard-copy';
 import FakeInputs from '../../../components/FakeInputs';
+
+const SeedPhraseForm = styled(RowContainer)`
+  @media (max-width: 400px) {
+    flex-direction: column;
+  }
+`;
+
+const CheckboxContainer = styled(Row)`
+  width: 50%;
+
+  @media (max-width: 400px) {
+    width: auto;
+    margin-bottom: 1rem;
+  }
+`;
+
+const StyledButton = styled(VioletButton)`
+  @media (max-width: 400px) {
+    width: 100%;
+  }
+`;
 
 const CreatePassword = ({
   seedPhrase,
@@ -43,7 +65,7 @@ const CreatePassword = ({
   return (
     <>
       <FakeInputs />
-      <Card width="53rem" height="55rem">
+      <Card minHeight={'50rem'} width="50rem" height="55rem">
         <Row
           width={'90%'}
           height={'100%'}
@@ -59,6 +81,7 @@ const CreatePassword = ({
             <ColorText
               style={{ fontSize: '1.3rem', fontFamily: 'Avenir Next Demi' }}
               background={'rgba(164, 231, 151, 0.5)'}
+              needBackground={true}
             >
               Please write down the following seed phrase and keep it in a safe
               place:
@@ -66,7 +89,7 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer style={{ position: 'relative' }}>
             <TextareaWithCopy
-              height={'11.2rem'}
+              height={'11.4rem'}
               value={seedPhrase}
               style={{ fontSize: '1.3rem', overflowY: 'auto' }}
               onCopy={() => clipboardCopy(seedPhrase)}
@@ -79,8 +102,8 @@ const CreatePassword = ({
             textStyle={{ fontSize: '1.4rem', paddingRight: '1rem' }}
             iconStyle={{ margin: '0 3rem 0 3rem', height: '60%' }}
           />
-          <RowContainer>
-            <Row width={'50%'}>
+          <SeedPhraseForm>
+            <CheckboxContainer>
               <StyledCheckbox
                 value={savedSeedPhrase}
                 onChange={() => setSavedSeedPhrase(!savedSeedPhrase)}
@@ -88,18 +111,22 @@ const CreatePassword = ({
                 theme={theme}
                 onKeyDown={handleKeyDown}
               />
-              <StyledLabel htmlFor="savedSeedPhrase" fontSize={'1.4rem'} style={{ paddingRight: '2rem' }}>
+              <StyledLabel
+                htmlFor="savedSeedPhrase"
+                fontSize={'1.4rem'}
+                style={{ paddingRight: '2rem' }}
+              >
                 I have saved these words in a safe place.
               </StyledLabel>
-            </Row>
-            <VioletButton
+            </CheckboxContainer>
+            <StyledButton
               theme={theme}
               disabled={isDisabled}
               onClick={() => submit()}
             >
               Go to confirm seed phrase
-            </VioletButton>
-          </RowContainer>
+            </StyledButton>
+          </SeedPhraseForm>
         </Row>
       </Card>
       <BottomLink />
