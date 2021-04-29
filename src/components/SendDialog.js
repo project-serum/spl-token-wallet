@@ -81,6 +81,13 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         <Tab label="SPL USDT" key="wusdtToSplUsdt" value="wusdtToSplUsdt" />,
         <Tab label="ERC20 USDT" key="swap" value="swap" />,
       ];
+    } else if (localStorage.getItem('sollet-private') && mint?.equals(USDC_MINT)) {
+      return [
+        <Tab label="SPL USDC" key="spl" value="spl" />,
+        <Tab label="SPL WUSDC" key="usdcToSplWUsdc" value="usdcToSplWUsdc" />,
+        wormholeTab,
+        <Tab label="ERC20 USDC" key="swap" value="swap" />,
+      ];
     } else {
       return [
         <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
@@ -163,6 +170,16 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             balanceInfo={balanceInfo}
             swapCoinInfo={swapCoinInfo}
             onSubmitRef={onSubmitRef}
+          />
+        ) : tab === 'usdcToSplWUsdc' ? (
+          <SendSwapDialog
+            key={tab}
+            onClose={onClose}
+            publicKey={publicKey}
+            balanceInfo={balanceInfo}
+            swapCoinInfo={swapCoinInfo}
+            onSubmitRef={onSubmitRef}
+            usdcToSplWUsdc
           />
         ) : (
           <SendSwapDialog
@@ -263,6 +280,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
+      decimals,
       null,
       overrideDestinationCheck,
     );
@@ -313,6 +331,7 @@ function SendSwapDialog({
   ethAccount,
   wusdcToSplUsdc = false,
   wusdtToSplUsdt = false,
+  usdcToSplWUsdc = false,
   onSubmitRef,
 }) {
   const wallet = useWallet();
@@ -328,7 +347,7 @@ function SendSwapDialog({
 
   const { tokenName, decimals, mint } = balanceInfo;
   const blockchain =
-    wusdcToSplUsdc || wusdtToSplUsdt
+    wusdcToSplUsdc || wusdtToSplUsdt || usdcToSplWUsdc
       ? 'sol'
       : swapCoinInfo.blockchain === 'sol'
       ? 'eth'
@@ -366,11 +385,16 @@ function SendSwapDialog({
   let splUsdtWalletAddress = useWalletAddressForMint(
     wusdtToSplUsdt ? USDT_MINT : null,
   );
+  let splWUsdcWalletAddress = useWalletAddressForMint(
+    usdcToSplWUsdc ? WUSDC_MINT : null,
+  );
   useEffect(() => {
     if (wusdcToSplUsdc && splUsdcWalletAddress) {
       setDestinationAddress(splUsdcWalletAddress);
     } else if (wusdtToSplUsdt && splUsdtWalletAddress) {
       setDestinationAddress(splUsdtWalletAddress);
+    } else if (usdcToSplWUsdc && splWUsdcWalletAddress) {
+      setDestinationAddress(splWUsdcWalletAddress);
     }
   }, [
     setDestinationAddress,
@@ -378,6 +402,8 @@ function SendSwapDialog({
     splUsdcWalletAddress,
     wusdtToSplUsdt,
     splUsdtWalletAddress,
+    usdcToSplWUsdc,
+    splWUsdcWalletAddress,
   ]);
 
   async function makeTransaction() {
@@ -397,6 +423,11 @@ function SendSwapDialog({
     }
     if (mint?.equals(WUSDC_MINT)) {
       params.wusdcToUsdc = true;
+    } else if (mint?.equals(USDC_MINT)) {
+      if (usdcToSplWUsdc) {
+        params.usdcToWUsdc = true;
+        params.coin = WUSDC_MINT.toString();
+      }
     } else if (mint?.equals(WUSDT_MINT)) {
       params.wusdtToUsdt = true;
     }
@@ -409,6 +440,7 @@ function SendSwapDialog({
       new PublicKey(swapInfo.address),
       amount,
       balanceInfo.mint,
+      decimals,
       swapInfo.memo,
     );
   }

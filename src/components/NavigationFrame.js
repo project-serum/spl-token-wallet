@@ -241,6 +241,7 @@ function NetworkSelector() {
 function WalletSelector() {
   const {
     accounts,
+    derivedAccounts,
     hardwareWalletAccount,
     setHardwareWalletAccount,
     setWalletSelector,
@@ -290,7 +291,7 @@ function WalletSelector() {
         onAdd={({ name, importedAccount }) => {
           addAccount({ name, importedAccount });
           setWalletSelector({
-            walletIndex: importedAccount ? undefined : accounts.length,
+            walletIndex: importedAccount ? undefined : derivedAccounts.length,
             importedPubkey: importedAccount
               ? importedAccount.publicKey.toString()
               : undefined,

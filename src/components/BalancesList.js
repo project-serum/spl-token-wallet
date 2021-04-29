@@ -33,6 +33,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
+import DeleteIcon from '@material-ui/icons/Delete';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
 import SendDialog from './SendDialog';
@@ -539,7 +540,7 @@ function BalanceListItemDetails({
     return <LoadingIndicator delay={0} />;
   }
 
-  let { mint, tokenName, tokenSymbol, owner } = balanceInfo;
+  let { mint, tokenName, tokenSymbol, owner, amount } = balanceInfo;
 
   // Only show the export UI for the native SOL coin.
   const exportNeedsDisplay =
@@ -664,6 +665,18 @@ function BalanceListItemDetails({
           >
             Send
           </Button>
+          {localStorage.getItem('warning-close-account') && mint && amount === 0 ? (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              startIcon={<DeleteIcon />}
+              onClick={() => setCloseTokenAccountDialogOpen(true)}
+            >
+              Delete
+            </Button>
+          ) : null}
+
         </div>
         {additionalInfo}
       </div>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   generateMnemonicAndSeed,
-  hasLockedMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
   loadMnemonicAndSeed,
   mnemonicToSeed,
   storeMnemonicAndSeed,
+  normalizeMnemonic,
 } from '../utils/wallet-seed';
 import {
   getAccountFromSeed,
@@ -15,7 +16,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import { BalanceListItem } from '../components/BalancesList.js';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { Typography } from '@material-ui/core';
+import { DialogActions, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
@@ -27,16 +28,23 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
+import DialogForm from '../components/DialogForm';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
+  const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
+  
+  if (loading) {
+    return null;
+  }
+
   return (
     <Container maxWidth="sm">
       {restore ? (
         <RestoreWalletForm goBack={() => setRestore(false)} />
       ) : (
         <>
-          {hasLockedMnemonicAndSeed() ? <LoginForm /> : <CreateWalletForm />}
+          {hasLockedMnemonicAndSeed ? <LoginForm /> : <CreateWalletForm />}
           <br />
           <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
             Restore existing wallet
@@ -91,60 +99,100 @@ function CreateWalletForm() {
 
 function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [seedCheck, setSeedCheck] = useState('');
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Create New Wallet
-        </Typography>
-        <Typography paragraph>
-          Create a new wallet to hold Solana and SPL tokens.
-        </Typography>
-        <Typography>
-          Please write down the following twenty four words and keep them in a
-          safe place:
-        </Typography>
-        {mnemonicAndSeed ? (
-          <TextField
-            variant="outlined"
-            fullWidth
-            multiline
-            margin="normal"
-            value={mnemonicAndSeed.mnemonic}
-            label="Seed Words"
-            onFocus={(e) => e.currentTarget.select()}
-          />
-        ) : (
-          <LoadingIndicator />
-        )}
-        <Typography paragraph>
-          Your private keys are only stored on your current computer or device.
-          You will need these words to restore your wallet if your browser's
-          storage is cleared or your device is damaged or lost.
-        </Typography>
-        <Typography paragraph>
-          By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
-          derivation path for the main wallet. To use an alternative path, try
-          restoring an existing wallet.
-        </Typography>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={confirmed}
-              disabled={!mnemonicAndSeed}
-              onChange={(e) => setConfirmed(e.target.checked)}
+    <>
+      <Card>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            Create New Wallet
+          </Typography>
+          <Typography paragraph>
+            Create a new wallet to hold Solana and SPL tokens.
+          </Typography>
+          <Typography>
+            Please write down the following twenty four words and keep them in a
+            safe place:
+          </Typography>
+          {mnemonicAndSeed ? (
+            <TextField
+              variant="outlined"
+              fullWidth
+              multiline
+              margin="normal"
+              value={mnemonicAndSeed.mnemonic}
+              label="Seed Words"
+              onFocus={(e) => e.currentTarget.select()}
             />
-          }
-          label="I have saved these words in a safe place."
-        />
-      </CardContent>
-      <CardActions style={{ justifyContent: 'flex-end' }}>
-        <Button color="primary" disabled={!confirmed} onClick={goForward}>
-          Continue
-        </Button>
-      </CardActions>
-    </Card>
+          ) : (
+            <LoadingIndicator />
+          )}
+          <Typography paragraph>
+            Your private keys are only stored on your current computer or device.
+            You will need these words to restore your wallet if your browser's
+            storage is cleared or your device is damaged or lost.
+          </Typography>
+          <Typography paragraph>
+            By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
+            derivation path for the main wallet. To use an alternative path, try
+            restoring an existing wallet.
+          </Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={confirmed}
+                disabled={!mnemonicAndSeed}
+                onChange={(e) => setConfirmed(e.target.checked)}
+              />
+            }
+            label="I have saved these words in a safe place."
+          />
+        </CardContent>
+        <CardActions style={{ justifyContent: 'flex-end' }}>
+          <Button color="primary" disabled={!confirmed} onClick={() => setShowDialog(true)}>
+            Continue
+          </Button>
+        </CardActions>
+      </Card>
+      <DialogForm
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        onSubmit={goForward}
+        fullWidth
+      >
+        <DialogTitle>{'Confirm Mnemonic'}</DialogTitle>
+        <DialogContentText style={{ margin: 20 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            Please re-enter your seed phrase to confirm that you have saved it.
+          </div>
+          <TextField
+            label={`Please type your seed phrase to confirm`}
+            fullWidth
+            variant="outlined"
+            margin="normal"
+            value={seedCheck}
+            onChange={(e) => setSeedCheck(e.target.value)}
+          />
+        </DialogContentText>
+        <DialogActions>
+          <Button onClick={() => setShowDialog(false)}>Close</Button>
+          <Button
+            type="submit"
+            color="secondary"
+            disabled={normalizeMnemonic(seedCheck) !== mnemonicAndSeed?.mnemonic}
+          >
+            Continue
+          </Button>
+        </DialogActions>
+      </DialogForm>
+    </>
   );
 }
 
@@ -205,13 +253,22 @@ function LoginForm() {
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const callAsync = useCallAsync();
 
-  function submit() {
+  const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
       progressMessage: 'Unlocking wallet...',
       successMessage: 'Wallet unlocked',
     });
   }
-
+  const submitOnEnter = (e) => {
+    if (e.code === "Enter" || e.code === "NumpadEnter") {
+      e.preventDefault();
+      e.stopPropagation();
+      submit();
+    }
+  }
+  const setPasswordOnChange = (e) => setPassword(e.target.value);
+  const toggleStayLoggedIn = (e) => setStayLoggedIn(e.target.checked);
+  
   return (
     <Card>
       <CardContent>
@@ -226,13 +283,14 @@ function LoginForm() {
           type="password"
           autoComplete="current-password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={setPasswordOnChange}
+          onKeyDown={submitOnEnter}
         />
         <FormControlLabel
           control={
             <Checkbox
               checked={stayLoggedIn}
-              onChange={(e) => setStayLoggedIn(e.target.checked)}
+              onChange={toggleStayLoggedIn}
             />
           }
           label="Keep wallet unlocked"
@@ -248,11 +306,13 @@ function LoginForm() {
 }
 
 function RestoreWalletForm({ goBack }) {
-  const [mnemonic, setMnemonic] = useState('');
+  const [rawMnemonic, setRawMnemonic] = useState('');
   const [seed, setSeed] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [next, setNext] = useState(false);
+
+  const mnemonic = normalizeMnemonic(rawMnemonic);
   const isNextBtnEnabled =
     password === passwordConfirm && validateMnemonic(mnemonic);
 
@@ -287,8 +347,8 @@ function RestoreWalletForm({ goBack }) {
               rows={3}
               margin="normal"
               label="Seed Words"
-              value={mnemonic}
-              onChange={(e) => setMnemonic(e.target.value)}
+              value={rawMnemonic}
+              onChange={(e) => setRawMnemonic(e.target.value)}
             />
             <TextField
               variant="outlined"

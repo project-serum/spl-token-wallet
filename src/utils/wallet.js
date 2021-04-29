@@ -14,7 +14,6 @@ import {
   getOwnedTokenAccounts,
   nativeTransfer,
   transferTokens,
-  transferAndClose,
 } from './tokens';
 import { TOKEN_PROGRAM_ID } from './tokens/instructions';
 import {
@@ -25,7 +24,7 @@ import {
 import { useListener, useLocalStorageState, useRefEqual } from './utils';
 import { useTokenInfo } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
-import { getUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
+import { useUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 import { WalletProviderFactory } from './walletProvider/factory';
 import { getAccountFromSeed } from './walletProvider/localStorage';
 import { useSnackbar } from 'notistack';
@@ -99,6 +98,7 @@ export class Wallet {
     destination,
     amount,
     mint,
+    decimals,
     memo = null,
     overrideDestinationCheck = false,
   ) => {
@@ -116,6 +116,7 @@ export class Wallet {
       amount,
       memo,
       mint,
+      decimals,
       overrideDestinationCheck,
     });
   };
@@ -133,16 +134,6 @@ export class Wallet {
     });
   };
 
-  transferAndClose = async (source, destination, amount) => {
-    return await transferAndClose({
-      connection: this.connection,
-      owner: this,
-      sourcePublicKey: source,
-      destinationPublicKey: destination,
-      amount,
-    });
-  };
-
   signTransaction = async (transaction) => {
     return this.provider.signTransaction(transaction);
   };
@@ -156,12 +147,12 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const {
+  const [{
     mnemonic,
     seed,
     importsEncryptionKey,
     derivationPath,
-  } = getUnlockedMnemonicAndSeed();
+  }] = useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -289,9 +280,9 @@ export function WalletProvider({ children }) {
     }
   }
 
-  const accounts = useMemo(() => {
+  const [accounts, derivedAccounts] = useMemo(() => {
     if (!seed) {
-      return [];
+      return [[], []];
     }
 
     const seedBuffer = Buffer.from(seed, 'hex');
@@ -325,7 +316,8 @@ export function WalletProvider({ children }) {
       };
     });
 
-    return derivedAccounts.concat(importedAccounts);
+    const accounts = derivedAccounts.concat(importedAccounts);
+    return [accounts, derivedAccounts];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
 
@@ -358,6 +350,7 @@ export function WalletProvider({ children }) {
         privateKeyImports,
         setPrivateKeyImports,
         accounts,
+        derivedAccounts,
         addAccount,
         setAccountName,
         derivationPath,
@@ -475,6 +468,7 @@ export function useBalanceInfo(publicKey) {
 export function useWalletSelector() {
   const {
     accounts,
+    derivedAccounts,
     addAccount,
     setWalletSelector,
     setAccountName,
@@ -484,6 +478,7 @@ export function useWalletSelector() {
 
   return {
     accounts,
+    derivedAccounts,
     setWalletSelector,
     addAccount,
     setAccountName,
