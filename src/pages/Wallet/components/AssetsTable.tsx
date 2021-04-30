@@ -73,6 +73,7 @@ const StyledTable = styled.table`
 
   @media (max-width: 400px) {
     margin: 0;
+    width: calc(100%);
   }
 `;
 
@@ -237,9 +238,11 @@ const AddTokenBtnRow = styled(RowContainer)`
   height: 5rem;
   padding-left: 2rem;
   @media (max-width: 400px) {
-    width: 100%;
+    width: 90%;
     justify-content: center;
     height: 6rem;
+    padding-left: 0;
+    margin: 0 auto;
   }
 `;
 

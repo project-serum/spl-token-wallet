@@ -29,7 +29,7 @@ import DiscordIcon from './DiscordIcon';
 import { Row } from '../../pages/commonStyles';
 import { isExtension } from '../../utils/utils';
 
-export const footerHeight = isExtension ? 0 : 0; //не забудь иземнить на 6 ...
+export const footerHeight = isExtension ? 0 : 6;
 
 const useStyles = makeStyles((theme) => ({
   content: {

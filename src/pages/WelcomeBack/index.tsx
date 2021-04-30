@@ -22,6 +22,7 @@ import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
 // import BottomLink from '../../components/BottomLink';
 import FakeInputs from '../../components/FakeInputs';
+import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
 const ImgContainer = styled.img`
   height: 7rem;
@@ -54,6 +55,7 @@ const WelcomeBack = () => {
   const theme = useTheme();
   const wallet = useWallet();
   const callAsync = useCallAsync();
+  const hash = localStorage.getItem('hash');
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
@@ -156,16 +158,30 @@ const WelcomeBack = () => {
           >
             Restore Another Wallet Using Seed Phrase
           </Link>
-          <Link
-            to={'/create_wallet'}
-            style={{
-              color: theme.customPalette.blue.new,
-              textDecoration: 'none',
-              fontSize: '1.2rem',
-            }}
-          >
-            Create Another Wallet
-          </Link>
+          {isExtension && hash !== '#from_extension' ? (
+            <span
+              onClick={openExtensionInNewTab}
+              style={{
+                color: theme.customPalette.blue.new,
+                textDecoration: 'none',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+              }}
+            >
+              Create Another Wallet
+            </span>
+          ) : (
+            <Link
+              to={'/create_wallet'}
+              style={{
+                color: theme.customPalette.blue.new,
+                textDecoration: 'none',
+                fontSize: '1.2rem',
+              }}
+            >
+              Create Another Wallet
+            </Link>
+          )}
         </BottomLinksContainer>
       </RowContainer>
     </Body>

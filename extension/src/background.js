@@ -52,6 +52,7 @@ function handleDisconnect(message, sender, sendResponse) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('extensionChanel');
   if (message.channel === 'sollet_contentscript_background_channel') {
     if (message.data.method === 'connect') {
       handleConnect(message, sender, sendResponse);

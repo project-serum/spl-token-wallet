@@ -197,7 +197,7 @@ export function forgetWallet() {
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
   if (isExtension) {
     // Must use wrapper function for window.location.reload
-    chrome.storage.local.clear(() => window.location.reload());
+    chrome.runtime.reload();
   } else {
     window.location.reload();
   }

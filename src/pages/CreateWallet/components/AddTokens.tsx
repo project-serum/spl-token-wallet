@@ -283,7 +283,13 @@ const AddTokens = () => {
                 style={{ height: '3.5rem' }}
                 background={'#366CE5'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
-                onClick={() => onSubmit()}
+                onClick={() => {
+                  chrome.runtime.sendMessage(
+                    { message: 'buttonClicked' },
+                    () => {},
+                  );
+                  onSubmit();
+                }}
               >
                 Finish
               </VioletButton>

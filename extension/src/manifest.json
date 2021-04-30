@@ -16,20 +16,15 @@
     "persistent": false,
     "scripts": ["background.js"]
   },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage", "tabs"],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
-      "js": [
-        "contentscript.js"
-      ],
+      "js": ["contentscript.js"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "web_accessible_resources": ["script.js"],
-  "content_security_policy": "script-src 'self' 'sha256-QsBtxouysAa4RXXyGXAjW2DKa1GMMpqfavhIkRVjYTI='; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'sha256-zCcm+WB+YKWlIVsWev2SEzgfFFo/Bz/rkqt3ylpD9KU='; object-src 'self'"
 }
-  

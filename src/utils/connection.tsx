@@ -17,7 +17,7 @@ const ConnectionContext = React.createContext<{
   connection: Connection;
 } | null>(null);
 
-export const MAINNET_URL = 'https://solana-api.projectserum.com';
+export const MAINNET_URL = 'https://api.mainnet-beta.solana.com';
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     'connectionEndpoint',

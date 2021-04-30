@@ -155,9 +155,7 @@ export default function App() {
 
   if (isExtension) {
     appElement = (
-      <ConnectedWalletsProvider>
-        {appElement}
-      </ConnectedWalletsProvider>
+      <ConnectedWalletsProvider>{appElement}</ConnectedWalletsProvider>
     );
   }
 
@@ -169,9 +167,7 @@ export default function App() {
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
-                <WalletProvider>
-                  {appElement}
-                </WalletProvider>
+                <WalletProvider>{appElement}</WalletProvider>
               </SnackbarProvider>
             </TokenRegistryProvider>
           </ConnectionProvider>
@@ -183,15 +179,22 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  
+
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
-    const origin = params.get('origin')
+    const origin = params.get('origin');
+    const hash = window.location.hash;
 
     if (origin) {
-      localStorage.setItem('origin', origin)
+      localStorage.setItem('origin', origin);
     } else {
-      localStorage.removeItem('origin')
+      localStorage.removeItem('origin');
+    }
+
+    if (hash) {
+      localStorage.setItem('hash', hash);
+    } else {
+      localStorage.removeItem('hash');
     }
   }, []);
 
@@ -199,20 +202,12 @@ const Pages = () => {
     <Switch>
       {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
       <Route path="/wallet" component={Wallet} />
-      <Route 
-        path="/restore_wallet" 
-        component={RestorePage}
-      />
+      <Route path="/restore_wallet" component={RestorePage} />
       <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" 
-        component={CreateWalletPage}
-      />
+      <Route path="/create_wallet" component={CreateWalletPage} />
       {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
       <Route exact path="/welcome_back" component={WelcomeBackPage} />
-      <Route
-        path="/connect_popup"
-        component={ConnectPopup}
-      />
+      <Route path="/connect_popup" component={ConnectPopup} />
 
       {/* popup if connecting from dex UI */}
       {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}

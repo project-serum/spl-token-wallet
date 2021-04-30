@@ -29,6 +29,9 @@ const AccountInfoSubContainer = styled(Row)`
   justify-content: space-between;
   @media (max-width: 400px) {
     width: 100%;
+    height: 30%;
+    border-bottom: 0.1rem solid #3a475c;
+    padding: 0 3rem 9rem 3rem;
   }
 `;
 
@@ -46,6 +49,7 @@ const Balances = styled(Row)`
   @media (max-width: 400px) {
     width: 100%;
     margin-top: 3rem;
+    padding: 0 3rem;
   }
 `;
 

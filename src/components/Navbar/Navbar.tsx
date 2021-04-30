@@ -21,6 +21,7 @@ import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 import { useWallet } from '../../utils/wallet';
 import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
+import { isExtension } from '../../utils/utils';
 
 const ButtonsContainer = styled(Row)`
   @media (max-width: 1200px) {
@@ -272,7 +273,11 @@ const Navbar = () => {
                 fontSize="1.2rem"
                 onClick={() => {
                   sessionStorage.removeItem('unlocked');
-                  window.location.reload();
+                  if (isExtension) {
+                    chrome.runtime.reload();
+                  } else {
+                    window.location.reload();
+                  }
                 }}
                 style={{
                   position: 'absolute',
@@ -327,7 +332,7 @@ const Navbar = () => {
             style={{ cursor: 'pointer' }}
             onClick={() => {
               sessionStorage.removeItem('unlocked');
-              window.location.reload();
+              chrome.runtime.reload();
             }}
             src={Lock}
             width={'20%'}

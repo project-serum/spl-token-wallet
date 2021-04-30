@@ -25,6 +25,7 @@ import { useTheme } from '@material-ui/core';
 import DerivableAccounts from './DerivableAccounts';
 import FakeInputs from '../../components/FakeInputs';
 import Warning from '../CreateWallet/components/Warning';
+import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
 const StyledTitle = styled(Title)`
   @media (max-width: 400px) {
@@ -39,6 +40,7 @@ export const RestorePage = () => {
   const [password, setPassword] = useState('');
   const [mnemonic, setMnemonic] = useState('');
   const [seed, setSeed] = useState('');
+  const hash = localStorage.getItem('hash');
 
   const theme = useTheme();
   const isMnemonicCorrect = validateMnemonic(mnemonic);
@@ -56,8 +58,6 @@ export const RestorePage = () => {
       submit();
     }
   };
-
-  console.log('restore re-render', redirectToWallet, origin);
 
   return (
     <Body>
@@ -140,7 +140,12 @@ export const RestorePage = () => {
           </Card>
         )}
 
-        <BottomLink to={'/create_wallet'} toText={'Create New Wallet'} />
+        <BottomLink
+          isButton={isExtension && hash !== '#from_extension'}
+          onClick={openExtensionInNewTab}
+          to={'/create_wallet'}
+          toText={'Create New Wallet'}
+        />
       </RowContainer>
     </Body>
   );
