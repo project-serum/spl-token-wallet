@@ -217,7 +217,7 @@ export async function createAssociatedTokenAccount({
 
   return [address, txSig];
 }
-async function createAssociatedTokenAccountIx(
+export async function createAssociatedTokenAccountIx(
   fundingAddress,
   walletAddress,
   splTokenMintAddress,
