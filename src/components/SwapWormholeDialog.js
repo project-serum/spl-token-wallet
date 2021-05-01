@@ -21,7 +21,6 @@ import { useWallet, useWalletAddressForMint } from '../utils/wallet';
 import { swapApiRequest } from '../utils/swap/api';
 import { getErc20Decimals } from '../utils/swap/eth.js';
 import { useSendTransaction } from '../utils/notifications';
-import { signAndSendTransaction } from '../utils/tokens';
 import { createAssociatedTokenAccountIx } from '../utils/tokens';
 
 // TODO: Import these constants from somewhere.
@@ -32,10 +31,27 @@ const DEX_PROGRAM_ID = new PublicKey(
   '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
 );
 const SWAP_PROGRAM_ID = new PublicKey(
-  '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin', // todo
+  '22Y43yTVxuUkoRKdm9thyRhQ3SdgQS7c7kB6UNCiaczD',
 );
 const MARKET_BASE = new PublicKey(
   'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
+);
+
+// TODO: remove
+const SRM_USDC = new PublicKey(
+		'ByRys5tuUWDgL73G8JBAEfkdFf8JWBzPBDHsBVQ5vbQA',
+);
+// TODO: remove
+const USDC_MINT = new PublicKey(
+		'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+);
+// TODO: remove
+const SRM_MINT = new PublicKey(
+		'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
+);
+// TODO: remove
+const SRM_TOKEN_ADDR = new PublicKey(
+		'DjvAd6u2d6rqqMfzzubBeAhSpsaBd8LvYAJViEf2fV8g',
 );
 
 export default function SwapWormholeDialog({
@@ -49,9 +65,10 @@ export default function SwapWormholeDialog({
   //
   // * undefined => loading.
   // * market.accountInfo === null => no pool exists.
-  // * pool.accountInfo !== null => pool exists.
+  // * market.accountInfo !== null => pool exists.
   const [market, setMarket] = useState(undefined);
-  const [wormholeMintAddr, setWormholeMintAddr] = useState(null);
+	const [wormholeMintAddr, setWormholeMintAddr] = useState(null);
+  const [maxAvailableSwapAmount, setMaxAvailableSwapAmount] = useState(0)
   const [transferAmountString, setTransferAmountString] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const wallet = useWallet();
@@ -66,6 +83,12 @@ export default function SwapWormholeDialog({
     SWAP_PROGRAM_ID,
     new Provider(wallet.connection, wallet),
   );
+
+	// Parses the orderbook to retrieve the max swappable amount available.
+	const parseOrderbook = async (marketClient) => {
+
+			setMaxAvailableSwapAmount(100);
+	};
 
   // Note: there are three "useEffect" closures to be run in order.
   //       Each one triggers the next.
@@ -98,6 +121,7 @@ export default function SwapWormholeDialog({
             Buffer.from(erc20Contract.slice(2), 'hex'),
           );
         }
+				_wormholeMintAddr = USDC_MINT;
         setWormholeMintAddr(_wormholeMintAddr);
       };
       fetch();
@@ -116,25 +140,30 @@ export default function SwapWormholeDialog({
         const seed =
           balanceInfo.mint.toString().slice(0, 16) +
           wormholeMintAddr.toString().slice(0, 16);
-        const publicKey = await PublicKey.createWithSeed(
+				/*
+				const publicKey = await PublicKey.createWithSeed(
           MARKET_BASE,
           seed,
           SWAP_PROGRAM_ID,
         );
+				*/
+				const marketAddress = SRM_USDC;
         try {
           const account = await Market.load(
             swapClient.provider.connection,
-            publicKey,
+					  marketAddress,
             swapClient.provider.opts,
             DEX_PROGRAM_ID,
           );
+					await parseOrderbook(account);
           setMarket({
             account,
-            publicKey,
+							publicKey: marketAddress,
           });
         } catch (err) {
+					// Market not found error.
           setMarket({
-            publicKey,
+							publicKey: marketAddress,
             account: null,
           });
         }
@@ -172,41 +201,37 @@ export default function SwapWormholeDialog({
     swapCoinInfo.ticker,
   ]);
 
-  // Estimate the swap amount to display to the user, i.e., the maximum available
-  // swap given the orderbook state.
-  useEffect(() => {
-    const fetch = async () => {
-      if (
-        market &&
-        market.account === null &&
-        market.publicKey &&
-        wormholeMintAddr &&
-        balanceAmount > 0
-      ) {
-        // todo
-      }
-    };
-    fetch();
-  }, [market, balanceAmount, wormholeMintAddr]);
-
   // Converts the sollet wrapped token into the wormhole wrapped token
   // by trading on swap market.
   async function convert() {
-    const swapAmount = parsedAmount * 10 ** balanceInfo.decimals;
-    const minExpectedAmount = swapAmount * 0.9978; // Subtract out taker fee.
+		const swapAmount = new BN(parsedAmount * 10 ** balanceInfo.decimals);
+			//		const minExpectedAmount = new BN(swapAmount.toNumber() * 0.99); // Subtract out taker fee.
+			const minExpectedAmount = new BN(1); // todo: uncomment above
     const [vaultSigner] = await getVaultOwnerAndNonce(
       market.account._decoded.ownAddress,
     );
     let [openOrders, needsCreateOpenOrders] = await (async () => {
-      const openOrders = await OpenOrders.findForOwner(
+      let openOrders = await OpenOrders.findForOwner(
         swapClient.provider.connection,
         wallet.publicKey,
         DEX_PROGRAM_ID,
       );
+				openOrders.forEach(oo => {
+						console.log('open orders', oo.address.toString());
+						console.log(
+								'open orders',
+								oo.baseTokenFree.toNumber(),
+								oo.baseTokenTotal.toNumber(),
+								oo.quoteTokenFree.toNumber(),
+								oo.quoteTokenTotal.toNumber(),
+						);
+				});
+				return [new PublicKey('5ZuiPLwGLFWd9waU5zz7Z4ZicKjf8iCz1zgsKHnf8Cpu'), false];
       // If we have an open orderes account use it. It doesn't matter which
       // one we use.
-      const addr = openOrders[0] ? openOrders[0].address : undefined;
-      return [addr, addr !== undefined];
+//      const addr = openOrders[0] ? openOrders[0].address : undefined;
+				//      return [addr, addr !== undefined];
+				// todo: uncomment above
     })();
     let signers = [];
 
@@ -214,7 +239,8 @@ export default function SwapWormholeDialog({
     const tx = new Transaction();
 
     // Create the wormhole associated token account, if needed.
-    let _wormholeTokenAddr = wormholeTokenAddr;
+			//		let _wormholeTokenAddr = wormholeTokenAddr;
+		let _wormholeTokenAddr = SRM_TOKEN_ADDR; // TODO: replace with above
     if (!_wormholeTokenAddr) {
       const [ix, addr] = await createAssociatedTokenAccountIx(
         wallet.publicKey,
@@ -223,7 +249,9 @@ export default function SwapWormholeDialog({
       );
       tx.add(ix);
       _wormholeTokenAddr = addr;
-    }
+    } else {
+				_wormholeTokenAddr = new PublicKey(_wormholeTokenAddr.toString());
+		}
 
     // Create the open orders account, if needed.
     if (needsCreateOpenOrders) {
@@ -243,7 +271,7 @@ export default function SwapWormholeDialog({
 
     // Execute the swap.
     tx.add(
-      swapClient.instruction.swap(Side.Bid, parsedAmount, minExpectedAmount, {
+      swapClient.instruction.swap(Side.Ask, swapAmount, minExpectedAmount, {
         accounts: {
           market: {
             market: market.account._decoded.ownAddress,
@@ -255,7 +283,8 @@ export default function SwapWormholeDialog({
             pcVault: market.account._decoded.quoteVault,
             vaultSigner,
             openOrders,
-            orderPayerTokenAccount: publicKey,
+							//            orderPayerTokenAccount: publicKey,
+						orderPayerTokenAccount: _wormholeTokenAddr,
             coinWallet: _wormholeTokenAddr,
           },
           pcWallet: publicKey,
@@ -268,20 +297,26 @@ export default function SwapWormholeDialog({
     );
 
     // Close the open orders account, if needed.
-    if (needsCreateOpenOrders) {
+			if (needsCreateOpenOrders) {
+					// TODO: enable once the dex supports this.
+					/*
       tx.add(
         DexInstructions.closeOpenOrders({
           openOrders,
           owner: swapClient.provider.wallet.publicKey,
           destination: swapClient.provider.wallet.publicKey,
-          market,
+					market: market.account._decoded.ownAddress,
           programId: DEX_PROGRAM_ID,
         }),
       );
+					*/
     }
-
+			console.log('tx', tx);
     // Send the transaction to the blockchain.
-    return await swapClient.provider.send(tx, signers);
+			return await swapClient.provider.send(tx, signers, {
+					preflightCommitment: false,
+					commitment: 'recent',
+			});
   }
   async function onSubmit() {
     setIsLoading(true);
@@ -324,8 +359,49 @@ export default function SwapWormholeDialog({
                 rel="noreferrer"
               >
                 <Chip label={market.publicKey.toString()} />
-              </a>
+							</a>
+              <br/>
+              {`Estimated max swap amount: ${maxAvailableSwapAmount.toFixed(4)}`}
             </DialogContentText>
+            <TextField
+              label="Amount"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              type="number"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Button
+                      onClick={() =>
+                        setTransferAmountString(
+                          Math.min(balanceAmountToUserAmount(balanceAmount, decimals), maxAvailableSwapAmount),
+                        )
+                      }
+                    >
+                      MAX
+                    </Button>
+                    {tokenSymbol ? tokenSymbol : null}
+                  </InputAdornment>
+                ),
+                inputProps: {
+                  step: Math.pow(10, -decimals),
+                },
+              }}
+              value={transferAmountString}
+              onChange={(e) => setTransferAmountString(e.target.value.trim())}
+              helperText={
+                <span
+                  onClick={() =>
+                    setTransferAmountString(
+                      Math.min(balanceAmountToUserAmount(balanceAmount, decimals), maxAvailableSwapAmount),
+                    )
+                  }
+                >
+                  Max: {Math.min(balanceAmountToUserAmount(balanceAmount, decimals), maxAvailableSwapAmount)}
+                </span>
+              }
+            />
           </>
         )}
       </DialogContent>
