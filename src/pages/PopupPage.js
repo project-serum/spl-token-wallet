@@ -36,7 +36,7 @@ function getInitialRequests() {
 
   const urlParams = new URLSearchParams(window.location.hash.slice(1));
   const request = JSON.parse(urlParams.get('request'));
-  
+
   if (request.method === 'sign') {
     const dataObj = request.params.data;
     // Deserialize `data` into a Uint8Array
@@ -416,7 +416,8 @@ function ApproveConnectionForm({ origin, onApprove }) {
           </Typography>
         </div>
         <Typography>Only connect with sites you trust.</Typography>
-        <Divider className={classes.divider} />
+				<Divider className={classes.divider} />
+					{/*
         <FormControlLabel
           control={
             <Switch
@@ -427,6 +428,7 @@ function ApproveConnectionForm({ origin, onApprove }) {
           }
           label={`Automatically approve transactions from ${origin}`}
         />
+					 */}
         {!dismissed && autoApprove && (
           <SnackbarContent
             className={classes.warningContainer}
