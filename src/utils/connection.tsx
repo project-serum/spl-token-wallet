@@ -18,6 +18,7 @@ const ConnectionContext = React.createContext<{
 } | null>(null);
 
 export const MAINNET_URL = 'https://solana-api.projectserum.com';
+export const MAINNET_VIP_URL = 'https://vip-api.mainnet-beta.solana.com/';
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     'connectionEndpoint',
@@ -56,7 +57,7 @@ export function useIsProdNetwork() {
   if (!context) {
     throw new Error('Missing connection context');
   }
-  return context.endpoint === MAINNET_URL;
+  return context.endpoint === MAINNET_URL || context.endpoint === MAINNET_VIP_URL;
 }
 
 export function useSolanaExplorerUrlSuffix() {

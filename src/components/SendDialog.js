@@ -442,7 +442,7 @@ function SendSwapDialog({
       />
     );
   }
-
+  const bitcoinDisable = (blockchain === 'btc' ? parseFloat(transferAmountString) < 0.001 : false);
   let sendButton = (
     <Button
       type="submit"
@@ -451,7 +451,8 @@ function SendSwapDialog({
         sending ||
         (needMetamask && !ethAccount) ||
         !validAmount ||
-        insufficientEthBalance
+        insufficientEthBalance ||
+        bitcoinDisable
       }
     >
       Send

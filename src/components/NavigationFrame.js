@@ -230,7 +230,7 @@ function NetworkSelector() {
                 <CheckIcon fontSize="small" />
               ) : null}
             </ListItemIcon>
-            {cluster.apiUrl}
+            {cluster.name === 'mainnet-beta-backup' ? 'Mainnet Beta Backup' : cluster.apiUrl}
           </MenuItem>
         ))}
       </Menu>
@@ -391,7 +391,7 @@ function WalletSelector() {
           <ListItemIcon className={classes.menuItemIcon}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
-          {'Log Out & Delete Mnemonic'}
+          {'Delete Mnemonic & Log Out'}
         </MenuItem>
       </Menu>
     </>
