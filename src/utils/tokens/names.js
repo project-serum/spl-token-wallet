@@ -279,7 +279,7 @@ export function TokenRegistryProvider(props) {
       const cluster = clusterForEndpoint(endpoint);
 
       const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
-        cluster?.name,
+				cluster?.clusterSlug
       );
       const tokenInfos =
         tokenListContainer !== filteredTokenListContainer
