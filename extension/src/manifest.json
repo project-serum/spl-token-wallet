@@ -13,7 +13,7 @@
     "512": "logo512.png"
   },
   "background": {
-    "persistent": false,
+    "persistent": true,
     "scripts": ["background.js"]
   },
   "permissions": [
