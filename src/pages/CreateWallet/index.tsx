@@ -47,7 +47,7 @@ export const CreateWalletPage = () => {
     generateMnemonicAndSeed().then((seedAndMnemonic) => {
       setMnemonicAndSeed(seedAndMnemonic);
     });
-  }, []);
+  }, [hasLockedMnemonicAndSeed]);
 
   const callAsync = useCallAsync();
 

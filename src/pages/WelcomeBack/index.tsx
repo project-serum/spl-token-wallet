@@ -54,7 +54,7 @@ const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [stayLoggedIn] = useState(true);
-  const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
+  const [loading] = useHasLockedMnemonicAndSeed();
 
   const theme = useTheme();
   const wallet = useWallet();

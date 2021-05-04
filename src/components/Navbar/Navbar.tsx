@@ -24,7 +24,6 @@ import {
   useHasLockedMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
-import { isExtension } from '../../utils/utils';
 
 const ButtonsContainer = styled(Row)`
   @media (max-width: 1200px) {
