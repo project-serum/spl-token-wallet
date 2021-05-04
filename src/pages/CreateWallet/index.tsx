@@ -12,7 +12,7 @@ import AddTokens from './components/AddTokens';
 import Warning from './components/Warning';
 import {
   generateMnemonicAndSeed,
-  hasLockedMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
   storeMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
@@ -37,8 +37,10 @@ export const CreateWalletPage = () => {
     seed: string;
   }>({ mnemonic: '', seed: '' });
 
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+
   useEffect(() => {
-    if (hasLockedMnemonicAndSeed()) {
+    if (hasLockedMnemonicAndSeed) {
       setCurrentStep(0);
     }
 

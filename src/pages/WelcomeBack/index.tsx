@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Redirect, Link } from 'react-router-dom';
-import { loadMnemonicAndSeed } from '../../utils/wallet-seed';
+import {
+  loadMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
+} from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 
 import {
@@ -51,6 +54,7 @@ const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [stayLoggedIn] = useState(true);
+  const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
 
   const theme = useTheme();
   const wallet = useWallet();
@@ -73,6 +77,10 @@ const WelcomeBack = () => {
       submit();
     }
   };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <Body>

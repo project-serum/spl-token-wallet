@@ -11,7 +11,7 @@ import { ConnectionProvider } from './utils/connection';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import SnackbarProvider from './components/SnackbarProvider';
-import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
+import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
@@ -179,7 +179,7 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
     const origin = params.get('origin');
@@ -216,7 +216,7 @@ const Pages = () => {
       {!!wallet && <Redirect from="/" to="/wallet" />}
 
       {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed() ? (
+      {hasLockedMnemonicAndSeed ? (
         <Redirect from="/" to="/welcome_back" />
       ) : (
         <Redirect from="/" to="/welcome" />

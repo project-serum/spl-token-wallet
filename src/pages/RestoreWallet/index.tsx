@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { Link, Redirect } from 'react-router-dom';
 
 import {
-  hasLockedMnemonicAndSeed,
   mnemonicToSeed,
+  useHasLockedMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import { validateMnemonic } from 'bip39';
 
@@ -46,6 +46,8 @@ export const RestorePage = () => {
   const isMnemonicCorrect = validateMnemonic(mnemonic);
   const isDisabled = !isMnemonicCorrect || password === '';
 
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+
   const submit = () => {
     mnemonicToSeed(mnemonic).then((seed) => {
       setSeed(seed);
@@ -66,7 +68,7 @@ export const RestorePage = () => {
       <Logo />
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}
       <RowContainer height={'80%'} direction={'column'}>
-        {hasLockedMnemonicAndSeed() ? (
+        {hasLockedMnemonicAndSeed ? (
           <Warning onSubmit={() => {}} showBottomLink={false} />
         ) : showDerivation ? (
           <DerivableAccounts

@@ -26,5 +26,5 @@
     }
   ],
   "web_accessible_resources": ["script.js"],
-  "content_security_policy": "script-src 'self' 'sha256-rL9PhfceRNCcVGxsNcgfPq6w0hXu3lTHyqRHqLhzxSo='; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'sha256-8HoujbSMCHfxeD6F4MFMSG3FL+Ylz8bO6gy9/BB+XyU='; object-src 'self'"
 }
