@@ -106,10 +106,15 @@ const AccountInfo = () => {
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
             color={theme.customPalette.grey.light}
+            maxFont={'2rem'}
           >
             Total Balance
           </Title>
-          <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
+          <Title
+            maxFont={'2.1rem'}
+            fontSize="2.4rem"
+            fontFamily={'Avenir Next Demi'}
+          >
             <TotalBalance key="navbarfalse" isNavbar={false} />
           </Title>
         </BalanceCard>
@@ -118,10 +123,15 @@ const AccountInfo = () => {
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
             color={theme.customPalette.grey.light}
+            maxFont={'2rem'}
           >
             SOL Balance
           </Title>
-          <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
+          <Title
+            maxFont={'2.1rem'}
+            fontSize="2.4rem"
+            fontFamily={'Avenir Next Demi'}
+          >
             {formatNumberToUSFormat(
               stripDigitPlaces(amount / Math.pow(10, decimals), 8),
             )}{' '}

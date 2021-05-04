@@ -159,6 +159,8 @@ const StyledTr = styled.tr`
   }
 
   @media (max-width: 400px) {
+    height: 9rem;
+
     td {
       display: none;
     }
@@ -169,7 +171,7 @@ const StyledTr = styled.tr`
     }
   }
 
-  @media (min-width: 401px) {
+  @media (min-width: 400px) {
     &:not(:last-child) td:last-child {
       display: none;
     }
@@ -183,6 +185,13 @@ const StyledTd = styled.td`
 
 const StyledTdMenu = styled(StyledTd)`
   position: relative;
+`;
+
+const DropdownContainer = styled.div`
+  height: auto;
+  width: 40%;
+  padding-left: 60%;
+
   &:hover div {
     display: flex;
   }
@@ -204,6 +213,9 @@ const AssetAmount = styled(Title)`
   color: ${(props) => props.theme.customPalette.green.light};
   font-size: 1.4rem;
   font-family: Avenir Next;
+  @media (max-width: 400px) {
+    font-size: 2rem;
+  }
 `;
 
 const AssetAmountUSD = styled(AssetAmount)`
@@ -655,10 +667,7 @@ const AssetItem = ({
           </Row>
           <Row direction="column">
             <RowContainer justify="flex-start">
-              <AssetAmountUSD
-                style={{ fontSize: '1.7rem' }}
-                theme={theme}
-              >{` $${stripDigitPlaces(
+              <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
                 (amount / Math.pow(10, decimals)) * priceForCalculate || 0,
                 2,
               )}`}</AssetAmountUSD>
@@ -817,18 +826,20 @@ const AssetItem = ({
         </RowContainer>
       </StyledTd>
       <StyledTdMenu style={{ textAlign: 'end', cursor: 'pointer' }}>
-        <img alt={'open menu'} src={Dots} />
-        <ActivitiesDropdown
-          urlSuffix={urlSuffix}
-          selectPublicKey={selectPublicKey}
-          setSendDialogOpen={setSendDialogOpen}
-          setDepositDialogOpen={setDepositDialogOpen}
-          publicKey={publicKey}
-          marketsData={marketsData}
-          tokenSymbol={tokenSymbol}
-          theme={theme}
-          quote={quote}
-        />
+        <DropdownContainer>
+          <img alt={'open menu'} src={Dots} />
+          <ActivitiesDropdown
+            urlSuffix={urlSuffix}
+            selectPublicKey={selectPublicKey}
+            setSendDialogOpen={setSendDialogOpen}
+            setDepositDialogOpen={setDepositDialogOpen}
+            publicKey={publicKey}
+            marketsData={marketsData}
+            tokenSymbol={tokenSymbol}
+            theme={theme}
+            quote={quote}
+          />
+        </DropdownContainer>
       </StyledTdMenu>
     </StyledTr>
   );

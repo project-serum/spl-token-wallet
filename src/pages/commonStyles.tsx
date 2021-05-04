@@ -118,6 +118,7 @@ export const Textarea = styled(({ style, ...props }) => (
   @media (max-width: 400px) {
     font-size: 1.4rem;
     line-height: 3rem;
+    height: 6rem;
   }
 `;
 
@@ -133,6 +134,7 @@ export const ContainerForIcon = styled.div`
 
   @media (max-width: 400px) {
     height: 4.5rem;
+    width: 4.5rem;
   }
 `;
 
@@ -251,7 +253,7 @@ export const Title = styled(
   ${(props) => props.style};
 
   @media (max-width: 400px) {
-    font-size: 1.6rem;
+    font-size: ${(props) => props.maxFont || '1.6rem'};
   }
 `;
 
@@ -274,6 +276,7 @@ export const VioletButton = styled((props) => (
     btnColor={props.color || props.theme.customPalette.white.main}
     borderRadius={'1rem'}
     border={props.border || 'none'}
+    hoverBackground={props.hoverBackground || 'none'}
     {...props}
   />
 ))`
@@ -397,6 +400,9 @@ export const StyledLabel = styled.label`
   font-size: ${(props) => props.fontSize || '1.2rem'};
   color: #93a0b2;
   cursor: pointer;
+  @media (max-width: 400px) {
+    font-size: 1.6rem;
+  }
 `;
 
 export const StyledCheckbox = styled(Checkbox)`
