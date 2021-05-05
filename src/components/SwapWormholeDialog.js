@@ -34,7 +34,7 @@ const SWAP_PROGRAM_ID = new PublicKey(
   '22Y43yTVxuUkoRKdm9thyRhQ3SdgQS7c7kB6UNCiaczD',
 );
 const MARKET_BASE = new PublicKey(
-  'CAXLccDUeS6egtNNEBLrxAqxSvuL6SwspqYX14JdKaiK',
+  '6a9wpsZpZGxGhFVSQBpcTNjNjytdbSA1iUw1A5KNDxPw',
 );
 
 export default function SwapWormholeDialog({
@@ -69,7 +69,8 @@ export default function SwapWormholeDialog({
 
   // Parses the orderbook to retrieve the max swappable amount available.
   const parseOrderbook = async (marketClient) => {
-    // todo
+			// todo
+
     setMaxAvailableSwapAmount(100);
   };
 
@@ -125,7 +126,7 @@ export default function SwapWormholeDialog({
         const marketAddress = await PublicKey.createWithSeed(
           MARKET_BASE,
           seed,
-          SWAP_PROGRAM_ID,
+          DEX_PROGRAM_ID,
         );
         try {
           const account = await Market.load(
@@ -134,12 +135,14 @@ export default function SwapWormholeDialog({
             swapClient.provider.opts,
             DEX_PROGRAM_ID,
           );
+						console.log('got market', account);
           await parseOrderbook(account);
           setMarket({
             account,
             publicKey: marketAddress,
           });
         } catch (err) {
+					console.error(err);
           // Market not found error.
           setMarket({
             publicKey: marketAddress,
@@ -185,7 +188,7 @@ export default function SwapWormholeDialog({
   async function convert() {
     const swapAmount = new BN(parsedAmount * 10 ** balanceInfo.decimals);
     /// TODO: make this more precise.
-    const minExpectedAmount = new BN(swapAmount.toNumber() * 0.99); // Subtract out taker fee.
+    const minExpectedAmount = new BN(0); // Subtract out taker fee.
 
     const [vaultSigner] = await getVaultOwnerAndNonce(
       market.account._decoded.ownAddress,
@@ -236,7 +239,7 @@ export default function SwapWormholeDialog({
         ),
       );
     }
-
+			console.log('order payer', publicKey.toString());
     // Execute the swap.
     tx.add(
       swapClient.instruction.swap(Side.Ask, swapAmount, minExpectedAmount, {
@@ -252,9 +255,9 @@ export default function SwapWormholeDialog({
             vaultSigner,
             openOrders,
             orderPayerTokenAccount: publicKey,
-            coinWallet: _wormholeTokenAddr,
+            coinWallet: publicKey,
           },
-          pcWallet: publicKey,
+					pcWallet: _wormholeTokenAddr,
           authority: swapClient.provider.wallet.publicKey,
           dexProgram: DEX_PROGRAM_ID,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -264,9 +267,9 @@ export default function SwapWormholeDialog({
     );
 
     // Close the open orders account, if needed.
-    // TODO: enable once the dex supports this.
-    /*
 			if (needsCreateOpenOrders) {
+					// TODO: enable once the dex supports this.
+					/*
       tx.add(
         DexInstructions.closeOpenOrders({
           openOrders,
@@ -276,8 +279,8 @@ export default function SwapWormholeDialog({
           programId: DEX_PROGRAM_ID,
         }),
       );
+					*/
     }
-			*/
 
     // Send the transaction to the blockchain.
     return await swapClient.provider.send(tx, signers, {
