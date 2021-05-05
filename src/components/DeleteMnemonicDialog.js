@@ -21,7 +21,7 @@ export default function DeleteMnemonicDialog({ open, onClose }) {
         }}
         fullWidth
       >
-        <DialogTitle>{'Log Out & Delete Mnemonic'}</DialogTitle>
+        <DialogTitle>{'Delete Mnemonic & Log Out'}</DialogTitle>
         <DialogContentText style={{ margin: 20 }}>
           <div
             style={{
