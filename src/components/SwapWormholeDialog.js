@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BN from 'bn.js';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
@@ -15,7 +15,7 @@ import {
   SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import { Program, Provider, Idl } from '@project-serum/anchor';
-import { Market, DexInstructions, OpenOrders } from '@project-serum/serum';
+import { Market, OpenOrders } from '@project-serum/serum';
 import { balanceAmountToUserAmount } from './SendDialog';
 import { useWallet, useWalletAddressForMint } from '../utils/wallet';
 import { swapApiRequest } from '../utils/swap/api';
@@ -68,11 +68,19 @@ export default function SwapWormholeDialog({
   );
 
   // Parses the orderbook to retrieve the max swappable amount available.
-  const parseOrderbook = async (marketClient) => {
-			// todo
-
-    setMaxAvailableSwapAmount(100);
-  };
+  const parseOrderbook = useCallback(
+    async (marketClient) => {
+      const bids = await marketClient.loadBids(swapClient.provider.connection);
+      let size = 0;
+      for (let order of bids) {
+        if (order.price === 1) {
+          size += order.size;
+        }
+      }
+      setMaxAvailableSwapAmount(size);
+    },
+    [setMaxAvailableSwapAmount, swapClient.provider.connection],
+  );
 
   // Note: there are three "useEffect" closures to be run in order.
   //       Each one triggers the next.
@@ -135,14 +143,12 @@ export default function SwapWormholeDialog({
             swapClient.provider.opts,
             DEX_PROGRAM_ID,
           );
-						console.log('got market', account);
           await parseOrderbook(account);
           setMarket({
             account,
             publicKey: marketAddress,
           });
         } catch (err) {
-					console.error(err);
           // Market not found error.
           setMarket({
             publicKey: marketAddress,
@@ -158,6 +164,7 @@ export default function SwapWormholeDialog({
     wormholeMintAddr,
     balanceInfo.mint,
     wallet.connection,
+    parseOrderbook,
   ]);
 
   // 3. Tell the bridge to create the swap market, if no
@@ -187,8 +194,8 @@ export default function SwapWormholeDialog({
   // by trading on swap market.
   async function convert() {
     const swapAmount = new BN(parsedAmount * 10 ** balanceInfo.decimals);
-    /// TODO: make this more precise.
-    const minExpectedAmount = new BN(0); // Subtract out taker fee.
+    // 1 for 1 swap, subtracting out taker fee.
+    const minExpectedAmount = swapAmount.mul(new BN(9978)).div(new BN(10000));
 
     const [vaultSigner] = await getVaultOwnerAndNonce(
       market.account._decoded.ownAddress,
@@ -239,7 +246,6 @@ export default function SwapWormholeDialog({
         ),
       );
     }
-			console.log('order payer', publicKey.toString());
     // Execute the swap.
     tx.add(
       swapClient.instruction.swap(Side.Ask, swapAmount, minExpectedAmount, {
@@ -257,7 +263,7 @@ export default function SwapWormholeDialog({
             orderPayerTokenAccount: publicKey,
             coinWallet: publicKey,
           },
-					pcWallet: _wormholeTokenAddr,
+          pcWallet: _wormholeTokenAddr,
           authority: swapClient.provider.wallet.publicKey,
           dexProgram: DEX_PROGRAM_ID,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -267,9 +273,9 @@ export default function SwapWormholeDialog({
     );
 
     // Close the open orders account, if needed.
-			if (needsCreateOpenOrders) {
-					// TODO: enable once the dex supports this.
-					/*
+    if (needsCreateOpenOrders) {
+      // TODO: enable once the dex supports this.
+      /*
       tx.add(
         DexInstructions.closeOpenOrders({
           openOrders,
@@ -363,7 +369,11 @@ export default function SwapWormholeDialog({
                   step: Math.pow(10, -decimals),
                 },
               }}
-              value={transferAmountString}
+              value={Math.min(
+                parseFloat(transferAmountString),
+                maxAvailableSwapAmount,
+                balanceAmountToUserAmount(balanceAmount, decimals),
+              )}
               onChange={(e) => setTransferAmountString(e.target.value.trim())}
               helperText={
                 <span
