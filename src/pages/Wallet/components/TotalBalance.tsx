@@ -9,7 +9,6 @@ import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
-import { fairsIsLoaded } from './AssetsTable';
 
 let usdValuesNavbar: any = {};
 let usdValuesTotal: any = {};

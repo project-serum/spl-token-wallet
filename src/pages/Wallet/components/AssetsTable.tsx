@@ -340,7 +340,7 @@ const AssetsTable = ({
             }
           })
         : [],
-    [publicKeys, wallet.publicKey, totalBalance],
+    [publicKeys, wallet.publicKey],
   );
 
   // const selectedAccount = accounts.find((a) => a.isSelected);
