@@ -113,6 +113,14 @@ const AddTokenButtonContainer = styled(RowContainer)`
   }
 `;
 
+export function fairsIsLoaded(publicKeys) {
+
+  return (
+    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
+    publicKeys.length
+  );
+}
+
 const AddTokenButton = ({
   theme,
   setShowAddTokenDialog,
@@ -287,7 +295,7 @@ const AssetsTable = ({
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
-  const [, setTotalUSD] = useState(0);
+  const [totalBalance, setTotalUSD] = useState(0);
 
   const [marketsData, setMarketsData] = useState<any>(null);
 
@@ -332,7 +340,7 @@ const AssetsTable = ({
             }
           })
         : [],
-    [publicKeys, wallet.publicKey],
+    [publicKeys, wallet.publicKey, totalBalance],
   );
 
   // const selectedAccount = accounts.find((a) => a.isSelected);
@@ -360,7 +368,10 @@ const AssetsTable = ({
         .filter((pk) => usdValues[pk.toString()])
         .map((pk) => usdValues[pk.toString()])
         .reduce((a, b) => a + b, 0.0);
-      setTotalUSD(totalUsdValue);
+
+        if (fairsIsLoaded(sortedPublicKeys)) {
+          setTotalUSD(totalUsdValue);
+        }
     },
     [sortedPublicKeys],
   );
@@ -374,6 +385,7 @@ const AssetsTable = ({
             publicKey={pk}
             theme={theme}
             marketsData={marketsData}
+            totalBalance={totalBalance}
             setUsdValue={setUsdValuesCallback}
             selectPublicKey={selectPublicKey}
             setSendDialogOpen={setSendDialogOpen}
@@ -390,6 +402,7 @@ const AssetsTable = ({
     selectPublicKey,
     setSendDialogOpen,
     setDepositDialogOpen,
+    totalBalance,
   ]);
 
   return (
@@ -476,6 +489,7 @@ const AssetItem = ({
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
+  totalBalance
 }: {
   publicKey: any;
   theme: Theme;
@@ -484,6 +498,7 @@ const AssetItem = ({
   selectPublicKey: (publicKey: any) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
+  totalBalance: number | undefined | null
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
   const urlSuffix = useSolanaExplorerUrlSuffix();
@@ -505,7 +520,7 @@ const AssetItem = ({
     tokenLogoUri: null,
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(null);
+  const [price, setPrice] = useState<number | null | undefined>(undefined);
   const coin = balanceInfo?.tokenSymbol.toUpperCase();
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
@@ -555,9 +570,7 @@ const AssetItem = ({
   let priceForCalculate = isUSDT
     ? 1
     : price === null &&
-      !priceStore.getFromCache(
-        serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-      )
+      !serumMarkets[coin]
     ? !closePrice
       ? price
       : closePrice
@@ -599,7 +612,6 @@ const AssetItem = ({
   useEffect(() => {
     if (
       usdValue !== undefined &&
-      usdValue !== null &&
       usdValue !== usdValues[publicKey]
     ) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);

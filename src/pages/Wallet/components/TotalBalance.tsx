@@ -9,6 +9,7 @@ import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
+import { fairsIsLoaded } from './AssetsTable';
 
 let usdValuesNavbar: any = {};
 let usdValuesTotal: any = {};
@@ -18,11 +19,13 @@ const Item = ({
   publicKey,
   setUsdValue,
   marketsData,
+  totalUSD,
 }: {
   isNavbar: boolean;
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
   marketsData: any;
+  totalUSD: number
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
 
@@ -34,7 +37,7 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(null);
+  const [price, setPrice] = useState<number | null | undefined>(undefined);
   const coin = balanceInfo?.tokenSymbol.toUpperCase();
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
@@ -52,6 +55,7 @@ const Item = ({
         // A Serum market exists. Fetch the price.
         else if (serumMarkets[coin]) {
           let m = serumMarkets[coin];
+
           priceStore
             .getPrice(connection, m.name)
             .then((price) => {
@@ -85,10 +89,7 @@ const Item = ({
 
   let priceForCalculate = isUSDT
     ? 1
-    : price === null &&
-      !priceStore.getFromCache(
-        serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-      )
+    : price === null && !serumMarkets[coin]
     ? !closePrice
       ? price
       : closePrice
@@ -102,11 +103,7 @@ const Item = ({
       : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   useEffect(() => {
-    if (
-      usdValue !== undefined &&
-      usdValue !== null &&
-      usdValue !== usdValues[publicKey]
-    ) {
+    if (usdValue !== undefined && usdValue !== usdValues[publicKey]) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
 
@@ -154,14 +151,15 @@ const TotalBalance = ({ isNavbar = true }) => {
         .map((pk) => usdValues[pk.toString()])
         .reduce((a, b) => a + b, 0.0);
 
-      setTotalUSD(totalUsdValue);
+      // if (fairsIsLoaded(sortedPublicKeys)) {
+        setTotalUSD(totalUsdValue);
+      // }
     },
     [sortedPublicKeys, usdValues],
   );
 
   const memoizedAssetsList = useMemo(() => {
     return sortedPublicKeys.map((pk, i) => {
-      console.log('pk', pk.toString(), i);
       return React.memo((props) => {
         return (
           <Item
@@ -170,11 +168,12 @@ const TotalBalance = ({ isNavbar = true }) => {
             isNavbar={isNavbar}
             setUsdValue={setUsdValuesCallback}
             marketsData={marketsData}
+            totalUSD={totalUSD}
           />
         );
       });
     });
-  }, [sortedPublicKeys, setUsdValuesCallback, marketsData, isNavbar]);
+  }, [sortedPublicKeys, setUsdValuesCallback, marketsData, isNavbar, totalUSD]);
 
   return (
     <>

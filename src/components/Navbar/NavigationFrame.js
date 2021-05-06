@@ -272,7 +272,7 @@ const FooterComponent = styled.footer`
 function Footer() {
   const classes = useFooterStyles();
   const theme = useTheme();
-  console.log('isExtension', isExtension);
+
   return (
     <FooterComponent className={classes.footer}>
       <Button

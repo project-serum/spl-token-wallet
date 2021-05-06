@@ -68,7 +68,6 @@ const RestoreTitle = styled(RowContainer)`
 `;
 
 export const WelcomePage = () => {
-  console.log('isExtension', isExtension);
   return (
     <Body>
       <Logo />
