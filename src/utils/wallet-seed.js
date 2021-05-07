@@ -197,11 +197,13 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   const decodedPlaintext = Buffer.from(plaintext).toString();
   const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
   if (stayLoggedIn) {
-    chrome.runtime.sendMessage({
-      channel: 'sollet_extension_mnemonic_channel',
-      method: 'set',
-      data: decodedPlaintext,
-    });
+    if (isExtension) {
+      chrome.runtime.sendMessage({
+        channel: 'sollet_extension_mnemonic_channel',
+        method: 'set',
+        data: decodedPlaintext,
+      });
+    }
   } else {
     sessionStorage.setItem('unlocked', decodedPlaintext);
   }
