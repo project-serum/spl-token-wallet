@@ -32,11 +32,17 @@ const StyledTd = styled.td`
 `;
 
 const ActivitiesStyledCard = styled(StyledCard)`
-  left: -4rem;
-  width: 16rem;
-  //   background: #222429;
+  width: 17rem;
+  left: -12rem;
+  top: 2rem;
   border: 0.1rem solid #3a475c;
   box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
+`;
+
+const ButtonsContainer = styled(RowContainer)`
+  flex-direction: column;
+  justify-content: center;
+  aling-items: flex-start;
 `;
 
 const ActivitiesDropdown = ({
@@ -51,24 +57,21 @@ const ActivitiesDropdown = ({
   quote,
 }) => {
   return (
-    // <div>hjkhjkhjk</div>
-    <ActivitiesStyledCard id="ActivitiesDropdown">
+    <ActivitiesStyledCard>
       <RowContainer>
         <RowContainer padding="0 1.6rem" direction="column">
           <StyledTd
             style={{ width: '100%', paddingLeft: '0', paddingRight: '0' }}
           >
-            <RowContainer
-              direction={'column'}
-              justify="center"
-              aling="flex-start"
-            >
+            <ButtonsContainer>
               <VioletButton
                 theme={theme}
+                hoverBackground={'rgba(255, 255, 255, 0.08)'}
+                backgroundColor={'transparent'}
                 style={{
                   width: '100%',
+                  padding: '0 0.5rem',
                   height: '5rem',
-                  background: 'transparent',
                   border: 'none',
                   color: '#f5fbfb',
                   justifyContent: 'end',
@@ -89,11 +92,13 @@ const ActivitiesDropdown = ({
 
               <VioletButton
                 theme={theme}
+                backgroundColor={'transparent'}
+                hoverBackground={'rgba(255, 255, 255, 0.08)'}
                 style={{
                   width: '100%',
                   height: '5rem',
-                  background: 'transparent',
                   border: 'none',
+                  padding: '0 0.5rem',
                   color: '#f5fbfb',
                   justifyContent: 'end',
                   whiteSpace: 'nowrap',
@@ -108,6 +113,8 @@ const ActivitiesDropdown = ({
               </VioletButton>
 
               <VioletButton
+                hoverBackground={'rgba(255, 255, 255, 0.08)'}
+                backgroundColor={'transparent'}
                 theme={theme}
                 component="a"
                 target="_blank"
@@ -119,7 +126,7 @@ const ActivitiesDropdown = ({
                 style={{
                   width: '100%',
                   height: '5rem',
-                  background: 'transparent',
+                  padding: '0 0.5rem',
                   border: 'none',
                   color: '#f5fbfb',
                   justifyContent: 'end',
@@ -134,6 +141,8 @@ const ActivitiesDropdown = ({
                 View Explorer
               </VioletButton>
               <VioletButton
+                hoverBackground={'rgba(255, 255, 255, 0.08)'}
+                backgroundColor={'transparent'}
                 theme={theme}
                 component="a"
                 target="_blank"
@@ -147,7 +156,7 @@ const ActivitiesDropdown = ({
                 style={{
                   width: '100%',
                   height: '5rem',
-                  background: 'transparent',
+                  padding: '0 0.5rem',
                   border: 'none',
                   color: '#f5fbfb',
                   justifyContent: 'end',
@@ -162,7 +171,7 @@ const ActivitiesDropdown = ({
                 />
                 Trade
               </VioletButton>
-            </RowContainer>
+            </ButtonsContainer>
           </StyledTd>
         </RowContainer>
       </RowContainer>

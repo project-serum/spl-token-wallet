@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { Body, RowContainer } from '../commonStyles';
 
 import Logo from '../../components/Logo';
@@ -11,12 +12,20 @@ import AddTokens from './components/AddTokens';
 import Warning from './components/Warning';
 import {
   generateMnemonicAndSeed,
-  hasLockedMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
   storeMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 import { DERIVATION_PATH } from '../../utils/walletProvider/localStorage';
 import FakeInputs from '../../components/FakeInputs';
+
+const MainRow = styled(RowContainer)`
+  @media (max-width: 400px) {
+    padding-bottom: 3rem;
+    overflow-x: auto;
+    height: 80%;
+  }
+`;
 
 export const CreateWalletPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -28,14 +37,16 @@ export const CreateWalletPage = () => {
     seed: string;
   }>({ mnemonic: '', seed: '' });
 
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+
   useEffect(() => {
-    if (hasLockedMnemonicAndSeed()) {
+    if (hasLockedMnemonicAndSeed) {
       setCurrentStep(0);
     }
-
     generateMnemonicAndSeed().then((seedAndMnemonic) => {
       setMnemonicAndSeed(seedAndMnemonic);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const callAsync = useCallAsync();
@@ -63,11 +74,7 @@ export const CreateWalletPage = () => {
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>
         <Logo />
-        <RowContainer
-          style={{ overflowX: 'auto', paddingBottom: '3rem' }}
-          height={'80%'}
-          direction={'column'}
-        >
+        <MainRow direction={'column'}>
           {/* margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} */}
           {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}
 
@@ -98,7 +105,7 @@ export const CreateWalletPage = () => {
           ) : (
             <AddTokens />
           )}
-        </RowContainer>
+        </MainRow>
       </RowContainer>
     </Body>
   );

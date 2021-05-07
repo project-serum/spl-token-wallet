@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 import {
   Row,
   Body,
@@ -66,7 +67,27 @@ const RestoreTitle = styled(RowContainer)`
   }
 `;
 
+const CreateWalletButtonInner = () => (
+  <CreateWalletButton width="35rem" height="35rem">
+    <Row direction={'column'} justify={'space-around'} height={'100%'}>
+      <Img width="12rem" height="12rem">
+        <img
+          src={
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzEiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MSA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMzUuNzVIMzUuMzk3Nk0zNS4zOTc2IDM1Ljc1SDcwLjc5NTJNMzUuMzk3NiAzNS43NVYwLjM1MjQxN00zNS4zOTc2IDM1Ljc1VjcxLjE0NzYiIHN0cm9rZT0iIzM2NkNFNSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo='
+          }
+          alt={'plus, add'}
+          width="100%"
+          height="100%"
+        />
+      </Img>
+      <BoldTitle>Create New Wallet</BoldTitle>
+    </Row>
+  </CreateWalletButton>
+);
+
 export const WelcomePage = () => {
+  const hash = localStorage.getItem('hash');
+
   return (
     <Body>
       <Logo />
@@ -78,49 +99,19 @@ export const WelcomePage = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href={'https://wallet.cryptocurrencies.ai/create_wallet'}
-                onClick={() => window.close()}
+                onClick={() => {
+                  window.close();
+                }}
               >
-                <CreateWalletButton width="35rem" height="35rem">
-                  <Row
-                    direction={'column'}
-                    justify={'space-around'}
-                    height={'100%'}
-                  >
-                    <Img width="12rem" height="12rem">
-                      <img
-                        src={
-                          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzEiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MSA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMzUuNzVIMzUuMzk3Nk0zNS4zOTc2IDM1Ljc1SDcwLjc5NTJNMzUuMzk3NiAzNS43NVYwLjM1MjQxN00zNS4zOTc2IDM1Ljc1VjcxLjE0NzYiIHN0cm9rZT0iIzM2NkNFNSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo='
-                        }
-                        alt={'plus, add'}
-                        width="100%"
-                        height="100%"
-                      />
-                    </Img>
-                    <BoldTitle>Create New Wallet</BoldTitle>
-                  </Row>
-                </CreateWalletButton>
+                <CreateWalletButtonInner />
               </a>
+            ) : isExtension && hash !== '#from_extension' ? (
+              <div onClick={openExtensionInNewTab}>
+                <CreateWalletButtonInner />
+              </div>
             ) : (
               <Link to={'/create_wallet'}>
-                <CreateWalletButton width="35rem" height="35rem">
-                  <Row
-                    direction={'column'}
-                    justify={'space-around'}
-                    height={'100%'}
-                  >
-                    <Img width="12rem" height="12rem">
-                      <img
-                        src={
-                          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzEiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCA3MSA3MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMzUuNzVIMzUuMzk3Nk0zNS4zOTc2IDM1Ljc1SDcwLjc5NTJNMzUuMzk3NiAzNS43NVYwLjM1MjQxN00zNS4zOTc2IDM1Ljc1VjcxLjE0NzYiIHN0cm9rZT0iIzM2NkNFNSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo='
-                        }
-                        alt={'plus, add'}
-                        width="100%"
-                        height="100%"
-                      />
-                    </Img>
-                    <BoldTitle>Create New Wallet</BoldTitle>
-                  </Row>
-                </CreateWalletButton>
+                <CreateWalletButtonInner />
               </Link>
             )}
           </Row>

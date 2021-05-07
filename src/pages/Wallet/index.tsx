@@ -15,8 +15,8 @@ const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
   height: 100%;
   padding: 0 3rem 3rem 3rem;
-  @media (max-width: 400%) {
-    padding: 0 5rem 3rem 5rem;
+  @media (max-width: 400px) {
+    padding: 0;
   }
 `;
 

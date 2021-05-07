@@ -22,6 +22,7 @@ const ActivityHeaderRow = styled(RowContainer)`
 const ComingSoonTitle = styled(Title)`
   @media (max-width: 400px) {
     font-size: 2rem;
+    white-space: nowrap;
   }
 `;
 

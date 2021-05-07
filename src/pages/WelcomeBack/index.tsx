@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Redirect, Link } from 'react-router-dom';
-import { loadMnemonicAndSeed } from '../../utils/wallet-seed';
+import {
+  loadMnemonicAndSeed,
+  useHasLockedMnemonicAndSeed,
+} from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 
 import {
@@ -22,6 +25,7 @@ import { useTheme } from '@material-ui/core';
 import { useWallet } from '../../utils/wallet';
 // import BottomLink from '../../components/BottomLink';
 import FakeInputs from '../../components/FakeInputs';
+import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
 const ImgContainer = styled.img`
   height: 7rem;
@@ -50,10 +54,13 @@ const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [stayLoggedIn] = useState(true);
+  // eslint-disable-next-line
+  const [_, loading] = useHasLockedMnemonicAndSeed();
 
   const theme = useTheme();
   const wallet = useWallet();
   const callAsync = useCallAsync();
+  const hash = localStorage.getItem('hash');
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
@@ -71,6 +78,10 @@ const WelcomeBack = () => {
       submit();
     }
   };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <Body>
@@ -156,16 +167,30 @@ const WelcomeBack = () => {
           >
             Restore Another Wallet Using Seed Phrase
           </Link>
-          <Link
-            to={'/create_wallet'}
-            style={{
-              color: theme.customPalette.blue.new,
-              textDecoration: 'none',
-              fontSize: '1.2rem',
-            }}
-          >
-            Create Another Wallet
-          </Link>
+          {isExtension && hash !== '#from_extension' ? (
+            <span
+              onClick={openExtensionInNewTab}
+              style={{
+                color: theme.customPalette.blue.new,
+                textDecoration: 'none',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+              }}
+            >
+              Create Another Wallet
+            </span>
+          ) : (
+            <Link
+              to={'/create_wallet'}
+              style={{
+                color: theme.customPalette.blue.new,
+                textDecoration: 'none',
+                fontSize: '1.2rem',
+              }}
+            >
+              Create Another Wallet
+            </Link>
+          )}
         </BottomLinksContainer>
       </RowContainer>
     </Body>

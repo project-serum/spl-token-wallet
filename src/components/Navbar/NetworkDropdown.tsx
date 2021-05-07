@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { BtnCustom } from '../BtnCustom';
 import { useWallet } from '../../utils/wallet';
-import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import { useHasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
 
 export const StyledDropdown = styled.div`
   display: flex;
@@ -134,8 +134,13 @@ const NetworkDropdown = () => {
     value: endpoint,
     label: networkLabels.find((a) => a.endpoint === endpoint)?.name || '',
   };
-
-  const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed();
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+  const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed;
+  console.log(
+    'hasLockedMnemonicAndSeed',
+    hasLockedMnemonicAndSeed,
+    isUserHasLockedMnemonicAndSeed,
+  );
 
   return (
     <StyledDropdown

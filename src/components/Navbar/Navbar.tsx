@@ -19,7 +19,10 @@ import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
-import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import {
+  reloadWallet,
+  useHasLockedMnemonicAndSeed,
+} from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
 
 const ButtonsContainer = styled(Row)`
@@ -171,7 +174,9 @@ const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
-  const showButtons = !hasLockedMnemonicAndSeed() || !!wallet;
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+
+  const showButtons = !hasLockedMnemonicAndSeed || !!wallet;
 
   return (
     <GridContainer
@@ -272,7 +277,7 @@ const Navbar = () => {
                 fontSize="1.2rem"
                 onClick={() => {
                   sessionStorage.removeItem('unlocked');
-                  window.location.reload();
+                  reloadWallet();
                 }}
                 style={{
                   position: 'absolute',
@@ -284,7 +289,7 @@ const Navbar = () => {
                 Lock Wallet
               </RedButton>
             </RowContainer>
-          ) : !hasLockedMnemonicAndSeed() ? (
+          ) : !hasLockedMnemonicAndSeed ? (
             <ButtonsContainer>
               <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
                 <VioletButton
@@ -327,7 +332,7 @@ const Navbar = () => {
             style={{ cursor: 'pointer' }}
             onClick={() => {
               sessionStorage.removeItem('unlocked');
-              window.location.reload();
+              reloadWallet();
             }}
             src={Lock}
             width={'20%'}

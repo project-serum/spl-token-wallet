@@ -36,6 +36,13 @@ const StyledRowContainer = styled(RowContainer)`
   }
 `;
 
+const StyledTitle = styled(Title)`
+  font-size: 1.2rem;
+  @media (max-width: 400px) {
+    font-size: 1.3rem;
+  }
+`;
+
 export default function DerivedAccounts({
   goBack,
   mnemonic,
@@ -231,14 +238,14 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
           tokenSymbol ? ` (${tokenSymbol})` : null
         }`}</Title>
 
-        <Title fontSize="1.2rem">
+        <StyledTitle>
           {isAssociatedToken && (
             <Row margin="0 1rem 0 0">
               <FingerprintIcon style={{ width: '2rem' }} />
             </Row>
           )}
           {publicKey.toBase58()}
-        </Title>
+        </StyledTitle>
       </Row>
     </RowContainer>
   );

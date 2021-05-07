@@ -29,6 +29,9 @@ const AccountInfoSubContainer = styled(Row)`
   justify-content: space-between;
   @media (max-width: 400px) {
     width: 100%;
+    height: 30%;
+    border-bottom: 0.1rem solid #3a475c;
+    padding: 0 3rem 9rem 3rem;
   }
 `;
 
@@ -46,6 +49,7 @@ const Balances = styled(Row)`
   @media (max-width: 400px) {
     width: 100%;
     margin-top: 3rem;
+    padding: 0 3rem;
   }
 `;
 
@@ -102,10 +106,15 @@ const AccountInfo = () => {
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
             color={theme.customPalette.grey.light}
+            maxFont={'2rem'}
           >
             Total Balance
           </Title>
-          <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
+          <Title
+            maxFont={'2.1rem'}
+            fontSize="2.4rem"
+            fontFamily={'Avenir Next Demi'}
+          >
             <TotalBalance key="navbarfalse" isNavbar={false} />
           </Title>
         </BalanceCard>
@@ -114,10 +123,15 @@ const AccountInfo = () => {
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
             color={theme.customPalette.grey.light}
+            maxFont={'2rem'}
           >
             SOL Balance
           </Title>
-          <Title fontSize="2.4rem" fontFamily={'Avenir Next Demi'}>
+          <Title
+            maxFont={'2.1rem'}
+            fontSize="2.4rem"
+            fontFamily={'Avenir Next Demi'}
+          >
             {formatNumberToUSFormat(
               stripDigitPlaces(amount / Math.pow(10, decimals), 8),
             )}{' '}

@@ -115,7 +115,7 @@ const ConfirmSeedPhrase = ({
             style={{ background: 'rgba(164, 231, 151, 0.5)' }}
           >
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
-              Place 12 words from your Seed Phrase in the correct order by
+              Place first 12 words from your Seed Phrase in the correct order by
               clicking on the words.
             </Title>
           </ColorText>
