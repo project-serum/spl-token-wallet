@@ -33,7 +33,7 @@ const StyledTd = styled.td`
 
 const ActivitiesStyledCard = styled(StyledCard)`
   width: 17rem;
-  left: -14rem;
+  left: -12rem;
   top: 2rem;
   border: 0.1rem solid #3a475c;
   box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);

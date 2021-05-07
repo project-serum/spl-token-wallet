@@ -43,11 +43,11 @@ export const CreateWalletPage = () => {
     if (hasLockedMnemonicAndSeed) {
       setCurrentStep(0);
     }
-
     generateMnemonicAndSeed().then((seedAndMnemonic) => {
       setMnemonicAndSeed(seedAndMnemonic);
     });
-  }, [hasLockedMnemonicAndSeed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const callAsync = useCallAsync();
 
