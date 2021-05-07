@@ -10,8 +10,8 @@ import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
 
-let usdValuesNavbar: any = {};
-let usdValuesTotal: any = {};
+let assetsValuesNavbar: any = {};
+let assetsValuesTotal: any = {};
 
 const Item = ({
   isNavbar,
@@ -36,15 +36,21 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(undefined);
+  const assetsValues = isNavbar ? assetsValuesNavbar : assetsValuesTotal;
+
+  const [price, setPriceRaw] = useState<number | null | undefined>(assetsValues[publicKey]?.price);
   const coin = balanceInfo?.tokenSymbol.toUpperCase();
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
   const connection = useConnection();
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal;
+
+  const setPrice = useCallback((price: number | undefined | null) => {
+    assetsValues[publicKey] = { ...assetsValues[publicKey], price };
+    setPriceRaw(price);
+  }, [setPriceRaw, publicKey, assetsValues]);
 
   useEffect(() => {
-    if (balanceInfo && !price) {
+    if (balanceInfo && price === undefined) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
@@ -77,7 +83,7 @@ const Item = ({
     }
 
     return () => {};
-  }, [price, balanceInfo, connection, coin, isUSDT]);
+  }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
 
   let { closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -86,9 +92,7 @@ const Item = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = isUSDT
-    ? 1
-    : price === null && !serumMarkets[coin]
+  let priceForCalculate = !price
     ? !closePrice
       ? price
       : closePrice
@@ -102,12 +106,12 @@ const Item = ({
       : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   useEffect(() => {
-    if (usdValue !== undefined && usdValue !== usdValues[publicKey]) {
+    if (usdValue !== undefined && usdValue !== assetsValues[publicKey]?.usdValue) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
 
     return () => {};
-  }, [setUsdValue, usdValue, publicKey, usdValues]);
+  }, [setUsdValue, usdValue, publicKey, assetsValues]);
 
   return null;
 };
@@ -124,12 +128,12 @@ const TotalBalance = ({ isNavbar = true }) => {
     [publicKeys],
   );
 
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal;
+  const assetsValues = isNavbar ? assetsValuesNavbar : assetsValuesTotal;
 
   useEffect(() => {
-    if (isNavbar) usdValuesNavbar = {};
+    if (isNavbar) assetsValuesNavbar = {};
     else {
-      usdValuesTotal = {};
+      assetsValuesTotal = {};
     }
   }, [selectedAccount, isNavbar]);
 
@@ -144,17 +148,18 @@ const TotalBalance = ({ isNavbar = true }) => {
 
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
-      usdValues[publicKey.toString()] = usdValue;
+      assetsValues[publicKey.toString()] = { ...assetsValues[publicKey.toString()], usdValue };
+
       const totalUsdValue: any = sortedPublicKeys
-        .filter((pk) => usdValues[pk.toString()])
-        .map((pk) => usdValues[pk.toString()])
+        .filter((pk) => assetsValues[pk.toString()])
+        .map((pk) => assetsValues[pk.toString()].usdValue)
         .reduce((a, b) => a + b, 0.0);
 
       // if (fairsIsLoaded(sortedPublicKeys)) {
         setTotalUSD(totalUsdValue);
       // }
     },
-    [sortedPublicKeys, usdValues],
+    [sortedPublicKeys, assetsValues],
   );
 
   const memoizedAssetsList = useMemo(() => {

@@ -114,14 +114,6 @@ const AddTokenButtonContainer = styled(RowContainer)`
   }
 `;
 
-export function fairsIsLoaded(publicKeys) {
-
-  return (
-    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
-    publicKeys.length
-  );
-}
-
 const AddTokenButton = ({
   theme,
   setShowAddTokenDialog,
@@ -281,17 +273,17 @@ const LastStyledTd = styled(StyledTd)`
 //
 // For a given set of publicKeys, we know all the USD values have been loaded when
 // all of their values in this object are not `undefined`.
-export const usdValues: any = {};
+export const assetsValues: any = {};
 
 // Calculating associated token addresses is an asynchronous operation, so we cache
 // the values so that we can quickly render components using them. This prevents
 // flickering for the associated token fingerprint icon.
 export const associatedTokensCache = {};
 
-export function pairsIsLoaded(publicKeys, usdValues) {
+export function fairsIsLoaded(publicKeys) {
   return (
-    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
-    publicKeys.length
+    publicKeys.filter((pk) => assetsValues[pk.toString()] !== undefined)
+      .length === publicKeys.length
   );
 }
 
@@ -310,14 +302,9 @@ const AssetsTable = ({
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
-  const [totalBalance, setTotalUSD] = useState(0);
-
+  const [, setTotalUSD] = useState(0);
   const [marketsData, setMarketsData] = useState<any>(null);
-
-  const [
-    publicKeys,
-    // loaded
-  ] = useWalletPublicKeys();
+  const [publicKeys] = useWalletPublicKeys();
 
   useEffect(() => {
     const getData = async () => {
@@ -328,16 +315,13 @@ const AssetsTable = ({
     getData();
   }, []);
 
-  // const { accounts, setAccountName } = useWalletSelector();
-
   // Dummy var to force rerenders on demand.
-
   const sortedPublicKeys = useMemo(
     () =>
       Array.isArray(publicKeys)
         ? [...publicKeys].sort((a, b) => {
-            const aVal = usdValues[a.toString()];
-            const bVal = usdValues[b.toString()];
+            const aVal = assetsValues[a.toString()]?.usdValue;
+            const bVal = assetsValues[b.toString()]?.usdValue;
 
             // SOL always fisrt
             if (a.equals(wallet.publicKey)) return -1;
@@ -378,29 +362,32 @@ const AssetsTable = ({
 
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
-      usdValues[publicKey.toString()] = usdValue;
+      assetsValues[publicKey.toString()] = {
+        ...assetsValues[publicKey.toString()],
+        usdValue,
+      };
+
       const totalUsdValue: any = sortedPublicKeys
-        .filter((pk) => usdValues[pk.toString()])
-        .map((pk) => usdValues[pk.toString()])
+        .filter((pk) => assetsValues[pk.toString()])
+        .map((pk) => assetsValues[pk.toString()].usdValue)
         .reduce((a, b) => a + b, 0.0);
 
-        if (fairsIsLoaded(sortedPublicKeys)) {
-          setTotalUSD(totalUsdValue);
-        }
+      if (fairsIsLoaded(sortedPublicKeys)) {
+        setTotalUSD(totalUsdValue);
+      }
     },
     [sortedPublicKeys],
   );
 
   const memoizedAssetsList = useMemo(() => {
     return sortedPublicKeys.map((pk, i) => {
-      return React.memo((props) => {
+      return React.memo(() => {
         return (
           <AssetItem
             key={`${pk.toString()}-${i}-table`}
             publicKey={pk}
             theme={theme}
             marketsData={marketsData}
-            totalBalance={totalBalance}
             setUsdValue={setUsdValuesCallback}
             selectPublicKey={selectPublicKey}
             setSendDialogOpen={setSendDialogOpen}
@@ -411,13 +398,12 @@ const AssetsTable = ({
     });
   }, [
     sortedPublicKeys,
-    setUsdValuesCallback,
     theme,
     marketsData,
     selectPublicKey,
     setSendDialogOpen,
     setDepositDialogOpen,
-    totalBalance,
+    setUsdValuesCallback,
   ]);
 
   return (
@@ -497,14 +483,13 @@ const AssetsTable = ({
 };
 
 const AssetItem = ({
-  publicKey,
-  setUsdValue,
   theme,
-  marketsData = new Map(),
+  publicKey,
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
-  totalBalance
+  marketsData = new Map(),
+  setUsdValue,
 }: {
   publicKey: any;
   theme: Theme;
@@ -513,7 +498,6 @@ const AssetItem = ({
   selectPublicKey: (publicKey: any) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
-  totalBalance: number | undefined | null
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
   const urlSuffix = useSolanaExplorerUrlSuffix();
@@ -535,13 +519,18 @@ const AssetItem = ({
     tokenLogoUri: null,
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(undefined);
   const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const [price, setPriceRaw] = useState(assetsValues[publicKey]?.price);
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
 
+  const setPrice = useCallback((price: number | undefined | null) => {
+    assetsValues[publicKey] = { ...assetsValues[publicKey], price };
+    setPriceRaw(price);
+  }, [setPriceRaw, publicKey]);
+
   useEffect(() => {
-    if (balanceInfo && !price) {
+    if (balanceInfo && assetsValues[publicKey] === undefined) {
       if (balanceInfo.tokenSymbol) {
         // Don't fetch USD stable coins. Mark to 1 USD.
         if (isUSDT) {
@@ -573,7 +562,7 @@ const AssetItem = ({
     }
 
     return () => {};
-  }, [price, balanceInfo, connection, coin, isUSDT]);
+  }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -582,14 +571,7 @@ const AssetItem = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = isUSDT
-    ? 1
-    : price === null &&
-      !serumMarkets[coin]
-    ? !closePrice
-      ? price
-      : closePrice
-    : price;
+  let priceForCalculate = !price ? (!closePrice ? price : closePrice) : price;
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
@@ -627,7 +609,7 @@ const AssetItem = ({
   useEffect(() => {
     if (
       usdValue !== undefined &&
-      usdValue !== usdValues[publicKey]
+      usdValue !== assetsValues[publicKey]?.usdValue
     ) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
@@ -680,7 +662,7 @@ const AssetItem = ({
           <Row direction="column">
             <RowContainer justify="flex-start">
               <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-                (amount / Math.pow(10, decimals)) * priceForCalculate || 0,
+                usdValue || 0,
                 2,
               )}`}</AssetAmountUSD>
             </RowContainer>
@@ -758,6 +740,10 @@ const AssetItem = ({
             width="10rem"
             background={'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'}
             color={theme.customPalette.dark.background}
+            hoverColor={theme.customPalette.white.main}
+            hoverBackground={
+              'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'
+            }
             margin="0 2rem 0 0"
             onClick={() => {
               selectPublicKey(publicKey);
@@ -777,6 +763,9 @@ const AssetItem = ({
             height="50%"
             width="7rem"
             background={
+              'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
+            }
+            hoverBackground={
               'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
             }
             margin="0 2rem 0 0"
