@@ -30,7 +30,7 @@ async function getExtensionUnlockedMnemonic() {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage(
       {
-        channel: 'sollet_extension_mnemonic_channel',
+        channel: 'ccai_extension_mnemonic_channel',
         method: 'get',
       },
       resolve,
@@ -139,7 +139,7 @@ export async function storeMnemonicAndSeed(
   sessionStorage.removeItem('unlocked');
   if (isExtension) {
     chrome.runtime.sendMessage({
-      channel: 'sollet_extension_mnemonic_channel',
+      channel: 'ccai_extension_mnemonic_channel',
       method: 'set',
       data: '',
     });
@@ -199,7 +199,7 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   if (stayLoggedIn) {
     if (isExtension) {
       chrome.runtime.sendMessage({
-        channel: 'sollet_extension_mnemonic_channel',
+        channel: 'ccai_extension_mnemonic_channel',
         method: 'set',
         data: decodedPlaintext,
       });
@@ -244,7 +244,7 @@ function deriveImportsEncryptionKey(seed) {
 export function reloadWallet() {
   if (isExtension) {
     chrome.runtime.sendMessage({
-      channel: 'sollet_extension_mnemonic_channel',
+      channel: 'ccai_extension_mnemonic_channel',
       method: 'set',
       data: '',
     });

@@ -41,7 +41,7 @@ const StyledCard = styled(Card)`
 export default function PopupPage() {
   const opener = window.opener;
 
-  const origin: any = localStorage.getItem('origin');
+  const origin: any = sessionStorage.getItem('origin');
 
   const selectedWallet = useWallet();
   const { accounts, setWalletSelector } = useWalletSelector();
@@ -51,7 +51,7 @@ export default function PopupPage() {
     (message) => {
       if (isExtension) {
         chrome.runtime.sendMessage({
-          channel: 'sollet_extension_background_channel',
+          channel: 'ccai_extension_background_channel',
           data: message,
         });
       } else {

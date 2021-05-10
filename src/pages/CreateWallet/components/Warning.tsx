@@ -35,7 +35,7 @@ const Warning = ({
   const theme = useTheme();
 
   const submit = async () => {
-    const origin = localStorage.getItem('origin');
+    const origin = sessionStorage.getItem('origin');
 
     if (!!origin) {
       console.log('add to location');

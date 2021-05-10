@@ -5,10 +5,10 @@ scriptTag.src = chrome.runtime.getURL('script.js');
 container.insertBefore(scriptTag, container.children[0]);
 container.removeChild(scriptTag);
 
-window.addEventListener('sollet_injected_script_message', (event) => {
+window.addEventListener('ccai_injected_script_message', (event) => {
   chrome.runtime.sendMessage(
     {
-      channel: 'sollet_contentscript_background_channel',
+      channel: 'ccai_contentscript_background_channel',
       data: event.detail,
     },
     (response) => {
@@ -17,7 +17,7 @@ window.addEventListener('sollet_injected_script_message', (event) => {
         return;
       }
       window.dispatchEvent(
-        new CustomEvent('sollet_contentscript_message', { detail: response }),
+        new CustomEvent('ccai_contentscript_message', { detail: response }),
       );
     },
   );

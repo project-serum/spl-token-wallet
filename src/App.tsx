@@ -186,9 +186,9 @@ const Pages = () => {
     const hash = window.location.hash;
 
     if (origin) {
-      localStorage.setItem('origin', origin);
+      sessionStorage.setItem('origin', origin);
     } else {
-      localStorage.removeItem('origin');
+      sessionStorage.removeItem('origin');
     }
 
     if (hash) {
