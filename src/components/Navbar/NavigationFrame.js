@@ -57,7 +57,7 @@ const StyledMain = styled.main`
       : 'calc(100% - 12rem)'};
 
   @media (max-width: 850px) {
-    height: calc(100% - ${footerHeight}rem);
+    height: calc(100%);
   }
   @media (max-width: 400px) {
     height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
