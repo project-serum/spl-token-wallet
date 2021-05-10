@@ -1,5 +1,5 @@
 {
-  "name": "spl-token-wallet",
+  "name": "cryptocurrencies-ai-wallet",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,6 +13,7 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
     "@types/bn.js": "^4.11.6",
+    "@types/chrome": "^0.0.134",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.4",
     "@types/react": "^17.0.0",
@@ -43,14 +44,23 @@
     "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
     "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.js\" --write",
+    "fix:prettier": "prettier \"src/**/*.js\" \"extension/src/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
+    "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "env": {
+      "browser": true,
+      "es6": true,
+      "webextensions": true
+    },
+    "extends": [
+      "react-app"
+    ]
   },
   "jest": {
     "transformIgnorePatterns": [

@@ -11,8 +11,10 @@ import { ConnectionProvider } from './utils/connection';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import SnackbarProvider from './components/SnackbarProvider';
-import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
+import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
+import { isExtension } from './utils/utils';
+import { ConnectedWalletsProvider } from './utils/connected-wallets';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -145,6 +147,18 @@ export default function App() {
     return null;
   }
 
+  let appElement = (
+    <NavigationFrame>
+      <Pages />
+    </NavigationFrame>
+  );
+
+  if (isExtension) {
+    appElement = (
+      <ConnectedWalletsProvider>{appElement}</ConnectedWalletsProvider>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingIndicator />}>
@@ -153,11 +167,7 @@ export default function App() {
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
-                <WalletProvider>
-                  <NavigationFrame>
-                    <Pages />
-                  </NavigationFrame>
-                </WalletProvider>
+                <WalletProvider>{appElement}</WalletProvider>
               </SnackbarProvider>
             </TokenRegistryProvider>
           </ConnectionProvider>
@@ -169,15 +179,22 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
-    const origin = params.get('origin')
+    const origin = params.get('origin');
+    const hash = window.location.hash;
 
     if (origin) {
-      localStorage.setItem('origin', origin)
+      sessionStorage.setItem('origin', origin);
     } else {
-      localStorage.removeItem('origin')
+      sessionStorage.removeItem('origin');
+    }
+
+    if (hash) {
+      localStorage.setItem('hash', hash);
+    } else {
+      localStorage.removeItem('hash');
     }
   }, []);
 
@@ -185,20 +202,12 @@ const Pages = () => {
     <Switch>
       {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
       <Route path="/wallet" component={Wallet} />
-      <Route 
-        path="/restore_wallet" 
-        component={RestorePage}
-      />
+      <Route path="/restore_wallet" component={RestorePage} />
       <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" 
-        component={CreateWalletPage}
-      />
+      <Route path="/create_wallet" component={CreateWalletPage} />
       {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
       <Route exact path="/welcome_back" component={WelcomeBackPage} />
-      <Route
-        path="/connect_popup"
-        component={ConnectPopup}
-      />
+      <Route path="/connect_popup" component={ConnectPopup} />
 
       {/* popup if connecting from dex UI */}
       {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
@@ -207,7 +216,7 @@ const Pages = () => {
       {!!wallet && <Redirect from="/" to="/wallet" />}
 
       {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed() ? (
+      {hasLockedMnemonicAndSeed ? (
         <Redirect from="/" to="/welcome_back" />
       ) : (
         <Redirect from="/" to="/welcome" />

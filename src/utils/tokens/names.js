@@ -300,11 +300,11 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
   );
   if (match) {
     if (!info) {
-      info = { ...match, logoUri: match.logoURI };
+      info = { ...match, name: match.name.replace(' (Sollet)', ''), logoUri: match.logoURI };
     }
     // The user has overridden a name locally.
     else {
-      info = { ...info, logoUri: match.logoURI };
+      info = { ...info, name: info.name.replace(' (Sollet)', ''), logoUri: match.logoURI };
     }
   }
   return { ...info };

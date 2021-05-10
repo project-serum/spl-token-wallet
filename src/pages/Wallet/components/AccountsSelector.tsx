@@ -24,7 +24,15 @@ import AddHardwareWalletPopup from './AddHardwareWalletPopup';
 import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
 import ForgetWallet from './ForgetWallet';
 
-const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
+const ExportPrivateKeyButton = styled(BtnCustom)`
+  @media (max-width: 540px) {
+    font-size: 1.2rem;
+  }
+`;
+
+export const StyledCard = styled(({ isFromPopup, ...props }) => (
+  <Card {...props} />
+))`
   position: absolute;
   top: 100%;
   ${(props) => (props.isFromPopup ? 'right: 0' : 'left: 0')};
@@ -32,9 +40,18 @@ const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
   height: auto;
   display: none;
   z-index: 2;
+  background: #222429;
+  border: 0.1rem solid #3a475c;
+  box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
+
+  @media (max-width: 540px) {
+    width: 35rem;
+  }
 `;
 
-const RowWithSelector = styled(({ isFromPopup, ...props }) => <Row {...props} />)`
+const RowWithSelector = styled(({ isFromPopup, ...props }) => (
+  <Row {...props} />
+))`
   position: relative;
   bottom: ${(props) => (props.isFromPopup ? '0' : '1rem')};
   padding: ${(props) => (props.isFromPopup ? '2rem' : '1rem 3rem 2rem 0')};
@@ -43,9 +60,13 @@ const RowWithSelector = styled(({ isFromPopup, ...props }) => <Row {...props} />
   &:hover #accountSelector {
     display: flex;
   }
+
+  @media (max-width: 540px) {
+    padding: 1rem 0;
+  }
 `;
 
-const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
+export const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
   return (
     <BtnCustom
       textTransform={'capitalize'}
@@ -95,7 +116,7 @@ const AccountsSelector = ({
       <Title
         fontSize={accountNameSize}
         fontFamily="Avenir Next Demi"
-        style={{ textTransform: 'capitalize', marginRight: '1rem' }}
+        style={{ textTransform: 'capitalize', marginRight: '1rem', whiteSpace: 'nowrap' }}
       >
         {selectedAccount && selectedAccount.name}
       </Title>
@@ -127,6 +148,7 @@ const AccountsSelector = ({
             {accountsToShow.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
+                  key={`${name}-${i}`}
                   direction="row"
                   align={'center'}
                   justify={isFromPopup ? 'flex-start' : 'space-between'}
@@ -161,7 +183,7 @@ const AccountsSelector = ({
                   </Row>
                   {!isFromPopup && (
                     <Row>
-                      <BtnCustom
+                      <ExportPrivateKeyButton
                         btnWidth="auto"
                         textTransform="capitalize"
                         color={theme.customPalette.blue.serum}
@@ -171,7 +193,7 @@ const AccountsSelector = ({
                         onClick={() => setIsExportAccountOpen(true)}
                       >
                         Export Private Key
-                      </BtnCustom>
+                      </ExportPrivateKeyButton>
                     </Row>
                   )}
                 </RowContainer>

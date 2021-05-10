@@ -183,7 +183,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
       <RowContainer width="90%">
         <TextareaWithCopy
           value={mnemonic}
-          height={'11.2rem'}
+          height={'11.4rem'}
           placeholder={'***'}
           style={{ fontSize: '1.3rem', overflowY: 'auto' }}
         />

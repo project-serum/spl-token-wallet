@@ -138,3 +138,15 @@ export const stripDigitPlaces = (
 
   return strippedNumber;
 };
+
+export const isExtension = window.location.protocol === 'chrome-extension:';
+
+export const isExtensionPopup = isExtension && window.opener;
+
+export const walletUrl = window.location.pathname
+
+export const openExtensionInNewTab = () => {
+  chrome.tabs.create({
+    url: chrome.extension.getURL('index.html#from_extension'),
+  });
+}

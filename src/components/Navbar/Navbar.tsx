@@ -14,11 +14,15 @@ import { Button, Theme } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
 import WalletIcon from '../../images/walletIcon.svg';
+import Lock from '../../images/lock.svg';
 import NetworkDropdown from './NetworkDropdown';
 import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
-import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import {
+  reloadWallet,
+  useHasLockedMnemonicAndSeed,
+} from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
 
 const ButtonsContainer = styled(Row)`
@@ -123,36 +127,69 @@ const NavLinkButton = ({
   );
 };
 
+const LinksContainer = styled(RowContainer)`
+  padding: 1rem 4rem 1rem 4rem;
+  height: 100%;
+  margin: 0 0 0 4rem;
+  border-right: ${(props) => props.theme.customPalette.border.main};
+  border-left: ${(props) => props.theme.customPalette.border.main};
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const WalletLoginContainer = styled(Row)`
+  height: 100%;
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const WalletLoginButtonContainer = styled(Row)`
+  display: none;
+  @media (max-width: 540px) {
+    height: 100%;
+    display: flex;
+    width: 45%;
+  }
+`;
+
+const LogoLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  width: 15%;
+  padding: 0.5rem 0;
+  @media (max-width: 540px) {
+    width: 100%;
+  }
+`;
+
+const HeaderContainer = styled(RowContainer)`
+  height: 100%;
+  @media (max-width: 540px) {
+    width: 40%;
+  }
+`;
 const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
-  const showButtons = !hasLockedMnemonicAndSeed() || !!wallet;
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+
+  const showButtons = !hasLockedMnemonicAndSeed || !!wallet;
 
   return (
-    <GridContainer theme={theme} style={{ paddingRight: !showButtons && '0' }}>
+    <GridContainer
+      wallet={!!wallet}
+      theme={theme}
+      style={{ paddingRight: !showButtons && '0' }}
+    >
       <RowContainer justify={'space-between'} height={'100%'}>
-        <RowContainer theme={theme} height={'100%'}>
-          <Link
-            to={'/'}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '15%',
-              padding: '0.5rem 0',
-            }}
-          >
+        <HeaderContainer theme={theme}>
+          <LogoLink to={'/'}>
             <LogoComponent width="100%" height="auto" margin="0" />
-          </Link>
-          <RowContainer
-            padding={'1rem 4rem 1rem 4rem'}
-            height={'100%'}
-            margin={' 0 0 0 4rem'}
-            style={{
-              borderRight: theme.customPalette.border.main,
-              borderLeft: theme.customPalette.border.main,
-            }}
-          >
+          </LogoLink>
+          <LinksContainer theme={theme}>
             <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
               <NavLinkButton
                 theme={theme}
@@ -204,9 +241,9 @@ const Navbar = () => {
                 Addressbook
               </NavLinkButton>
             </StyledLink>
-          </RowContainer>
-        </RowContainer>
-        <Row height={'100%'}>
+          </LinksContainer>
+        </HeaderContainer>
+        <WalletLoginContainer>
           <NetworkDropdown />
           {!!wallet ? (
             <RowContainer>
@@ -240,7 +277,7 @@ const Navbar = () => {
                 fontSize="1.2rem"
                 onClick={() => {
                   sessionStorage.removeItem('unlocked');
-                  window.location.reload();
+                  reloadWallet();
                 }}
                 style={{
                   position: 'absolute',
@@ -252,7 +289,7 @@ const Navbar = () => {
                 Lock Wallet
               </RedButton>
             </RowContainer>
-          ) : !hasLockedMnemonicAndSeed() ? (
+          ) : !hasLockedMnemonicAndSeed ? (
             <ButtonsContainer>
               <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
                 <VioletButton
@@ -287,7 +324,21 @@ const Navbar = () => {
               </Title>
             </RowContainer>
           )}
-        </Row>
+        </WalletLoginContainer>
+
+        <WalletLoginButtonContainer>
+          <NetworkDropdown />
+          <img
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              sessionStorage.removeItem('unlocked');
+              reloadWallet();
+            }}
+            src={Lock}
+            width={'20%'}
+            alt={'lock wallet'}
+          />
+        </WalletLoginButtonContainer>
       </RowContainer>
     </GridContainer>
   );

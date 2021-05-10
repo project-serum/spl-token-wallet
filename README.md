@@ -1,8 +1,8 @@
 # SPL Token Wallet
 
-Example Solana wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
+Example Cryptocurrencies.Ai wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
 
-See [sollet.io](https://www.sollet.io) for a demo.
+See [wallet.cryptocurrencies.io](https://www.wallet.cryptocurrencies.ai) for a demo.
 
 Wallet keys are stored in `localStorage`, optionally encrypted by a password.
 

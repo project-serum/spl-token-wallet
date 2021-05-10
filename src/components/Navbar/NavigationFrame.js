@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { useWalletSelector } from '../../utils/wallet';
+import { useWallet, useWalletSelector } from '../../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
@@ -22,12 +22,14 @@ import AddAccountDialog from '../AddAccountDialog';
 import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
 import AddHardwareWalletDialog from '../AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
-import Navbar from './Navbar'
-import TwitterIcon from './TwitterIcon'
-import TelegramIcon from './TelegramIcon'
-import DiscordIcon from './DiscordIcon'
+import Navbar from './Navbar';
+import TwitterIcon from './TwitterIcon';
+import TelegramIcon from './TelegramIcon';
+import DiscordIcon from './DiscordIcon';
 import { Row } from '../../pages/commonStyles';
+import { isExtension } from '../../utils/utils';
 
+export const footerHeight = isExtension ? 0 : 6;
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -48,35 +50,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const StyledMain = styled.main`
-  height: ${props => props.isConnectPopup ? 'calc(100% - 6rem)' : 'calc(100% - 12rem)'};
+  height: ${(props) =>
+    props.isConnectPopup
+      ? `calc(100% - ${footerHeight}rem)`
+      : 'calc(100% - 12rem)'};
 
   @media (max-width: 850px) {
-    height: calc(100% - 6rem);
+    height: calc(100%);
   }
-`
+  @media (max-width: 540px) {
+    height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
+  }
+`;
 
 const StyledLink = styled.a`
   height: 100%;
-`
+`;
 
 export const StyledImg = styled.img`
   height: 100%;
-`
+`;
 
 export default function NavigationFrame({ children }) {
   const isConnectPopup = window.opener;
-  
+  const wallet = useWallet();
+
   return isConnectPopup ? (
     <>
-      <StyledMain isConnectPopup>{children}</StyledMain>
+      <StyledMain isWalletConnected={false} isConnectPopup>{children}</StyledMain>
       <Footer />
     </>
   ) : (
     <>
       <Navbar />
-      <StyledMain>{children}</StyledMain>
+      <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
     </>
   );
@@ -249,14 +257,24 @@ const Socials = styled(Row)`
       }
     }
   }
-`
+`;
+
+const FooterComponent = styled.footer`
+  height: 6rem;
+  padding: 0 0 0 3rem;
+  @media (max-width: 540px) {
+    padding: 0;
+    height: 0;
+    display: none;
+  }
+`;
 
 function Footer() {
   const classes = useFooterStyles();
-  const theme = useTheme()
+  const theme = useTheme();
 
   return (
-    <footer style={{ height: '6rem', padding: '0 0 0 3rem' }} className={classes.footer}>
+    <FooterComponent className={classes.footer}>
       <Button
         variant="outlined"
         color="primary"
@@ -265,33 +283,37 @@ function Footer() {
         rel="noopener"
         href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
         startIcon={<CodeIcon />}
-        style={{ border: '0', height: '50%', color: theme.customPalette.blue.serum }}
+        style={{
+          border: '0',
+          height: '50%',
+          color: theme.customPalette.blue.serum,
+        }}
       >
         View Source
       </Button>
-        <Socials justify={'space-around'} height="100%" width={'auto'}>
-          <StyledLink
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://twitter.com/CCAI_Official"
-          >
-            <TwitterIcon />
-          </StyledLink>
-          <StyledLink
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://t.me/CryptocurrenciesAi"
-          >
-            <TelegramIcon />
-          </StyledLink>
-          <StyledLink
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://discord.gg/2EaKvrs"
-          >
-            <DiscordIcon />
-          </StyledLink>
-        </Socials>
-    </footer>
+      <Socials justify={'space-around'} height="100%" width={'auto'}>
+        <StyledLink
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://twitter.com/CCAI_Official"
+        >
+          <TwitterIcon />
+        </StyledLink>
+        <StyledLink
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://t.me/CryptocurrenciesAi"
+        >
+          <TelegramIcon />
+        </StyledLink>
+        <StyledLink
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://discord.gg/2EaKvrs"
+        >
+          <DiscordIcon />
+        </StyledLink>
+      </Socials>
+    </FooterComponent>
   );
 }

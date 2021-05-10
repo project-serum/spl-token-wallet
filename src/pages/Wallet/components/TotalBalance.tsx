@@ -1,24 +1,30 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
-import { useBalanceInfo, useWalletPublicKeys, useWalletSelector } from '../../../utils/wallet';
+import {
+  useBalanceInfo,
+  useWalletPublicKeys,
+  useWalletSelector,
+} from '../../../utils/wallet';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import { useConnection } from '../../../utils/connection';
 
-let usdValuesNavbar: any = {};
-let usdValuesTotal: any = {}
+let assetsValuesNavbar: any = {};
+let assetsValuesTotal: any = {};
 
 const Item = ({
   isNavbar,
   publicKey,
   setUsdValue,
   marketsData,
+  totalUSD,
 }: {
-  isNavbar: boolean,
+  isNavbar: boolean;
   publicKey: string;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
   marketsData: any;
+  totalUSD: number
 }) => {
   const balanceInfo = useBalanceInfo(publicKey);
 
@@ -30,26 +36,31 @@ const Item = ({
     tokenSymbol: '--',
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(null);
+  const assetsValues = isNavbar ? assetsValuesNavbar : assetsValuesTotal;
+
+  const [price, setPriceRaw] = useState<number | null | undefined>(assetsValues[publicKey]?.price);
+  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const isUSDT =
+    coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
   const connection = useConnection();
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal
+
+  const setPrice = useCallback((price: number | undefined | null) => {
+    assetsValues[publicKey] = { ...assetsValues[publicKey], price };
+    setPriceRaw(price);
+  }, [setPriceRaw, publicKey, assetsValues]);
 
   useEffect(() => {
-    if (balanceInfo && !price) {
+    if (balanceInfo && price === undefined) {
       if (balanceInfo.tokenSymbol) {
         const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (
-          coin === 'USDT' ||
-          coin === 'USDC' ||
-          coin === 'WUSDC' ||
-          coin === 'WUSDT'
-        ) {
+        if (isUSDT) {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
         else if (serumMarkets[coin]) {
           let m = serumMarkets[coin];
+
           priceStore
             .getPrice(connection, m.name)
             .then((price) => {
@@ -71,8 +82,8 @@ const Item = ({
       }
     }
 
-    return () => {}
-  }, [price, balanceInfo, connection]);
+    return () => {};
+  }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
 
   let { closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -81,15 +92,11 @@ const Item = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate =
-    price === null &&
-    !priceStore.getFromCache(
-      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-    )
-      ? !closePrice
-        ? price
-        : closePrice
-      : price;
+  let priceForCalculate = !price
+    ? !closePrice
+      ? price
+      : closePrice
+    : price;
 
   const usdValue =
     priceForCalculate === undefined // Not yet loaded.
@@ -99,16 +106,12 @@ const Item = ({
       : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
 
   useEffect(() => {
-    if (
-      usdValue !== undefined &&
-      usdValue !== null &&
-      usdValue !== usdValues[publicKey]
-    ) {
+    if (usdValue !== undefined && usdValue !== assetsValues[publicKey]?.usdValue) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
 
-    return () => {}
-  }, [setUsdValue, usdValue, publicKey, usdValues]);
+    return () => {};
+  }, [setUsdValue, usdValue, publicKey, assetsValues]);
 
   return null;
 };
@@ -125,14 +128,14 @@ const TotalBalance = ({ isNavbar = true }) => {
     [publicKeys],
   );
 
-  const usdValues = isNavbar ? usdValuesNavbar : usdValuesTotal;
+  const assetsValues = isNavbar ? assetsValuesNavbar : assetsValuesTotal;
 
   useEffect(() => {
-    if (isNavbar) usdValuesNavbar = {};
+    if (isNavbar) assetsValuesNavbar = {};
     else {
-      usdValuesTotal = {}
+      assetsValuesTotal = {};
     }
-  }, [selectedAccount, isNavbar])
+  }, [selectedAccount, isNavbar]);
 
   useEffect(() => {
     const getData = async () => {
@@ -145,39 +148,45 @@ const TotalBalance = ({ isNavbar = true }) => {
 
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
-      usdValues[publicKey.toString()] = usdValue;
+      assetsValues[publicKey.toString()] = { ...assetsValues[publicKey.toString()], usdValue };
+
       const totalUsdValue: any = sortedPublicKeys
-        .filter((pk) => usdValues[pk.toString()])
-        .map((pk) => usdValues[pk.toString()])
+        .filter((pk) => assetsValues[pk.toString()])
+        .map((pk) => assetsValues[pk.toString()].usdValue)
         .reduce((a, b) => a + b, 0.0);
 
-      setTotalUSD(totalUsdValue);
+      // if (fairsIsLoaded(sortedPublicKeys)) {
+        setTotalUSD(totalUsdValue);
+      // }
     },
-    [sortedPublicKeys, usdValues],
+    [sortedPublicKeys, assetsValues],
   );
 
   const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.map((pk) => {
+    return sortedPublicKeys.map((pk, i) => {
       return React.memo((props) => {
         return (
           <Item
-            key={`${pk.toString()}${isNavbar}`}
+            key={`${pk.toString()}${isNavbar}${i}`}
             publicKey={pk}
             isNavbar={isNavbar}
             setUsdValue={setUsdValuesCallback}
             marketsData={marketsData}
+            totalUSD={totalUSD}
           />
         );
       });
     });
-  }, [sortedPublicKeys, setUsdValuesCallback, marketsData, isNavbar]);
+  }, [sortedPublicKeys, setUsdValuesCallback, marketsData, isNavbar, totalUSD]);
 
   return (
     <>
-      {memoizedAssetsList.map((Memoized) => (
-        <Memoized />
+      {memoizedAssetsList.map((Memoized, i) => (
+        <Memoized key={`${isNavbar}-${i}`} />
       ))}
-      <span key={`${isNavbar}-total-balance`}>${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}</span>
+      <span key={`${isNavbar}-total-balance`}>
+        ${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}
+      </span>
     </>
   );
 };

@@ -21,20 +21,31 @@ import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 import { BtnCustom } from '../../../components/BtnCustom';
 
 import AddIcon from '../../../images/addIcon.svg';
+import Dots from '../../../images/Dots.svg';
 import RefreshIcon from '../../../images/refresh.svg';
 import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
+import ActivitiesDropdown from './ActivitiesDropdown';
 
-export const TableContainer = styled(({ theme, ...props }) => (
+export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
 ))`
   background: ${(props) => props.theme.customPalette.grey.background};
   border: ${(props) => props.theme.customPalette.border.new};
   border-radius: 1.2rem;
   height: 100%;
+
+  @media (max-width: 540px) {
+    height: calc(100% - 4rem);
+    background: none;
+    border: none;
+    border-radius: none;
+    width: 100%;
+    display: ${(props) => (props.isActive ? 'block' : 'none')};
+  }
 `;
 
 const StyledTable = styled.table`
@@ -59,12 +70,48 @@ const StyledTable = styled.table`
   & tr td:last-child {
     padding-right: 2.4rem;
   }
+
+  @media (max-width: 540px) {
+    margin: 0;
+    width: calc(100%);
+  }
 `;
 
 export const HeadRow = styled(Row)`
   text-align: right;
   width: 10%;
   border-bottom: ${(props) => props.theme.customPalette.border.new};
+`;
+
+const RefreshButton = styled(BtnCustom)`
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const AddTokenStyledButton = styled(BtnCustom)`
+  @media (max-width: 540px) {
+    border: 0.1rem solid #f5fbfb;
+    background: transparent;
+    border-radius: 4rem;
+    height: 6rem;
+    width: 100%;
+    span {
+      color: #f5fbfb;
+    }
+  }
+`;
+
+const ImgContainer = styled.img`
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const AddTokenButtonContainer = styled(RowContainer)`
+  @media (max-width: 540px) {
+    display: none;
+  }
 `;
 
 const AddTokenButton = ({
@@ -75,16 +122,20 @@ const AddTokenButton = ({
   setShowAddTokenDialog: (isOpen: boolean) => void;
 }) => {
   return (
-    <BtnCustom
+    <AddTokenStyledButton
       textTransform={'capitalize'}
       borderWidth="0"
       height={'100%'}
       padding={'1.2rem 0'}
       onClick={() => setShowAddTokenDialog(true)}
     >
-      <img src={AddIcon} alt="addIcon" style={{ marginRight: '1rem' }} />
+      <ImgContainer
+        src={AddIcon}
+        alt="addIcon"
+        style={{ marginRight: '1rem' }}
+      />
       <GreyTitle theme={theme}>Add token</GreyTitle>
-    </BtnCustom>
+    </AddTokenStyledButton>
   );
 };
 
@@ -106,11 +157,44 @@ const StyledTr = styled.tr`
     background: ${(props) =>
       props.disableHover ? '' : props.theme.customPalette.dark.background};
   }
+
+  @media (max-width: 540px) {
+    height: 9rem;
+
+    td {
+      display: none;
+    }
+
+    td:first-child,
+    td:last-child {
+      display: table-cell;
+    }
+  }
+
+  @media (min-width: 540px) {
+    &:not(:last-child) td:last-child {
+      display: none;
+    }
+  }
 `;
 
 const StyledTd = styled.td`
   padding-top: 1rem;
   padding-bottom: 1rem;
+`;
+
+const StyledTdMenu = styled(StyledTd)`
+  position: relative;
+`;
+
+const DropdownContainer = styled.div`
+  height: auto;
+  width: 40%;
+  padding-left: 60%;
+
+  &:hover div {
+    display: flex;
+  }
 `;
 
 const AssetSymbol = styled(Title)`
@@ -129,6 +213,9 @@ const AssetAmount = styled(Title)`
   color: ${(props) => props.theme.customPalette.green.light};
   font-size: 1.4rem;
   font-family: Avenir Next;
+  @media (max-width: 540px) {
+    font-size: 2rem;
+  }
 `;
 
 const AssetAmountUSD = styled(AssetAmount)`
@@ -136,6 +223,47 @@ const AssetAmountUSD = styled(AssetAmount)`
   color: #fff;
 `;
 
+const MainHeaderRow = styled(RowContainer)`
+  height: 5rem;
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const ValuesContainerForExtension = styled(RowContainer)`
+  display: none;
+  @media (max-width: 540px) {
+    display: flex;
+    justify-content: flex-start;
+  }
+`;
+const ValuesContainer = styled(RowContainer)`
+  justify-content: flex-start;
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const AddTokenBtnRow = styled(RowContainer)`
+  width: 14rem;
+  justify-content: flex-start;
+  height: 5rem;
+  padding-left: 2rem;
+  @media (max-width: 540px) {
+    width: 90%;
+    justify-content: center;
+    height: 6rem;
+    padding-left: 0;
+    margin: 0 auto;
+  }
+`;
+
+const LastStyledTd = styled(StyledTd)`
+  padding-left: 0;
+  @media (max-width: 540px) {
+    width: 100%;
+  }
+`;
 // Aggregated $USD values of all child BalanceListItems child components.
 //
 // Values:
@@ -145,26 +273,28 @@ const AssetAmountUSD = styled(AssetAmount)`
 //
 // For a given set of publicKeys, we know all the USD values have been loaded when
 // all of their values in this object are not `undefined`.
-export const usdValues: any = {};
+export const assetsValues: any = {};
 
 // Calculating associated token addresses is an asynchronous operation, so we cache
 // the values so that we can quickly render components using them. This prevents
 // flickering for the associated token fingerprint icon.
 export const associatedTokensCache = {};
 
-export function pairsIsLoaded(publicKeys, usdValues) {
+export function fairsIsLoaded(publicKeys) {
   return (
-    publicKeys.filter((pk) => usdValues[pk.toString()] !== undefined).length ===
-    publicKeys.length
+    publicKeys.filter((pk) => assetsValues[pk.toString()] !== undefined)
+      .length === publicKeys.length
   );
 }
 
 const AssetsTable = ({
+  isActive,
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
   setShowAddTokenDialog,
 }: {
+  isActive?: boolean;
   selectPublicKey: (publicKey: any) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
@@ -173,13 +303,8 @@ const AssetsTable = ({
   const theme = useTheme();
   const wallet = useWallet();
   const [, setTotalUSD] = useState(0);
-
   const [marketsData, setMarketsData] = useState<any>(null);
-
-  const [
-    publicKeys,
-    // loaded
-  ] = useWalletPublicKeys();
+  const [publicKeys] = useWalletPublicKeys();
 
   useEffect(() => {
     const getData = async () => {
@@ -190,16 +315,13 @@ const AssetsTable = ({
     getData();
   }, []);
 
-  // const { accounts, setAccountName } = useWalletSelector();
-
   // Dummy var to force rerenders on demand.
-
   const sortedPublicKeys = useMemo(
     () =>
       Array.isArray(publicKeys)
         ? [...publicKeys].sort((a, b) => {
-            const aVal = usdValues[a.toString()];
-            const bVal = usdValues[b.toString()];
+            const aVal = assetsValues[a.toString()]?.usdValue;
+            const bVal = assetsValues[b.toString()]?.usdValue;
 
             // SOL always fisrt
             if (a.equals(wallet.publicKey)) return -1;
@@ -240,22 +362,29 @@ const AssetsTable = ({
 
   const setUsdValuesCallback = useCallback(
     (publicKey, usdValue) => {
-      usdValues[publicKey.toString()] = usdValue;
+      assetsValues[publicKey.toString()] = {
+        ...assetsValues[publicKey.toString()],
+        usdValue,
+      };
+
       const totalUsdValue: any = sortedPublicKeys
-        .filter((pk) => usdValues[pk.toString()])
-        .map((pk) => usdValues[pk.toString()])
+        .filter((pk) => assetsValues[pk.toString()])
+        .map((pk) => assetsValues[pk.toString()].usdValue)
         .reduce((a, b) => a + b, 0.0);
-      setTotalUSD(totalUsdValue);
+
+      if (fairsIsLoaded(sortedPublicKeys)) {
+        setTotalUSD(totalUsdValue);
+      }
     },
     [sortedPublicKeys],
   );
 
   const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.map((pk) => {
-      return React.memo((props) => {
+    return sortedPublicKeys.map((pk, i) => {
+      return React.memo(() => {
         return (
           <AssetItem
-            key={`${pk.toString()}-table`}
+            key={`${pk.toString()}-${i}-table`}
             publicKey={pk}
             theme={theme}
             marketsData={marketsData}
@@ -269,12 +398,12 @@ const AssetsTable = ({
     });
   }, [
     sortedPublicKeys,
-    setUsdValuesCallback,
     theme,
     marketsData,
     selectPublicKey,
     setSendDialogOpen,
     setDepositDialogOpen,
+    setUsdValuesCallback,
   ]);
 
   return (
@@ -283,8 +412,9 @@ const AssetsTable = ({
       width="calc(85% - 1rem)"
       direction="column"
       justify={'flex-start'}
+      isActive={isActive}
     >
-      <RowContainer height="5rem" theme={theme}>
+      <MainHeaderRow theme={theme}>
         <HeadRow
           theme={theme}
           justify="flex-start"
@@ -293,13 +423,15 @@ const AssetsTable = ({
           <GreyTitle theme={theme}>Assets</GreyTitle>
         </HeadRow>
         <HeadRow theme={theme}>
-          <AddTokenButton
-            setShowAddTokenDialog={setShowAddTokenDialog}
-            theme={theme}
-          />
+          <AddTokenButtonContainer>
+            <AddTokenButton
+              setShowAddTokenDialog={setShowAddTokenDialog}
+              theme={theme}
+            />
+          </AddTokenButtonContainer>
         </HeadRow>
         <HeadRow theme={theme}>
-          <BtnCustom
+          <RefreshButton
             textTransform={'capitalize'}
             borderWidth="0"
             height={'100%'}
@@ -321,9 +453,9 @@ const AssetsTable = ({
               style={{ marginRight: '1rem' }}
             />
             <GreyTitle theme={theme}>Refresh</GreyTitle>
-          </BtnCustom>
+          </RefreshButton>
         </HeadRow>
-      </RowContainer>
+      </MainHeaderRow>
       <RowContainer
         style={{ display: 'block', overflowY: 'auto' }}
         height="calc(100% - 5rem)"
@@ -331,21 +463,17 @@ const AssetsTable = ({
         <StyledTable theme={theme}>
           <tbody>
             {memoizedAssetsList.map((MemoizedAsset, i) => (
-              <MemoizedAsset />
+              <MemoizedAsset key={i} />
             ))}
-            <StyledTr disableHover theme={theme}>
-              <StyledTd style={{ paddingLeft: '0' }}>
-                <RowContainer
-                  width="14rem"
-                  justify="flex-start"
-                  style={{ height: '5rem', paddingLeft: '2rem' }}
-                >
+            <StyledTr disableHover theme={theme} style={{ width: '100%' }}>
+              <LastStyledTd colSpan={2}>
+                <AddTokenBtnRow>
                   <AddTokenButton
                     setShowAddTokenDialog={setShowAddTokenDialog}
                     theme={theme}
                   />
-                </RowContainer>
-              </StyledTd>
+                </AddTokenBtnRow>
+              </LastStyledTd>
             </StyledTr>
           </tbody>
         </StyledTable>
@@ -355,13 +483,13 @@ const AssetsTable = ({
 };
 
 const AssetItem = ({
-  publicKey,
-  setUsdValue,
   theme,
-  marketsData = new Map(),
+  publicKey,
   selectPublicKey,
   setSendDialogOpen,
   setDepositDialogOpen,
+  marketsData = new Map(),
+  setUsdValue,
 }: {
   publicKey: any;
   theme: Theme;
@@ -391,19 +519,21 @@ const AssetItem = ({
     tokenLogoUri: null,
   };
 
-  const [price, setPrice] = useState<number | null | undefined>(null);
+  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const [price, setPriceRaw] = useState(assetsValues[publicKey]?.price);
+  const isUSDT =
+    coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
+
+  const setPrice = useCallback((price: number | undefined | null) => {
+    assetsValues[publicKey] = { ...assetsValues[publicKey], price };
+    setPriceRaw(price);
+  }, [setPriceRaw, publicKey]);
 
   useEffect(() => {
-    if (balanceInfo && !price) {
+    if (balanceInfo && assetsValues[publicKey] === undefined) {
       if (balanceInfo.tokenSymbol) {
-        const coin = balanceInfo.tokenSymbol.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
-        if (
-          coin === 'USDT' ||
-          coin === 'USDC' ||
-          coin === 'WUSDC' ||
-          coin === 'WUSDT'
-        ) {
+        if (isUSDT) {
           setPrice(1);
         }
         // A Serum market exists. Fetch the price.
@@ -432,7 +562,7 @@ const AssetItem = ({
     }
 
     return () => {};
-  }, [price, balanceInfo, connection]);
+  }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -441,15 +571,7 @@ const AssetItem = ({
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate =
-    price === null &&
-    !priceStore.getFromCache(
-      serumMarkets[tokenSymbol.toUpperCase()]?.name || '',
-    )
-      ? !closePrice
-        ? price
-        : closePrice
-      : price;
+  let priceForCalculate = !price ? (!closePrice ? price : closePrice) : price;
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
@@ -487,8 +609,7 @@ const AssetItem = ({
   useEffect(() => {
     if (
       usdValue !== undefined &&
-      usdValue !== null &&
-      usdValue !== usdValues[publicKey]
+      usdValue !== assetsValues[publicKey]?.usdValue
     ) {
       setUsdValue(publicKey, usdValue === null ? null : usdValue);
     }
@@ -497,9 +618,9 @@ const AssetItem = ({
   }, [setUsdValue, publicKey, usdValue]);
 
   return (
-    <StyledTr theme={theme}>
+    <StyledTr key={`${publicKey}`} theme={theme}>
       <StyledTd>
-        <RowContainer justify="flex-start">
+        <ValuesContainer justify="flex-start">
           <Row margin="0 1rem 0 0">
             <TokenIcon
               tokenLogoUri={tokenLogoUri}
@@ -528,8 +649,33 @@ const AssetItem = ({
               )} ${tokenSymbol}`}</AssetAmount>
             </RowContainer>
           </Row>
-        </RowContainer>
+        </ValuesContainer>
+        <ValuesContainerForExtension>
+          <Row margin="0 1rem 0 0">
+            <TokenIcon
+              tokenLogoUri={tokenLogoUri}
+              mint={mint}
+              tokenName={tokenName}
+              size={'3.6rem'}
+            />
+          </Row>
+          <Row direction="column">
+            <RowContainer justify="flex-start">
+              <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
+                usdValue || 0,
+                2,
+              )}`}</AssetAmountUSD>
+            </RowContainer>
+            <RowContainer justify="flex-start">
+              <AssetAmount theme={theme}>{`${stripDigitPlaces(
+                amount / Math.pow(10, decimals),
+                8,
+              )} ${tokenSymbol}`}</AssetAmount>
+            </RowContainer>
+          </Row>
+        </ValuesContainerForExtension>
       </StyledTd>
+
       <StyledTd style={{ paddingRight: '2rem' }}>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Amount:</GreyTitle>
@@ -561,7 +707,6 @@ const AssetItem = ({
           </Title>
         </RowContainer>
       </StyledTd>
-
       <StyledTd>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
@@ -595,6 +740,10 @@ const AssetItem = ({
             width="10rem"
             background={'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'}
             color={theme.customPalette.dark.background}
+            hoverColor={theme.customPalette.white.main}
+            hoverBackground={
+              'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'
+            }
             margin="0 2rem 0 0"
             onClick={() => {
               selectPublicKey(publicKey);
@@ -614,6 +763,9 @@ const AssetItem = ({
             height="50%"
             width="7rem"
             background={
+              'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
+            }
+            hoverBackground={
               'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
             }
             margin="0 2rem 0 0"
@@ -674,10 +826,26 @@ const AssetItem = ({
           </VioletButton> */}
         </RowContainer>
       </StyledTd>
+      <StyledTdMenu style={{ textAlign: 'end', cursor: 'pointer' }}>
+        <DropdownContainer>
+          <img alt={'open menu'} src={Dots} />
+          <ActivitiesDropdown
+            urlSuffix={urlSuffix}
+            selectPublicKey={selectPublicKey}
+            setSendDialogOpen={setSendDialogOpen}
+            setDepositDialogOpen={setDepositDialogOpen}
+            publicKey={publicKey}
+            marketsData={marketsData}
+            tokenSymbol={tokenSymbol}
+            theme={theme}
+            quote={quote}
+          />
+        </DropdownContainer>
+      </StyledTdMenu>
     </StyledTr>
   );
 };
 
 export default React.memo(AssetsTable, (prev, next) => {
-  return true;
+  return prev.isActive === next.isActive;
 });

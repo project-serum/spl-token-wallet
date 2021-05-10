@@ -1,31 +1,31 @@
-import React from 'react'
-import styled from 'styled-components'
-import { Button } from '@material-ui/core'
+import React from 'react';
+import styled from 'styled-components';
+import { Button } from '@material-ui/core';
 
 type Props = {
-  btnWidth: string,
-  height: string,
-  btnColor: string,
-  borderRadius: string,
-  color: string,
-  margin: string,
-  padding: string,
-  fontSize: string,
-  backgroundColor: string,
-  borderColor: string,
-  hoverBackground: string,
-  fontFamily: string,
-  borderWidth: string,
-  letterSpacing: string,
-  hoverColor: string,
-  transition: string,
-  needMinWidth: string,
-  textTransform: string,
-  hoverBorderColor: string,
-  boxShadow: string,
-  fontWeight: number | string,
-  href?: string
-}
+  btnWidth: string;
+  height: string;
+  btnColor: string;
+  borderRadius: string;
+  color: string;
+  margin: string;
+  padding: string;
+  fontSize: string;
+  backgroundColor: string;
+  borderColor: string;
+  hoverBackground: string;
+  fontFamily: string;
+  borderWidth: string;
+  letterSpacing: string;
+  hoverColor: string;
+  transition: string;
+  needMinWidth: string;
+  textTransform: string;
+  hoverBorderColor: string;
+  boxShadow: string;
+  fontWeight: number | string;
+  href?: string;
+};
 
 export const BtnCustom = styled(
   ({
@@ -49,16 +49,17 @@ export const BtnCustom = styled(
     textTransform,
     hoverBorderColor,
     ...rest
-  }: Props) => <Button {...rest} />
+  }: Props) => <Button {...rest} />,
 )`
   &&& {
     color: ${(props: Props) => props.btnColor || props.color || '#333'};
   }
-  
+
   width: ${(props: Props) => props.btnWidth || '22.5rem'};
   height: ${(props: Props) => props.height || `3rem`};
   border: 0.1rem solid
-    ${(props: Props) => props.borderColor || props.btnColor || props.color || '#333'};
+    ${(props: Props) =>
+      props.borderColor || props.btnColor || props.color || '#333'};
   border-radius: ${(props: Props) => props.borderRadius || '.8rem'};
   border-width: ${(props: Props) => props.borderWidth || '.1rem'};
   border-color: ${(props: Props) =>
@@ -73,16 +74,21 @@ export const BtnCustom = styled(
   min-width: ${(props: Props) => !props.needMinWidth && 'auto'};
   text-transform: ${(props: Props) => props.textTransform || 'uppercase'};
   box-shadow: ${(props: Props) => props.boxShadow || 'none'};
-  transition: all .3s ease-out;
+  transition: all 0.3s ease-out;
 
   &:hover {
     color: ${(props: Props) => props.hoverColor};
     border-color: ${(props: Props) => props.hoverBorderColor};
-    background: ${(props: Props) => props.hoverBackground || props.backgroundColor};
+    background: ${(props: Props) =>
+      props.hoverBackground || props.backgroundColor};
     transition: ${(props: Props) => props.transition || 'all .3s ease-out'};
   }
 
   & .MuiButton-label {
     flex-direction: inherit;
   }
-`
+
+  @media (max-width: 540px) {
+    font-size: 1.6rem;
+  }
+`;

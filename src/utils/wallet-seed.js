@@ -3,6 +3,8 @@ import { randomBytes, secretbox } from 'tweetnacl';
 import * as bip32 from 'bip32';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
+import { isExtension } from './utils';
+import { useEffect, useState } from 'react';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -20,19 +22,38 @@ export async function mnemonicToSeed(mnemonic) {
   return Buffer.from(seed).toString('hex');
 }
 
-let unlockedMnemonicAndSeed = (() => {
+async function getExtensionUnlockedMnemonic() {
+  if (!isExtension) {
+    return null;
+  }
+
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      {
+        channel: 'ccai_extension_mnemonic_channel',
+        method: 'get',
+      },
+      resolve,
+    );
+  });
+}
+
+const EMPTY_MNEMONIC = {
+  mnemonic: null,
+  seed: null,
+  importsEncryptionKey: null,
+  derivationPath: null,
+};
+
+let unlockedMnemonicAndSeed = (async () => {
   const stored = JSON.parse(
-    sessionStorage.getItem('unlocked') ||
+    (await getExtensionUnlockedMnemonic()) ||
+      sessionStorage.getItem('unlocked') ||
       localStorage.getItem('unlocked') ||
       'null',
   );
   if (stored === null) {
-    return {
-      mnemonic: null,
-      seed: null,
-      importsEncryptionKey: null,
-      derivationPath: null,
-    };
+    return EMPTY_MNEMONIC;
   }
   return {
     importsEncryptionKey: deriveImportsEncryptionKey(stored.seed),
@@ -45,8 +66,26 @@ export function getUnlockedMnemonicAndSeed() {
   return unlockedMnemonicAndSeed;
 }
 
-export function hasLockedMnemonicAndSeed() {
-  return !!localStorage.getItem('locked');
+export function useUnlockedMnemonicAndSeed() {
+  const [currentUnlockedMnemonic, setCurrentUnlockedMnemonic] = useState(null);
+
+  useEffect(() => {
+    walletSeedChanged.addListener('change', setCurrentUnlockedMnemonic);
+    unlockedMnemonicAndSeed.then(setCurrentUnlockedMnemonic);
+    return () => {
+      walletSeedChanged.removeListener('change', setCurrentUnlockedMnemonic);
+    };
+  }, []);
+
+  return !currentUnlockedMnemonic
+    ? [EMPTY_MNEMONIC, true]
+    : [currentUnlockedMnemonic, false];
+}
+
+export function useHasLockedMnemonicAndSeed() {
+  const [unlockedMnemonic, loading] = useUnlockedMnemonicAndSeed();
+
+  return [!unlockedMnemonic.seed && !!localStorage.getItem('locked'), loading];
 }
 
 function setUnlockedMnemonicAndSeed(
@@ -55,13 +94,14 @@ function setUnlockedMnemonicAndSeed(
   importsEncryptionKey,
   derivationPath,
 ) {
-  unlockedMnemonicAndSeed = {
+  const data = {
     mnemonic,
     seed,
     importsEncryptionKey,
     derivationPath,
   };
-  walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
+  unlockedMnemonicAndSeed = Promise.resolve(data);
+  walletSeedChanged.emit('change', data);
 }
 
 export async function storeMnemonicAndSeed(
@@ -95,8 +135,16 @@ export async function storeMnemonicAndSeed(
   } else {
     localStorage.setItem('unlocked', plaintext);
     localStorage.removeItem('locked');
-    sessionStorage.removeItem('unlocked');
   }
+  sessionStorage.removeItem('unlocked');
+  if (isExtension) {
+    chrome.runtime.sendMessage({
+      channel: 'ccai_extension_mnemonic_channel',
+      method: 'set',
+      data: '',
+    });
+  }
+
   const importsEncryptionKey = deriveImportsEncryptionKey(seed);
   setUnlockedMnemonicAndSeed(
     mnemonic,
@@ -128,7 +176,7 @@ export const checkIsCorrectPassword = async (password) => {
   const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
 
   return { mnemonic, seed, derivationPath };
-}
+};
 
 export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   const {
@@ -149,6 +197,14 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
   const decodedPlaintext = Buffer.from(plaintext).toString();
   const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
   if (stayLoggedIn) {
+    if (isExtension) {
+      chrome.runtime.sendMessage({
+        channel: 'ccai_extension_mnemonic_channel',
+        method: 'set',
+        data: decodedPlaintext,
+      });
+    }
+  } else {
     sessionStorage.setItem('unlocked', decodedPlaintext);
   }
   const importsEncryptionKey = deriveImportsEncryptionKey(seed);
@@ -185,6 +241,21 @@ function deriveImportsEncryptionKey(seed) {
     .privateKey;
 }
 
+export function reloadWallet() {
+  if (isExtension) {
+    chrome.runtime.sendMessage({
+      channel: 'ccai_extension_mnemonic_channel',
+      method: 'set',
+      data: '',
+    });
+    sessionStorage.removeItem('unlocked');
+    chrome.runtime.reload();
+    console.log('sessionStorage', sessionStorage);
+  } else {
+    window.location.reload();
+  }
+}
+
 export function forgetWallet() {
   localStorage.clear();
   sessionStorage.removeItem('unlocked');
@@ -194,5 +265,5 @@ export function forgetWallet() {
     importsEncryptionKey: null,
   };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
-  window.location.reload();
+  reloadWallet();
 }
