@@ -29,7 +29,7 @@ import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
 const ImgContainer = styled.img`
   height: 7rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 10rem;
   }
 `;
@@ -38,13 +38,13 @@ const BottomLinksContainer = styled(RowContainer)`
   justify-content: space-around;
   width: 50rem;
   margin: 1rem 0 0 0;
-  // @media (max-width: 400px) {
+  // @media (max-width: 540px) {
   //   display: none;
   // }
 `;
 
 const UnlockButton = styled(VioletButton)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 100%;
     height: 6rem;
   }

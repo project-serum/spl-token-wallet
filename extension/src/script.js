@@ -1,5 +1,5 @@
 
-window.sollet = {
+window.ccai = {
   postMessage: (message) => {
     const listener = (event) => {
       if (event.detail.id === message.id) {

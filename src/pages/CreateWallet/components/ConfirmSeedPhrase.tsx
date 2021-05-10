@@ -21,7 +21,7 @@ import { BtnCustom } from '../../../components/BtnCustom';
 const ConfirmAnswer = styled(RowContainer)`
   height: auto;
   padding: 1rem 0 0 0;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;

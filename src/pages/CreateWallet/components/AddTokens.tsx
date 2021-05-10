@@ -44,7 +44,7 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useAsyncData } from '../../../utils/fetch-loop';
 
 const RowForStepComponents = styled(RowContainer)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     flex-direction: column;
   }
 `;

@@ -88,7 +88,7 @@ export const BtnCustom = styled(
     flex-direction: inherit;
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.6rem;
   }
 `;

@@ -26,7 +26,7 @@ const StyledCardButton = styled(CardButton)`
     width: 25rem;
     height: 25rem;
   }
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 30rem;
     height: ${(props) => (props.isRestoreBtn ? '14rem' : '30rem')};
   }
@@ -43,7 +43,7 @@ const RestoreButton = styled(Row)`
   justify-content: space-around;
   flex-direction: column;
   height: 100%;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     flex-direction: row;
     justify-content: space-between;
     width: 85%;
@@ -53,7 +53,7 @@ const RestoreButton = styled(Row)`
 const RestoreIcon = styled(Img)`
   width: 12rem;
   height: 12rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 9rem;
     height: 9rem;
   }
@@ -61,7 +61,7 @@ const RestoreIcon = styled(Img)`
 
 const RestoreTitle = styled(RowContainer)`
   flex-direction: column;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 60%;
     align-items: flex-start;
   }

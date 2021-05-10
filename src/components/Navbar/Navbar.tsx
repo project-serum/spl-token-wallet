@@ -133,21 +133,21 @@ const LinksContainer = styled(RowContainer)`
   margin: 0 0 0 4rem;
   border-right: ${(props) => props.theme.customPalette.border.main};
   border-left: ${(props) => props.theme.customPalette.border.main};
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const WalletLoginContainer = styled(Row)`
   height: 100%;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const WalletLoginButtonContainer = styled(Row)`
   display: none;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 100%;
     display: flex;
     width: 45%;
@@ -159,14 +159,14 @@ const LogoLink = styled(Link)`
   align-items: center;
   width: 15%;
   padding: 0.5rem 0;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 100%;
   }
 `;
 
 const HeaderContainer = styled(RowContainer)`
   height: 100%;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 40%;
   }
 `;

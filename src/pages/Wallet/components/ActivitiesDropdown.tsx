@@ -26,7 +26,7 @@ const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
   z-index: 2;
 `;
 
-const StyledTd = styled.td`
+const StyledTd = styled.div`
   padding-top: 1rem;
   padding-bottom: 1rem;
 `;

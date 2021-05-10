@@ -28,7 +28,7 @@ import Warning from '../CreateWallet/components/Warning';
 import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
 const StyledTitle = styled(Title)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 2rem;
   }
 `;

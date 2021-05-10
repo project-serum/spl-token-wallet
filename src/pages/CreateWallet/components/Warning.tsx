@@ -18,7 +18,7 @@ import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
 const StyledTitle = styled(BoldTitle)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 4.5rem;
   }
 `;

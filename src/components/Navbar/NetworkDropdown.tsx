@@ -20,7 +20,7 @@ export const StyledDropdown = styled.div`
   }
   padding: 1rem 3rem 1rem 0;
   border-right: ${(props) => props.theme.customPalette.border.new};
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     border: none;
   }
 `;
@@ -58,7 +58,7 @@ export const StyledPaper = styled(
     /* padding-left: 8px;
     padding-right: 8px; */
 
-    @media (max-width: 400px) {
+    @media (max-width: 540px) {
       right: 8rem;
       top: calc(10rem - 0.1rem);
     }
@@ -136,11 +136,6 @@ const NetworkDropdown = () => {
   };
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed;
-  console.log(
-    'hasLockedMnemonicAndSeed',
-    hasLockedMnemonicAndSeed,
-    isUserHasLockedMnemonicAndSeed,
-  );
 
   return (
     <StyledDropdown

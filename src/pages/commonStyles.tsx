@@ -84,7 +84,7 @@ export const ColorText = styled.div`
   flex-direction: ${(props) => props.direction || 'row'};
   align-items: ${(props) => props.align || 'center'};
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     padding: ${(props) => (props.needBackground ? '0 2rem 0 2rem' : 'auto')};
     background: ${(props) => (props.needBackground ? 'transparent' : 'auto')};
     font-size: 1.5rem;
@@ -115,7 +115,7 @@ export const Textarea = styled(({ style, ...props }) => (
 
   ${(props) => props.style};
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.4rem;
     line-height: 3rem;
     height: 6rem;
@@ -132,7 +132,7 @@ export const ContainerForIcon = styled.div`
   justify-content: center;
   align-items: center;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 4.5rem;
     width: 4.5rem;
   }
@@ -157,7 +157,7 @@ export const Card = styled.div`
   flex-direction: column;
   align-items: center;
   transition: 0.3s all ease-out;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     background: #17181a;
     border: none;
     box-shadow: none;
@@ -198,7 +198,7 @@ export const Input = styled(({ style, ...props }) => (
 
   ${(props) => props.style};
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.4rem;
     height: 6rem;
   }
@@ -238,6 +238,7 @@ export const Title = styled(
     textAlign,
     margin,
     style,
+    maxFont,
     ...props
   }) => <span {...props} />,
 )`
@@ -252,7 +253,7 @@ export const Title = styled(
   margin: ${(props) => props.margin || '0'};
   ${(props) => props.style};
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: ${(props) => props.maxFont || '1.6rem'};
   }
 `;
@@ -282,7 +283,7 @@ export const VioletButton = styled((props) => (
 ))`
   outline: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 6rem;
   }
 `;
@@ -303,7 +304,7 @@ export const RedButton = styled((props) => (
 ))`
   outline: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 6rem;
   }
 `;
@@ -332,7 +333,7 @@ export const RedFilledButton = styled((props) => (
 ))`
   outline: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 6rem;
   }
 `;
@@ -353,7 +354,7 @@ export const WhiteButton = styled((props) => (
 ))`
   outline: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 6rem;
   }
 `;
@@ -400,7 +401,7 @@ export const StyledLabel = styled.label`
   font-size: ${(props) => props.fontSize || '1.2rem'};
   color: #93a0b2;
   cursor: pointer;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.6rem;
   }
 `;
@@ -446,7 +447,7 @@ export const SearchInput = styled.input`
   color: #fff;
   padding: 0 2rem;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 4.5rem;
   }
 `;

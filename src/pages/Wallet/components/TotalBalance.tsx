@@ -181,8 +181,8 @@ const TotalBalance = ({ isNavbar = true }) => {
 
   return (
     <>
-      {memoizedAssetsList.map((Memoized) => (
-        <Memoized />
+      {memoizedAssetsList.map((Memoized, i) => (
+        <Memoized key={`${isNavbar}-${i}`} />
       ))}
       <span key={`${isNavbar}-total-balance`}>
         ${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}

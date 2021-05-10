@@ -59,7 +59,7 @@ const StyledMain = styled.main`
   @media (max-width: 850px) {
     height: calc(100%);
   }
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
   }
 `;
@@ -262,7 +262,7 @@ const Socials = styled(Row)`
 const FooterComponent = styled.footer`
   height: 6rem;
   padding: 0 0 0 3rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     padding: 0;
     height: 0;
     display: none;

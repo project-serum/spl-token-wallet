@@ -25,7 +25,7 @@ import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
 import ForgetWallet from './ForgetWallet';
 
 const ExportPrivateKeyButton = styled(BtnCustom)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.2rem;
   }
 `;
@@ -44,7 +44,7 @@ export const StyledCard = styled(({ isFromPopup, ...props }) => (
   border: 0.1rem solid #3a475c;
   box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 35rem;
   }
 `;
@@ -61,7 +61,7 @@ const RowWithSelector = styled(({ isFromPopup, ...props }) => (
     display: flex;
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     padding: 1rem 0;
   }
 `;
@@ -116,7 +116,7 @@ const AccountsSelector = ({
       <Title
         fontSize={accountNameSize}
         fontFamily="Avenir Next Demi"
-        style={{ textTransform: 'capitalize', marginRight: '1rem' }}
+        style={{ textTransform: 'capitalize', marginRight: '1rem', whiteSpace: 'nowrap' }}
       >
         {selectedAccount && selectedAccount.name}
       </Title>
@@ -148,6 +148,7 @@ const AccountsSelector = ({
             {accountsToShow.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
+                  key={`${name}-${i}`}
                   direction="row"
                   align={'center'}
                   justify={isFromPopup ? 'flex-start' : 'space-between'}

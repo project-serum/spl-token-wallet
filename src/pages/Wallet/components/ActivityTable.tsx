@@ -7,20 +7,20 @@ import { RowContainer, Title } from '../../commonStyles';
 const StyledActivityTable = styled(TableContainer)`
   width: calc(15% - 1rem);
   flex-direction: column;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: ${(props) => (props.isActive ? 'block' : 'none')};
   }
 `;
 
 const ActivityHeaderRow = styled(RowContainer)`
   height: 5rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const ComingSoonTitle = styled(Title)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 2rem;
     white-space: nowrap;
   }

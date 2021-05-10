@@ -38,7 +38,7 @@ const StyledRowContainer = styled(RowContainer)`
 
 const StyledTitle = styled(Title)`
   font-size: 1.2rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 1.3rem;
   }
 `;

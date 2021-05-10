@@ -30,7 +30,7 @@ import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import ActivitiesDropdown from './ActivitiesDropdown';
 
-export const TableContainer = styled(({ theme, ...props }) => (
+export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
 ))`
   background: ${(props) => props.theme.customPalette.grey.background};
@@ -38,7 +38,7 @@ export const TableContainer = styled(({ theme, ...props }) => (
   border-radius: 1.2rem;
   height: 100%;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: calc(100% - 4rem);
     background: none;
     border: none;
@@ -71,7 +71,7 @@ const StyledTable = styled.table`
     padding-right: 2.4rem;
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     margin: 0;
     width: calc(100%);
   }
@@ -84,13 +84,13 @@ export const HeadRow = styled(Row)`
 `;
 
 const RefreshButton = styled(BtnCustom)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const AddTokenStyledButton = styled(BtnCustom)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     border: 0.1rem solid #f5fbfb;
     background: transparent;
     border-radius: 4rem;
@@ -103,13 +103,13 @@ const AddTokenStyledButton = styled(BtnCustom)`
 `;
 
 const ImgContainer = styled.img`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const AddTokenButtonContainer = styled(RowContainer)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
@@ -158,7 +158,7 @@ const StyledTr = styled.tr`
       props.disableHover ? '' : props.theme.customPalette.dark.background};
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 9rem;
 
     td {
@@ -171,7 +171,7 @@ const StyledTr = styled.tr`
     }
   }
 
-  @media (min-width: 400px) {
+  @media (min-width: 540px) {
     &:not(:last-child) td:last-child {
       display: none;
     }
@@ -213,7 +213,7 @@ const AssetAmount = styled(Title)`
   color: ${(props) => props.theme.customPalette.green.light};
   font-size: 1.4rem;
   font-family: Avenir Next;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     font-size: 2rem;
   }
 `;
@@ -225,21 +225,21 @@ const AssetAmountUSD = styled(AssetAmount)`
 
 const MainHeaderRow = styled(RowContainer)`
   height: 5rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
 
 const ValuesContainerForExtension = styled(RowContainer)`
   display: none;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: flex;
     justify-content: flex-start;
   }
 `;
 const ValuesContainer = styled(RowContainer)`
   justify-content: flex-start;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: none;
   }
 `;
@@ -249,7 +249,7 @@ const AddTokenBtnRow = styled(RowContainer)`
   justify-content: flex-start;
   height: 5rem;
   padding-left: 2rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 90%;
     justify-content: center;
     height: 6rem;
@@ -260,7 +260,7 @@ const AddTokenBtnRow = styled(RowContainer)`
 
 const LastStyledTd = styled(StyledTd)`
   padding-left: 0;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 100%;
   }
 `;
@@ -463,7 +463,7 @@ const AssetsTable = ({
         <StyledTable theme={theme}>
           <tbody>
             {memoizedAssetsList.map((MemoizedAsset, i) => (
-              <MemoizedAsset />
+              <MemoizedAsset key={i} />
             ))}
             <StyledTr disableHover theme={theme} style={{ width: '100%' }}>
               <LastStyledTd colSpan={2}>
@@ -618,7 +618,7 @@ const AssetItem = ({
   }, [setUsdValue, publicKey, usdValue]);
 
   return (
-    <StyledTr theme={theme}>
+    <StyledTr key={`${publicKey}`} theme={theme}>
       <StyledTd>
         <ValuesContainer justify="flex-start">
           <Row margin="0 1rem 0 0">

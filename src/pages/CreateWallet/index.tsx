@@ -20,7 +20,7 @@ import { DERIVATION_PATH } from '../../utils/walletProvider/localStorage';
 import FakeInputs from '../../components/FakeInputs';
 
 const MainRow = styled(RowContainer)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     padding-bottom: 3rem;
     overflow-x: auto;
     height: 80%;

@@ -20,7 +20,7 @@ import clipboardCopy from 'clipboard-copy';
 import FakeInputs from '../../../components/FakeInputs';
 
 const SeedPhraseForm = styled(RowContainer)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     flex-direction: column;
   }
 `;
@@ -28,14 +28,14 @@ const SeedPhraseForm = styled(RowContainer)`
 const CheckboxContainer = styled(Row)`
   width: 50%;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: auto;
     margin-bottom: 1rem;
   }
 `;
 
 const StyledButton = styled(VioletButton)`
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     width: 100%;
   }
 `;

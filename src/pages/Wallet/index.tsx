@@ -15,7 +15,7 @@ const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
   height: 100%;
   padding: 0 3rem 3rem 3rem;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     padding: 0;
   }
 `;
@@ -23,7 +23,7 @@ const MainWalletContainer = styled(RowContainer)`
 const Switcher = styled.button`
   display: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     outline: none;
     display: block;
     width: 50%;
@@ -41,7 +41,7 @@ const Switcher = styled.button`
 const SwitcherRow = styled(RowContainer)`
   display: none;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -54,7 +54,7 @@ const TableContainer = styled(RowContainer)`
   height: 100%;
   justify-content: space-between;
 
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     height: 60%;
     flex-direction: column;
   }

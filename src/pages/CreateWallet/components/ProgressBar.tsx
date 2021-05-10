@@ -86,7 +86,7 @@ const ProgressBarRow = styled(RowContainer)`
   justify-content: flex-start;
   align-items: baseline;
   padding: 0 0 7rem 0;
-  @media (max-width: 400px) {
+  @media (max-width: 540px) {
     margin-top: ${(props) => (props.currentStep === 3 ? '45rem' : 'none')};
   }
   ${(props) => props.style}
