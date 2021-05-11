@@ -73,7 +73,7 @@ export default function SwapWormholeDialog({
       const bids = await marketClient.loadBids(swapClient.provider.connection);
       let size = 0;
       for (let order of bids) {
-        if (order.price === 1) {
+        if (order.price > 0.9970) {
           size += order.size;
         }
       }
@@ -195,7 +195,7 @@ export default function SwapWormholeDialog({
   async function convert() {
     const swapAmount = new BN(parsedAmount * 10 ** balanceInfo.decimals);
     // 1 for 1 swap, subtracting out taker fee.
-    const minExpectedAmount = swapAmount.mul(new BN(9978)).div(new BN(10000));
+    const minExpectedAmount = swapAmount.mul(new BN(9970)).div(new BN(10000));
 
     const [vaultSigner] = await getVaultOwnerAndNonce(
       market.account._decoded.ownAddress,
