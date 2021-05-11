@@ -210,7 +210,7 @@ export default function SwapWormholeDialog({
       // If we have an open orderes account use it. It doesn't matter which
       // one we use.
       const addr = openOrders[0] ? openOrders[0].address : undefined;
-      return [addr, addr !== undefined];
+      return [addr, addr === undefined];
     })();
     let signers = [];
 
