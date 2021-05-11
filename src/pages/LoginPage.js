@@ -33,7 +33,7 @@ import DialogForm from '../components/DialogForm';
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
   const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
-  
+
   if (loading) {
     return null;
   }
@@ -268,7 +268,7 @@ function LoginForm() {
   }
   const setPasswordOnChange = (e) => setPassword(e.target.value);
   const toggleStayLoggedIn = (e) => setStayLoggedIn(e.target.checked);
-  
+
   return (
     <Card>
       <CardContent>
@@ -315,7 +315,7 @@ function RestoreWalletForm({ goBack }) {
   const mnemonic = normalizeMnemonic(rawMnemonic);
   const isNextBtnEnabled =
     password === passwordConfirm && validateMnemonic(mnemonic);
-
+  const displayInvalidMnemonic = validateMnemonic(mnemonic) === false && mnemonic.length > 0;
   return (
     <>
       {next ? (
@@ -340,6 +340,11 @@ function RestoreWalletForm({ goBack }) {
               <b>Do not enter your hardware wallet seedphrase here.</b> Hardware
               wallets can be optionally connected after a web wallet is created.
             </Typography>
+            {displayInvalidMnemonic && (
+               <Typography fontWeight="fontWeightBold" style={{ color: 'red' }}>
+                 Mnemonic validation failed. Please enter a valid BIP 39 seed phrase.
+               </Typography>
+            )}
             <TextField
               variant="outlined"
               fullWidth
