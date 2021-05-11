@@ -40,7 +40,7 @@ export const RestorePage = () => {
   const [password, setPassword] = useState('');
   const [mnemonic, setMnemonic] = useState('');
   const [seed, setSeed] = useState('');
-  const hash = localStorage.getItem('hash');
+  const hash = sessionStorage.getItem('hash');
 
   const theme = useTheme();
   const isMnemonicCorrect = validateMnemonic(mnemonic);

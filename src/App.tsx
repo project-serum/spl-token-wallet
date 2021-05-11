@@ -192,9 +192,9 @@ const Pages = () => {
     }
 
     if (hash) {
-      localStorage.setItem('hash', hash);
+      sessionStorage.setItem('hash', hash);
     } else {
-      localStorage.removeItem('hash');
+      sessionStorage.removeItem('hash');
     }
   }, []);
 
