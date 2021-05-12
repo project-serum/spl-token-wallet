@@ -22,6 +22,8 @@ import { swapApiRequest } from '../utils/swap/api';
 import { getErc20Decimals } from '../utils/swap/eth.js';
 import { useSendTransaction } from '../utils/notifications';
 import { createAssociatedTokenAccountIx } from '../utils/tokens';
+import assert from "assert";
+import tuple from "immutable-tuple";
 
 // TODO: Import these constants from somewhere.
 const TOKEN_PROGRAM_ID = new PublicKey(
@@ -36,6 +38,10 @@ const SWAP_PROGRAM_ID = new PublicKey(
 const MARKET_BASE = new PublicKey(
   '6a9wpsZpZGxGhFVSQBpcTNjNjytdbSA1iUw1A5KNDxPw',
 );
+
+// Stores current version for any swap market that needs to be relisted at a version number higher than 0
+// keys are base58 string representation of mints concatenated with a forward-slash
+const SWAP_MARKET_VERSIONS = {}
 
 export default function SwapWormholeDialog({
   publicKey,
@@ -73,7 +79,7 @@ export default function SwapWormholeDialog({
       const bids = await marketClient.loadBids(swapClient.provider.connection);
       let size = 0;
       for (let order of bids) {
-        if (order.price > 0.9970) {
+        if (order.price > 0.9990) {
           size += order.size;
         }
       }
@@ -128,14 +134,12 @@ export default function SwapWormholeDialog({
   useEffect(() => {
     if (wormholeMintAddr !== null) {
       const fetch = async () => {
-        const seed =
-          balanceInfo.mint.toString().slice(0, 16) +
-          wormholeMintAddr.toString().slice(0, 16);
-        const marketAddress = await PublicKey.createWithSeed(
-          MARKET_BASE,
-          seed,
-          DEX_PROGRAM_ID,
-        );
+        const marketAddress = await getSwapMarketAddress(
+          balanceInfo.mint,
+          wormholeMintAddr,
+          SWAP_MARKET_VERSIONS[`${balanceInfo.mint.toString()}/${wormholeMintAddr.toString()}`] || 0
+        )
+        console.log(marketAddress.toString())
         try {
           const account = await Market.load(
             swapClient.provider.connection,
@@ -195,7 +199,7 @@ export default function SwapWormholeDialog({
   async function convert() {
     const swapAmount = new BN(parsedAmount * 10 ** balanceInfo.decimals);
     // 1 for 1 swap, subtracting out taker fee.
-    const minExpectedAmount = swapAmount.mul(new BN(9970)).div(new BN(10000));
+    const minExpectedAmount = swapAmount.mul(new BN(9968)).div(new BN(10000));
 
     const [vaultSigner] = await getVaultOwnerAndNonce(
       market.account._decoded.ownAddress,
@@ -330,7 +334,7 @@ export default function SwapWormholeDialog({
               <br />
               {`Swap Market: `}
               <a
-                href={`https://explorer.solana.com/address/${market.publicKey}`}
+                href={`https://solanabeach.io/address/${market.publicKey}`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -404,6 +408,31 @@ export default function SwapWormholeDialog({
         </Button>
       </DialogActions>
     </>
+  );
+}
+
+async function getSwapMarketAddress(
+  coinMint: PublicKey,
+  priceCurrencyMint: PublicKey,
+  version = 0
+): Promise<PublicKey | null> {
+  if (version > 99) {
+    console.log("Swap market version cannot be greater than 99");
+    return null;
+  }
+  if (version < 0) {
+    console.log("Version cannot be less than zero");
+    return null;
+  }
+  const padToTwo = number => number <= 99 ? `0${number}`.slice(-2) : number;
+  const seed =
+    coinMint.toString().slice(0, 15) +
+    priceCurrencyMint.toString().slice(0, 15) +
+    padToTwo(version);
+  return await PublicKey.createWithSeed(
+    MARKET_BASE,
+    seed,
+    DEX_PROGRAM_ID,
   );
 }
 
