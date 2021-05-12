@@ -16,7 +16,7 @@
     "persistent": false,
     "scripts": ["background.js"]
   },
-  "permissions": ["storage", "clipboardRead"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
