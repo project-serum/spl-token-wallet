@@ -260,6 +260,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'CHEEMS',
+      mintAddress: '3FoUAsGDbvTD6YZ4wVKJgTB76onJUKz7GPEBNiR5b8wc',
+      tokenName: 'Cheems',
+      icon:
+        'https://svgshare.com/i/XJf.svg',
+    },
   ],
 };
 
