@@ -7,6 +7,12 @@ export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function toUrlParams(obj: object) {
+  return Object.keys(obj)
+      .map(key => key + '=' + obj[key])
+      .join('&');
+}
+
 export function useLocalStorageState<T>(
   key: string,
   defaultState: T,
