@@ -265,7 +265,7 @@ const POPULAR_TOKENS = {
       mintAddress: '2QK9vxydd7WoDwvVFT5JSU8cwE9xmbJSzeqbRESiPGMG',
       tokenName: 'KEKW Coin',
       icon:
-        'https://www.kekw.io/images/favicon.png',
+        'https://www.kekw.io/images/logo_final_round_smallFace.png',
     },
   ],
 };
