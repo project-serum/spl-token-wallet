@@ -56,6 +56,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
 import EditAccountNameDialog from './EditAccountNameDialog';
 import MergeAccountsDialog from './MergeAccountsDialog';
+import SwapButton from './SwapButton';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -227,6 +228,7 @@ export default function BalancesList() {
               />
             </IconButton>
           </Tooltip>
+          <SwapButton />
           <Tooltip title="Merge Tokens" arrow>
             <IconButton
               size={iconSize}
