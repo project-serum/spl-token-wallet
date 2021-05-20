@@ -97,7 +97,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
       const tabs = [
         <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
       ];
-      if (!DISABLED_ERC20_MINTS.has(mint.toString())) {
+      if (!DISABLED_ERC20_MINTS.has(mint.toString()) || localStorage.getItem('sollet-private')) {
         tabs.push(erc20Tab);
       }
       return tabs;
