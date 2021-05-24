@@ -99,8 +99,18 @@ function CreateWalletForm() {
 
 function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [seedCheck, setSeedCheck] = useState('');
+
+  const downloadMnemonic = (mnemonic) => {
+    const url = window.URL.createObjectURL(new Blob([mnemonic]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'sollet.bak');
+    document.body.appendChild(link);
+    link.click();
+  }
 
   return (
     <>
@@ -149,9 +159,17 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             }
             label="I have saved these words in a safe place."
           />
+          <Typography paragraph>
+          <Button variant="contained" color="primary" onClick={() => {
+            downloadMnemonic(mnemonicAndSeed?.mnemonic);
+            setDownloaded(true);
+          }}>
+            Download Backup Mnemonic File (Required)
+          </Button>
+          </Typography>
         </CardContent>
         <CardActions style={{ justifyContent: 'flex-end' }}>
-          <Button color="primary" disabled={!confirmed} onClick={() => setShowDialog(true)}>
+          <Button color="primary" disabled={!confirmed || !downloaded} onClick={() => setShowDialog(true)}>
             Continue
           </Button>
         </CardActions>
