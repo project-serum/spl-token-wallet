@@ -30,10 +30,6 @@ import SignFormContent from '../components/SignFormContent';
 import SignCustomFormContent from '../components/SignCustomFormContent';
 import { decrypt } from 'eciesjs';
 
-function decryptMessage(encryptedMessage, keyPair) {
-  return decrypt(keyPair.toHex(), encryptedMessage).toString();
-}
-
 function getInitialRequests() {
   if (!isExtension) {
     return [];
@@ -311,7 +307,10 @@ export default function PopupPage({ opener }) {
     postMessage({
       result: {
         messages: messages.map((message) =>
-          decryptMessage(message, selectedWallet.provider.encryptionKeyPair),
+          decrypt(
+            selectedWallet.provider.encryptionKeyPair.toHex(),
+            message,
+          ).toString(),
         ),
       },
       id: request.id,
