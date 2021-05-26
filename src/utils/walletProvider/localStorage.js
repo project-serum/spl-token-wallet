@@ -4,6 +4,7 @@ import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { derivePath } from 'ed25519-hd-key';
+import { PrivateKey } from 'eciesjs';
 
 export const DERIVATION_PATH = {
   deprecated: undefined,
@@ -11,6 +12,16 @@ export const DERIVATION_PATH = {
   bip44Change: 'bip44Change',
   bip44Root: 'bip44Root', // Ledger only.
 };
+
+export function getEncryptionKeyPairFromSeed(
+  seed,
+  walletIndex,
+  dPath = undefined,
+  accountIndex = 0,
+) {
+  const derivedSeed = deriveSeed(seed, walletIndex, dPath, accountIndex);
+  return PrivateKey.fromHex(derivedSeed.toString('hex'));
+}
 
 export function getAccountFromSeed(
   seed,
@@ -41,6 +52,7 @@ function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
 export class LocalStorageWalletProvider {
   constructor(args) {
     this.account = args.account;
+    this.encryptionKeyPair = args.encryptionKeyPair;
   }
 
   init = async () => {

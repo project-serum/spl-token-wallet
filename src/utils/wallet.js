@@ -26,7 +26,10 @@ import { useTokenInfo } from './tokens/names';
 import { refreshCache, useAsyncData } from './fetch-loop';
 import { useUnlockedMnemonicAndSeed, walletSeedChanged } from './wallet-seed';
 import { WalletProviderFactory } from './walletProvider/factory';
-import { getAccountFromSeed } from './walletProvider/localStorage';
+import {
+  getAccountFromSeed,
+  getEncryptionKeyPairFromSeed,
+} from './walletProvider/localStorage';
 import { useSnackbar } from 'notistack';
 
 const DEFAULT_WALLET_SELECTOR = {
@@ -147,12 +150,8 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const [{
-    mnemonic,
-    seed,
-    importsEncryptionKey,
-    derivationPath,
-  }] = useUnlockedMnemonicAndSeed();
+  const [{ mnemonic, seed, importsEncryptionKey, derivationPath }] =
+    useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -218,9 +217,8 @@ export function WalletProvider({ children }) {
               )
             : new Account(
                 (() => {
-                  const { nonce, ciphertext } = privateKeyImports[
-                    walletSelector.importedPubkey
-                  ];
+                  const { nonce, ciphertext } =
+                    privateKeyImports[walletSelector.importedPubkey];
                   return nacl.secretbox.open(
                     bs58.decode(ciphertext),
                     bs58.decode(nonce),
@@ -228,7 +226,14 @@ export function WalletProvider({ children }) {
                   );
                 })(),
               );
-        wallet = await Wallet.create(connection, 'local', { account });
+        wallet = await Wallet.create(connection, 'local', {
+          account,
+          encryptionKeyPair: getEncryptionKeyPairFromSeed(
+            Buffer.from(seed, 'hex'),
+            walletSelector.walletIndex,
+            derivationPath,
+          ),
+        });
       }
       setWallet(wallet);
     })();
@@ -287,8 +292,11 @@ export function WalletProvider({ children }) {
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
-        .publicKey;
+      let address = getAccountFromSeed(
+        seedBuffer,
+        idx,
+        derivationPath,
+      ).publicKey;
       let name = localStorage.getItem(`name${idx}`);
       return {
         selector: {

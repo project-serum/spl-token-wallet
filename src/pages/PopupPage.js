@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+
 import { useWallet, useWalletSelector } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import {
@@ -26,6 +27,12 @@ import WarningIcon from '@material-ui/icons/Warning';
 import { useLocalStorageState, isExtension } from '../utils/utils';
 import SignTransactionFormContent from '../components/SignTransactionFormContent';
 import SignFormContent from '../components/SignFormContent';
+import SignCustomFormContent from '../components/SignCustomFormContent';
+import { decrypt } from 'eciesjs';
+
+function decryptMessage(encryptedMessage, keyPair) {
+  return decrypt(keyPair.toHex(), encryptedMessage).toString();
+}
 
 function getInitialRequests() {
   if (!isExtension) {
@@ -36,7 +43,7 @@ function getInitialRequests() {
 
   const urlParams = new URLSearchParams(window.location.hash.slice(1));
   const request = JSON.parse(urlParams.get('request'));
-  
+
   if (request.method === 'sign') {
     const dataObj = request.params.data;
     // Deserialize `data` into a Uint8Array
@@ -60,7 +67,8 @@ export default function PopupPage({ opener }) {
     return params.get('origin');
   }, []);
   const selectedWallet = useWallet();
-  const selectedWalletAddress = selectedWallet && selectedWallet.publicKey.toBase58();
+  const selectedWalletAddress =
+    selectedWallet && selectedWallet.publicKey.toBase58();
   const { accounts, setWalletSelector } = useWalletSelector();
   const [wallet, setWallet] = useState(isExtension ? null : selectedWallet);
 
@@ -87,10 +95,9 @@ export default function PopupPage({ opener }) {
     if (!isExtension) {
       setWallet(selectedWallet);
     }
-  // using stronger condition here
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // using stronger condition here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWalletAddress]);
-
 
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
@@ -106,7 +113,7 @@ export default function PopupPage({ opener }) {
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [origin]);
 
   // (Extension only) Set wallet once connectedWallet is retrieved.
@@ -114,8 +121,8 @@ export default function PopupPage({ opener }) {
     if (isExtension && connectedAccount) {
       setWallet(selectedWallet);
     }
-  // using stronger condition here
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // using stronger condition here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedAccount, selectedWalletAddress]);
 
   // Send a disconnect event if this window is closed, this component is
@@ -152,7 +159,9 @@ export default function PopupPage({ opener }) {
         if (
           e.data.method !== 'signTransaction' &&
           e.data.method !== 'signAllTransactions' &&
-          e.data.method !== 'sign'
+          e.data.method !== 'sign' &&
+          e.data.method !== 'getEncryptionPublicKey' &&
+          e.data.method !== 'decrypt'
         ) {
           postMessage({ error: 'Unsupported method', id: e.data.id });
         }
@@ -169,7 +178,7 @@ export default function PopupPage({ opener }) {
 
   const { messages, messageDisplay } = useMemo(() => {
     if (!request || request.method === 'connect') {
-      return { messages: [], messageDisplay: 'tx' }
+      return { messages: [], messageDisplay: 'tx' };
     }
     switch (request.method) {
       case 'signTransaction':
@@ -189,7 +198,17 @@ export default function PopupPage({ opener }) {
         return {
           messages: [request.params.data],
           messageDisplay: request.params.display === 'utf8' ? 'utf8' : 'hex',
-        }
+        };
+      case 'getEncryptionPublicKey':
+        return {
+          messages: request.params.messages.map((m) => bs58.decode(m)),
+          messageDisplay: 'utf8',
+        };
+      case 'decrypt':
+        return {
+          messages: request.params.messages.map((m) => bs58.decode(m)),
+          messageDisplay: 'custom',
+        };
       default:
         throw new Error('Unexpected method: ' + request.method);
     }
@@ -261,7 +280,9 @@ export default function PopupPage({ opener }) {
   assert(
     (request.method === 'signTransaction' ||
       request.method === 'signAllTransactions' ||
-      request.method === 'sign') &&
+      request.method === 'sign' ||
+      request.method === 'getEncryptionPublicKey' ||
+      request.method === 'decrypt') &&
       wallet,
   );
 
@@ -275,9 +296,37 @@ export default function PopupPage({ opener }) {
       case 'signAllTransactions':
         sendAllSignatures(messages);
         break;
+      case 'getEncryptionPublicKey':
+        getEncryptionPublicKey(messages[0]);
+        break;
+      case 'decrypt':
+        decrypt(messages);
+        break;
       default:
         throw new Error('Unexpected method: ' + request.method);
     }
+  }
+
+  async function decrypt(messages) {
+    postMessage({
+      result: {
+        messages: messages.map((message) =>
+          decryptMessage(message, selectedWallet.provider.encryptionKeyPair),
+        ),
+      },
+      id: request.id,
+    });
+  }
+
+  async function getEncryptionPublicKey() {
+    postMessage({
+      result: {
+        publicKey: bs58.encode(
+          selectedWallet.provider.encryptionKeyPair.publicKey.compressed,
+        ),
+      },
+      id: request.id,
+    });
   }
 
   async function sendSignature(message) {
@@ -319,7 +368,7 @@ export default function PopupPage({ opener }) {
       id: request.id,
     });
   }
-
+  console.log(messages);
   return (
     <ApproveSignatureForm
       key={request.id}
@@ -485,6 +534,15 @@ function ApproveSignatureForm({
           origin={origin}
           messages={messages}
           onApprove={onApprove}
+          buttonRef={buttonRef}
+        />
+      );
+    } else if (messageDisplay === 'custom') {
+      return (
+        <SignCustomFormContent
+          origin={origin}
+          message={messages[0]}
+          messageDisplay={messageDisplay}
           buttonRef={buttonRef}
         />
       );
