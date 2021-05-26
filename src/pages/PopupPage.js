@@ -197,7 +197,7 @@ export default function PopupPage({ opener }) {
         };
       case 'getEncryptionPublicKey':
         return {
-          messages: request.params.messages.map((m) => bs58.decode(m)),
+          messages: [],
           messageDisplay: 'utf8',
         };
       case 'decrypt':
@@ -293,25 +293,25 @@ export default function PopupPage({ opener }) {
         sendAllSignatures(messages);
         break;
       case 'getEncryptionPublicKey':
-        getEncryptionPublicKey(messages[0]);
+        getEncryptionPublicKey();
         break;
       case 'decrypt':
-        decrypt(messages);
+        decryptMessages(messages);
         break;
       default:
         throw new Error('Unexpected method: ' + request.method);
     }
   }
 
-  async function decrypt(messages) {
+  async function decryptMessages(messages) {
     postMessage({
       result: {
-        messages: messages.map((message) =>
-          decrypt(
+        messages: messages.map((message) => {
+          return decrypt(
             selectedWallet.provider.encryptionKeyPair.toHex(),
             message,
-          ).toString(),
-        ),
+          ).toString();
+        }),
       },
       id: request.id,
     });
