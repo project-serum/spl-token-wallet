@@ -367,7 +367,7 @@ export default function PopupPage({ opener }) {
       id: request.id,
     });
   }
-  console.log(messages);
+
   return (
     <ApproveSignatureForm
       key={request.id}
