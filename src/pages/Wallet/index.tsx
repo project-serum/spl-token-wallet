@@ -61,7 +61,7 @@ const TableContainer = styled(RowContainer)`
 `;
 
 const Wallet = () => {
-  const hash = localStorage.getItem('hash');
+  const hash = sessionStorage.getItem('hash');
 
   const [selectedPublicKey, selectPublicKey] = useState<any>(null);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
