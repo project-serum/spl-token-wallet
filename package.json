@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-cdk/aws-codepipeline": "^1.106.1",
+    "@aws-cdk/aws-s3-deployment": "^1.106.1",
+    "@aws-cdk/core": "^1.106.1",
+    "@aws-cdk/pipelines": "^1.106.1",
     "@ledgerhq/hw-transport-webusb": "^5.45.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
@@ -45,7 +49,10 @@
     "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
     "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cdk:bootstrap": "npx cdk bootstrap --profile 066474761205_AdministratorAccess --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess",
+    "cdk:deploy": "npx cdk deploy --profile 066474761205_AdministratorAccess",
+    "cdk:destroy": "npx cdk destroy --profile 066474761205_AdministratorAccess"
   },
   "eslintConfig": {
     "env": {
