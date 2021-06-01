@@ -26,6 +26,9 @@ const RAYDIUM_LP_PROGRAM_ID = new PublicKey(
 const MANGO_PROGRAM_ID = new PublicKey(
   'JD3bq9hGdy38PuWQ4h2YJpELmHVGPPfFSuFkpzAd9zfu',
 );
+const MANGO_PROGRAM_ID_V2 = new PublicKey(
+  '5fNfvyp5czQVX77yoACa3JJVEhdRaWjPuazuWgjhTqEH',
+);
 
 const marketCache = {};
 let marketCacheConnection = null;
@@ -133,7 +136,7 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
-    } else if (programId.equals(MANGO_PROGRAM_ID)) {
+    } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
       console.log('[' + index + '] Handled as mango markets instruction');
       let decodedInstruction = decodeMangoInstruction(decoded);
       return await handleMangoInstruction(
