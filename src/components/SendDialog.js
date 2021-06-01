@@ -48,7 +48,8 @@ const WUSDT_MINT = new PublicKey(
 
 const USDT_MINT = new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB');
 const DISABLED_ERC20_MINTS = new Set([
-  'kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6'
+  'kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6',
+  'ABE7D8RU1eHfCJWzHYZZeymeE8k9nPPXfqge2NQYyKoL',
 ])
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {

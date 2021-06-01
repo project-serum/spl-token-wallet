@@ -30,6 +30,8 @@ import Tab from '@material-ui/core/Tab';
 import { DialogContentText, Tooltip } from '@material-ui/core';
 import { EthFeeEstimate } from './EthFeeEstimate';
 
+const DISABLED_MINTS = new Set(['ABE7D8RU1eHfCJWzHYZZeymeE8k9nPPXfqge2NQYyKoL']);
+
 export default function DepositDialog({
   open,
   onClose,
@@ -63,7 +65,8 @@ export default function DepositDialog({
         indicatorColor="primary"
       >
         <Tab label={firstTab} />
-        <Tab label={secondTab} />
+        {(!DISABLED_MINTS.has(mint.toString()) ||
+          localStorage.getItem('sollet-private')) && <Tab label={secondTab} />}
       </Tabs>
     );
   }
