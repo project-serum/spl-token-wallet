@@ -27,3 +27,5 @@ yarn-error.log*
 
 # generate with `build:extension` script
 extension/build/*
+
+cdk.out
