@@ -14,13 +14,13 @@
       "zoneName": "sendit.finance"
     },
     "testing": {
-      "hostName": "wallet-just.sendit.finance"
+      "hostName": "identity-just.sendit.finance"
     },
     "staging": {
-      "hostName": "wallet-staging.sendit.finance"
+      "hostName": "identity-staging.sendit.finance"
     },
     "production": {
-      "hostName": "wallet.sendit.finance"
+      "hostName": "identity.sendit.finance"
     }
   }
 }
