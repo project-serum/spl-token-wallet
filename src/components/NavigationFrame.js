@@ -72,7 +72,7 @@ export default function NavigationFrame({ children }) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title} component="h1">
-            {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
+            {isExtensionWidth ? 'SendIt' : 'SendIt Identity'}
           </Typography>
           <NavigationButtons />
         </Toolbar>
@@ -230,7 +230,9 @@ function NetworkSelector() {
                 <CheckIcon fontSize="small" />
               ) : null}
             </ListItemIcon>
-            {cluster.name === 'mainnet-beta-backup' ? 'Mainnet Beta Backup' : cluster.apiUrl}
+            {cluster.name === 'mainnet-beta-backup'
+              ? 'Mainnet Beta Backup'
+              : cluster.apiUrl}
           </MenuItem>
         ))}
       </Menu>
@@ -249,10 +251,8 @@ function WalletSelector() {
   } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [
-    addHardwareWalletDialogOpen,
-    setAddHardwareWalletDialogOpen,
-  ] = useState(false);
+  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] =
+    useState(false);
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
   const classes = useStyles();
