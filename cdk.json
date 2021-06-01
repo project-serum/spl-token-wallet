@@ -1,0 +1,26 @@
+{
+  "app": "bin/infrastructure.js",
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true,
+    "repo": {
+      "owner": "sendit-finance",
+      "name": "spl-token-wallet",
+      "githubConnectionArn": "arn:aws:codestar-connections:us-east-1:066474761205:connection/1a78c381-0394-490d-9adf-20b91a16b725",
+      "branch": "master"
+    },
+    "certificateArn": "arn:aws:acm:us-east-1:066474761205:certificate/3ce854c8-cb4a-424b-b0d0-e8922501a886",
+    "zone": {
+      "hostedZoneId": "Z01621402YZS4PX0R6WHS",
+      "zoneName": "sendit.finance"
+    },
+    "testing": {
+      "hostName": "wallet-just.sendit.finance"
+    },
+    "staging": {
+      "hostName": "wallet-staging.sendit.finance"
+    },
+    "production": {
+      "hostName": "wallet.sendit.finance"
+    }
+  }
+}
