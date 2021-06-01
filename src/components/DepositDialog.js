@@ -65,7 +65,7 @@ export default function DepositDialog({
         indicatorColor="primary"
       >
         <Tab label={firstTab} />
-        {(!DISABLED_MINTS.has(mint.toString()) ||
+        {(!DISABLED_MINTS.has(mint && mint.toString()) ||
           localStorage.getItem('sollet-private')) && <Tab label={secondTab} />}
       </Tabs>
     );
