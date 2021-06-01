@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { decrypt } from 'eciesjs';
 
 import { useWallet, useWalletSelector } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
@@ -28,7 +29,6 @@ import { useLocalStorageState, isExtension } from '../utils/utils';
 import SignTransactionFormContent from '../components/SignTransactionFormContent';
 import SignFormContent from '../components/SignFormContent';
 import SignCustomFormContent from '../components/SignCustomFormContent';
-import { decrypt } from 'eciesjs';
 
 function getInitialRequests() {
   if (!isExtension) {
