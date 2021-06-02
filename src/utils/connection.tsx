@@ -4,12 +4,14 @@ import {
   clusterApiUrl,
   Connection,
   PublicKey,
+  Account,
 } from '@solana/web3.js';
 import tuple from 'immutable-tuple';
 import { struct } from 'superstruct';
 import assert from 'assert';
 import { useLocalStorageState, useRefEqual } from './utils';
 import { refreshCache, setCache, useAsyncData } from './fetch-loop';
+import MultiEndpointsConnection from './MultiEndpointsConnection';
 
 const ConnectionContext = React.createContext<{
   endpoint: string;
@@ -18,17 +20,66 @@ const ConnectionContext = React.createContext<{
 } | null>(null);
 
 export const MAINNET_URL = 'https://api.mainnet-beta.solana.com';
+const MAINNET_BETA_ENDPOINT = clusterApiUrl('mainnet-beta');
+export const ENDPOINTS = [
+  {
+    name: 'mainnet-beta',
+    endpoint: MAINNET_BETA_ENDPOINT,
+  },
+  { name: 'testnet', endpoint: clusterApiUrl('testnet') },
+  { name: 'devnet', endpoint: clusterApiUrl('devnet') },
+  { name: 'localnet', endpoint: 'http://127.0.0.1:8899' },
+];
+
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     'connectionEndpoint',
-    MAINNET_URL,
+    ENDPOINTS[0].endpoint,
   );
 
-  const connection = useMemo(() => new Connection(endpoint, 'recent'), [
-    endpoint,
-  ]);
+  const connection = useMemo(
+    () =>
+      endpoint === MAINNET_BETA_ENDPOINT
+        ? // multi connection only for mainnet
+          new MultiEndpointsConnection(
+            [
+              { url: 'https://mango.rpcpool.com/', RPS: 10 },
+              { url: 'https://solana-api.projectserum.com', RPS: 2 },
+              { url: 'https://api.mainnet-beta.solana.com', RPS: 4 },
+              { url: 'https://raydium.rpcpool.com/', RPS: 10 },
+              { url: 'https://orca.rpcpool.com/', RPS: 10 },
+              { url: 'https://api.rpcpool.com', RPS: 10 },
+            ],
+            'recent',
+          )
+        : new Connection(
+            ENDPOINTS.find((endpointInfo) => endpointInfo.endpoint === endpoint)
+              ?.endpoint || MAINNET_BETA_ENDPOINT,
+            'recent',
+          ),
+    [endpoint],
+  );
+
+  useEffect(() => {
+    // @ts-ignore
+    const id = connection.onAccountChange(new Account().publicKey, () => {});
+    return () => {
+      // @ts-ignore
+      connection.removeAccountChangeListener(id);
+    };
+  }, [connection]);
+
+  useEffect(() => {
+    // @ts-ignore
+    const id = connection.onSlotChange(() => null);
+    return () => {
+      // @ts-ignore
+      connection.removeSlotChangeListener(id);
+    };
+  }, [connection]);
 
   return (
+    // @ts-ignore
     <ConnectionContext.Provider value={{ endpoint, setEndpoint, connection }}>
       {children}
     </ConnectionContext.Provider>
