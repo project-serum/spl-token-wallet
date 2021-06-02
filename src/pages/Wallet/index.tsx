@@ -70,7 +70,11 @@ const Wallet = () => {
   });
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
-  const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+
+  const hash = sessionStorage.getItem('hash');
+  const [showAddTokenDialog, setShowAddTokenDialog] = useState(
+    hash === '#add_token_to_rebalance',
+  );
   const [activeTab, setTabActive] = useState('assets');
 
   // const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
