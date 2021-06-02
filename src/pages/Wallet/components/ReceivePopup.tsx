@@ -41,7 +41,12 @@ import {
 import MetamaskIcon from '../../../images/metamask.png';
 import FakeInputs from '../../../components/FakeInputs';
 
-export default function DepositDialog({ open, onClose, publicKey }) {
+export default function DepositDialog({
+  open,
+  onClose,
+  publicKey,
+  isAssociatedToken,
+}) {
   const balanceInfo = useBalanceInfo(publicKey) || {
     amount: 0,
     decimals: 8,
@@ -82,6 +87,11 @@ export default function DepositDialog({ open, onClose, publicKey }) {
     (tokenSymbol ?? abbreviateAddress(mint)) === 'wUSDC'
       ? (tokenSymbol ?? abbreviateAddress(mint)).replace('w', 'Wrapped ')
       : tokenSymbol ?? abbreviateAddress(mint);
+
+  const displaySolAddress = publicKey.equals(owner) || isAssociatedToken;
+  const depositAddressStr = displaySolAddress
+    ? owner.toBase58()
+    : publicKey.toBase58();
 
   let firstTab;
   // let secondTab;
@@ -141,7 +151,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
               autoFocus
               qrCode
             /> */}
-              <TextareaWithCopy value={publicKey?.toBase58()} height={'5rem'} />
+              <TextareaWithCopy value={depositAddressStr} height={'5rem'} />
             </RowContainer>
             <RowContainer
               width="90%"
@@ -150,7 +160,7 @@ export default function DepositDialog({ open, onClose, publicKey }) {
             >
               <Link
                 href={
-                  `https://explorer.solana.com/account/${publicKey?.toBase58()}` +
+                  `https://explorer.solana.com/account/${depositAddressStr}` +
                   urlSuffix
                 }
                 target="_blank"
@@ -167,8 +177,14 @@ export default function DepositDialog({ open, onClose, publicKey }) {
             <RowContainer width="90%" padding="2rem 0">
               <AttentionComponent
                 text={
-                  !!owner && publicKey?.equals(owner)
-                    ? 'This address can only be used to receive SOL. Do not send other tokens to this address.'
+                  !displaySolAddress && isAssociatedToken === false
+                    ? `This address can only be used to receive ${
+                        tokenSymbol ?? abbreviateAddress(mint)
+                      }. Do not send other tokens to this address.`
+                    : isAssociatedToken
+                    ? `This address can be used to receive ${
+                        tokenSymbol ?? abbreviateAddress(mint)
+                      }.`
                     : `This address can only be used to receive ${tokenSymbolForCheck} in Solana Network. Do not send SOL${
                         tokenSymbolForCheck === 'wUSDT' ||
                         tokenSymbolForCheck === 'wUSDC'
