@@ -16,7 +16,7 @@ import {
   transferTokens,
   transferAndClose,
 } from './tokens';
-import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './tokens/instructions';
+import { TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT, CCAI_MINT } from './tokens/instructions';
 import {
   ACCOUNT_LAYOUT,
   parseMintData,
@@ -436,6 +436,21 @@ export function useBalanceInfo(publicKey) {
       valid: true,
       tokenLogoUri: logoUri,
     };
+  }
+
+  if (mint && mint.equals(CCAI_MINT)) {
+    const ccaLogoUri = 'https://cryptocurrencies.ai/ccaiTokenLogo.svg'
+
+    return {
+      amount,
+      decimals: 9,
+      mint,
+      owner,
+      tokenName: 'CCAI',
+      tokenSymbol: 'CCAI',
+      valid: true,
+      tokenLogoUri: ccaLogoUri,
+    }
   }
 
   if (mint && mintInfoLoaded) {
