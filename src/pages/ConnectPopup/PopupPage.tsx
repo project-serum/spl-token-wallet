@@ -27,6 +27,7 @@ import { isExtension } from '../../utils/utils';
 import SignTransactionFormContent from './SignTransactionFormContent';
 import SignFormContent from './SignFormContent';
 import { footerHeight } from '../../components/Navbar/NavigationFrame';
+import NetworkDropdown from '../../components/Navbar/NetworkDropdown';
 
 const StyledCard = styled(Card)`
   background: #17181a;
@@ -45,7 +46,8 @@ export default function PopupPage() {
   const hash: any = sessionStorage.getItem('hash');
 
   const selectedWallet = useWallet();
-  const selectedWalletAddress = selectedWallet && selectedWallet.publicKey.toBase58();
+  const selectedWalletAddress =
+    selectedWallet && selectedWallet.publicKey.toBase58();
   const { accounts, setWalletSelector } = useWalletSelector();
   const [wallet, setWallet] = useState(isExtension ? null : selectedWallet);
 
@@ -70,14 +72,14 @@ export default function PopupPage() {
   const [requests, setRequests] = useState<any[]>(getInitialRequests(hash));
   const [autoApprove, setAutoApprove] = useState(true);
 
-    // Keep selectedWallet and wallet in sync.
-    useEffect(() => {
-      if (!isExtension) {
-        setWallet(selectedWallet);
-      }
+  // Keep selectedWallet and wallet in sync.
+  useEffect(() => {
+    if (!isExtension) {
+      setWallet(selectedWallet);
+    }
     // using stronger condition here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedWalletAddress]);
+  }, [selectedWalletAddress]);
 
   // (Extension only) Fetch connected wallet for site from local storage.
   useEffect(() => {
@@ -93,7 +95,7 @@ export default function PopupPage() {
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [origin]);
 
   // (Extension only) Set wallet once connectedWallet is retrieved.
@@ -218,7 +220,14 @@ export default function PopupPage() {
       }
     }
 
-    return <ApproveConnectionForm origin={origin} onApprove={connect} autoApprove={autoApprove} setAutoApprove={setAutoApprove} />;
+    return (
+      <ApproveConnectionForm
+        origin={origin}
+        onApprove={connect}
+        autoApprove={autoApprove}
+        setAutoApprove={setAutoApprove}
+      />
+    );
   }
 
   assert(
@@ -361,14 +370,14 @@ function getInitialRequests(hash: string) {
   // TODO CHECK OPENER (?)
 
   const urlParams = new URLSearchParams(hash.slice(1));
-  let request
+  let request;
 
   try {
     request = JSON.parse(urlParams?.get('request') || 'null');
   } catch (e) {
     console.error('getInitialRequests error', e);
   }
-  
+
   if (request?.method === 'sign') {
     const dataObj = request.params.data;
     // Deserialize `data` into a Uint8Array
@@ -386,7 +395,12 @@ function getInitialRequests(hash: string) {
   return [request];
 }
 
-function ApproveConnectionForm({ origin, onApprove, autoApprove, setAutoApprove }) {
+function ApproveConnectionForm({
+  origin,
+  onApprove,
+  autoApprove,
+  setAutoApprove,
+}) {
   const wallet = useWallet();
   const classes = useStyles();
   const { accounts } = useWalletSelector();
@@ -413,6 +427,7 @@ function ApproveConnectionForm({ origin, onApprove, autoApprove, setAutoApprove 
         >
           Allow this site to access your Wallet™?
         </Title>
+        <NetworkDropdown />
         <RowContainer
           margin={'0 0 4rem 0'}
           direction={'column'}

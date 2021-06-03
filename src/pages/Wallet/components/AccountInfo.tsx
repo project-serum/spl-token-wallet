@@ -2,12 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '@material-ui/core';
 
+import copy from 'clipboard-copy';
+
 import { useBalanceInfo, useWallet } from '../../../utils/wallet';
 import { Row, RowContainer, Title, ExclamationMark } from '../../commonStyles';
 import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 
 import AccountsSelector from './AccountsSelector';
 import TotalBalance from './TotalBalance';
+import { useSnackbar } from 'notistack';
 
 const MobilePublicKeyTitle = styled(Title)`
   display: none;
@@ -19,7 +22,7 @@ const MobilePublicKeyTitle = styled(Title)`
 
 const DesktopPublicKeyTitle = styled(Title)`
   display: inline;
-
+  white-space: nowrap;
   @media (max-width: 540px) {
     display: none;
   }
@@ -104,7 +107,7 @@ const InstructionTitle = styled(Title)`
   @media (max-width: 540px) {
     font-size: 1.3rem;
   }
-`
+`;
 
 const InstructionsBlock = ({ theme, showOnMobile = false }) => {
   return (
@@ -148,6 +151,7 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
 const AccountInfo = () => {
   const theme = useTheme();
   const wallet = useWallet();
+  const { enqueueSnackbar } = useSnackbar();
 
   const balanceInfo = useBalanceInfo(wallet.publicKey);
   let { amount, decimals } = balanceInfo || {
@@ -166,12 +170,43 @@ const AccountInfo = () => {
         <AccountInfoSubContainer>
           <AccountsSelector />
           <DesktopPublicKeyTitle color={theme.customPalette.grey.light}>
-            {publicKey}
+            {publicKey}{' '}
+            <Title
+              style={{
+                marginLeft: '2rem',
+                color: '#366CE5',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                copy(publicKey);
+
+                enqueueSnackbar('Copied!', { variant: 'success' });
+              }}
+            >
+              Copy
+            </Title>
           </DesktopPublicKeyTitle>
-          <MobilePublicKeyTitle color={theme.customPalette.grey.light}>
-            {publicKey.slice(0, 5) +
+          <MobilePublicKeyTitle
+            style={{ whiteSpace: 'nowrap' }}
+            color={theme.customPalette.grey.light}
+          >
+            {publicKey.slice(0, 3) +
               '...' +
-              publicKey.slice(publicKey.length - 5)}
+              publicKey.slice(publicKey.length - 3)}
+            <Title
+              style={{
+                marginLeft: '2rem',
+                color: '#366CE5',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                copy(publicKey);
+
+                enqueueSnackbar('Copied!', { variant: 'success' });
+              }}
+            >
+              Copy
+            </Title>
           </MobilePublicKeyTitle>
         </AccountInfoSubContainer>
         <InstructionsBlock showOnMobile theme={theme} />
