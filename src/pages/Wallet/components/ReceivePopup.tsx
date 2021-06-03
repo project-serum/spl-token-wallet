@@ -181,19 +181,9 @@ export default function DepositDialog({
                     ? `This address can only be used to receive ${
                         tokenSymbol ?? abbreviateAddress(mint)
                       }. Do not send other tokens to this address.`
-                    : isAssociatedToken
-                    ? `This address can be used to receive ${
+                    : `This address can be used to receive ${
                         tokenSymbol ?? abbreviateAddress(mint)
                       }.`
-                    : `This address can only be used to receive ${tokenSymbolForCheck} in Solana Network. Do not send SOL${
-                        tokenSymbolForCheck === 'wUSDT' ||
-                        tokenSymbolForCheck === 'wUSDC'
-                          ? `, Native ${tokenSymbolForCheck.replace(
-                              'Wrapped ',
-                              '',
-                            )}`
-                          : ''
-                      } or ERC-20 ${tokenSymbolForCheck} to this address.`
                 }
                 blockHeight={'8rem'}
                 iconStyle={{ margin: '0 2rem 0 3rem' }}
