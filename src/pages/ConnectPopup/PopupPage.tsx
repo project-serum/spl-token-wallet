@@ -418,7 +418,7 @@ function ApproveConnectionForm({
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
           <LogoComponent width="100%" height="auto" margin="0" />{' '}
-          <NetworkDropdown popupPage width={'14rem'} />
+          <NetworkDropdown popupPage={true} width={'14rem'} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
         <Title
