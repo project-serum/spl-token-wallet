@@ -417,7 +417,8 @@ function ApproveConnectionForm({
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <LogoComponent width="50%" height="auto" margin="0" />
+          <LogoComponent width="100%" height="auto" margin="0" />{' '}
+          <NetworkDropdown popupPage width={'14rem'} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
         <Title
@@ -427,7 +428,7 @@ function ApproveConnectionForm({
         >
           Allow this site to access your Wallet™?
         </Title>
-        <NetworkDropdown />
+
         <RowContainer
           margin={'0 0 4rem 0'}
           direction={'column'}

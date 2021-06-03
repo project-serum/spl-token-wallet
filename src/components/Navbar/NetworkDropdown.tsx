@@ -100,15 +100,17 @@ export const StyledMenuItem = styled(MenuItem)`
 const WalletStatusButton = ({
   connection,
   theme,
+  width,
 }: {
   connection: string;
   theme: Theme;
+  width: string;
 }) => (
   <BtnCustom
     btnColor={theme.customPalette.white.main}
     borderWidth={'0'}
     textTransform={'capitalize'}
-    btnWidth={'10rem'}
+    btnWidth={width ? width : '10rem'}
     height={'3.5rem'}
     padding={'1.25rem 0'}
     fontSize={'1.2rem'}
@@ -119,7 +121,7 @@ const WalletStatusButton = ({
   </BtnCustom>
 );
 
-const NetworkDropdown = () => {
+const NetworkDropdown = ({ width, popupPage }) => {
   const theme = useTheme();
   const wallet = useWallet();
   const { endpoint, setEndpoint } = useConnectionConfig();
@@ -148,10 +150,15 @@ const NetworkDropdown = () => {
       <WalletStatusButton
         connection={currentConnectionEndpoint.label}
         theme={theme}
+        width={width}
       />
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
+        style={{
+          right: popupPage ? '23.5rem' : 'auto',
+          top: popupPage ? 'calc(6.9rem)' : 'auto',
+        }}
         customNotActiveRem={
           !!wallet
             ? '37rem'
