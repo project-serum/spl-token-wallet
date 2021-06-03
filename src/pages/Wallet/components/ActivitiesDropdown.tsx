@@ -48,7 +48,7 @@ const ButtonsContainer = styled(RowContainer)`
 const ActivitiesDropdown = ({
   theme,
   urlSuffix,
-  selectPublicKey,
+  selectToken,
   setSendDialogOpen,
   setDepositDialogOpen,
   publicKey,
@@ -78,7 +78,7 @@ const ActivitiesDropdown = ({
                   whiteSpace: 'nowrap',
                 }}
                 onClick={() => {
-                  selectPublicKey(publicKey);
+                  selectToken();
                   setDepositDialogOpen(true);
                 }}
               >
@@ -104,7 +104,7 @@ const ActivitiesDropdown = ({
                   whiteSpace: 'nowrap',
                 }}
                 onClick={() => {
-                  selectPublicKey(publicKey);
+                  selectToken();
                   setSendDialogOpen(true);
                 }}
               >

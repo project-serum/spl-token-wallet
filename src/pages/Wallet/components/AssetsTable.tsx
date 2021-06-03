@@ -29,6 +29,7 @@ import ExplorerIcon from '../../../images/explorer.svg';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import { priceStore, serumMarkets } from '../../../utils/markets';
 import ActivitiesDropdown from './ActivitiesDropdown';
+import { findAssociatedTokenAddress } from '../../../utils/tokens';
 
 export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
@@ -289,13 +290,19 @@ export function fairsIsLoaded(publicKeys) {
 
 const AssetsTable = ({
   isActive,
-  selectPublicKey,
+  selectToken,
   setSendDialogOpen,
   setDepositDialogOpen,
   setShowAddTokenDialog,
 }: {
   isActive?: boolean;
-  selectPublicKey: (publicKey: any) => void;
+  selectToken: ({
+    publicKey,
+    isAssociatedToken,
+  }: {
+    publicKey: string;
+    isAssociatedToken: boolean;
+  }) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
   setShowAddTokenDialog: (isOpen: boolean) => void;
@@ -389,7 +396,7 @@ const AssetsTable = ({
             theme={theme}
             marketsData={marketsData}
             setUsdValue={setUsdValuesCallback}
-            selectPublicKey={selectPublicKey}
+            selectToken={selectToken}
             setSendDialogOpen={setSendDialogOpen}
             setDepositDialogOpen={setDepositDialogOpen}
           />
@@ -400,7 +407,7 @@ const AssetsTable = ({
     sortedPublicKeys,
     theme,
     marketsData,
-    selectPublicKey,
+    selectToken,
     setSendDialogOpen,
     setDepositDialogOpen,
     setUsdValuesCallback,
@@ -485,7 +492,7 @@ const AssetsTable = ({
 const AssetItem = ({
   theme,
   publicKey,
-  selectPublicKey,
+  selectToken,
   setSendDialogOpen,
   setDepositDialogOpen,
   marketsData = new Map(),
@@ -495,10 +502,17 @@ const AssetItem = ({
   theme: Theme;
   marketsData: any;
   setUsdValue: (publicKey: any, usdValue: null | number) => void;
-  selectPublicKey: (publicKey: any) => void;
+  selectToken: ({
+    publicKey,
+    isAssociatedToken,
+  }: {
+    publicKey: string;
+    isAssociatedToken: boolean;
+  }) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
 }) => {
+  const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const urlSuffix = useSolanaExplorerUrlSuffix();
   const connection = useConnection();
@@ -524,10 +538,13 @@ const AssetItem = ({
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
 
-  const setPrice = useCallback((price: number | undefined | null) => {
-    assetsValues[publicKey] = { ...assetsValues[publicKey], price };
-    setPriceRaw(price);
-  }, [setPriceRaw, publicKey]);
+  const setPrice = useCallback(
+    (price: number | undefined | null) => {
+      assetsValues[publicKey] = { ...assetsValues[publicKey], price };
+      setPriceRaw(price);
+    },
+    [setPriceRaw, publicKey],
+  );
 
   useEffect(() => {
     if (balanceInfo && assetsValues[publicKey] === undefined) {
@@ -563,6 +580,28 @@ const AssetItem = ({
 
     return () => {};
   }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
+
+  // Fetch and cache the associated token address.
+  if (wallet && wallet.publicKey && mint) {
+    if (
+      associatedTokensCache[wallet.publicKey.toString()] === undefined ||
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()] ===
+        undefined
+    ) {
+      findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+        let walletAccounts = Object.assign(
+          {},
+          associatedTokensCache[wallet.publicKey.toString()],
+        );
+        walletAccounts[mint.toString()] = assocTok;
+        associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
+        // if (assocTok.equals(publicKey)) {
+        //   // Force a rerender now that we've cached the value.
+        //   setForceUpdate((forceUpdate) => !forceUpdate);
+        // }
+      });
+    }
+  }
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
     (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
@@ -616,6 +655,25 @@ const AssetItem = ({
 
     return () => {};
   }, [setUsdValue, publicKey, usdValue]);
+
+  let isAssociatedToken = mint ? false : false;
+
+  if (
+    wallet &&
+    wallet.publicKey &&
+    mint &&
+    associatedTokensCache[wallet.publicKey.toString()]
+  ) {
+    let acc =
+      associatedTokensCache[wallet.publicKey.toString()][mint.toString()];
+    if (acc) {
+      if (acc.equals(publicKey)) {
+        isAssociatedToken = true;
+      } else {
+        isAssociatedToken = false;
+      }
+    }
+  }
 
   return (
     <StyledTr key={`${publicKey}`} theme={theme}>
@@ -746,7 +804,7 @@ const AssetItem = ({
             }
             margin="0 2rem 0 0"
             onClick={() => {
-              selectPublicKey(publicKey);
+              selectToken({ publicKey, isAssociatedToken });
               setDepositDialogOpen(true);
             }}
           >
@@ -770,7 +828,7 @@ const AssetItem = ({
             }
             margin="0 2rem 0 0"
             onClick={() => {
-              selectPublicKey(publicKey);
+              selectToken({ publicKey, isAssociatedToken });
               setSendDialogOpen(true);
             }}
           >
@@ -831,7 +889,7 @@ const AssetItem = ({
           <img alt={'open menu'} src={Dots} />
           <ActivitiesDropdown
             urlSuffix={urlSuffix}
-            selectPublicKey={selectPublicKey}
+            selectToken={() => selectToken({ publicKey, isAssociatedToken })}
             setSendDialogOpen={setSendDialogOpen}
             setDepositDialogOpen={setDepositDialogOpen}
             publicKey={publicKey}
