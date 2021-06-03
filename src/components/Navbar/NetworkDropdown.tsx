@@ -38,9 +38,12 @@ export const StyledPaper = styled(
   &&& {
     z-index: 11;
     position: absolute;
-    top: calc(6rem - 0.1rem);
+    top: ${(props) =>
+      props.popupPage ? 'calc(6.9rem)' : 'calc(6rem - 0.1rem)'};
     right: ${(props) =>
-      props.isWalletConnected
+      props.popupPage
+        ? '23.5rem'
+        : props.isWalletConnected
         ? props.customActiveRem
           ? props.customActiveRem
           : `9rem`
@@ -59,8 +62,9 @@ export const StyledPaper = styled(
     padding-right: 8px; */
 
     @media (max-width: 540px) {
-      right: 8rem;
-      top: calc(10rem - 0.1rem);
+      right: ${(props) => (props.popupPage ? '23.5rem' : '8rem')};
+      top: ${(props) =>
+        props.popupPage ? 'calc(6.9rem)' : 'calc(10rem - 0.1rem)'};
     }
   }
 `;
@@ -121,7 +125,13 @@ const WalletStatusButton = ({
   </BtnCustom>
 );
 
-const NetworkDropdown = ({ width, popupPage }) => {
+const NetworkDropdown = ({
+  width = '10rem',
+  popupPage = false,
+}: {
+  width: string;
+  popupPage: boolean;
+}) => {
   const theme = useTheme();
   const wallet = useWallet();
   const { endpoint, setEndpoint } = useConnectionConfig();
@@ -155,10 +165,7 @@ const NetworkDropdown = ({ width, popupPage }) => {
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
-        style={{
-          right: popupPage ? '23.5rem' : 'auto',
-          top: popupPage ? 'calc(6.9rem)' : 'auto',
-        }}
+        popupPage={popupPage}
         customNotActiveRem={
           !!wallet
             ? '37rem'

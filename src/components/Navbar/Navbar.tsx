@@ -244,7 +244,7 @@ const Navbar = () => {
           </LinksContainer>
         </HeaderContainer>
         <WalletLoginContainer>
-          <NetworkDropdown />
+          <NetworkDropdown width={'10rem'} popupPage={false} />
           {!!wallet ? (
             <RowContainer>
               <img
@@ -327,7 +327,7 @@ const Navbar = () => {
         </WalletLoginContainer>
 
         <WalletLoginButtonContainer>
-          <NetworkDropdown />
+          <NetworkDropdown width={'10rem'} popupPage={false} />
           <img
             style={{ cursor: 'pointer' }}
             onClick={() => {
