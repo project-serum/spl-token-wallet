@@ -36,7 +36,7 @@ export const getMarketsData = async () => {
         programId
       }
     }
-`;
+  `;
 
   const datesForQuery = {
     startOfTime: dayjs().startOf('hour').subtract(24, 'hour').unix(),

@@ -86,7 +86,7 @@ const CreateWalletButtonInner = () => (
 );
 
 export const WelcomePage = () => {
-  const hash = localStorage.getItem('hash');
+  const hash = sessionStorage.getItem('hash');
 
   return (
     <Body>

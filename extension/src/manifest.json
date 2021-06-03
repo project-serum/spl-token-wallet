@@ -1,7 +1,7 @@
 {
   "name": "Cryptocurrencies.Ai Wallet™",
   "description": "Cryptocurrencies.Ai Wallet™ is a web-based cryptocurrency wallet that enables you to safely manage assets on the Solana blockchain.",
-  "version": "0.1",
+  "version": "0.2",
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Open the popup"
@@ -16,7 +16,7 @@
     "persistent": false,
     "scripts": ["background.js"]
   },
-  "permissions": ["storage", "clipboardRead"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],

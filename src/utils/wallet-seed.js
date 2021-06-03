@@ -46,20 +46,31 @@ const EMPTY_MNEMONIC = {
 };
 
 let unlockedMnemonicAndSeed = (async () => {
-  const stored = JSON.parse(
-    (await getExtensionUnlockedMnemonic()) ||
-      sessionStorage.getItem('unlocked') ||
-      localStorage.getItem('unlocked') ||
-      'null',
-  );
+  const mnemonic = await getExtensionUnlockedMnemonic();
+
+  let stored = null;
+
+  try {
+    stored = await JSON.parse(
+      mnemonic ||
+        sessionStorage.getItem('unlocked') ||
+        localStorage.getItem('unlocked') ||
+        'null',
+    );
+  } catch (e) {
+    console.error('unlockedMnemonicAndSeed error', e);
+  }
+
   if (stored === null) {
     return EMPTY_MNEMONIC;
   }
+
   return {
     importsEncryptionKey: deriveImportsEncryptionKey(stored.seed),
     ...stored,
   };
 })();
+
 export const walletSeedChanged = new EventEmitter();
 
 export function getUnlockedMnemonicAndSeed() {
@@ -250,7 +261,6 @@ export function reloadWallet() {
     });
     sessionStorage.removeItem('unlocked');
     chrome.runtime.reload();
-    console.log('sessionStorage', sessionStorage);
   } else {
     window.location.reload();
   }

@@ -60,7 +60,7 @@ const WelcomeBack = () => {
   const theme = useTheme();
   const wallet = useWallet();
   const callAsync = useCallAsync();
-  const hash = localStorage.getItem('hash');
+  const hash = sessionStorage.getItem('hash');
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
