@@ -1,3 +1,4 @@
+
 import bs58 from 'bs58';
 import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
 import {
@@ -23,6 +24,13 @@ const RAYDIUM_LP_PROGRAM_ID = new PublicKey(
   'RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr',
 );
 
+const MANGO_PROGRAM_ID = new PublicKey(
+  'JD3bq9hGdy38PuWQ4h2YJpELmHVGPPfFSuFkpzAd9zfu',
+);
+const MANGO_PROGRAM_ID_V2 = new PublicKey(
+  '5fNfvyp5czQVX77yoACa3JJVEhdRaWjPuazuWgjhTqEH',
+);
+
 const marketCache = {};
 let marketCacheConnection = null;
 const cacheDuration = 15 * 1000;
@@ -46,6 +54,7 @@ export const decodeMessage = async (connection, wallet, message) => {
       publicKey,
       transactionMessage?.accountKeys,
       transactionInstruction,
+      transactionMessage,
       i,
     );
     instructions.push({
@@ -61,6 +70,7 @@ const toInstruction = async (
   publicKey,
   accountKeys,
   instruction,
+  transactionMessage,
   index,
 ) => {
   if (
@@ -127,6 +137,24 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
+    } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
+      console.log('[' + index + '] Handled as mango markets instruction');
+      let decodedInstruction = decodeMangoInstruction(decoded);
+      return await handleMangoInstruction(
+        connection,
+        instruction,
+        accountKeys,
+        decodedInstruction,
+      );
+    } else {
+      return {
+        type: 'Unknown',
+        accountMetas: instruction.accounts.map((index) => ({
+          publicKey: accountKeys[index],
+          isWritable: transactionMessage.isAccountWritable(index),
+        })),
+        programId,
+      };
     }
   } catch {}
 
@@ -134,6 +162,18 @@ const toInstruction = async (
   console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
 
   return;
+};
+
+const handleMangoInstruction = async (
+  connection,
+  instruction,
+  accountKeys,
+  decodedInstruction,
+) => {
+  // TODO
+  return {
+    type: 'mango',
+  };
 };
 
 const handleRayStakeInstruction = async (
@@ -158,6 +198,11 @@ const handleRayLpInstruction = async (
   return {
     type: 'raydium',
   };
+};
+
+const decodeMangoInstruction = () => {
+  // TODO
+  return undefined;
 };
 
 const decodeStakeInstruction = () => {
@@ -400,7 +445,7 @@ const getNewOrderV3Data = (accounts, accountKeys) => {
     NEW_ORDER_V3_OWNER_INDEX,
   );
   return { openOrdersPubkey, ownerPubkey };
-}
+};
 
 const getSettleFundsData = (accounts, accountKeys) => {
   const basePubkey = getAccountByIndex(

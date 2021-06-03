@@ -61,11 +61,17 @@ const TableContainer = styled(RowContainer)`
 `;
 
 const Wallet = () => {
-  const hash = sessionStorage.getItem('hash');
-
-  const [selectedPublicKey, selectPublicKey] = useState<any>(null);
+  const [selectedTokenData, selectToken] = useState<{
+    publicKey: string;
+    isAssociatedToken: boolean;
+  }>({
+    publicKey: '',
+    isAssociatedToken: false,
+  });
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+
+  const hash = sessionStorage.getItem('hash');
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(
     hash === '#add_token_to_rebalance',
   );
@@ -104,7 +110,7 @@ const Wallet = () => {
 
         <AssetsTable
           isActive={activeTab === 'assets'}
-          selectPublicKey={selectPublicKey}
+          selectToken={selectToken}
           setSendDialogOpen={setSendDialogOpen}
           setDepositDialogOpen={setDepositDialogOpen}
           setShowAddTokenDialog={setShowAddTokenDialog}
@@ -113,16 +119,21 @@ const Wallet = () => {
         <ActivityTable isActive={activeTab === 'activity'} />
       </TableContainer>
 
-      <SendDialog
-        open={sendDialogOpen}
-        onClose={() => setSendDialogOpen(false)}
-        publicKey={selectedPublicKey}
-      />
-      <ReceiveDialog
-        open={depositDialogOpen}
-        onClose={() => setDepositDialogOpen(false)}
-        publicKey={selectedPublicKey}
-      />
+      {selectedTokenData.publicKey && (
+        <SendDialog
+          open={sendDialogOpen}
+          onClose={() => setSendDialogOpen(false)}
+          publicKey={selectedTokenData.publicKey}
+        />
+      )}
+      {selectedTokenData.publicKey && (
+        <ReceiveDialog
+          open={depositDialogOpen}
+          onClose={() => setDepositDialogOpen(false)}
+          isAssociatedToken={selectedTokenData.isAssociatedToken}
+          publicKey={selectedTokenData.publicKey}
+        />
+      )}
 
       <AddTokenDialog
         open={showAddTokenDialog}
