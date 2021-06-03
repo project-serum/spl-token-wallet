@@ -41,7 +41,9 @@ export const StyledPaper = styled(
     top: ${(props) =>
       props.popupPage ? 'calc(6.9rem)' : 'calc(6rem - 0.1rem)'};
     right: ${(props) =>
-      props.isWalletConnected
+      props.popupPage
+        ? '24rem'
+        : props.isWalletConnected
         ? props.customActiveRem
           ? props.customActiveRem
           : `9rem`
@@ -60,7 +62,7 @@ export const StyledPaper = styled(
     padding-right: 8px; */
 
     @media (max-width: 540px) {
-      right: 8rem;
+      right: ${(props) => (props.popupPage ? '24rem' : '8rem')};
       top: ${(props) =>
         props.popupPage ? 'calc(6.9rem)' : 'calc(10rem - 0.1rem)'};
     }
