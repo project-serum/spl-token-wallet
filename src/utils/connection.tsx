@@ -4,7 +4,6 @@ import {
   clusterApiUrl,
   Connection,
   PublicKey,
-  Account,
 } from '@solana/web3.js';
 import tuple from 'immutable-tuple';
 import { struct } from 'superstruct';
@@ -46,7 +45,7 @@ export function ConnectionProvider({ children }) {
               { url: 'https://mango.rpcpool.com/', RPS: 10 },
               { url: 'https://solana-api.projectserum.com', RPS: 2 },
               { url: 'https://api.mainnet-beta.solana.com', RPS: 4 },
-              { url: 'https://raydium.rpcpool.com/', RPS: 10 },
+              // { url: 'https://raydium.rpcpool.com/', RPS: 10 },
               { url: 'https://orca.rpcpool.com/', RPS: 10 },
               { url: 'https://api.rpcpool.com', RPS: 10 },
             ],
@@ -59,24 +58,6 @@ export function ConnectionProvider({ children }) {
           ),
     [endpoint],
   );
-
-  useEffect(() => {
-    // @ts-ignore
-    const id = connection.onAccountChange(new Account().publicKey, () => {});
-    return () => {
-      // @ts-ignore
-      connection.removeAccountChangeListener(id);
-    };
-  }, [connection]);
-
-  useEffect(() => {
-    // @ts-ignore
-    const id = connection.onSlotChange(() => null);
-    return () => {
-      // @ts-ignore
-      connection.removeSlotChangeListener(id);
-    };
-  }, [connection]);
 
   return (
     // @ts-ignore
@@ -126,17 +107,25 @@ export function useSolanaExplorerUrlSuffix() {
 
 export function useAccountInfo(publicKey?: PublicKey) {
   const connection = useConnection();
+  const { endpoint } = useConnectionConfig()
   const cacheKey = tuple(connection, publicKey?.toBase58());
   const [accountInfo, loaded] = useAsyncData(
     async () => (publicKey ? connection.getAccountInfo(publicKey) : null),
     cacheKey,
   );
+
   useEffect(() => {
     if (!publicKey) {
       return;
     }
+
+    // multi-connection only in mainnet beta, we should use same connection for removeAccountChange
+    // @ts-ignore
+    const rawConnection = endpoint === MAINNET_BETA_ENDPOINT ? connection.getConnection() : connection
     let previousInfo: AccountInfo<Buffer> | null = null;
-    const id = connection.onAccountChange(publicKey, (info) => {
+
+    console.log('add account change', cacheKey, connection);
+    const id = rawConnection.onAccountChange(publicKey, (info) => {
       if (
         !previousInfo ||
         !previousInfo.data.equals(info.data) ||
@@ -146,11 +135,15 @@ export function useAccountInfo(publicKey?: PublicKey) {
         setCache(cacheKey, info);
       }
     });
+
     return () => {
-      connection.removeAccountChangeListener(id);
+      rawConnection.removeAccountChangeListener(id).catch((e) => {
+        console.log('remove account change error', cacheKey, connection);
+      });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection, publicKey?.toBase58() ?? '', cacheKey]);
+  }, [connection, publicKey?.toBase58() ?? '', cacheKey, endpoint]);
+
   return [
     useRefEqual(
       accountInfo,

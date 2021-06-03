@@ -29,8 +29,12 @@ class MultiEndpointsConnection implements Connection {
       if (typeof Connection.prototype[functionName] !== 'function') continue
       this[functionName] = (...args: any) => {
         // select connection, depending on RPS and load of connection, execute method of this connection
-        const connection = this.getConnection();
-        return connection[functionName](...args)
+        try {
+          const connection = this.getConnection();
+          return connection[functionName](...args)
+        } catch (e) {
+          console.error(functionName, e)
+        }
       }
     }
 
