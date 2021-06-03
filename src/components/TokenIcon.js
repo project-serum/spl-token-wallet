@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function TokenIcon({ mint, url, tokenName, size = 20 }) {
+export default function TokenIcon({ mint, url, tokenName, size = 20, ...props }) {
   const [hasError, setHasError] = useState(false);
 
   if (!url && mint === null) {
@@ -23,6 +23,7 @@ export default function TokenIcon({ mint, url, tokenName, size = 20 }) {
         borderRadius: size / 2,
       }}
       onError={() => setHasError(true)}
+      {...props}
     />
   );
 }

@@ -15,6 +15,7 @@ import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
 import { Typography } from '@material-ui/core';
 import TokenInfoDialog from './TokenInfoDialog';
+import FtxPayDialog from './FtxPay/FtxPayDialog';
 import Link from '@material-ui/core/Link';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -36,6 +37,7 @@ import SortIcon from '@material-ui/icons/Sort';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
+import ftxPayIcon from './FtxPay/icon.png';
 import SendDialog from './SendDialog';
 import DepositDialog from './DepositDialog';
 import {
@@ -103,6 +105,7 @@ export default function BalancesList() {
     false,
   );
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
+  const [showFtxPayDialog, setShowFtxPayDialog] = useState(false);
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
   const isExtensionWidth = useIsExtensionWidth();
@@ -211,6 +214,19 @@ export default function BalancesList() {
                 </IconButton>
               </Tooltip>
             )}
+          <Tooltip title="Deposit via FTX Pay" arrow>
+            <IconButton onClick={() => setShowFtxPayDialog(true)}>
+              <img
+                title={'FTX Pay'}
+                alt={'FTX Pay'}
+                style={{
+                  width: 20,
+                  height: 20,
+                }}
+                src={ftxPayIcon}
+              />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Merge Tokens" arrow>
             <IconButton
               size={iconSize}
@@ -274,6 +290,11 @@ export default function BalancesList() {
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
+      />
+      <FtxPayDialog
+        open={showFtxPayDialog}
+        publicKeys={publicKeys}
+        onClose={() => setShowFtxPayDialog(false)}
       />
       <EditAccountNameDialog
         open={showEditAccountNameDialog}
@@ -665,7 +686,9 @@ function BalanceListItemDetails({
           >
             Send
           </Button>
-          {localStorage.getItem('warning-close-account') && mint && amount === 0 ? (
+          {localStorage.getItem('warning-close-account') &&
+          mint &&
+          amount === 0 ? (
             <Button
               variant="outlined"
               color="secondary"
@@ -676,7 +699,6 @@ function BalanceListItemDetails({
               Delete
             </Button>
           ) : null}
-
         </div>
         {additionalInfo}
       </div>
