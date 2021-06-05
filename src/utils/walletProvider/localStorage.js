@@ -41,6 +41,7 @@ function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
 export class LocalStorageWalletProvider {
   constructor(args) {
     this.account = args.account;
+    this.publicKey = this.account.publicKey;
   }
 
   init = async () => {
@@ -55,10 +56,6 @@ export class LocalStorageWalletProvider {
     };
     return this;
   };
-
-  get publicKey() {
-    return this.account.publicKey;
-  }
 
   signTransaction = async (transaction) => {
     transaction.partialSign(this.account);
