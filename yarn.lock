@@ -1938,10 +1938,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/swap-ui@^0.1.0-alpha.25":
-  version "0.1.0-alpha.25"
-  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.1.0-alpha.25.tgz#8e5e322009476d1d0e8bfb184d0d2a524b901e91"
-  integrity sha512-jwXktAxFcr3UpXNO+XbL0ezDuSMBEusVIZMLIPCw0Xt29lrtnRO92EEb5zx/Ga+ByBXrhheVcihITqYnfJtK7Q==
+"@project-serum/swap-ui@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.1.0.tgz#893d31d86346b20b071dd514f9eaba9a55f3e5bb"
+  integrity sha512-QOsrEQLu4Hxlr7CLS3wktPRajif2slTHaP3RIs+D7b2vaxUVOMMoWdWCCcc8OTLbEAbMhx+9gLz9k+rmfReB5A==
   dependencies:
     "@fontsource/roboto" "^4.3.0"
     "@project-serum/serum" "^0.13.34"
