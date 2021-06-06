@@ -4,7 +4,7 @@ import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import Swap from '@project-serum/swap-ui';
 import { Provider } from '@project-serum/anchor';
-import { Signer, Connection, TransactionSignature } from '@solana/web3.js';
+import { Connection, TransactionSignature } from '@solana/web3.js';
 import { TokenListContainer } from '@solana/spl-token-registry';
 import { useTokenInfos } from '../utils/tokens/names';
 import { useSendTransaction } from '../utils/notifications';
