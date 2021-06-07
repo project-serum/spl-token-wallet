@@ -278,7 +278,7 @@ export function TokenRegistryProvider(props) {
   const { endpoint } = useConnectionConfig();
   const [tokenInfos, setTokenInfos] = useState(null);
   useEffect(() => {
-    if (endpoint !== MAINNET_VIP_URL || endpoint !== MAINNET_URL) return;
+    if (endpoint !== MAINNET_VIP_URL && endpoint !== MAINNET_URL) return;
     const tokenListProvider = new TokenListProvider();
     tokenListProvider.resolve().then((tokenListContainer) => {
       const cluster = clusterForEndpoint(endpoint);
