@@ -36,6 +36,7 @@ import {
 import { parseTokenAccountData } from '../utils/tokens/data';
 import { Switch, Tooltip } from '@material-ui/core';
 import { EthFeeEstimate } from './EthFeeEstimate';
+import SwapWormholeDialog from './SwapWormholeDialog';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -67,15 +68,20 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const { mint, tokenName, tokenSymbol } = balanceInfo;
 
   const getTabs = (mint) => {
+    const wormholeTab = (
+      <Tab label={'SPL Wormhole'} key="wormhole" value="wormhole" />
+    );
     if (mint?.equals(WUSDC_MINT)) {
       return [
         <Tab label="SPL WUSDC" key="spl" value="spl" />,
+        wormholeTab,
         <Tab label="SPL USDC" key="wusdcToSplUsdc" value="wusdcToSplUsdc" />,
         <Tab label="ERC20 USDC" key="swap" value="swap" />,
       ];
     } else if (mint?.equals(WUSDT_MINT)) {
       return [
         <Tab label="SPL WUSDT" key="spl" value="spl" />,
+        wormholeTab,
         <Tab label="SPL USDT" key="wusdtToSplUsdt" value="wusdtToSplUsdt" />,
         <Tab label="ERC20 USDT" key="swap" value="swap" />,
       ];
@@ -83,6 +89,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
       return [
         <Tab label="SPL USDC" key="spl" value="spl" />,
         <Tab label="SPL WUSDC" key="usdcToSplWUsdc" value="usdcToSplWUsdc" />,
+        wormholeTab,
         <Tab label="ERC20 USDC" key="swap" value="swap" />,
       ];
     } else {
@@ -96,7 +103,8 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         />
       );
       const tabs = [
-        <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
+			  <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
+        wormholeTab,
       ];
       if (!DISABLED_ERC20_MINTS.has(mint.toString()) || localStorage.getItem('sollet-private')) {
         tabs.push(erc20Tab);
@@ -111,6 +119,9 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         open={open}
         onClose={onClose}
         onSubmit={() => onSubmitRef.current()}
+        maxWidth={
+          mint?.equals(WUSDC_MINT) || mint?.equals(WUSDT_MINT) ? 'md' : 'sm'
+        }
         fullWidth
       >
         <DialogTitle>
@@ -161,6 +172,14 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             swapCoinInfo={swapCoinInfo}
             onSubmitRef={onSubmitRef}
             wusdtToSplUsdt
+          />
+        ) : tab === 'wormhole' ? (
+          <SwapWormholeDialog
+            publicKey={publicKey}
+            onClose={onClose}
+            balanceInfo={balanceInfo}
+            swapCoinInfo={swapCoinInfo}
+            onSubmitRef={onSubmitRef}
           />
         ) : tab === 'usdcToSplWUsdc' ? (
           <SendSwapDialog
@@ -679,7 +698,7 @@ function useForm(
   };
 }
 
-function balanceAmountToUserAmount(balanceAmount, decimals) {
+export function balanceAmountToUserAmount(balanceAmount, decimals) {
   return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals);
 }
 
