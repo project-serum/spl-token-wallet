@@ -102,10 +102,10 @@ export const isExtensionPopup = isExtension && window.opener;
  */
 export const decodeAccount = (privateKey: string) => {
   try {
-    return Keypair.fromSecretKey(JSON.parse(privateKey));
+    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
   } catch (_) {
     try {
-      return Keypair.fromSecretKey(bs58.decode(privateKey));
+      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
     } catch (_) {
       return undefined;
     }
