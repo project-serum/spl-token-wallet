@@ -1,4 +1,4 @@
-import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import TransportWebHid from '@ledgerhq/hw-transport-webhid';
 import {
   getPublicKey,
   solana_derivation_path,
@@ -8,6 +8,8 @@ import {
 } from './ledger-core';
 import { DERIVATION_PATH } from './localStorage';
 import bs58 from 'bs58';
+
+let TRANSPORT = null;
 
 export class LedgerWalletProvider {
   constructor(args) {
@@ -25,7 +27,10 @@ export class LedgerWalletProvider {
   }
 
   init = async () => {
-    this.transport = await TransportWebUsb.create();
+    if (TRANSPORT === null) {
+      TRANSPORT = await TransportWebHid.create();
+    }
+    this.transport = TRANSPORT;
     this.pubKey = await getPublicKey(this.transport, this.solanaDerivationPath);
     this.transport.on('disconnect', this.onDisconnect);
     this.listAddresses = async (walletCount) => {
