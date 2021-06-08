@@ -1,6 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import EventEmitter from 'events';
-import { useConnectionConfig, MAINNET_URL } from '../connection';
+import {
+  useConnectionConfig,
+  MAINNET_URL,
+  MAINNET_VIP_URL,
+} from '../connection';
 import { useListener } from '../utils';
 import { clusterForEndpoint } from '../clusters';
 import { useCallback } from 'react';
@@ -274,12 +278,13 @@ export function TokenRegistryProvider(props) {
   const { endpoint } = useConnectionConfig();
   const [tokenInfos, setTokenInfos] = useState(null);
   useEffect(() => {
+    if (endpoint !== MAINNET_VIP_URL && endpoint !== MAINNET_URL) return;
     const tokenListProvider = new TokenListProvider();
     tokenListProvider.resolve().then((tokenListContainer) => {
       const cluster = clusterForEndpoint(endpoint);
 
       const filteredTokenListContainer = tokenListContainer?.filterByClusterSlug(
-				cluster?.clusterSlug
+        cluster?.clusterSlug,
       );
       const tokenInfos =
         tokenListContainer !== filteredTokenListContainer

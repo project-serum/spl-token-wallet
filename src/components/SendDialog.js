@@ -48,6 +48,10 @@ const WUSDT_MINT = new PublicKey(
 );
 
 const USDT_MINT = new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB');
+const DISABLED_ERC20_MINTS = new Set([
+  'kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6',
+  'ABE7D8RU1eHfCJWzHYZZeymeE8k9nPPXfqge2NQYyKoL',
+])
 
 export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const isProdNetwork = useIsProdNetwork();
@@ -89,17 +93,23 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
         <Tab label="ERC20 USDC" key="swap" value="swap" />,
       ];
     } else {
-      return [
-        <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
-        wormholeTab,
+      const erc20Tab = (
         <Tab
           label={`${swapCoinInfo.erc20Contract ? 'ERC20' : 'Native'} ${
             swapCoinInfo.ticker
           }`}
           key="swap"
           value="swap"
-        />,
+        />
+      );
+      const tabs = [
+			  <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
+        wormholeTab,
       ];
+      if (!DISABLED_ERC20_MINTS.has(mint.toString()) || localStorage.getItem('sollet-private')) {
+        tabs.push(erc20Tab);
+      }
+      return tabs;
     }
   };
 

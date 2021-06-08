@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Account, Connection, PublicKey } from '@solana/web3.js';
+import { Keypair, Connection, PublicKey } from '@solana/web3.js';
 import { useMediaQuery } from '@material-ui/core';
 import * as bs58 from 'bs58';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
 
 export function useLocalStorageState<T>(
   key: string,
@@ -101,10 +102,10 @@ export const isExtensionPopup = isExtension && window.opener;
  */
 export const decodeAccount = (privateKey: string) => {
   try {
-    return new Account(JSON.parse(privateKey));
+    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
   } catch (_) {
     try {
-      return new Account(bs58.decode(privateKey));
+      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
     } catch (_) {
       return undefined;
     }
