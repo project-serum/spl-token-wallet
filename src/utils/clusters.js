@@ -10,7 +10,7 @@ export const CLUSTERS = [
   },
   {
     name: 'devnet',
-    apiUrl: clusterApiUrl('devnet'),
+    apiUrl: 'https://api.devnet.solana.com',
     label: 'Devnet'
   },
   {

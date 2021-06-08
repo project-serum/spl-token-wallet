@@ -26,7 +26,7 @@ export const ENDPOINTS = [
     endpoint: MAINNET_BETA_ENDPOINT,
   },
   { name: 'testnet', endpoint: clusterApiUrl('testnet') },
-  { name: 'devnet', endpoint: clusterApiUrl('devnet') },
+  { name: 'devnet', endpoint: 'https://api.devnet.solana.com' },
   { name: 'localnet', endpoint: 'http://127.0.0.1:8899' },
 ];
 
@@ -97,7 +97,7 @@ export function useSolanaExplorerUrlSuffix() {
     throw new Error('Missing connection context');
   }
   const endpoint = context.endpoint;
-  if (endpoint === clusterApiUrl('devnet')) {
+  if (endpoint === 'https://api.devnet.solana.com') {
     return '?cluster=devnet';
   } else if (endpoint === clusterApiUrl('testnet')) {
     return '?cluster=testnet';
