@@ -178,7 +178,7 @@ export default function SignTransactionFormContent({
   const onOpenAddress = (address) => {
     address &&
       window.open(
-        'https://explorer.solana.com/address/' + address + explorerUrlSuffix,
+        'https://solscan.io/account/' + address + explorerUrlSuffix,
         '_blank',
       );
   };
