@@ -101,7 +101,7 @@ export default function FtxPayDialog({ open, onClose }) {
                         target="_blank"
                         rel="noopener"
                         href={
-                          `https://explorer.solana.com/account/${tokenInfo.address}` +
+                          `https://solscan.io/account/${tokenInfo.address}` +
                           urlSuffix
                         }
                       >

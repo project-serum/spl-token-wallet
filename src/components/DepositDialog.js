@@ -112,7 +112,7 @@ export default function DepositDialog({
             <DialogContentText variant="body2">
               <Link
                 href={
-                  `https://explorer.solana.com/account/${depositAddressStr}` +
+                  `https://solscan.io/account/${depositAddressStr}` +
                   urlSuffix
                 }
                 target="_blank"
