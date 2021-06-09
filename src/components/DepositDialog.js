@@ -118,7 +118,7 @@ export default function DepositDialog({
                 target="_blank"
                 rel="noopener"
               >
-                View on Solana Explorer
+                View on Solscan
               </Link>
             </DialogContentText>
           </>

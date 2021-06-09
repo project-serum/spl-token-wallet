@@ -610,7 +610,7 @@ function BalanceListItemDetails({
               target="_blank"
               rel="noopener"
             >
-              View on Solana
+              View on Solscan
             </Link>
           </Typography>
           {market && (
