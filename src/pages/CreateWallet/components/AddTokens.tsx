@@ -257,8 +257,7 @@ const AddTokens = () => {
                         (account) =>
                           account.parsed.mint.toBase58() === token.address,
                       )}
-                      onSubmit={onSubmit}
-                      disalbed={sending}
+                      disabled={sending}
                       selectedTokens={selectedTokens}
                       setSelectedTokens={setSelectedTokens}
                     />

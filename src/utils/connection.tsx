@@ -124,7 +124,6 @@ export function useAccountInfo(publicKey?: PublicKey) {
     const rawConnection = endpoint === MAINNET_BETA_ENDPOINT ? connection.getConnection() : connection
     let previousInfo: AccountInfo<Buffer> | null = null;
 
-    console.log('add account change', cacheKey, connection);
     const id = rawConnection.onAccountChange(publicKey, (info) => {
       if (
         !previousInfo ||
