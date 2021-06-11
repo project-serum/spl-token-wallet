@@ -67,7 +67,7 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
                 label={
                   <b>
                     {formattedIx && formattedIx.accounts[index].name
-                      ? sentenceCase(formattedIx.accounts[index].name)
+                      ? formattedIx.accounts[index].name
                       : 'Account #' + (index + 1)}
                   </b>
                 }
