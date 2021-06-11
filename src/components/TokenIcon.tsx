@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CoinPlaceholder from '../images/coinPlaceholder.svg';
+import { CCAI_MINT } from '../utils/tokens/instructions';
 
 export default function TokenIcon({
   mint,
@@ -33,7 +34,7 @@ export default function TokenIcon({
       style={{
         width: size,
         height: size,
-        borderRadius: `calc(${size} / 2)`,
+        borderRadius: mint === CCAI_MINT.toString() ? 0 : `calc(${size} / 2)`,
         ...style,
       }}
       onError={() => setHasError(true)}

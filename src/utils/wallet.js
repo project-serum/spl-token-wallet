@@ -448,7 +448,7 @@ export function useBalanceInfo(publicKey) {
       decimals: 9,
       mint,
       owner,
-      tokenName: 'CCAI',
+      tokenName: 'Cryptocurrencies.Ai',
       tokenSymbol: 'CCAI',
       valid: true,
       tokenLogoUri: ccaLogoUri,
