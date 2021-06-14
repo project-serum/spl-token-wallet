@@ -40,8 +40,10 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
+const LOCAL_BUILD = window.location.href.includes('localhost');
+const DEVELOP_BUILD = window.location.href.includes('develop');
+
 export default function App() {
-  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
   // TODO: add toggle for dark mode
   const prefersDarkMode = true;
   const theme = React.useMemo(
@@ -175,16 +177,13 @@ export default function App() {
           </ConnectionProvider>
         </ThemeProvider>
       </Suspense>
-      <DevUrlPopup
-        open={isDevUrlPopupOpen}
-        close={() => openDevUrlPopup(false)}
-      />
     </BrowserRouter>
   );
 }
 
 const Pages = () => {
   const wallet = useWallet();
+  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
@@ -205,28 +204,36 @@ const Pages = () => {
   }, []);
 
   return (
-    <Switch>
-      {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
-      <Route path="/wallet" component={Wallet} />
-      <Route path="/restore_wallet" component={RestorePage} />
-      <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" component={CreateWalletPage} />
-      {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
-      <Route exact path="/welcome_back" component={WelcomeBackPage} />
-      <Route path="/connect_popup" component={ConnectPopup} />
-
-      {/* popup if connecting from dex UI */}
-      {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
-
-      {/* if wallet exists - for case when we'll have unlocked wallet */}
-      {!!wallet && <Redirect from="/" to="/wallet" />}
-
-      {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed ? (
-        <Redirect from="/" to="/welcome_back" />
-      ) : (
-        <Redirect from="/" to="/welcome" />
+    <>
+      {DEVELOP_BUILD && (
+        <DevUrlPopup
+          open={isDevUrlPopupOpen}
+          close={() => openDevUrlPopup(false)}
+        />
       )}
-    </Switch>
+      <Switch>
+        {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
+        <Route path="/wallet" component={Wallet} />
+        <Route path="/restore_wallet" component={RestorePage} />
+        <Route path="/welcome" component={WelcomePage} />
+        <Route path="/create_wallet" component={CreateWalletPage} />
+        {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
+        <Route exact path="/welcome_back" component={WelcomeBackPage} />
+        <Route path="/connect_popup" component={ConnectPopup} />
+
+        {/* popup if connecting from dex UI */}
+        {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
+
+        {/* if wallet exists - for case when we'll have unlocked wallet */}
+        {!!wallet && <Redirect from="/" to="/wallet" />}
+
+        {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
+        {hasLockedMnemonicAndSeed ? (
+          <Redirect from="/" to="/welcome_back" />
+        ) : (
+          <Redirect from="/" to="/welcome" />
+        )}
+      </Switch>
+    </>
   );
 };
