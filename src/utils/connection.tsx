@@ -129,5 +129,5 @@ export async function getMultipleSolanaAccounts(
 ): Promise<
   Array<null | { publicKey: PublicKey; account: AccountInfo<Buffer> }>
 > {
-	return anchor.utils.getMultipleAccounts(connection, publicKeys);
+	return anchor.utils.rpc.getMultipleAccounts(connection, publicKeys);
 }
