@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useMemo, useState } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
@@ -15,6 +15,7 @@ import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
+import { DevUrlPopup } from '../src/components/DevUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -40,6 +41,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 }
 
 export default function App() {
+  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
   // TODO: add toggle for dark mode
   const prefersDarkMode = true;
   const theme = React.useMemo(
@@ -173,6 +175,10 @@ export default function App() {
           </ConnectionProvider>
         </ThemeProvider>
       </Suspense>
+      <DevUrlPopup
+        open={isDevUrlPopupOpen}
+        close={() => openDevUrlPopup(false)}
+      />
     </BrowserRouter>
   );
 }
