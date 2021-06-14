@@ -138,7 +138,7 @@ const NetworkDropdown = ({
 
   const networkLabels = [
     { name: 'Mainnet Beta', endpoint: MAINNET_URL },
-    { name: 'Devnet', endpoint: clusterApiUrl('devnet') },
+    { name: 'Devnet', endpoint: 'https://api.devnet.solana.com' },
     { name: 'Testnet', endpoint: clusterApiUrl('testnet') },
   ];
 

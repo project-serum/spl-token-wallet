@@ -235,7 +235,7 @@ export default function AddTokenDialog({ open, onClose }) {
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. CCAI Token)'}
+                placeholder={'Token Name (e.g. Cryptocurrencies.Ai)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}
@@ -316,8 +316,7 @@ export default function AddTokenDialog({ open, onClose }) {
                         (account) =>
                           account.parsed.mint.toBase58() === tokenInfo.address,
                       )}
-                      onSubmit={onSubmit}
-                      disalbed={sending}
+                      disabled={sending}
                       selectedTokens={selectedTokens}
                       setSelectedTokens={setSelectedTokens}
                     />
@@ -402,6 +401,15 @@ export function TokenListItem({
   existingAccount,
   selectedTokens,
   setSelectedTokens,
+}: {
+  name: string,
+  logoUri: string,
+  symbol: string,
+  mintAddress: string,
+  disabled: boolean,
+  existingAccount: boolean,
+  selectedTokens: any[],
+  setSelectedTokens: any
 }) {
   const alreadyExists = !!existingAccount;
 

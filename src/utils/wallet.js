@@ -413,6 +413,8 @@ export function useWalletAddressForMint(mint) {
   );
 }
 
+export const stripAddress = (address) => address.slice(0, 3) + '...' + address.slice(address.length - 3)
+
 export function useBalanceInfo(publicKey) {
   let [accountInfo, accountInfoLoaded] = useAccountInfo(publicKey);
   let { mint, owner, amount } = accountInfo?.owner.equals(TOKEN_PROGRAM_ID)
@@ -446,7 +448,7 @@ export function useBalanceInfo(publicKey) {
       decimals: 9,
       mint,
       owner,
-      tokenName: 'CCAI',
+      tokenName: 'Cryptocurrencies.Ai',
       tokenSymbol: 'CCAI',
       valid: true,
       tokenLogoUri: ccaLogoUri,
@@ -456,13 +458,14 @@ export function useBalanceInfo(publicKey) {
   if (mint && mintInfoLoaded) {
     try {
       let { decimals } = parseMintData(mintInfo.data);
+      const mintAddress = mint.toString()
       return {
         amount,
         decimals,
         mint,
         owner,
-        tokenName: name.replace(' (Sollet)', ''),
-        tokenSymbol: symbol,
+        tokenName: !!name ? name.replace(' (Sollet)', '') : '',
+        tokenSymbol: symbol || stripAddress(mintAddress),
         valid: true,
         tokenLogoUri: logoUri,
       };

@@ -264,7 +264,7 @@ const Navbar = () => {
                   color={theme.customPalette.grey.dark}
                   fontSize="1rem"
                 >
-                  {wallet.publicKey.toBase58()}
+                  {wallet?.publicKey.toBase58()}
                 </Title>
                 <Title color={theme.customPalette.green.main} fontSize="1rem">
                   <TotalBalance />

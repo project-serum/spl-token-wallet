@@ -26,7 +26,7 @@ export const ENDPOINTS = [
     endpoint: MAINNET_BETA_ENDPOINT,
   },
   { name: 'testnet', endpoint: clusterApiUrl('testnet') },
-  { name: 'devnet', endpoint: clusterApiUrl('devnet') },
+  { name: 'devnet', endpoint: 'https://api.devnet.solana.com' },
   { name: 'localnet', endpoint: 'http://127.0.0.1:8899' },
 ];
 
@@ -42,12 +42,12 @@ export function ConnectionProvider({ children }) {
         ? // multi connection only for mainnet
           new MultiEndpointsConnection(
             [
-              { url: 'https://mango.rpcpool.com/', RPS: 10 },
+              // { url: 'https://mango.rpcpool.com/', RPS: 10 },
               { url: 'https://solana-api.projectserum.com', RPS: 2 },
               { url: 'https://api.mainnet-beta.solana.com', RPS: 4 },
               // { url: 'https://raydium.rpcpool.com/', RPS: 10 },
-              { url: 'https://orca.rpcpool.com/', RPS: 10 },
-              { url: 'https://api.rpcpool.com', RPS: 10 },
+              // { url: 'https://orca.rpcpool.com/', RPS: 10 },
+              // { url: 'https://api.rpcpool.com', RPS: 10 },
             ],
             'recent',
           )
@@ -97,7 +97,7 @@ export function useSolanaExplorerUrlSuffix() {
     throw new Error('Missing connection context');
   }
   const endpoint = context.endpoint;
-  if (endpoint === clusterApiUrl('devnet')) {
+  if (endpoint === 'https://api.devnet.solana.com') {
     return '?cluster=devnet';
   } else if (endpoint === clusterApiUrl('testnet')) {
     return '?cluster=testnet';
@@ -124,7 +124,6 @@ export function useAccountInfo(publicKey?: PublicKey) {
     const rawConnection = endpoint === MAINNET_BETA_ENDPOINT ? connection.getConnection() : connection
     let previousInfo: AccountInfo<Buffer> | null = null;
 
-    console.log('add account change', cacheKey, connection);
     const id = rawConnection.onAccountChange(publicKey, (info) => {
       if (
         !previousInfo ||
