@@ -1938,20 +1938,20 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/swap-ui@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.1.3.tgz#a49c66d0549dbdf41f5e1d8b5ffce98364965eb1"
-  integrity sha512-SijHWDnH9xfO0cgjp93megUvw8x5GrdtSQnpGxg/keyjdv7jg8Ee06A4VHnaI3HbZDfYXzwwo/oM2UC9NMNV/A==
+"@project-serum/swap-ui@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.1.4.tgz#da379cb47610e0b4275e29682ace4a3cac010834"
+  integrity sha512-ddgYsb0G9SfEBebWXDdowq2iGnrNL96JHy5DMe6+Xzl3fotHNFySukJz6K8MGWxAkHLBeesQGexNAiGuNKITMQ==
   dependencies:
     "@fontsource/roboto" "^4.3.0"
     "@project-serum/serum" "^0.13.34"
-    "@project-serum/swap" "^0.1.0-alpha.20"
+    "@project-serum/swap" "^0.1.0-alpha.24"
     "@solana/spl-token" "^0.1.4"
 
-"@project-serum/swap@^0.1.0-alpha.20":
-  version "0.1.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@project-serum/swap/-/swap-0.1.0-alpha.20.tgz#0d5a57d2d6e507b3375cfb8965bb85fc7bdda9cf"
-  integrity sha512-Q2schT1I/gSj3k9crlefxv9qdeWSPYPtF39Ga518cKlakdXt8FZgfmAgJs7YN389GkOo5FcNBSVvVO47H4mBAg==
+"@project-serum/swap@^0.1.0-alpha.24":
+  version "0.1.0-alpha.24"
+  resolved "https://registry.yarnpkg.com/@project-serum/swap/-/swap-0.1.0-alpha.24.tgz#de98f91251175744a668f6b181742a9954acddb2"
+  integrity sha512-ebzpg3Wo7IBGyd2P1w1/lbd1jHdN9uW3DOBi57CdViGN2NCs3Q3A5wH2fyjZ7DUTjQ/o/moZ5N24kHtL6zvwQg==
   dependencies:
     "@project-serum/serum" "^0.13.34"
     "@solana/spl-token" "^0.1.3"

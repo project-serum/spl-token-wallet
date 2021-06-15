@@ -1,5 +1,11 @@
-import React from 'react';
-import { Tooltip, Popover, IconButton } from '@material-ui/core';
+import React, { useState } from 'react';
+import {
+  Tooltip,
+  Popover,
+  IconButton,
+  DialogActions,
+  Button,
+} from '@material-ui/core';
 import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import Swap from '@project-serum/swap-ui';
@@ -10,22 +16,76 @@ import { useTokenInfos } from '../utils/tokens/names';
 import { useSendTransaction } from '../utils/notifications';
 import { useWallet } from '../utils/wallet';
 import { useConnection } from '../utils/connection';
+import { isExtension } from '../utils/utils';
+import DialogForm from './DialogForm';
 
 export default function SwapButton({ size }) {
+  if (isExtension) {
+    return <SwapButtonDialog />;
+  } else {
+    return <SwapButtonPopover />;
+  }
+}
+
+function SwapButtonDialog({ size }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [sendTransaction] = useSendTransaction();
   const connection = useConnection();
   const wallet = useWallet();
   const tokenInfos = useTokenInfos();
   const tokenList = tokenInfos && new TokenListContainer(tokenInfos);
   const provider = new NotifyingProvider(connection, wallet, sendTransaction);
+  return (
+    <>
+      <Tooltip title="Swap Tokens">
+        <IconButton size={size} onClick={() => setDialogOpen(true)}>
+          <SwapHoriz />
+        </IconButton>
+      </Tooltip>
+      <DialogForm
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        fullWidth
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
+          <Swap
+            provider={provider}
+            tokenList={tokenList}
+            containerStyle={{
+              width: '100%',
+              boxShadow: 'none',
+            }}
+          />
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)}>Close</Button>
+          </DialogActions>
+        </div>
+      </DialogForm>
+    </>
+  );
+}
 
+function SwapButtonPopover({ size }) {
+  const [sendTransaction] = useSendTransaction();
+  const connection = useConnection();
+  const wallet = useWallet();
+  const tokenInfos = useTokenInfos();
+  const tokenList = tokenInfos && new TokenListContainer(tokenInfos);
+  const provider = new NotifyingProvider(connection, wallet, sendTransaction);
   return (
     tokenList && (
       <PopupState variant="popover">
         {(popupState) => (
           <div style={{ display: 'flex' }}>
             <Tooltip title="Swap Tokens">
-              <IconButton {...bindTrigger(popupState)} size={size} >
+              <IconButton {...bindTrigger(popupState)} size={size}>
                 <SwapHoriz />
               </IconButton>
             </Tooltip>
@@ -43,7 +103,11 @@ export default function SwapButton({ size }) {
               disableRestoreFocus
               keepMounted
             >
-              <Swap provider={provider} tokenList={tokenList} />
+              <Swap
+                provider={provider}
+                tokenList={tokenList}
+                containerStyle={{ width: '432px' }}
+              />
             </Popover>
           </div>
         )}
