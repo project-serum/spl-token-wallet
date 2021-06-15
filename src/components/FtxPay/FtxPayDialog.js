@@ -9,7 +9,7 @@ import { useWalletSelector } from '../../utils/wallet';
 import { usePopularTokens } from '../../utils/tokens/names';
 import TokenIcon from '../TokenIcon';
 import Link from '@material-ui/core/Link';
-import { abbreviateAddress } from '../../utils/utils';
+import { abbreviateAddress, useIsExtensionWidth } from '../../utils/utils';
 import FormControl from '@material-ui/core/FormControl';
 import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
 import { MenuItem, Select } from '@material-ui/core';
@@ -44,6 +44,8 @@ export default function FtxPayDialog({ open, onClose }) {
   const [coin, setCoin] = useState('SOL');
   const address = selectedAccount?.address?.toBase58();
   const urlSuffix = useSolanaExplorerUrlSuffix();
+  const isExtensionWidth = useIsExtensionWidth();
+
   const onSubmit = () => {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('address', address);
@@ -56,6 +58,7 @@ export default function FtxPayDialog({ open, onClose }) {
       'resizable,width=450,height=780',
     );
   };
+
   return (
     <DialogForm open={open} onClose={onClose} fullWidth>
       <DialogTitle>
@@ -83,7 +86,7 @@ export default function FtxPayDialog({ open, onClose }) {
                     size={30}
                     className={classes.tokenIcon}
                   />
-                  <div>Solana SOL</div>
+                  <div>{isExtensionWidth ? 'SOL' : 'Solana SOL'}</div>
                 </div>
               </MenuItem>
               {popularTokens
@@ -105,8 +108,7 @@ export default function FtxPayDialog({ open, onClose }) {
                           urlSuffix
                         }
                       >
-                        {tokenInfo.name ?? abbreviateAddress(tokenInfo.address)}{' '}
-                        {tokenInfo.symbol}
+                        {(isExtensionWidth ? '' : `${tokenInfo.name ?? abbreviateAddress(tokenInfo.address)} `) + tokenInfo.symbol}
                       </Link>
                     </div>
                   </MenuItem>

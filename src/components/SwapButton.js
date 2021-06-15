@@ -11,7 +11,7 @@ import { useSendTransaction } from '../utils/notifications';
 import { useWallet } from '../utils/wallet';
 import { useConnection } from '../utils/connection';
 
-export default function SwapButton() {
+export default function SwapButton({ size }) {
   const [sendTransaction] = useSendTransaction();
   const connection = useConnection();
   const wallet = useWallet();
@@ -25,7 +25,7 @@ export default function SwapButton() {
         {(popupState) => (
           <div style={{ display: 'flex' }}>
             <Tooltip title="Swap Tokens">
-              <IconButton {...bindTrigger(popupState)}>
+              <IconButton {...bindTrigger(popupState)} size={size} >
                 <SwapHoriz />
               </IconButton>
             </Tooltip>

@@ -216,7 +216,10 @@ export default function BalancesList() {
               </Tooltip>
             )}
           <Tooltip title="Deposit via FTX Pay" arrow>
-            <IconButton onClick={() => setShowFtxPayDialog(true)}>
+            <IconButton
+              size={iconSize}
+              onClick={() => setShowFtxPayDialog(true)}
+            >
               <img
                 title={'FTX Pay'}
                 alt={'FTX Pay'}
@@ -228,7 +231,7 @@ export default function BalancesList() {
               />
             </IconButton>
           </Tooltip>
-          <SwapButton />
+          <SwapButton size={iconSize} />
           <Tooltip title="Merge Tokens" arrow>
             <IconButton
               size={iconSize}

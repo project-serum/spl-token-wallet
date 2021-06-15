@@ -160,7 +160,7 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             label="I have saved these words in a safe place."
           />
           <Typography paragraph>
-          <Button variant="contained" color="primary" onClick={() => {
+          <Button variant="contained" color="primary" style={{ marginTop: 20 }} onClick={() => {
             downloadMnemonic(mnemonicAndSeed?.mnemonic);
             setDownloaded(true);
           }}>
