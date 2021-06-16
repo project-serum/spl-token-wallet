@@ -20,8 +20,8 @@ import { useIsExtensionWidth } from '../utils/utils';
 import DialogForm from './DialogForm';
 
 export default function SwapButton({ size }) {
-  const isExtension = useIsExtensionWidth();
-  if (isExtension) {
+  const isExtensionWidth = useIsExtensionWidth();
+  if (isExtensionWidth) {
     return <SwapButtonDialog />;
   } else {
     return <SwapButtonPopover />;
