@@ -16,11 +16,12 @@ import { useTokenInfos } from '../utils/tokens/names';
 import { useSendTransaction } from '../utils/notifications';
 import { useWallet } from '../utils/wallet';
 import { useConnection } from '../utils/connection';
-import { isExtension } from '../utils/utils';
+import { useIsExtensionWidth } from '../utils/utils';
 import DialogForm from './DialogForm';
 
 export default function SwapButton({ size }) {
-  if (isExtension) {
+  const isExtensionWidth = useIsExtensionWidth();
+  if (isExtensionWidth) {
     return <SwapButtonDialog />;
   } else {
     return <SwapButtonPopover />;
