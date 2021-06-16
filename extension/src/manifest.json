@@ -1,7 +1,7 @@
 {
   "name": "Sollet",
   "description": "Solana SPL Token Wallet",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Open the popup"
