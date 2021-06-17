@@ -39,7 +39,7 @@ const Item = ({
   const assetsValues = isNavbar ? assetsValuesNavbar : assetsValuesTotal;
 
   const [price, setPriceRaw] = useState<number | null | undefined>(assetsValues[publicKey]?.price);
-  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const coin = balanceInfo?.tokenSymbol?.toUpperCase();
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
   const connection = useConnection();
@@ -52,7 +52,7 @@ const Item = ({
   useEffect(() => {
     if (balanceInfo && price === undefined) {
       if (balanceInfo.tokenSymbol) {
-        const coin = balanceInfo.tokenSymbol.toUpperCase();
+        const coin = balanceInfo.tokenSymbol?.toUpperCase();
         // Don't fetch USD stable coins. Mark to 1 USD.
         if (isUSDT) {
           setPrice(1);
