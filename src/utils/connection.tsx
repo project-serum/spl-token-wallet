@@ -17,7 +17,9 @@ const ConnectionContext = React.createContext<{
 } | null>(null);
 
 export const MAINNET_URL = 'https://solana-api.projectserum.com';
-export const MAINNET_VIP_URL = 'https://vip-api-1e4b2d8l9r.mainnet-beta.solana.com';
+// No backup url for now. Leave the variable to not break wallets that
+// have saved the url in their local storage, previously.
+export const MAINNET_BACKUP_URL = 'https://solana-api.projectserum.com/';
 export function ConnectionProvider({ children }) {
   const [endpoint, setEndpoint] = useLocalStorageState(
     'connectionEndpoint',
@@ -56,7 +58,7 @@ export function useIsProdNetwork() {
   if (!context) {
     throw new Error('Missing connection context');
   }
-  return context.endpoint === MAINNET_URL || context.endpoint === MAINNET_VIP_URL;
+  return context.endpoint === MAINNET_URL || context.endpoint === MAINNET_BACKUP_URL;
 }
 
 export function useSolanaExplorerUrlSuffix() {
