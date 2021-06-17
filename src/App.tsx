@@ -205,7 +205,7 @@ const Pages = () => {
 
   return (
     <>
-      {DEVELOP_BUILD && (
+      {DEVELOP_BUILD && !LOCAL_BUILD && (
         <DevUrlPopup
           open={isDevUrlPopupOpen}
           close={() => openDevUrlPopup(false)}
