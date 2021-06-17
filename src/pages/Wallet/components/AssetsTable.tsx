@@ -533,7 +533,7 @@ const AssetItem = ({
     tokenLogoUri: null,
   };
 
-  const coin = balanceInfo?.tokenSymbol.toUpperCase();
+  const coin = balanceInfo?.tokenSymbol?.toUpperCase();
   const [price, setPriceRaw] = useState(assetsValues[publicKey]?.price);
   const isUSDT =
     coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
