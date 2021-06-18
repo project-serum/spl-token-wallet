@@ -4,7 +4,6 @@ import { LedgerWalletProvider } from '../../../utils/walletProvider/ledger';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useSnackbar } from 'notistack';
 import {
-  Card,
   RowContainer,
   Title,
   VioletButton,
@@ -43,7 +42,7 @@ export function toDerivationPath(dPathMenuItem) {
 }
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
-  const [view, setView] = useState(AddHardwareView.Splash);
+  const [view, setView] = useState(AddHardwareView.Accounts);
   const [hardwareAccount, setHardwareAccount] = useState(null);
   return (
     <DialogForm height="auto"
@@ -92,7 +91,8 @@ function ConfirmHardwareWallet({ account, onDone, onBack }) {
           onBack();
         });
     }
-  });
+  })
+  
   return (
     <>
       <RowContainer>
@@ -179,12 +179,10 @@ export function AccountsSelector({
   onClick,
 }) {
   return (
-    <Card>
+    <>
       <RowContainer
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
+        width="90%"
+        justify="space-between"
       >
         <Title variant="h5" gutterBottom>
           Derivable Accounts
@@ -215,6 +213,7 @@ export function AccountsSelector({
           </Select>
         </FormControl>
       </RowContainer>
+      <RowContainer direction="column" margin="2rem 0 0 0">
       {accounts.map((acc) => {
         return (
           // @ts-ignore
@@ -222,14 +221,14 @@ export function AccountsSelector({
             <BalanceListItem
               key={acc.publicKey.toString()}
               expandable={false}
-              // @ts-ignore
-              onClick={onClick}
               publicKey={acc.publicKey}
+              setUsdValue={() => {}}
             />
           </div>
         );
       })}
-    </Card>
+      </RowContainer>
+    </>
   );
 }
 
@@ -283,7 +282,7 @@ function LedgerAccounts({ onContinue, onClose, open }) {
     }
   }, [dPathMenuItem, enqueueSnackbar, open, onClose]);
   return (
-    <Card elevation={0}>
+    <>
       {accounts === null ? (
         <div style={{ padding: '24px' }}>
           <Title align="center">
@@ -294,6 +293,7 @@ function LedgerAccounts({ onContinue, onClose, open }) {
               display: 'block',
               marginLeft: 'auto',
               marginRight: 'auto',
+              marginTop: '1rem',
             }}
           />
         </div>
@@ -307,6 +307,6 @@ function LedgerAccounts({ onContinue, onClose, open }) {
           dPathMenuItem={dPathMenuItem}
         />
       )}
-    </Card>
+    </>
   );
 }

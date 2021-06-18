@@ -13,7 +13,7 @@ import {
 import { findAssociatedTokenAddress } from '../utils/tokens';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@material-ui/core/Collapse';
-import { Typography } from '@material-ui/core';
+import { Typography, useTheme } from '@material-ui/core';
 import TokenInfoDialog from './TokenInfoDialog';
 import Link from '@material-ui/core/Link';
 import ExpandLess from '@material-ui/icons/ExpandLess';
@@ -54,6 +54,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
 import EditAccountNameDialog from './EditAccountNameDialog';
 import MergeAccountsDialog from './MergeAccountsDialog';
+import { StyledTitle } from '../pages/RestoreWallet/DerivableAccounts';
+import { Title } from '../pages/commonStyles';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -295,6 +297,7 @@ const useStyles = makeStyles((theme) => ({
 export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
+  const theme = useTheme()
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
@@ -389,7 +392,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
           <FingerprintIcon style={{ width: '20px' }} />
         </div>
       )}
-      <div
+      <StyledTitle
         style={{
           display: 'flex',
           justifyContent: 'center',
@@ -397,7 +400,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
         }}
       >
         {publicKey.toBase58()}
-      </div>
+      </StyledTitle>
     </div>
   );
 
@@ -414,18 +417,18 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
 
   return (
     <>
-      <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
+      <ListItem  button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
           <TokenIcon mint={mint} tokenName={tokenName} size={28} />
         </ListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
           <ListItemText
             primary={
-              <>
+              <Title color={theme.customPalette.green.light}>
                 {balanceFormat.format(amount / Math.pow(10, decimals))}{' '}
                 {tokenName ?? abbreviateAddress(mint)}
                 {tokenSymbol ? ` (${tokenSymbol})` : null}
-              </>
+              </Title>
             }
             secondary={subtitle}
             secondaryTypographyProps={{ className: classes.address }}
