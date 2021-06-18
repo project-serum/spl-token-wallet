@@ -203,34 +203,32 @@ const AccountsSelector = ({
               );
             })}
           </RowContainer>
-          {!isFromPopup && (
-            <RowContainer padding="0 1.6rem" direction="column">
-              <WalletActionButton
-                theme={theme}
-                icon={AddIcon}
-                buttonText={'Add Account'}
-                openPopup={() => setIsAddAccountOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ImportHardwareIcon}
-                buttonText={'Import Hardware Wallet'}
-                openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ExportMnemonicIcon}
-                buttonText={'Export Seed Phrase'}
-                openPopup={() => setIsExportMnemonicOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={DeleteAccountIcon}
-                buttonText={'Forget wallet for this device'}
-                openPopup={() => setIsDeleteAccountOpen(true)}
-              />
-            </RowContainer>
-          )}
+          <RowContainer padding="0 1.6rem" direction="column">
+            <WalletActionButton
+              theme={theme}
+              icon={AddIcon}
+              buttonText={'Add Account'}
+              openPopup={() => setIsAddAccountOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ImportHardwareIcon}
+              buttonText={'Import Hardware Wallet'}
+              openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ExportMnemonicIcon}
+              buttonText={'Export Seed Phrase'}
+              openPopup={() => setIsExportMnemonicOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={DeleteAccountIcon}
+              buttonText={'Forget wallet for this device'}
+              openPopup={() => setIsDeleteAccountOpen(true)}
+            />
+          </RowContainer>
         </RowContainer>
       </StyledCard>
 
