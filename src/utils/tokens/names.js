@@ -264,6 +264,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'sMOON',
+      mintAddress: '61jpgnwjRvMi65NMpcuX1iXiAVfukBfKbPH4mAX7H1sb',
+      tokenName: 'SolarMoon',
+      icon:
+        'https://raw.githubusercontent.com/notsolma/SolarMoon/main/solarmoon/images/SolarMoonDark.jpeg',
+    },
   ],
 };
 
