@@ -104,11 +104,14 @@ const AccountsSelector = ({
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
   const theme = useTheme();
-  const { accounts, addAccount, setWalletSelector } = useWalletSelector();
+  const {
+    accounts,
+    hardwareWalletAccount,
+    setHardwareWalletAccount,
+    setWalletSelector,
+  } = useWalletSelector();
 
-  const accountsToShow = accounts.filter((acc) =>
-    isFromPopup ? !acc.selector.ledger : true,
-  );
+  const accountsToShow = hardwareWalletAccount ? accounts.concat(hardwareWalletAccount) : accounts;
   const selectedAccount = accounts.find((a) => a.isSelected);
 
   return (
@@ -200,41 +203,38 @@ const AccountsSelector = ({
               );
             })}
           </RowContainer>
-          {!isFromPopup && (
-            <RowContainer padding="0 1.6rem" direction="column">
-              <WalletActionButton
-                theme={theme}
-                icon={AddIcon}
-                buttonText={'Add Account'}
-                openPopup={() => setIsAddAccountOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ImportHardwareIcon}
-                buttonText={'Import Hardware Wallet'}
-                openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ExportMnemonicIcon}
-                buttonText={'Export Seed Phrase'}
-                openPopup={() => setIsExportMnemonicOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={DeleteAccountIcon}
-                buttonText={'Forget wallet for this device'}
-                openPopup={() => setIsDeleteAccountOpen(true)}
-              />
-            </RowContainer>
-          )}
+          <RowContainer padding="0 1.6rem" direction="column">
+            <WalletActionButton
+              theme={theme}
+              icon={AddIcon}
+              buttonText={'Add Account'}
+              openPopup={() => setIsAddAccountOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ImportHardwareIcon}
+              buttonText={'Import Hardware Wallet'}
+              openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ExportMnemonicIcon}
+              buttonText={'Export Seed Phrase'}
+              openPopup={() => setIsExportMnemonicOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={DeleteAccountIcon}
+              buttonText={'Forget wallet for this device'}
+              openPopup={() => setIsDeleteAccountOpen(true)}
+            />
+          </RowContainer>
         </RowContainer>
       </StyledCard>
 
       <AddAccountPopup
         open={isAddAccountOpen}
         onAdd={({ name, importedAccount }) => {
-          addAccount({ name, importedAccount });
           setWalletSelector({
             walletIndex: importedAccount
               ? undefined
@@ -253,16 +253,23 @@ const AccountsSelector = ({
       <AddHardwareWalletPopup
         open={isAddHardwareWalletDialogOpen}
         onClose={() => setIsAddHardwareWalletDialogOpen(false)}
-        onAdd={(pubKey) => {
-          addAccount({
+        onAdd={({ publicKey, derivationPath, account, change }) => {
+          setHardwareWalletAccount({
             name: 'Hardware wallet',
-            importedAccount: pubKey.toString(),
+            publicKey,
+            importedAccount: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
           setWalletSelector({
             walletIndex: undefined,
-            importedPubkey: pubKey.toString(),
+            importedPubkey: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
         }}
       />
