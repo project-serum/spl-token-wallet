@@ -10,6 +10,8 @@ import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
 
 import { RowContainer } from '../commonStyles';
+import { PublicKey } from '@solana/web3.js';
+import { useWallet } from '../../utils/wallet';
 
 const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
@@ -61,11 +63,12 @@ const TableContainer = styled(RowContainer)`
 `;
 
 const Wallet = () => {
+  const wallet  = useWallet()
   const [selectedTokenData, selectToken] = useState<{
-    publicKey: string;
+    publicKey: PublicKey;
     isAssociatedToken: boolean;
   }>({
-    publicKey: '',
+    publicKey: wallet.publicKey,
     isAssociatedToken: false,
   });
   const [sendDialogOpen, setSendDialogOpen] = useState(false);

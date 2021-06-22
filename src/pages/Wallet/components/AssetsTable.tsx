@@ -1,23 +1,20 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { Theme, useTheme } from '@material-ui/core';
+import { PublicKey } from '@solana/web3.js';
 
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 
 import TokenIcon from '../../../components/TokenIcon';
 import {
-  refreshWalletPublicKeys,
-  useBalanceInfo,
   useWallet,
-  useWalletPublicKeys,
 } from '../../../utils/wallet';
 
 import {
-  refreshAccountInfo,
   useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../../utils/connection';
-import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+import { formatNumberToUSFormat, getAllTokensData, isUSDToken, stripDigitPlaces, TokenInfo, useInterval } from '../../../utils/utils';
 import { BtnCustom } from '../../../components/BtnCustom';
 
 import AddIcon from '../../../images/addIcon.svg';
@@ -27,9 +24,11 @@ import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
 import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
-import { priceStore, serumMarkets } from '../../../utils/markets';
 import ActivitiesDropdown from './ActivitiesDropdown';
 import { findAssociatedTokenAddress } from '../../../utils/tokens';
+import { useTokenInfos } from '../../../utils/tokens/names';
+import { CCAI_MINT } from '../../../utils/tokens/instructions';
+import { Loading } from '../../../components/Loading';
 
 export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
@@ -265,28 +264,11 @@ const LastStyledTd = styled(StyledTd)`
     width: 100%;
   }
 `;
-// Aggregated $USD values of all child BalanceListItems child components.
-//
-// Values:
-// * undefined => loading.
-// * null => no market exists.
-// * float => done.
-//
-// For a given set of publicKeys, we know all the USD values have been loaded when
-// all of their values in this object are not `undefined`.
-export const assetsValues: any = {};
 
 // Calculating associated token addresses is an asynchronous operation, so we cache
 // the values so that we can quickly render components using them. This prevents
 // flickering for the associated token fingerprint icon.
 export const associatedTokensCache = {};
-
-export function fairsIsLoaded(publicKeys) {
-  return (
-    publicKeys.filter((pk) => assetsValues[pk.toString()] !== undefined)
-      .length === publicKeys.length
-  );
-}
 
 const AssetsTable = ({
   isActive,
@@ -300,7 +282,7 @@ const AssetsTable = ({
     publicKey,
     isAssociatedToken,
   }: {
-    publicKey: string;
+    publicKey: PublicKey;
     isAssociatedToken: boolean;
   }) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
@@ -309,109 +291,68 @@ const AssetsTable = ({
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
-  const [, setTotalUSD] = useState(0);
+  const connection = useConnection()
+  const tokenInfos = useTokenInfos()
+  const [refreshCounter, changeRefreshCounter] = useState(0);
   const [marketsData, setMarketsData] = useState<any>(null);
-  const [publicKeys] = useWalletPublicKeys();
+  const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(new Map());
+
+  const walletPubkey = wallet?.publicKey?.toString()
+
+  useInterval(() => {
+    changeRefreshCounter(refreshCounter + 1)
+  }, 15 * 1000)
 
   useEffect(() => {
     const getData = async () => {
       const data = await MarketsDataSingleton.getData();
+      const allTokensInfo = await getAllTokensData(new PublicKey(walletPubkey), connection, tokenInfos)
+
       setMarketsData(data);
+      setAllTokensData(allTokensInfo)
     };
 
     getData();
-  }, []);
+  }, [connection, walletPubkey, tokenInfos, refreshCounter]);
 
-  // Dummy var to force rerenders on demand.
   const sortedPublicKeys = useMemo(
-    () =>
-      Array.isArray(publicKeys)
-        ? [...publicKeys].sort((a, b) => {
-            const aVal = assetsValues[a.toString()]?.usdValue;
-            const bVal = assetsValues[b.toString()]?.usdValue;
+    () => [...allTokensData.values()].sort((tokenA, tokenB) => {
+      if ((!tokenA && !tokenB) || !walletPubkey) return 0
+      if (!tokenA) return 1
+      if (!tokenB) return -1
 
-            // SOL always fisrt
-            if (a.equals(wallet.publicKey)) return -1;
-            if (b.equals(wallet.publicKey)) return 1;
+      const isTokenAUSDT = isUSDToken(tokenA.symbol)
+      const isTokenBUSDT = isUSDToken(tokenB.symbol)
 
-            a = aVal === undefined || aVal === null ? -1 : aVal;
-            b = bVal === undefined || bVal === null ? -1 : bVal;
+      let tokenAPrice = (marketsData.get(`${tokenA.symbol}_USDC`) || marketsData.get(`${tokenA.symbol}_USDT`) || { closePrice: 0}).closePrice
+      if (isTokenAUSDT) tokenAPrice = 1
+      let tokenBPrice = (marketsData.get(`${tokenB.symbol}_USDC`) || marketsData.get(`${tokenB.symbol}_USDT`) || { closePrice: 0}).closePrice
+      if (isTokenBUSDT) tokenBPrice = 1
+      
+      const aVal = tokenA.amount * tokenAPrice;
+      const bVal = tokenB.amount * tokenBPrice;
 
-            if (b < a) {
-              return -1;
-            } else if (b > a) {
-              return 1;
-            } else {
-              return 0;
-            }
-          })
-        : [],
-    [publicKeys, wallet.publicKey],
-  );
+      // SOL always fisrt
+      if (new PublicKey(tokenA.address).equals(new PublicKey(walletPubkey))) return -1;
+      if (new PublicKey(tokenB.address).equals(new PublicKey(walletPubkey))) return 1;
 
-  // const selectedAccount = accounts.find((a) => a.isSelected);
-  // const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
+      // CCAI always second
+      if (new PublicKey (tokenA.mint).equals(CCAI_MINT)) return -1;
+      if (new PublicKey (tokenB.mint).equals(CCAI_MINT)) return 1;
 
-  // Memoized callback and component for the `BalanceListItems`.
-  //
-  // The `BalancesList` fetches data, e.g., fairs for tokens using React hooks
-  // in each of the child `BalanceListItem` components. However, we want the
-  // parent component, to aggregate all of this data together, for example,
-  // to show the cumulative USD amount in the wallet.
-  //
-  // To achieve this, we need to pass a callback from the parent to the chlid,
-  // so that the parent can collect the results of all the async network requests.
-  // However, this can cause a render loop, since invoking the callback can cause
-  // the parent to rerender, which causese the child to rerender, which causes
-  // the callback to be invoked.
-  //
-  // To solve this, we memoize all the `BalanceListItem` children components
+      const totalA = aVal === undefined || aVal === null ? -1 : aVal;
+      const totalB = bVal === undefined || bVal === null ? -1 : bVal;
 
-  const setUsdValuesCallback = useCallback(
-    (publicKey, usdValue) => {
-      assetsValues[publicKey.toString()] = {
-        ...assetsValues[publicKey.toString()],
-        usdValue,
-      };
-
-      const totalUsdValue: any = sortedPublicKeys
-        .filter((pk) => assetsValues[pk.toString()])
-        .map((pk) => assetsValues[pk.toString()].usdValue)
-        .reduce((a, b) => a + b, 0.0);
-
-      if (fairsIsLoaded(sortedPublicKeys)) {
-        setTotalUSD(totalUsdValue);
+      if (totalB < totalA) {
+        return -1;
+      } else if (totalB > totalA) {
+        return 1;
+      } else {
+        return tokenA.symbol.localeCompare(tokenB.symbol);
       }
-    },
-    [sortedPublicKeys],
+    }),
+    [allTokensData, walletPubkey, marketsData],
   );
-
-  const memoizedAssetsList = useMemo(() => {
-    return sortedPublicKeys.map((pk, i) => {
-      return React.memo(() => {
-        return (
-          <AssetItem
-            key={`${pk.toString()}-${i}-table`}
-            publicKey={pk}
-            theme={theme}
-            marketsData={marketsData}
-            setUsdValue={setUsdValuesCallback}
-            selectToken={selectToken}
-            setSendDialogOpen={setSendDialogOpen}
-            setDepositDialogOpen={setDepositDialogOpen}
-          />
-        );
-      });
-    });
-  }, [
-    sortedPublicKeys,
-    theme,
-    marketsData,
-    selectToken,
-    setSendDialogOpen,
-    setDepositDialogOpen,
-    setUsdValuesCallback,
-  ]);
 
   return (
     <TableContainer
@@ -445,10 +386,7 @@ const AssetsTable = ({
             padding={'1.2rem 0'}
             onClick={() => {
               try {
-                refreshWalletPublicKeys(wallet);
-                sortedPublicKeys.forEach((publicKey) => {
-                  refreshAccountInfo(wallet.connection, publicKey, true);
-                });
+                changeRefreshCounter(refreshCounter + 1)
               } catch (e) {
                 console.error(e);
               }
@@ -469,9 +407,19 @@ const AssetsTable = ({
       >
         <StyledTable theme={theme}>
           <tbody>
-            {memoizedAssetsList.map((MemoizedAsset, i) => (
-              <MemoizedAsset key={i} />
+            {sortedPublicKeys.map((balanceInfo, i) => (
+              <AssetItem
+                key={`${balanceInfo.address}-${i}-table`}
+                publicKey={new PublicKey(balanceInfo.address)}
+                theme={theme}
+                marketsData={marketsData}
+                balanceInfo={balanceInfo}
+                selectToken={selectToken}
+                setSendDialogOpen={setSendDialogOpen}
+                setDepositDialogOpen={setDepositDialogOpen}
+              />
             ))}
+            {sortedPublicKeys.length === 0 && <Loading color={'#366ce5'} style={{ padding: '2rem 0 2rem 4.8rem'}} />}
             <StyledTr disableHover theme={theme} style={{ width: '100%' }}>
               <LastStyledTd colSpan={2}>
                 <AddTokenBtnRow>
@@ -496,128 +444,77 @@ const AssetItem = ({
   setSendDialogOpen,
   setDepositDialogOpen,
   marketsData = new Map(),
-  setUsdValue,
+  balanceInfo,
+
 }: {
-  publicKey: any;
+  publicKey: PublicKey;
   theme: Theme;
-  marketsData: any;
-  setUsdValue: (publicKey: any, usdValue: null | number) => void;
+  marketsData: Map<string, { lastPriceDiff: number, closePrice: number }>;
+  balanceInfo?: TokenInfo;
   selectToken: ({
     publicKey,
     isAssociatedToken,
   }: {
-    publicKey: string;
+    publicKey: PublicKey;
     isAssociatedToken: boolean;
   }) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
 }) => {
   const wallet = useWallet();
-  const balanceInfo = useBalanceInfo(publicKey);
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  const connection = useConnection();
 
   let {
     amount,
-    decimals,
     mint,
-    tokenName,
-    tokenSymbol,
+    name: tokenName,
+    symbol: tokenSymbol,
     tokenLogoUri,
   } = balanceInfo || {
     amount: 0,
-    decimals: 8,
-    mint: null,
-    tokenName: 'Loading...',
-    tokenSymbol: '--',
-    tokenLogoUri: null,
+    mint: '',
+    name: 'Loading...',
+    symbol: '--',
+    tokenLogoUri: undefined,
   };
-
-  const coin = balanceInfo?.tokenSymbol?.toUpperCase();
-  const [price, setPriceRaw] = useState(assetsValues[publicKey]?.price);
-  const isUSDT =
-    coin === 'USDT' || coin === 'USDC' || coin === 'WUSDC' || coin === 'WUSDT';
-
-  const setPrice = useCallback(
-    (price: number | undefined | null) => {
-      assetsValues[publicKey] = { ...assetsValues[publicKey], price };
-      setPriceRaw(price);
-    },
-    [setPriceRaw, publicKey],
-  );
-
-  useEffect(() => {
-    if (balanceInfo && assetsValues[publicKey] === undefined) {
-      if (balanceInfo.tokenSymbol) {
-        // Don't fetch USD stable coins. Mark to 1 USD.
-        if (isUSDT) {
-          setPrice(1);
-        }
-        // A Serum market exists. Fetch the price.
-        else if (serumMarkets[coin]) {
-          let m = serumMarkets[coin];
-
-          priceStore
-            .getPrice(connection, m.name)
-            .then((price) => {
-              setPrice(price || 0);
-            })
-            .catch((err) => {
-              console.error(err);
-              setPrice(null);
-            });
-        }
-        // No Serum market exists.
-        else {
-          setPrice(null);
-        }
-      }
-      // No token symbol so don't fetch market data.
-      else {
-        setPrice(null);
-      }
-    }
-
-    return () => {};
-  }, [price, balanceInfo, connection, coin, isUSDT, setPrice, publicKey]);
 
   // Fetch and cache the associated token address.
   if (wallet && wallet.publicKey && mint) {
     if (
       associatedTokensCache[wallet.publicKey.toString()] === undefined ||
-      associatedTokensCache[wallet.publicKey.toString()][mint.toString()] ===
+      associatedTokensCache[wallet.publicKey.toString()][mint] ===
         undefined
     ) {
-      findAssociatedTokenAddress(wallet.publicKey, mint).then((assocTok) => {
+      findAssociatedTokenAddress(wallet.publicKey, new PublicKey(mint)).then((assocTok) => {
         let walletAccounts = Object.assign(
           {},
           associatedTokensCache[wallet.publicKey.toString()],
         );
-        walletAccounts[mint.toString()] = assocTok;
+        walletAccounts[mint] = assocTok;
         associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
-        // if (assocTok.equals(publicKey)) {
-        //   // Force a rerender now that we've cached the value.
-        //   setForceUpdate((forceUpdate) => !forceUpdate);
-        // }
       });
     }
   }
 
   let { lastPriceDiff, closePrice } = (!!marketsData &&
-    (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`) ||
-      marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`))) || {
+    (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`) ||
+      marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`))) || {
     closePrice: 0,
     lastPriceDiff: 0,
   };
 
-  let priceForCalculate = !price ? (!closePrice ? price : closePrice) : price;
+  let priceForCalculate = closePrice;
+
+  if (isUSDToken(tokenSymbol)) {
+    priceForCalculate = 1;
+  }
 
   const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
   const quote = !!marketsData
-    ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
-      ? 'USDT'
-      : marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`)
+    ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`)
       ? 'USDC'
+      : marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
+      ? 'USDT'
       : 'USDT'
     : 'USDT';
 
@@ -642,19 +539,7 @@ const AssetItem = ({
       ? undefined
       : priceForCalculate === null // Loaded and empty.
       ? null
-      : +((amount / Math.pow(10, decimals)) * priceForCalculate).toFixed(2); // Loaded.
-
-  // add saved usd value
-  useEffect(() => {
-    if (
-      usdValue !== undefined &&
-      usdValue !== assetsValues[publicKey]?.usdValue
-    ) {
-      setUsdValue(publicKey, usdValue === null ? null : usdValue);
-    }
-
-    return () => {};
-  }, [setUsdValue, publicKey, usdValue]);
+      : +((amount) * priceForCalculate).toFixed(2); // Loaded.
 
   let isAssociatedToken = mint ? false : false;
 
@@ -702,7 +587,7 @@ const AssetItem = ({
             </RowContainer>
             <RowContainer justify="flex-start">
               <AssetAmount theme={theme}>{`${stripDigitPlaces(
-                amount / Math.pow(10, decimals),
+                amount,
                 8,
               )} ${tokenSymbol}`}</AssetAmount>
             </RowContainer>
@@ -726,7 +611,7 @@ const AssetItem = ({
             </RowContainer>
             <RowContainer justify="flex-start">
               <AssetAmount theme={theme}>{`${stripDigitPlaces(
-                amount / Math.pow(10, decimals),
+                amount,
                 8,
               )} ${tokenSymbol}`}</AssetAmount>
             </RowContainer>
@@ -738,7 +623,7 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Amount:</GreyTitle>
           <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-            (amount / Math.pow(10, decimals)) * priceForCalculate || 0,
+            (amount) * priceForCalculate || 0,
             2,
           )}`}</AssetAmountUSD>
         </RowContainer>
@@ -863,7 +748,7 @@ const AssetItem = ({
             disabled={
               !marketsData ||
               (!marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) &&
-                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`))
+                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)) || tokenSymbol === 'USDC'
             }
             rel="noopener"
             href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}

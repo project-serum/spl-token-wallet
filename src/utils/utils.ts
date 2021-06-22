@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { TokenInstructions } from '@project-serum/serum'
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -149,4 +150,92 @@ export const openExtensionInNewTab = () => {
   chrome.tabs.create({
     url: chrome.extension.getURL('index.html#from_extension'),
   });
+}
+export interface TokenInfo {
+  symbol: string
+  amount: number
+  decimals: number
+  mint: string
+  address: string
+  name: string;
+  tokenLogoUri: string
+}
+
+export const getAllTokensData = async (
+  owner: PublicKey,
+  connection: Connection,
+  tokenInfos: any,
+): Promise<Map<string, TokenInfo>> => {
+  const allTokensMap = new Map()
+
+  if (!tokenInfos) return allTokensMap
+
+  const ALL_TOKENS_MINTS_MAP = new Map()
+
+  tokenInfos.forEach(tokenInfo => ALL_TOKENS_MINTS_MAP.set(tokenInfo.address, tokenInfo))
+
+  const [parsedTokenAccounts, solBalance] = await Promise.all([connection.getParsedTokenAccountsByOwner(
+    owner,
+    { programId: TokenInstructions.TOKEN_PROGRAM_ID }
+  ), await connection.getBalance(owner)])
+
+  const SOLToken = {
+    symbol: 'SOL',
+    amount: solBalance / LAMPORTS_PER_SOL,
+    decimals: 9,
+    mint: TokenInstructions.WRAPPED_SOL_MINT.toString(),
+    address: owner.toString(),
+  }
+
+  allTokensMap.set(owner.toString(), SOLToken)
+
+  parsedTokenAccounts.value.forEach((el) => {
+    const tokenMintInfo = ALL_TOKENS_MINTS_MAP.get(el.account.data.parsed.info.mint)
+    const dataForToken = {
+      name: tokenMintInfo
+        ? tokenMintInfo.name.replace(' (Sollet)', '')
+        : '',
+      symbol: tokenMintInfo
+        ? tokenMintInfo.symbol
+        : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint)),
+      decimals: el.account.data.parsed.info.tokenAmount.decimals,
+      amount: el.account.data.parsed.info.tokenAmount.uiAmount,
+      mint: el.account.data.parsed.info.mint,
+      address: el.pubkey.toString(),
+      tokenLogoUri: tokenMintInfo ? tokenMintInfo.logoURI : undefined,
+    }
+
+    allTokensMap.set(el.pubkey.toString(), dataForToken)
+  })
+
+  return allTokensMap
+}
+
+export const isUSDToken = (token: string): boolean => {
+  const upperToken = token.toUpperCase()
+  return upperToken === 'USDT' || upperToken === 'USDC' || upperToken === 'WUSDC' || upperToken === 'WUSDT';
+}
+
+
+export function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      // @ts-ignore
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => {
+        clearInterval(id);
+      };
+    }
+  }, [delay]);
 }
