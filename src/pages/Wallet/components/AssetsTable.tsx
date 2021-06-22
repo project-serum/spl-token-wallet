@@ -301,7 +301,7 @@ const AssetsTable = ({
 
   useInterval(() => {
     changeRefreshCounter(refreshCounter + 1)
-  }, 15 * 1000)
+  }, 5 * 1000)
 
   useEffect(() => {
     const getData = async () => {
