@@ -2,22 +2,19 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  // Account,
   TransactionInstruction,
   SYSVAR_RENT_PUBKEY,
-  Account,
 } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum';
 import {
   assertOwner,
-  // assertOwner,
   closeAccount,
   initializeAccount,
   initializeMint,
   memoInstruction,
   mintTo,
   TOKEN_PROGRAM_ID,
-  transfer,
+  transferChecked,
 } from './instructions';
 import {
   ACCOUNT_LAYOUT,
@@ -303,6 +300,7 @@ export async function transferTokens({
   amount,
   memo,
   mint,
+  decimals,
   overrideDestinationCheck,
 }) {
   const destinationAccountInfo = await connection.getAccountInfo(
@@ -315,6 +313,8 @@ export async function transferTokens({
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
+      mint,
+      decimals,
       sourcePublicKey,
       destinationPublicKey,
       amount,
@@ -342,50 +342,40 @@ export async function transferTokens({
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
+      mint,
+      decimals,
       sourcePublicKey,
       destinationPublicKey: destinationSplTokenAccount.publicKey,
       amount,
       memo,
     });
   }
-  throw new Error('Destination token account does not exist.');
-}
-
-// SPL tokens only.
-export async function transferAndClose({
-  connection,
-  owner,
-  sourcePublicKey,
-  destinationPublicKey,
-  amount,
-}) {
-  const tx = createTransferBetweenSplTokenAccountsInstruction({
-    ownerPublicKey: owner.publicKey,
+  return await createAndTransferToAccount({
+    connection,
+    owner,
     sourcePublicKey,
     destinationPublicKey,
     amount,
+    memo,
+    mint,
+    decimals,
   });
-  tx.add(
-    closeAccount({
-      source: sourcePublicKey,
-      destination: owner.publicKey,
-      owner: owner.publicKey,
-    }),
-  );
-  let signers = [];
-  return await signAndSendTransaction(connection, tx, owner, signers);
 }
 
 function createTransferBetweenSplTokenAccountsInstruction({
   ownerPublicKey,
+  mint,
+  decimals,
   sourcePublicKey,
   destinationPublicKey,
   amount,
   memo,
 }) {
   let transaction = new Transaction().add(
-    transfer({
+    transferChecked({
       source: sourcePublicKey,
+      mint,
+      decimals,
       destination: destinationPublicKey,
       owner: ownerPublicKey,
       amount,
@@ -400,6 +390,8 @@ function createTransferBetweenSplTokenAccountsInstruction({
 async function transferBetweenSplTokenAccounts({
   connection,
   owner,
+  mint,
+  decimals,
   sourcePublicKey,
   destinationPublicKey,
   amount,
@@ -407,6 +399,8 @@ async function transferBetweenSplTokenAccounts({
 }) {
   const transaction = createTransferBetweenSplTokenAccountsInstruction({
     ownerPublicKey: owner.publicKey,
+    mint,
+    decimals,
     sourcePublicKey,
     destinationPublicKey,
     amount,
@@ -416,7 +410,7 @@ async function transferBetweenSplTokenAccounts({
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
-export async function createAndTransferToAccount({
+async function createAndTransferToAccount({
   connection,
   owner,
   sourcePublicKey,
@@ -424,8 +418,16 @@ export async function createAndTransferToAccount({
   amount,
   memo,
   mint,
+  decimals,
 }) {
-  const newAccount = new Account();
+  const [
+    createAccountInstruction,
+    newAddress,
+  ] = await createAssociatedTokenAccountIx(
+    owner.publicKey,
+    destinationPublicKey,
+    mint,
+  );
   let transaction = new Transaction();
   transaction.add(
     assertOwner({
@@ -433,35 +435,20 @@ export async function createAndTransferToAccount({
       owner: SystemProgram.programId,
     }),
   );
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: owner.publicKey,
-      newAccountPubkey: newAccount.publicKey,
-      lamports: await connection.getMinimumBalanceForRentExemption(
-        ACCOUNT_LAYOUT.span,
-      ),
-      space: ACCOUNT_LAYOUT.span,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-  );
-  transaction.add(
-    initializeAccount({
-      account: newAccount.publicKey,
-      mint,
-      owner: destinationPublicKey,
-    }),
-  );
+  transaction.add(createAccountInstruction);
   const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
     {
       ownerPublicKey: owner.publicKey,
+      mint,
+      decimals,
       sourcePublicKey,
-      destinationPublicKey: newAccount.publicKey,
+      destinationPublicKey: newAddress,
       amount,
       memo,
     },
   );
   transaction.add(transferBetweenAccountsTxn);
-  let signers = [newAccount];
+  let signers = [];
   return await signAndSendTransaction(connection, transaction, owner, signers);
 }
 
