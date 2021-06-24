@@ -109,6 +109,7 @@ const AccountsSelector = ({
     hardwareWalletAccount,
     setHardwareWalletAccount,
     setWalletSelector,
+    addAccount,
   } = useWalletSelector();
 
   const accountsToShow = hardwareWalletAccount ? accounts.concat(hardwareWalletAccount) : accounts;
@@ -235,6 +236,7 @@ const AccountsSelector = ({
       <AddAccountPopup
         open={isAddAccountOpen}
         onAdd={({ name, importedAccount }) => {
+          addAccount({ name, importedAccount });
           setWalletSelector({
             walletIndex: importedAccount
               ? undefined
