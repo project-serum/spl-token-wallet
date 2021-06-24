@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Theme, useTheme } from '@material-ui/core';
 import { PublicKey } from '@solana/web3.js';
@@ -9,16 +9,13 @@ import TokenIcon from '../../../components/TokenIcon';
 import { useWallet } from '../../../utils/wallet';
 
 import {
-  useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../../utils/connection';
 import {
   formatNumberToUSFormat,
-  getAllTokensData,
   isUSDToken,
   stripDigitPlaces,
   TokenInfo,
-  useInterval,
 } from '../../../utils/utils';
 import { BtnCustom } from '../../../components/BtnCustom';
 
@@ -28,10 +25,8 @@ import RefreshIcon from '../../../images/refresh.svg';
 import ReceiveIcon from '../../../images/receive.svg';
 import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
-import { MarketsDataSingleton } from '../../../components/MarketsDataSingleton';
 import ActivitiesDropdown from './ActivitiesDropdown';
 import { findAssociatedTokenAddress } from '../../../utils/tokens';
-import { useTokenInfos } from '../../../utils/tokens/names';
 import { CCAI_MINT } from '../../../utils/tokens/instructions';
 import { Loading } from '../../../components/Loading';
 

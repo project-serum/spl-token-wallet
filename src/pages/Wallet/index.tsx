@@ -147,9 +147,11 @@ const Wallet = () => {
         <ActivityTable isActive={activeTab === 'activity'} />
       </TableContainer>
 
-      {selectedTokenData.publicKey && (
+      {allTokensData.get(selectedTokenData.publicKey.toString()) && selectedTokenData.publicKey && (
         <SendDialog
           open={sendDialogOpen}
+          balanceInfo={allTokensData.get(selectedTokenData.publicKey.toString())}
+          refreshTokensData={refreshTokensData}
           onClose={() => setSendDialogOpen(false)}
           publicKey={selectedTokenData.publicKey}
         />
@@ -165,6 +167,9 @@ const Wallet = () => {
 
       <AddTokenDialog
         open={showAddTokenDialog}
+        allTokensData={allTokensData}
+        balanceInfo={allTokensData.get(wallet.publicKey.toString())}
+        refreshTokensData={refreshTokensData}
         onClose={() => setShowAddTokenDialog(false)}
       />
 
