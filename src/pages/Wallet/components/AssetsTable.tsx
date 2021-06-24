@@ -6,15 +6,20 @@ import { PublicKey } from '@solana/web3.js';
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 
 import TokenIcon from '../../../components/TokenIcon';
-import {
-  useWallet,
-} from '../../../utils/wallet';
+import { useWallet } from '../../../utils/wallet';
 
 import {
   useConnection,
   useSolanaExplorerUrlSuffix,
 } from '../../../utils/connection';
-import { formatNumberToUSFormat, getAllTokensData, isUSDToken, stripDigitPlaces, TokenInfo, useInterval } from '../../../utils/utils';
+import {
+  formatNumberToUSFormat,
+  getAllTokensData,
+  isUSDToken,
+  stripDigitPlaces,
+  TokenInfo,
+  useInterval,
+} from '../../../utils/utils';
 import { BtnCustom } from '../../../components/BtnCustom';
 
 import AddIcon from '../../../images/addIcon.svg';
@@ -272,12 +277,18 @@ export const associatedTokensCache = {};
 
 const AssetsTable = ({
   isActive,
+  allTokensData,
+  marketsData,
+  refreshTokensData,
   selectToken,
   setSendDialogOpen,
   setDepositDialogOpen,
   setShowAddTokenDialog,
 }: {
   isActive?: boolean;
+  allTokensData: Map<string, TokenInfo>;
+  marketsData: Map<string, { closePrice: number; lastPriceDiff: number }>;
+  refreshTokensData: () => void;
   selectToken: ({
     publicKey,
     isAssociatedToken,
@@ -291,66 +302,53 @@ const AssetsTable = ({
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
-  const connection = useConnection()
-  const tokenInfos = useTokenInfos()
-  const [refreshCounter, changeRefreshCounter] = useState(0);
-  const [marketsData, setMarketsData] = useState<any>(null);
-  const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(new Map());
-
-  const walletPubkey = wallet?.publicKey?.toString()
-
-  useInterval(() => {
-    changeRefreshCounter(refreshCounter + 1)
-  }, 5 * 1000)
-
-  useEffect(() => {
-    const getData = async () => {
-      const data = await MarketsDataSingleton.getData();
-      const allTokensInfo = await getAllTokensData(new PublicKey(walletPubkey), connection, tokenInfos)
-
-      setMarketsData(data);
-      setAllTokensData(allTokensInfo)
-    };
-
-    getData();
-  }, [connection, walletPubkey, tokenInfos, refreshCounter]);
+  const walletPubkey = wallet?.publicKey?.toString();
 
   const sortedPublicKeys = useMemo(
-    () => [...allTokensData.values()].sort((tokenA, tokenB) => {
-      if ((!tokenA && !tokenB) || !walletPubkey) return 0
-      if (!tokenA) return 1
-      if (!tokenB) return -1
+    () =>
+      [...allTokensData.values()].sort((tokenA, tokenB) => {
+        if ((!tokenA && !tokenB) || !walletPubkey) return 0;
+        if (!tokenA) return 1;
+        if (!tokenB) return -1;
 
-      const isTokenAUSDT = isUSDToken(tokenA.symbol)
-      const isTokenBUSDT = isUSDToken(tokenB.symbol)
+        const isTokenAUSDT = isUSDToken(tokenA.symbol);
+        const isTokenBUSDT = isUSDToken(tokenB.symbol);
 
-      let tokenAPrice = (marketsData.get(`${tokenA.symbol}_USDC`) || marketsData.get(`${tokenA.symbol}_USDT`) || { closePrice: 0}).closePrice
-      if (isTokenAUSDT) tokenAPrice = 1
-      let tokenBPrice = (marketsData.get(`${tokenB.symbol}_USDC`) || marketsData.get(`${tokenB.symbol}_USDT`) || { closePrice: 0}).closePrice
-      if (isTokenBUSDT) tokenBPrice = 1
-      
-      const aVal = tokenA.amount * tokenAPrice;
-      const bVal = tokenB.amount * tokenBPrice;
+        let tokenAPrice = (
+          marketsData.get(`${tokenA.symbol}_USDC`) ||
+          marketsData.get(`${tokenA.symbol}_USDT`) || { closePrice: 0 }
+        ).closePrice;
+        if (isTokenAUSDT) tokenAPrice = 1;
+        let tokenBPrice = (
+          marketsData.get(`${tokenB.symbol}_USDC`) ||
+          marketsData.get(`${tokenB.symbol}_USDT`) || { closePrice: 0 }
+        ).closePrice;
+        if (isTokenBUSDT) tokenBPrice = 1;
 
-      // SOL always fisrt
-      if (new PublicKey(tokenA.address).equals(new PublicKey(walletPubkey))) return -1;
-      if (new PublicKey(tokenB.address).equals(new PublicKey(walletPubkey))) return 1;
+        const aVal = tokenA.amount * tokenAPrice;
+        const bVal = tokenB.amount * tokenBPrice;
 
-      // CCAI always second
-      if (new PublicKey (tokenA.mint).equals(CCAI_MINT)) return -1;
-      if (new PublicKey (tokenB.mint).equals(CCAI_MINT)) return 1;
+        // SOL always fisrt
+        if (new PublicKey(tokenA.address).equals(new PublicKey(walletPubkey)))
+          return -1;
+        if (new PublicKey(tokenB.address).equals(new PublicKey(walletPubkey)))
+          return 1;
 
-      const totalA = aVal === undefined || aVal === null ? -1 : aVal;
-      const totalB = bVal === undefined || bVal === null ? -1 : bVal;
+        // CCAI always second
+        if (new PublicKey(tokenA.mint).equals(CCAI_MINT)) return -1;
+        if (new PublicKey(tokenB.mint).equals(CCAI_MINT)) return 1;
 
-      if (totalB < totalA) {
-        return -1;
-      } else if (totalB > totalA) {
-        return 1;
-      } else {
-        return tokenA.symbol.localeCompare(tokenB.symbol);
-      }
-    }),
+        const totalA = aVal === undefined || aVal === null ? -1 : aVal;
+        const totalB = bVal === undefined || bVal === null ? -1 : bVal;
+
+        if (totalB < totalA) {
+          return -1;
+        } else if (totalB > totalA) {
+          return 1;
+        } else {
+          return tokenA.symbol.localeCompare(tokenB.symbol);
+        }
+      }),
     [allTokensData, walletPubkey, marketsData],
   );
 
@@ -384,13 +382,7 @@ const AssetsTable = ({
             borderWidth="0"
             height={'100%'}
             padding={'1.2rem 0'}
-            onClick={() => {
-              try {
-                changeRefreshCounter(refreshCounter + 1)
-              } catch (e) {
-                console.error(e);
-              }
-            }}
+            onClick={refreshTokensData}
           >
             <img
               src={RefreshIcon}
@@ -419,7 +411,12 @@ const AssetsTable = ({
                 setDepositDialogOpen={setDepositDialogOpen}
               />
             ))}
-            {sortedPublicKeys.length === 0 && <Loading color={'#366ce5'} style={{ padding: '2rem 0 2rem 4.8rem'}} />}
+            {sortedPublicKeys.length === 0 && (
+              <Loading
+                color={'#366ce5'}
+                style={{ padding: '2rem 0 2rem 4.8rem' }}
+              />
+            )}
             <StyledTr disableHover theme={theme} style={{ width: '100%' }}>
               <LastStyledTd colSpan={2}>
                 <AddTokenBtnRow>
@@ -445,11 +442,10 @@ const AssetItem = ({
   setDepositDialogOpen,
   marketsData = new Map(),
   balanceInfo,
-
 }: {
   publicKey: PublicKey;
   theme: Theme;
-  marketsData: Map<string, { lastPriceDiff: number, closePrice: number }>;
+  marketsData: Map<string, { lastPriceDiff: number; closePrice: number }>;
   balanceInfo?: TokenInfo;
   selectToken: ({
     publicKey,
@@ -482,17 +478,18 @@ const AssetItem = ({
   if (wallet && wallet.publicKey && mint) {
     if (
       associatedTokensCache[wallet.publicKey.toString()] === undefined ||
-      associatedTokensCache[wallet.publicKey.toString()][mint] ===
-        undefined
+      associatedTokensCache[wallet.publicKey.toString()][mint] === undefined
     ) {
-      findAssociatedTokenAddress(wallet.publicKey, new PublicKey(mint)).then((assocTok) => {
-        let walletAccounts = Object.assign(
-          {},
-          associatedTokensCache[wallet.publicKey.toString()],
-        );
-        walletAccounts[mint] = assocTok;
-        associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
-      });
+      findAssociatedTokenAddress(wallet.publicKey, new PublicKey(mint)).then(
+        (assocTok) => {
+          let walletAccounts = Object.assign(
+            {},
+            associatedTokensCache[wallet.publicKey.toString()],
+          );
+          walletAccounts[mint] = assocTok;
+          associatedTokensCache[wallet.publicKey.toString()] = walletAccounts;
+        },
+      );
     }
   }
 
@@ -539,7 +536,7 @@ const AssetItem = ({
       ? undefined
       : priceForCalculate === null // Loaded and empty.
       ? null
-      : +((amount) * priceForCalculate).toFixed(2); // Loaded.
+      : +(amount * priceForCalculate).toFixed(2); // Loaded.
 
   let isAssociatedToken = mint ? false : false;
 
@@ -623,7 +620,7 @@ const AssetItem = ({
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Amount:</GreyTitle>
           <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-            (amount) * priceForCalculate || 0,
+            amount * priceForCalculate || 0,
             2,
           )}`}</AssetAmountUSD>
         </RowContainer>
@@ -748,7 +745,8 @@ const AssetItem = ({
             disabled={
               !marketsData ||
               (!marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) &&
-                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)) || tokenSymbol === 'USDC'
+                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)) ||
+              tokenSymbol === 'USDC'
             }
             rel="noopener"
             href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
@@ -790,5 +788,9 @@ const AssetItem = ({
 };
 
 export default React.memo(AssetsTable, (prev, next) => {
-  return prev.isActive === next.isActive;
+  return (
+    prev.isActive === next.isActive &&
+    JSON.stringify([...prev.allTokensData.values()]) === JSON.stringify([...next.allTokensData.values()]) &&
+    JSON.stringify([...prev.marketsData.values()]) === JSON.stringify([...next.marketsData.values()])
+  );
 });
