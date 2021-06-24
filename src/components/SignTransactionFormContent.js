@@ -9,6 +9,7 @@ import { useConnection, useSolanaExplorerUrlSuffix } from '../utils/connection';
 import { useWallet, useWalletPublicKeys } from '../utils/wallet';
 import NewOrder from './instructions/NewOrder';
 import UnknownInstruction from './instructions/UnknownInstruction';
+import StakeInstruction from '../components/instructions/StakeInstruction';
 import SystemInstruction from '../components/instructions/SystemInstruction';
 import DexInstruction from '../components/instructions/DexInstruction';
 import TokenInstruction from '../components/instructions/TokenInstruction';
@@ -211,6 +212,19 @@ export default function SignTransactionFormContent({
       case 'systemTransfer':
         return (
           <SystemInstruction
+            instruction={instruction}
+            onOpenAddress={onOpenAddress}
+          />
+        );
+      case 'stakeAuthorizeWithSeed':
+      case 'stakeAuthorize':
+      case 'stakeDeactivate':
+      case 'stakeDelegate':
+      case 'stakeInitialize':
+      case 'stakeSplit':
+      case 'stakeWithdraw':
+        return (
+          <StakeInstruction
             instruction={instruction}
             onOpenAddress={onOpenAddress}
           />

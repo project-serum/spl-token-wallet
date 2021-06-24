@@ -1,5 +1,5 @@
 import bs58 from 'bs58';
-import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
+import { Message, StakeInstruction, StakeProgram, SystemInstruction, SystemProgram } from '@solana/web3.js';
 import {
   decodeInstruction,
   decodeTokenInstructionData,
@@ -96,6 +96,9 @@ const toInstruction = async (
     if (programId.equals(SystemProgram.programId)) {
       console.log('[' + index + '] Handled as system instruction');
       return handleSystemInstruction(publicKey, instruction, accountKeys);
+    } else if (programId.equals(StakeProgram.programId)) {
+      console.log('[' + index + '] Handled as stake instruction');
+      return handleStakeInstruction(publicKey, instruction, accountKeys);
     } else if (programId.equals(TOKEN_PROGRAM_ID)) {
       console.log('[' + index + '] Handled as token instruction');
       let decodedInstruction = decodeTokenInstruction(decoded);
@@ -376,6 +379,62 @@ const handleSystemInstruction = (publicKey, instruction, accountKeys) => {
 
   return {
     type: 'system' + type,
+    data: decoded,
+  };
+};
+
+const handleStakeInstruction = (publicKey, instruction, accountKeys) => {
+  const { programIdIndex, accounts, data } = instruction;
+  if (!programIdIndex || !accounts || !data) {
+    return;
+  }
+
+  // construct stake instruction
+  const stakeInstruction = {
+    programId: accountKeys[programIdIndex],
+    keys: accounts.map((accountIndex) => ({
+      pubkey: accountKeys[accountIndex],
+    })),
+    data: bs58.decode(data),
+  };
+
+  let decoded;
+  const type = StakeInstruction.decodeInstructionType();
+  switch (type) {
+    case 'AuthorizeWithSeed':
+      decoded = StakeInstruction.decodeAuthorizeWithSeed(stakeInstruction);
+      break;
+    case 'Authorize':
+      decoded = StakeInstruction.decodeAuthorize(stakeInstruction);
+      break;
+    case 'Deactivate':
+      decoded = StakeInstruction.decodeDeactivate(stakeInstruction);
+      break;
+    case 'Delegate':
+      decoded = StakeInstruction.decodeDelegate(stakeInstruction);
+      break;
+    case 'Initialize':
+      decoded = StakeInstruction.decodeInitialize(stakeInstruction);
+      break;
+    case 'Split':
+      decoded = StakeInstruction.decodeSplit(stakeInstruction);
+      break;
+    case 'Withdraw':
+      decoded = StakeInstruction.decodeWithdraw(stakeInstruction);
+      break;
+    default:
+      return;
+  }
+
+  if (
+    !decoded ||
+    (decoded.fromPubkey && !publicKey.equals(decoded.fromPubkey))
+  ) {
+    return;
+  }
+
+  return {
+    type: 'stake' + type,
     data: decoded,
   };
 };
