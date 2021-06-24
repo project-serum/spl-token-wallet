@@ -158,7 +158,9 @@ const toInstruction = async (
         programId,
       };
     }
-  } catch {}
+  } catch (e) {
+    console.log(`Failed to decode instruction: ${e}`);
+  }
 
   // all decodings failed
   console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
@@ -399,7 +401,7 @@ const handleStakeInstruction = (publicKey, instruction, accountKeys) => {
   };
 
   let decoded;
-  const type = StakeInstruction.decodeInstructionType();
+  const type = StakeInstruction.decodeInstructionType(stakeInstruction);
   switch (type) {
     case 'AuthorizeWithSeed':
       decoded = StakeInstruction.decodeAuthorizeWithSeed(stakeInstruction);
@@ -415,6 +417,18 @@ const handleStakeInstruction = (publicKey, instruction, accountKeys) => {
       break;
     case 'Initialize':
       decoded = StakeInstruction.decodeInitialize(stakeInstruction);
+      // Lockup inactive if all zeroes
+      const lockup = decoded.lockup;
+      if (lockup && lockup.unixTimestamp === 0 && lockup.epoch === 0 && lockup.custodian.equals(PublicKey.default)) {
+        decoded.lockup = 'Inactive';
+      }
+      else {
+        decoded.lockup = `unixTimestamp: ${lockup.unixTimestamp}, custodian: ${lockup.epoch}, custodian: ${lockup.custodian.toBase58()}`;
+      }
+      // flatten authorized to allow address render
+      decoded.authorizedStaker = decoded.authorized.staker
+      decoded.authorizedWithdrawer = decoded.authorized.withdrawer
+      delete decoded.authorized
       break;
     case 'Split':
       decoded = StakeInstruction.decodeSplit(stakeInstruction);
