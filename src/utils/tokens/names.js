@@ -264,6 +264,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'PAI',
+      mintAddress: 'Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS',
+      tokenName: 'PAI (Parrot)',
+      icon:
+        'https://partyparrot.finance/images/tokens/pai.svg',
+    }
   ],
 };
 
