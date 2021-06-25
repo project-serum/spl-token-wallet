@@ -264,6 +264,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'SLRS',
+      mintAddress: 'SLRSSpSLUTP7okbCUBYStWCo1vUgyt775faPqz8HUMr',
+      tokenName: 'Solrise Finance',
+      icon:
+        'https://i.ibb.co/tqbTKTT/slrs-256.png',
+    },
   ],
 };
 
