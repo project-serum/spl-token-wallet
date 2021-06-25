@@ -264,6 +264,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'CCAI',
+      mintAddress: 'E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp',
+      tokenName: 'Cryptocurrencies.Ai',
+      icon:
+        'https://cryptocurrencies.ai/logo.png',
+    },
   ],
 };
 
