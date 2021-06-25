@@ -264,6 +264,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://cdn.jsdelivr.net/gh/solana-labs/token-list/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png',
     },
+    {
+      tokenSymbol: 'KEKW',
+      mintAddress: '2QK9vxydd7WoDwvVFT5JSU8cwE9xmbJSzeqbRESiPGMG',
+      tokenName: 'KEKW Coin',
+      icon:
+        'https://www.kekw.io/images/logo_final_round_smallFace.png',
+    },
   ],
 };
 
