@@ -4,7 +4,6 @@ import {
   decodeInstruction,
   Market,
   MARKETS,
-  TokenInstructions,
   SETTLE_FUNDS_BASE_WALLET_INDEX,
   SETTLE_FUNDS_QUOTE_WALLET_INDEX,
   NEW_ORDER_OPEN_ORDERS_INDEX,
@@ -505,84 +504,6 @@ const getSettleFundsData = (accounts, accountKeys) => {
   }
 
   return { basePubkey, quotePubkey };
-};
-
-const getTransferData = (publicKey, accounts, accountKeys) => {
-  const sourcePubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_SOURCE_INDEX,
-  );
-
-  const destinationPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_DESTINATION_INDEX,
-  );
-
-  const ownerPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_OWNER_INDEX,
-  );
-
-  if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
-    return;
-  }
-
-  return { sourcePubkey, destinationPubkey, ownerPubkey };
-};
-
-const getInitializeAccountData = (publicKey, accounts, accountKeys) => {
-  const accountPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.INITIALIZE_ACCOUNT_ACCOUNT_INDEX,
-  );
-
-  const mintPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.INITIALIZE_ACCOUNT_MINT_INDEX,
-  );
-
-  const ownerPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.INITIALIZE_ACCOUNT_OWNER_INDEX,
-  );
-
-  if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
-    return;
-  }
-
-  return { accountPubkey, mintPubkey, ownerPubkey };
-};
-
-const getCloseAccountData = (publicKey, accounts, accountKeys) => {
-  const sourcePubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_SOURCE_INDEX,
-  );
-
-  const destinationPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_DESTINATION_INDEX,
-  );
-
-  const ownerPubkey = getAccountByIndex(
-    accounts,
-    accountKeys,
-    TokenInstructions.TRANSFER_OWNER_INDEX,
-  );
-
-  if (!ownerPubkey || !publicKey.equals(ownerPubkey)) {
-    return;
-  }
-
-  return { sourcePubkey, destinationPubkey, ownerPubkey };
 };
 
 const getAccountByIndex = (accounts, accountKeys, accountIndex) => {
