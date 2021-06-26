@@ -274,7 +274,7 @@ const POPULAR_TOKENS = {
     {
       tokenSymbol: ’NET’,
       mintAddress: 'CjpDCj8zLSM37669qng5znYP25JuoDPCvLSLLd7pxAsr',
-      tokenName: ’Nordic Energy’,
+      tokenName: ’Nordic Energy Token’,
       icon:
         'https://i.imgur.com/RxxI1Tr.png',
     },
