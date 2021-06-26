@@ -200,6 +200,7 @@ export default function SignTransactionFormContent({
       case 'initializeAccount':
       case 'transfer':
       case 'approve':
+      case 'revoke':
       case 'mintTo':
         return (
           <TokenInstruction
