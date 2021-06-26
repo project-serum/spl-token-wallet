@@ -455,7 +455,7 @@ const handleTokenInstruction = (
 
   return {
     type: decoded.type,
-    decoded: decoded.params,
+    data: decoded.params,
   }
 };
 
