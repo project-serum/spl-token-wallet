@@ -6,11 +6,12 @@ import copy from 'clipboard-copy';
 
 import { useBalanceInfo, useWallet } from '../../../utils/wallet';
 import { Row, RowContainer, Title, ExclamationMark } from '../../commonStyles';
-import { formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+import { abbreviateAddress, formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
 
 import AccountsSelector from './AccountsSelector';
 import TotalBalance from './TotalBalance';
 import { useSnackbar } from 'notistack';
+import { PublicKey } from '@solana/web3.js';
 
 const MobilePublicKeyTitle = styled(Title)`
   display: none;
@@ -190,9 +191,7 @@ const AccountInfo = () => {
             style={{ whiteSpace: 'nowrap' }}
             color={theme.customPalette.grey.light}
           >
-            {publicKey.slice(0, 3) +
-              '...' +
-              publicKey.slice(publicKey.length - 3)}
+            {abbreviateAddress(new PublicKey(publicKey))}
             <Title
               style={{
                 marginLeft: '2rem',

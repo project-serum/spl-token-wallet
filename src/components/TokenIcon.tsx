@@ -1,3 +1,4 @@
+import { TokenInstructions } from '@project-serum/serum';
 import React, { useState } from 'react';
 import CoinPlaceholder from '../images/coinPlaceholder.svg';
 import { CCAI_MINT } from '../utils/tokens/instructions';
@@ -17,7 +18,7 @@ export default function TokenIcon({
 }) {
   const [hasError, setHasError] = useState(false);
 
-  if (mint === null) {
+  if (mint === TokenInstructions.WRAPPED_SOL_MINT.toString()) {
     tokenLogoUri =
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
   }

@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
-  refreshWalletPublicKeys,
-  useBalanceInfo,
   useWallet,
-  useWalletTokenAccounts,
 } from '../../../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../../../utils/tokens/names';
@@ -51,14 +48,13 @@ export const feeFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 6,
 });
 
-export default function AddTokenDialog({ open, onClose }) {
+export default function AddTokenDialog({ open, onClose, allTokensData, balanceInfo, refreshTokensData }) {
   let wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
     wallet.tokenAccountCost,
   );
   let updateTokenName = useUpdateTokenName();
-  const [walletAccounts] = useWalletTokenAccounts();
 
   const [sendTransaction, sending] = useSendTransaction();
   const popularTokens = usePopularTokens();
@@ -72,14 +68,9 @@ export default function AddTokenDialog({ open, onClose }) {
   const [selectedTokens, setSelectedTokens] = useState([]);
 
   const theme = useTheme();
-  const balanceInfo = useBalanceInfo(wallet.publicKey);
   let { amount, decimals } = balanceInfo || {
     amount: 0,
     decimals: 8,
-    mint: null,
-    tokenName: 'Loading...',
-    tokenSymbol: '--',
-    tokenLogoUri: null,
   };
 
   let valid = true;
@@ -112,7 +103,7 @@ export default function AddTokenDialog({ open, onClose }) {
       Promise.all(
         selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
       ).then(() => {
-        refreshWalletPublicKeys(wallet);
+        refreshTokensData()
         onClose();
       });
 
@@ -121,7 +112,7 @@ export default function AddTokenDialog({ open, onClose }) {
 
     sendTransaction(addToken(params), {
       onSuccess: () => {
-        refreshWalletPublicKeys(wallet);
+        refreshTokensData()
         onClose();
       },
     });
@@ -139,8 +130,7 @@ export default function AddTokenDialog({ open, onClose }) {
           8,
         );
 
-  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost;
-
+  const isBalanceLowerCost = amount < cost;
   const isDisabled = sending || !valid || isBalanceLowerCost;
 
   const handleKeyDown = (event: any) => {
@@ -312,9 +302,9 @@ export default function AddTokenDialog({ open, onClose }) {
                       key={tokenInfo.address}
                       {...tokenInfo}
                       mintAddress={tokenInfo.address}
-                      existingAccount={(walletAccounts || []).find(
-                        (account) =>
-                          account.parsed.mint.toBase58() === tokenInfo.address,
+                      existingAccount={([...allTokensData.values()] || []).find(
+                        (tokenData) =>
+                        tokenData.mint === tokenInfo.address,
                       )}
                       disabled={sending}
                       selectedTokens={selectedTokens}
@@ -361,7 +351,7 @@ export default function AddTokenDialog({ open, onClose }) {
               }}
             >
               {formatNumberToUSFormat(
-                stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
+                stripDigitPlaces(amount, decimals),
               )}{' '}
               SOL
             </WhiteText>

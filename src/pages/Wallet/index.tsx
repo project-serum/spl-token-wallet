@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 
@@ -10,6 +10,12 @@ import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
 
 import { RowContainer } from '../commonStyles';
+import { PublicKey } from '@solana/web3.js';
+import { useWallet } from '../../utils/wallet';
+import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
+import { MarketsDataSingleton } from '../../components/MarketsDataSingleton';
+import { useConnection } from '../../utils/connection';
+import { useTokenInfos } from '../../utils/tokens/names';
 
 const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
@@ -61,11 +67,12 @@ const TableContainer = styled(RowContainer)`
 `;
 
 const Wallet = () => {
+  const wallet  = useWallet()
   const [selectedTokenData, selectToken] = useState<{
-    publicKey: string;
+    publicKey: PublicKey;
     isAssociatedToken: boolean;
   }>({
-    publicKey: '',
+    publicKey: wallet.publicKey,
     isAssociatedToken: false,
   });
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -77,11 +84,29 @@ const Wallet = () => {
   );
   const [activeTab, setTabActive] = useState('assets');
 
-  // const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
-  // const [
-  //   closeTokenAccountDialogOpen,
-  //   setCloseTokenAccountDialogOpen,
-  // ] = useState(false);
+  const connection = useConnection()
+  const tokenInfos = useTokenInfos()
+  const [refreshCounter, changeRefreshCounter] = useState(0);
+  const [marketsData, setMarketsData] = useState<Map<string, any>>(new Map());
+  const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(new Map());
+
+  const walletPubkey = wallet?.publicKey?.toString()
+
+  const refreshTokensData = () => changeRefreshCounter(refreshCounter + 1)
+
+  useInterval(refreshTokensData, 5 * 1000)
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await MarketsDataSingleton.getData();
+      const allTokensInfo = await getAllTokensData(new PublicKey(walletPubkey), connection, tokenInfos)
+
+      setMarketsData(data);
+      setAllTokensData(allTokensInfo)
+    };
+
+    getData();
+  }, [connection, walletPubkey, tokenInfos, refreshCounter]);
 
   return (
     <MainWalletContainer>
@@ -110,6 +135,9 @@ const Wallet = () => {
 
         <AssetsTable
           isActive={activeTab === 'assets'}
+          marketsData={marketsData}
+          allTokensData={allTokensData}
+          refreshTokensData={refreshTokensData}
           selectToken={selectToken}
           setSendDialogOpen={setSendDialogOpen}
           setDepositDialogOpen={setDepositDialogOpen}
@@ -119,9 +147,11 @@ const Wallet = () => {
         <ActivityTable isActive={activeTab === 'activity'} />
       </TableContainer>
 
-      {selectedTokenData.publicKey && (
+      {allTokensData.get(selectedTokenData.publicKey.toString()) && selectedTokenData.publicKey && (
         <SendDialog
           open={sendDialogOpen}
+          balanceInfo={allTokensData.get(selectedTokenData.publicKey.toString())}
+          refreshTokensData={refreshTokensData}
           onClose={() => setSendDialogOpen(false)}
           publicKey={selectedTokenData.publicKey}
         />
@@ -137,6 +167,9 @@ const Wallet = () => {
 
       <AddTokenDialog
         open={showAddTokenDialog}
+        allTokensData={allTokensData}
+        balanceInfo={allTokensData.get(wallet.publicKey.toString())}
+        refreshTokensData={refreshTokensData}
         onClose={() => setShowAddTokenDialog(false)}
       />
 

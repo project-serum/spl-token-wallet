@@ -317,7 +317,7 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
   if (match) {
-    if (!info) {
+    if (!info?.address) {
       info = { ...match, name: match.name.replace(' (Sollet)', ''), logoUri: match.logoURI };
     }
     // The user has overridden a name locally.

@@ -535,7 +535,7 @@ function ApproveSignatureForm({
   return (
     <>
       <CardContent>{renderFormContent()}</CardContent>
-      <RowContainer>
+      <RowContainer justify="space-between">
         <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
           Cancel
         </WhiteButton>
