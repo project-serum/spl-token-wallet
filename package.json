@@ -11,6 +11,7 @@
     "@project-serum/serum": "^0.13.33",
     "@project-serum/swap-ui": "^0.1.10",
     "@project-serum/token": "^0.0.1-alpha.3",
+    "@solana/spl-name-service": "^0.1.2",
     "@solana/spl-token-registry": "^0.2.102",
     "@solana/web3.js": "^1.17.0",
     "@testing-library/jest-dom": "^5.11.6",
