@@ -271,6 +271,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://i.ibb.co/tqbTKTT/slrs-256.png',
     },
+    {
+      tokenSymbol: 'NET',
+      mintAddress: 'CjpDCj8zLSM37669qng5znYP25JuoDPCvLSLLd7pxAsr',
+      tokenName: 'Nordic Energy Token',
+      icon:
+        'https://i.imgur.com/RxxI1Tr.png',
+    },
   ],
 };
 
