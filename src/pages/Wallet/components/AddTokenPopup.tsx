@@ -419,6 +419,7 @@ export function TokenListItem({
         style={{
           borderBottom: theme.customPalette.border.new,
           cursor: 'pointer',
+          minHeight: '4.5rem',
         }}
         onClick={() => {
           if (isDisabled) return;
