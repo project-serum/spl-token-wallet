@@ -1,5 +1,5 @@
 language: node_js
-node_js: 14
+node_js: 12
 dist: bionic
 cache: yarn
 script: yarn build
