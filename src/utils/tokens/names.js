@@ -271,6 +271,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://i.ibb.co/tqbTKTT/slrs-256.png',
     },
+    {
+      tokenSymbol: 'BDE',
+      mintAddress: 'H5gczCNbrtso6BqGKihF97RaWaxpUEZnFuFUKK4YX3s2',
+      tokenName: 'Big Defi Energy',
+      icon:
+        'https://raw.githubusercontent.com/bitcoinoverdose/bitcoinoverdose/main/bde.png',
+    },
   ],
 };
 
