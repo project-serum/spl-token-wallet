@@ -16,6 +16,7 @@ import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { DevUrlPopup } from '../src/components/DevUrlPopup';
+import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -184,6 +185,10 @@ export default function App() {
 const Pages = () => {
   const wallet = useWallet();
   const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
+  const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
+    true,
+  );
+
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
@@ -210,7 +215,11 @@ const Pages = () => {
           open={isDevUrlPopupOpen}
           close={() => openDevUrlPopup(false)}
         />
-      )}
+      )}{' '}
+      <MigrationToNewUrlPopup
+        open={isMigrationToNewUrlPopupOpen}
+        close={() => openMigrationToNewUrlPopup(false)}
+      />
       <Switch>
         {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
         <Route path="/wallet" component={Wallet} />

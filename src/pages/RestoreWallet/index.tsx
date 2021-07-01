@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, Redirect } from 'react-router-dom';
+import Helmet from 'react-helmet';
 
 import {
   mnemonicToSeed,
@@ -63,6 +64,9 @@ export const RestorePage = () => {
 
   return (
     <Body>
+      <Helmet>
+        <title>Restore SunWallet by seed phrase</title>
+      </Helmet>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
       <Logo />

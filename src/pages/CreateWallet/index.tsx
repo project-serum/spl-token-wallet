@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Body, RowContainer } from '../commonStyles';
+import Helmet from 'react-helmet';
 
 import Logo from '../../components/Logo';
 
@@ -71,6 +72,9 @@ export const CreateWalletPage = () => {
 
   return (
     <Body>
+      <Helmet>
+        <title>Create new SunWallet</title>
+      </Helmet>
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>
         <Logo />

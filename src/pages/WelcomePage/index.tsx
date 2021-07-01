@@ -1,7 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { isExtension, openExtensionInNewTab } from '../../utils/utils';
+import Helmet from 'react-helmet';
+import {
+  extensionUrl,
+  isExtension,
+  openExtensionInNewTab,
+} from '../../utils/utils';
 import {
   Row,
   Body,
@@ -13,7 +18,6 @@ import {
 } from '../commonStyles';
 
 // import Import from '../../images/ImportButton.svg';
-import Logo from '../../components/Logo';
 
 const StyledContainer = styled(Row)`
   @media (max-width: 620px) {
@@ -22,6 +26,10 @@ const StyledContainer = styled(Row)`
 `;
 
 const StyledCardButton = styled(CardButton)`
+  justify-content: spase-between;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 4rem;
   @media (max-width: 620px) {
     width: 25rem;
     height: 25rem;
@@ -42,6 +50,7 @@ const CreateWalletButton = styled(StyledCardButton)`
 const RestoreButton = styled(Row)`
   justify-content: space-around;
   flex-direction: column;
+  align-items: flex-start;
   height: 100%;
   @media (max-width: 540px) {
     flex-direction: row;
@@ -53,6 +62,8 @@ const RestoreButton = styled(Row)`
 const RestoreIcon = styled(Img)`
   width: 12rem;
   height: 12rem;
+  display: flex;
+  justify-content: flex-start;
   @media (max-width: 540px) {
     width: 9rem;
     height: 9rem;
@@ -61,6 +72,7 @@ const RestoreIcon = styled(Img)`
 
 const RestoreTitle = styled(RowContainer)`
   flex-direction: column;
+  align-items: flex-start;
   @media (max-width: 540px) {
     width: 60%;
     align-items: flex-start;
@@ -90,7 +102,9 @@ export const WelcomePage = () => {
 
   return (
     <Body>
-      <Logo />
+      <Helmet>
+        <title>SunWallet | Solana Wallet made by Cryptocurrencies.Ai</title>
+      </Helmet>
       <RowContainer height={'80%'} direction={'column'}>
         <StyledContainer>
           <Row>
@@ -113,10 +127,7 @@ export const WelcomePage = () => {
               <Link to={'/create_wallet'}>
                 <CreateWalletButtonInner />
               </Link>
-            )}
-          </Row>
-
-          <Row direction={'column'} justify={'space-between'} height={'100%'}>
+            )}{' '}
             <Link to={'/restore_wallet'}>
               <StyledCardButton width="35rem" height="35rem" isRestoreBtn>
                 <RestoreButton>
@@ -137,7 +148,36 @@ export const WelcomePage = () => {
                 </RestoreButton>
               </StyledCardButton>
             </Link>
-            {/* <a href={'/import_wallet'}>
+            <a
+              href={extensionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ margin: '0 0 0 2rem' }}
+            >
+              <StyledCardButton width="35rem" height="35rem" isRestoreBtn>
+                <RestoreButton>
+                  <RestoreIcon>
+                    <img
+                      src={
+                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjMuOTQ2MyAzMi44MjczQzIxLjY1OTMgMzIuODIzNiAxOS40NjcxIDMxLjkxMzQgMTcuODUwMiAzMC4yOTZDMTYuMjMzMiAyOC42Nzg3IDE1LjMyMzUgMjYuNDg2MyAxNS4zMjAzIDI0LjE5OTNDMTUuMzIzIDIxLjkxMTcgMTYuMjMyOCAxOS43MTg0IDE3Ljg1MDIgMTguMTAwNkMxOS40Njc2IDE2LjQ4MjggMjEuNjYwNyAxNS41NzI1IDIzLjk0ODMgMTUuNTY5M0MyNi4yMzYzIDE1LjU3MiAyOC40Mjk5IDE2LjQ4MjEgMzAuMDQ3NyAxOC4wOTk5QzMxLjY2NTYgMTkuNzE3OCAzMi41NzU3IDIxLjkxMTMgMzIuNTc4MyAyNC4xOTkzQzMyLjU3NTEgMjYuNDg3IDMxLjY2NDggMjguNjggMzAuMDQ3IDMwLjI5NzVDMjguNDI5MiAzMS45MTQ5IDI2LjIzNiAzMi44MjQ3IDIzLjk0ODMgMzIuODI3M0gyMy45NDYzWiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTI3LjU4MDkgMzQuMzYxNUMyNS43ODExIDM1LjAxNDcgMjMuODQyMSAzNS4xODc0IDIxLjk1NTIgMzQuODYyN0MyMC4wNjgzIDM0LjUzNzkgMTguMjk4NyAzMy43MjY4IDE2LjgyMDkgMzIuNTA5NUMxNS4yMjc2IDMxLjE5NTUgMTQuMDM2OCAyOS40NTkyIDEzLjM4NDkgMjcuNDk5NUwxMy4zODA5IDI3LjQ4NzVMMy44NzA4NyAxMS4wMTk1QzAuNDYwNDQxIDE2LjIzOCAtMC43NjQ3OTYgMjIuNTg2OCAwLjQ1ODg3NSAyOC42OTk1QzEuMDU5NzggMzEuNzg3NiAyLjI2NzE0IDM0LjcyNTggNC4wMTExIDM3LjM0NDFDNS43NTUwNSAzOS45NjI1IDguMDAwOTcgNDIuMjA4OSAxMC42MTg5IDQzLjk1MzVDMTMuMzY3NiA0NS44MDEzIDE2LjQ3MTggNDcuMDU0NyAxOS43MzI5IDQ3LjYzMzVMMjcuNTgwOSAzNC4zNjM1VjM0LjM2MTVaIiBmaWxsPSIjNEFBRTQ4Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNDUuNTE4NCAxMy40MTM3QzQzLjcxOTUgOS43OTQ2MSA0MS4wNDEzIDYuNjg0NjUgMzcuNzI5MyA0LjM2ODU2QzM0LjQxNzIgMi4wNTI0NyAzMC41NzcxIDAuNjA0MjY1IDI2LjU2MDQgMC4xNTY1MzNDMjIuNTQzNyAtMC4yOTEyIDE4LjQ3ODkgMC4yNzU4NTEgMTQuNzM4MiAxLjgwNTc3QzEwLjk5NzQgMy4zMzU2OCA3LjcwMDE4IDUuNzc5NTcgNS4xNDg0NCA4LjkxMzY4TDEzLjE4MDQgMjIuODI1N0MxMy41MTEgMjAuMjQ5OCAxNC43NTk4IDE3Ljg3OTcgMTYuNjk3NSAxNi4xNTA3QzE4LjYzNTIgMTQuNDIxNyAyMS4xMzE3IDEzLjQ0OTkgMjMuNzI4NCAxMy40MTM3SDQ1LjUxODRaIiBmaWxsPSIjRUEzOTM5Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjMuODUyNyA0Ny45OTkzQzI5Ljg3MjcgNDcuOTk5MyAzNS42MzQ3IDQ1Ljc0MTMgNDAuMDcyNyA0MS42NDMzQzQ0LjUyNzcgMzcuNTQwNCA0Ny4yNTYgMzEuODk3MiA0Ny43MDQ3IDI1Ljg1NzNDNDcuOTYzIDIyLjM2MDYgNDcuNDU1MiAxOC44NDk2IDQ2LjIxNjcgMTUuNTY5M0gzMC41MDQ3QzMxLjgxMzcgMTYuNjA0OCAzMi44NzAxIDE3LjkyNDIgMzMuNTk0MyAxOS40MjhDMzQuMzE4NCAyMC45MzE3IDM0LjY5MTMgMjIuNTgwMyAzNC42ODQ3IDI0LjI0OTNDMzQuNjY4OCAyNi43MDMyIDMzLjgzNzEgMjkuMDgyMSAzMi4zMjA3IDMxLjAxMTNMMjIuMzA0NyA0Ny45NTEzQzIyLjgyMDcgNDcuOTgzMyAyMy4zNDA3IDQ3Ljk5OTMgMjMuODUyNyA0Ny45OTkzWiIgZmlsbD0iI0ZFRDE0QiIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo='
+                      }
+                      alt={'restore'}
+                      width="100%"
+                      height="100%"
+                    />
+                  </RestoreIcon>
+                  <RestoreTitle>
+                    <BoldTitle>Instal Extension</BoldTitle>
+                    <Title>for chrome-based browsers</Title>
+                  </RestoreTitle>
+                </RestoreButton>
+              </StyledCardButton>
+            </a>
+          </Row>
+
+          {/* <Row direction={'column'} justify={'space-between'} height={'100%'}> */}
+
+          {/* <a href={'/import_wallet'}>
             <CardButton width="35rem" height="16.5rem">
               <Row width={'80%'} justify={'space-between'}>
                 {' '}
@@ -158,7 +198,7 @@ export const WelcomePage = () => {
               </Row>
             </CardButton>
           </a> */}
-          </Row>
+          {/* </Row> */}
         </StyledContainer>
       </RowContainer>
     </Body>

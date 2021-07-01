@@ -245,7 +245,7 @@ export function ConnectToMetamaskButton() {
         rel="noopener"
         width={'calc(50% - .5rem)'}
       >
-        {isExtension ? 'Open CCAI Wallet' : 'Connect to MetaMask'}
+        {isExtension ? 'Open SunWallet' : 'Connect to MetaMask'}
       </VioletButton>
     );
   }

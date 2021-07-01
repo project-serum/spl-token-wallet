@@ -7,7 +7,7 @@ import { BtnCustom } from '../BtnCustom';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
 import { useTheme, Paper } from '@material-ui/core';
 
-const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
+export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   height: auto;
   padding: 2rem 4rem;
   width: 55rem;

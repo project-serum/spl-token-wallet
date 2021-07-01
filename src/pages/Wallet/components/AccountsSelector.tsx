@@ -18,11 +18,16 @@ import AddIcon from '../../../images/addIcon.svg';
 import ImportHardwareIcon from '../../../images/importHardware.svg';
 import ExportMnemonicIcon from '../../../images/exportMnemonic.svg';
 import DeleteAccountIcon from '../../../images/deleteAccount.svg';
+import MergeAccountsIcon from '../../../images/merge.svg';
+import ManageConnections from '../../../images/connections.svg';
 
 import AddAccountPopup from './AddAccountPopup';
 import AddHardwareWalletPopup from './AddHardwareWalletPopup';
 import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
 import ForgetWallet from './ForgetWallet';
+import MergeAccountsDialog from '../../../components/MergeAccountsDialog';
+import ConnectionsPage from '../../Connections';
+// import { isExtension } from '../../../utils/utils';
 
 const ExportPrivateKeyButton = styled(BtnCustom)`
   @media (max-width: 540px) {
@@ -102,6 +107,8 @@ const AccountsSelector = ({
   const [isExportMnemonicOpen, setIsExportMnemonicOpen] = useState(false);
   const [isExportAccountOpen, setIsExportAccountOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [isMergeAccountsOpen, setIsMergeAccoutsOpen] = useState(false);
+  const [isManageConnectiosOpen, setIsManageConnectiosOpen] = useState(false);
 
   const theme = useTheme();
   const {
@@ -112,7 +119,9 @@ const AccountsSelector = ({
     addAccount,
   } = useWalletSelector();
 
-  const accountsToShow = hardwareWalletAccount ? accounts.concat(hardwareWalletAccount) : accounts;
+  const accountsToShow = hardwareWalletAccount
+    ? accounts.concat(hardwareWalletAccount)
+    : accounts;
   const selectedAccount = accounts.find((a) => a.isSelected);
 
   return (
@@ -120,7 +129,11 @@ const AccountsSelector = ({
       <Title
         fontSize={accountNameSize}
         fontFamily="Avenir Next Demi"
-        style={{ textTransform: 'capitalize', marginRight: '1rem', whiteSpace: 'nowrap' }}
+        style={{
+          textTransform: 'capitalize',
+          marginRight: '1rem',
+          whiteSpace: 'nowrap',
+        }}
       >
         {selectedAccount && selectedAccount.name}
       </Title>
@@ -219,10 +232,27 @@ const AccountsSelector = ({
             />
             <WalletActionButton
               theme={theme}
+              icon={MergeAccountsIcon}
+              buttonText={'Merge Accounts'}
+              openPopup={() => setIsMergeAccoutsOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
               icon={ExportMnemonicIcon}
               buttonText={'Export Seed Phrase'}
               openPopup={() => setIsExportMnemonicOpen(true)}
             />
+            {/* {isExtension && ( */}
+            <WalletActionButton
+              theme={theme}
+              icon={ManageConnections}
+              buttonText={'View Connected Sites'}
+              openPopup={() => {
+                setIsManageConnectiosOpen(true);
+              }}
+            />
+            {/* )} */}
+
             <WalletActionButton
               theme={theme}
               icon={DeleteAccountIcon}
@@ -275,6 +305,10 @@ const AccountsSelector = ({
           });
         }}
       />
+      <MergeAccountsDialog
+        open={isMergeAccountsOpen}
+        onClose={() => setIsMergeAccoutsOpen(false)}
+      />
       <ExportMnemonicDialog
         open={isExportMnemonicOpen}
         onClose={() => setIsExportMnemonicOpen(false)}
@@ -287,6 +321,11 @@ const AccountsSelector = ({
         open={isDeleteAccountOpen}
         openExportMnemonicPopup={() => setIsExportMnemonicOpen(true)}
         onClose={() => setIsDeleteAccountOpen(false)}
+      />
+      <ConnectionsPage
+        theme={theme}
+        close={setIsManageConnectiosOpen}
+        open={isManageConnectiosOpen}
       />
     </RowWithSelector>
   );
