@@ -403,9 +403,11 @@ function ApproveConnectionForm({
 }) {
   const wallet = useWallet();
   const classes = useStyles();
-  const { accounts } = useWalletSelector();
+  const { accounts, hardwareWalletAccount } = useWalletSelector();
   // TODO better way to do this
-  const account = accounts.find((account) =>
+  const allAccounts = hardwareWalletAccount ? [hardwareWalletAccount, ...accounts] : accounts
+
+  const account = allAccounts.find((account) =>
     account.address.equals(wallet.publicKey),
   );
   // const [autoApprove, setAutoApprove] = useState(true);
@@ -442,7 +444,7 @@ function ApproveConnectionForm({
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Title fontSize="1.6rem">{account.name}</Title>
+          <Title fontSize="1.6rem">{account?.name}</Title>
           <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
         </RowContainer>
 
