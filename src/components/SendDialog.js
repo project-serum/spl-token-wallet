@@ -222,33 +222,38 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   } = useForm(balanceInfo, addressHelperText, passValidation);
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
-  const [destination, setDestination] = useState();
+  const [isDomainName, setIsDomainName] = useState(false);
+  const [domainOwner, setDomainOwner] = useState();
 
   useEffect(() => {
     (async () => {
       if (destinationAddress.startsWith('@')) {
-        destinationAddress = await resolveTwitterHandle(
+        const twitterOwner = await resolveTwitterHandle(
           wallet.connection,
           destinationAddress.slice(1),
         );
-        if (!destinationAddress) {
+        if (!twitterOwner) {
           setAddressHelperText(`This Twitter handle is not registered`);
           setPassValidation(undefined);
           setShouldShowOverride(undefined);
           return;
         }
+        setIsDomainName(true);
+        setDomainOwner(twitterOwner);
       }
       if (destinationAddress.endsWith('.sol')) {
-        destinationAddress = await resolveDomainName(
+        const domainOwner = await resolveDomainName(
           wallet.connection,
           destinationAddress.slice(0, -4),
         );
-        if (!destinationAddress) {
+        if (!domainOwner) {
           setAddressHelperText(`This domain name is not registered`);
           setPassValidation(undefined);
           setShouldShowOverride(undefined);
           return;
         }
+        setIsDomainName(true);
+        setDomainOwner(domainOwner);
       }
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
@@ -258,7 +263,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       }
       try {
         const destinationAccountInfo = await wallet.connection.getAccountInfo(
-          new PublicKey(destinationAddress),
+          new PublicKey(isDomainName ? domainOwner : destinationAddress),
         );
         setShouldShowOverride(false);
 
@@ -269,7 +274,6 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
           if (accountInfo.mint.toBase58() === mintString) {
             setPassValidation(true);
             setAddressHelperText('Address is a valid SPL token address');
-            setDestination(destinationAddress);
           } else {
             setPassValidation(false);
             setAddressHelperText('Destination address mint does not match');
@@ -277,9 +281,10 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         } else {
           setPassValidation(true);
           setAddressHelperText(
-            `Destination is a Solana address: ${destinationAddress}`,
+            `Destination is a Solana address: ${
+              isDomainName ? domainOwner : destinationAddress
+            }`,
           );
-          setDestination(destinationAddress);
         }
       } catch (e) {
         console.log(`Received error validating address ${e}`);
@@ -289,8 +294,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [destinationAddress, wallet, mintString]);
-
+  }, [destinationAddress, wallet, mintString, isDomainName, domainOwner]);
   useEffect(() => {
     return () => {
       setOverrideDestinationCheck(false);
@@ -301,12 +305,9 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }
-    if (!destination) {
-      throw new Error('Invalid destination');
-    }
     return wallet.transferToken(
       publicKey,
-      new PublicKey(destination),
+      new PublicKey(isDomainName ? domainOwner : destinationAddress),
       amount,
       balanceInfo.mint,
       decimals,
