@@ -1,22 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import {
-  GridContainer,
-  RowContainer,
-  Row,
-  VioletButton,
-  RedButton,
-  Title,
-} from '../../pages/commonStyles';
+import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
 
 // import { Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 // import { CSSProperties } from '@material-ui/styles';
-import WalletIcon from '../../images/walletIcon.svg';
 import Lock from '../../images/lock.svg';
 import NetworkDropdown from './NetworkDropdown';
-import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
 import {
@@ -30,11 +21,11 @@ import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 
-const ButtonsContainer = styled(Row)`
-  @media (max-width: 1200px) {
-    display: none;
-  }
-`;
+// const ButtonsContainer = styled(Row)`
+//   @media (max-width: 1200px) {
+//     display: none;
+//   }
+// `;
 
 // const StyledButton = styled(Button)`
 //   font-size: 12px;
@@ -205,7 +196,7 @@ const Navbar = () => {
     <GridContainer
       wallet={!!wallet}
       theme={theme}
-      style={{ paddingRight: !showButtons && '0' }}
+      style={{ paddingRight: !showButtons && '3rem' }}
     >
       <RowContainer justify={'space-between'} height={'100%'}>
         <HeaderContainer theme={theme}>
@@ -267,25 +258,25 @@ const Navbar = () => {
           </LinksContainer> */}
         </HeaderContainer>
         <WalletLoginContainer>
-          {!!wallet ? (
+          {/* {!!wallet ? (
             <NetworkDropdown width={'10rem'} popupPage={false} />
-          ) : (
-            <a
-              href={extensionUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                whiteSpace: 'nowrap',
-                fontSize: '1.3rem',
-                color: '#fbf2f2',
-                textTransform: 'none',
-                fontFamily: 'Avenir Next medium',
-              }}
-            >
-              Install Extension
-            </a>
-          )}
-          {!!wallet ? (
+          ) : ( */}
+          <a
+            href={extensionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: '1.3rem',
+              color: '#fbf2f2',
+              textTransform: 'none',
+              fontFamily: 'Avenir Next medium',
+            }}
+          >
+            Install Extension
+          </a>
+          {/* )} */}
+          {/* {!!wallet ? (
             <RowContainer>
               <img
                 src={WalletIcon}
@@ -356,33 +347,33 @@ const Navbar = () => {
                 </VioletButton>
               </Link>
             </ButtonsContainer>
-          ) : (
-            <RowContainer padding="0 2rem">
-              <Socials justify={'space-around'} height="100%" width={'auto'}>
-                <StyledLink
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://twitter.com/CCAI_Official"
-                >
-                  <TwitterIcon />
-                </StyledLink>
-                <StyledLink
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://t.me/CryptocurrenciesAi"
-                >
-                  <TelegramIcon />
-                </StyledLink>
-                <StyledLink
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://discord.gg/2EaKvrs"
-                >
-                  <DiscordIcon />
-                </StyledLink>
-              </Socials>
-            </RowContainer>
-          )}
+          ) : ( */}
+          <RowContainer>
+            <Socials justify={'space-around'} height="100%" width={'auto'}>
+              <StyledLink
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://twitter.com/CCAI_Official"
+              >
+                <TwitterIcon />
+              </StyledLink>
+              <StyledLink
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://t.me/CryptocurrenciesAi"
+              >
+                <TelegramIcon />
+              </StyledLink>
+              <StyledLink
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://discord.gg/2EaKvrs"
+              >
+                <DiscordIcon />
+              </StyledLink>
+            </Socials>
+          </RowContainer>
+          {/* )} */}
         </WalletLoginContainer>
 
         <WalletLoginButtonContainer>

@@ -207,6 +207,10 @@ const Pages = () => {
       sessionStorage.removeItem('hash');
     }
   }, []);
+  const isMigrationToNewUrlPopupDone = localStorage.getItem(
+    'isMigrationToNewUrlPopupDone',
+  );
+  console.log('isMigrationToNewUrlPopupDone', isMigrationToNewUrlPopupDone);
 
   return (
     <>
@@ -216,10 +220,12 @@ const Pages = () => {
           close={() => openDevUrlPopup(false)}
         />
       )}{' '}
-      <MigrationToNewUrlPopup
-        open={isMigrationToNewUrlPopupOpen}
-        close={() => openMigrationToNewUrlPopup(false)}
-      />
+      {!isMigrationToNewUrlPopupDone && (
+        <MigrationToNewUrlPopup
+          open={isMigrationToNewUrlPopupOpen}
+          close={() => openMigrationToNewUrlPopup(false)}
+        />
+      )}
       <Switch>
         {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
         <Route path="/wallet" component={Wallet} />

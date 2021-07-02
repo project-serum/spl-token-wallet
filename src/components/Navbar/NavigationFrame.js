@@ -265,12 +265,26 @@ const FooterComponentForExtension = styled.footer`
 function Footer() {
   const classes = useFooterStyles();
   // const theme = useTheme();
-  const location = useLocation()
-  console.log('location', location)
+  const location = useLocation();
+  console.log('location', location);
 
   return (
     <>
       <FooterComponent className={classes.footer}>
+        <span
+          style={{
+            fontSize: '1.3rem',
+            color: '#fbf2f2',
+            textTransform: 'none',
+            fontFamily: 'Avenir Next medium',
+          }}
+        >
+          {location.pathname.includes('restore')
+            ? 'Restore your wallet using seed phrase to get access for SPL assets management and interaction with dApps on the Solana blockchain.'
+            : location.pathname.includes('create')
+            ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
+            : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
+        </span>{' '}
         <Button
           variant="outlined"
           color="primary"
@@ -288,20 +302,6 @@ function Footer() {
         >
           Source
         </Button>
-        <span
-          style={{
-            fontSize: '1.3rem',
-            color: '#fbf2f2',
-            textTransform: 'none',
-            fontFamily: 'Avenir Next medium',
-          }}
-        >
-          {location.pathname.includes('restore')
-            ? 'Restore your wallet using seed phrase to get access for SPL assets management and interaction with dApps on the Solana blockchain.'
-            : location.pathname.includes('create')
-            ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
-            : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
-        </span>
       </FooterComponent>
       <FooterComponentForExtension>
         {' '}

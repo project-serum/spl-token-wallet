@@ -103,8 +103,12 @@ export const MigrationToNewUrlPopup = ({
           }}
           isUserConfident={true}
           theme={theme}
-          onClick={() => close()}
+          onClick={() => {
+            close();
+            localStorage.setItem('isMigrationToNewUrlPopupDone', 'true');
+          }}
         >
+          {' '}
           Got it!
         </BlueButton>
       </RowContainer>
