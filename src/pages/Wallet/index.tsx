@@ -67,7 +67,7 @@ const TableContainer = styled(RowContainer)`
 `;
 
 const Wallet = () => {
-  const wallet  = useWallet()
+  const wallet = useWallet();
   const [selectedTokenData, selectToken] = useState<{
     publicKey: PublicKey;
     isAssociatedToken: boolean;
@@ -84,25 +84,31 @@ const Wallet = () => {
   );
   const [activeTab, setTabActive] = useState('assets');
 
-  const connection = useConnection()
-  const tokenInfos = useTokenInfos()
+  const connection = useConnection();
+  const tokenInfos = useTokenInfos();
   const [refreshCounter, changeRefreshCounter] = useState(0);
   const [marketsData, setMarketsData] = useState<Map<string, any>>(new Map());
-  const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(new Map());
+  const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(
+    new Map(),
+  );
 
-  const walletPubkey = wallet?.publicKey?.toString()
+  const walletPubkey = wallet?.publicKey?.toString();
 
-  const refreshTokensData = () => changeRefreshCounter(refreshCounter + 1)
+  const refreshTokensData = () => changeRefreshCounter(refreshCounter + 1);
 
-  useInterval(refreshTokensData, 5 * 1000)
+  useInterval(refreshTokensData, 5 * 1000);
 
   useEffect(() => {
     const getData = async () => {
       const data = await MarketsDataSingleton.getData();
-      const allTokensInfo = await getAllTokensData(new PublicKey(walletPubkey), connection, tokenInfos)
+      const allTokensInfo = await getAllTokensData(
+        new PublicKey(walletPubkey),
+        connection,
+        tokenInfos,
+      );
 
       setMarketsData(data);
-      setAllTokensData(allTokensInfo)
+      setAllTokensData(allTokensInfo);
     };
 
     getData();
@@ -112,7 +118,7 @@ const Wallet = () => {
     <MainWalletContainer>
       {window.opener && <Redirect to={'/connect_popup'} />}
 
-      <AccountInfo />
+      <AccountInfo marketsData={marketsData} allTokensData={allTokensData} />
       <TableContainer>
         <SwitcherRow>
           <Switcher
@@ -147,15 +153,18 @@ const Wallet = () => {
         <ActivityTable isActive={activeTab === 'activity'} />
       </TableContainer>
 
-      {allTokensData.get(selectedTokenData.publicKey.toString()) && selectedTokenData.publicKey && (
-        <SendDialog
-          open={sendDialogOpen}
-          balanceInfo={allTokensData.get(selectedTokenData.publicKey.toString())}
-          refreshTokensData={refreshTokensData}
-          onClose={() => setSendDialogOpen(false)}
-          publicKey={selectedTokenData.publicKey}
-        />
-      )}
+      {allTokensData.get(selectedTokenData.publicKey.toString()) &&
+        selectedTokenData.publicKey && (
+          <SendDialog
+            open={sendDialogOpen}
+            balanceInfo={allTokensData.get(
+              selectedTokenData.publicKey.toString(),
+            )}
+            refreshTokensData={refreshTokensData}
+            onClose={() => setSendDialogOpen(false)}
+            publicKey={selectedTokenData.publicKey}
+          />
+        )}
       {selectedTokenData.publicKey && (
         <ReceiveDialog
           open={depositDialogOpen}
