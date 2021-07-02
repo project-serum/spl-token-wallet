@@ -6,7 +6,12 @@ import copy from 'clipboard-copy';
 
 import { useBalanceInfo, useWallet } from '../../../utils/wallet';
 import { Row, RowContainer, Title, ExclamationMark } from '../../commonStyles';
-import { abbreviateAddress, formatNumberToUSFormat, stripDigitPlaces } from '../../../utils/utils';
+import {
+  abbreviateAddress,
+  formatNumberToUSFormat,
+  stripDigitPlaces,
+  TokenInfo,
+} from '../../../utils/utils';
 
 import AccountsSelector from './AccountsSelector';
 import TotalBalance from './TotalBalance';
@@ -149,7 +154,13 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
   );
 };
 
-const AccountInfo = () => {
+const AccountInfo = ({
+  allTokensData,
+  marketsData,
+}: {
+  allTokensData: Map<string, TokenInfo>;
+  marketsData: Map<string, any>;
+}) => {
   const theme = useTheme();
   const wallet = useWallet();
   const { enqueueSnackbar } = useSnackbar();
@@ -229,7 +240,12 @@ const AccountInfo = () => {
             fontSize="2.4rem"
             fontFamily={'Avenir Next Demi'}
           >
-            <TotalBalance key="navbarfalse" isNavbar={false} />
+            <TotalBalance
+              allTokensData={allTokensData}
+              marketsData={marketsData}
+              key="navbarfalse"
+              isNavbar={false}
+            />
           </Title>
         </BalanceCard>
         <BalanceCard needLeftMargin>
@@ -259,5 +275,10 @@ const AccountInfo = () => {
 };
 
 export default React.memo(AccountInfo, (prev, next) => {
-  return true;
+  return (
+    JSON.stringify([...prev.allTokensData.values()]) ===
+      JSON.stringify([...next.allTokensData.values()]) &&
+    JSON.stringify([...prev.marketsData.values()]) ===
+      JSON.stringify([...next.marketsData.values()])
+  );
 });

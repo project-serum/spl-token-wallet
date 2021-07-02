@@ -210,7 +210,6 @@ const Pages = () => {
   const isMigrationToNewUrlPopupDone = localStorage.getItem(
     'isMigrationToNewUrlPopupDone',
   );
-  console.log('isMigrationToNewUrlPopupDone', isMigrationToNewUrlPopupDone);
 
   return (
     <>
