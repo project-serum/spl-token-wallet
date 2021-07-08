@@ -4,7 +4,7 @@ import {
   getHashedName,
   getNameAccountKey,
   NameRegistryState,
-} from '@solana/spl-name-service';
+} from '@bonfida/spl-name-service';
 
 // Address of the SOL TLD
 export const SOL_TLD_AUTHORITY = new PublicKey(
