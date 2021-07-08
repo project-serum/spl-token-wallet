@@ -232,7 +232,7 @@ export default function BalancesList() {
             </IconButton>
           </Tooltip>
           <SwapButton size={iconSize} />
-          <Tooltip title="Merge Tokens" arrow>
+          <Tooltip title="Migrate Tokens" arrow>
             <IconButton
               size={iconSize}
               onClick={() => setShowMergeAccounts(true)}
