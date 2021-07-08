@@ -1339,6 +1339,25 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bonfida/spl-name-service@^0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@bonfida/spl-name-service/-/spl-name-service-0.1.12.tgz#ab186fe0c907efe66cb6818e2f429f9f4b3ab0d2"
+  integrity sha512-zVZiOjhZK+VZAs4aqOmxj6vplbGGwcin/gJ3Xm/gn+wV1GzgeqDkYrrDJclEpQ7WcmA4WV/Pad6tWfPtGt12/g==
+  dependencies:
+    "@solana/spl-token" "0.1.4"
+    "@solana/web3.js" "^1.11.0"
+    bip32 "^2.0.6"
+    bn.js "^5.1.3"
+    borsh "^0.4.0"
+    bs58 "4.0.1"
+    buffer-layout "^1.2.0"
+    core-util-is "^1.0.2"
+    crypto "^1.0.1"
+    crypto-ts "^1.0.2"
+    fs "^0.0.1-security"
+    tweetnacl "^1.0.3"
+    webpack-dev-server "^3.11.2"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -2020,24 +2039,6 @@
   integrity sha512-MZPUxrmFubI36XS1DI3qmI0YdN1gks62JtFZvxR67ljjSNCeK6U08Zx4msEWOXuofgqUt6zPHSi1H9fbjR/NRA==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
-
-"@solana/spl-name-service@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@solana/spl-name-service/-/spl-name-service-0.1.2.tgz#d49240a692bbf05ef56d79db0916b17a4829b99d"
-  integrity sha512-rmVYzhmZgaYmaANzmuxemoJWMnkuM59zitJpdkJejn/oTPYc+SezhQk52fN4dqjCz1cTBnzDJ+0AUJIwgNWnNQ==
-  dependencies:
-    "@solana/spl-token" "0.1.4"
-    "@solana/web3.js" "^1.11.0"
-    bip32 "^2.0.6"
-    bn.js "^5.1.3"
-    bs58 "4.0.1"
-    buffer-layout "^1.2.0"
-    core-util-is "^1.0.2"
-    crypto "^1.0.1"
-    crypto-ts "^1.0.2"
-    fs "^0.0.1-security"
-    tweetnacl "^1.0.3"
-    webpack-dev-server "^3.11.2"
 
 "@solana/spl-token-registry@^0.2.102":
   version "0.2.102"
