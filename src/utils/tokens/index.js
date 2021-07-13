@@ -16,11 +16,7 @@ import {
   TOKEN_PROGRAM_ID,
   transferChecked,
 } from './instructions';
-import {
-  ACCOUNT_LAYOUT,
-  getOwnedAccountsFilters,
-  MINT_LAYOUT,
-} from './data';
+import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
 import bs58 from 'bs58';
 
 export async function getOwnedTokenAccounts(connection, publicKey) {
@@ -335,10 +331,10 @@ export async function transferTokens({
   destinationAccountInfo = await connection.getAccountInfo(
     destinationAssociatedTokenAddress,
   );
-    if (
-      !!destinationAccountInfo &&
-      destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)
-    ) {
+  if (
+    !!destinationAccountInfo &&
+    destinationAccountInfo.owner.equals(TOKEN_PROGRAM_ID)
+  ) {
     return await transferBetweenSplTokenAccounts({
       connection,
       owner,
