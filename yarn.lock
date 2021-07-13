@@ -1519,11 +1519,6 @@
     "@ethersproject/rlp" "^5.0.3"
     "@ethersproject/signing-key" "^5.0.4"
 
-"@fontsource/roboto@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@fontsource/roboto/-/roboto-4.3.0.tgz#00f1cceca43eff85bb0e1d424311751ee41f6aa6"
-  integrity sha512-WeFWCWYutLWyEtRmBhn+bLbW4/km0l+HhTpR8wWDxJLiGiMOhVLO/Z0q5w6l20ZOkWnf6Z1rN3o3W2HjvYN6Rg==
-
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -1965,12 +1960,11 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@project-serum/swap-ui@^0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.1.11.tgz#026f28dc87c36aee6bb1b9be924342b66d7f11de"
-  integrity sha512-irhexVN319gzHBVO6ordDafEOdnOuSJsy+Fi+5CSOV4XbqkD+iUm/bJdSw1iszwjXYQcyMR8qvONbsnEDS0lRA==
+"@project-serum/swap-ui@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@project-serum/swap-ui/-/swap-ui-0.2.1.tgz#eb6f5f4b58db747e0f9e5362d2b95b43fe0e7c16"
+  integrity sha512-xINb2LIFKTDdZsYfbRTUfbp6CyUe7CIzf2w08EPfVwsd669fentdQ53DIfDXjS552f4EoaEeJh9oZgcK8CMXwA==
   dependencies:
-    "@fontsource/roboto" "^4.3.0"
     "@project-serum/serum" "^0.13.34"
     "@project-serum/swap" "^0.1.0-alpha.31"
     "@solana/spl-token" "^0.1.4"
