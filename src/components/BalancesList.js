@@ -57,6 +57,8 @@ import TokenIcon from './TokenIcon';
 import EditAccountNameDialog from './EditAccountNameDialog';
 import MergeAccountsDialog from './MergeAccountsDialog';
 import SwapButton from './SwapButton';
+import DnsIcon from '@material-ui/icons/Dns';
+import DomainsList from './DomainsList';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -108,6 +110,7 @@ export default function BalancesList() {
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
   const [showFtxPayDialog, setShowFtxPayDialog] = useState(false);
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
+  const [showDomains, setShowDomains] = useState(false);
   const { accounts, setAccountName } = useWalletSelector();
   const isExtensionWidth = useIsExtensionWidth();
   // Dummy var to force rerenders on demand.
@@ -231,6 +234,12 @@ export default function BalancesList() {
               />
             </IconButton>
           </Tooltip>
+          <Tooltip title="See your domains" arrow>
+            <IconButton size={iconSize} onClick={() => setShowDomains(true)}>
+              <DnsIcon />
+            </IconButton>
+          </Tooltip>
+          <DomainsList open={showDomains} setOpen={setShowDomains} />
           <SwapButton size={iconSize} />
           <Tooltip title="Migrate Tokens" arrow>
             <IconButton
@@ -607,8 +616,7 @@ function BalanceListItemDetails({
           <Typography variant="body2">
             <Link
               href={
-                `https://solscan.io/account/${publicKey.toBase58()}` +
-                urlSuffix
+                `https://solscan.io/account/${publicKey.toBase58()}` + urlSuffix
               }
               target="_blank"
               rel="noopener"
