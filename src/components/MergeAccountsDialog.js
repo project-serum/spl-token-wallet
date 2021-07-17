@@ -47,7 +47,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
   const mergeAccounts = async (retryCount = 30) => {
     try {
       if (retryCount === 0) {
-        enqueueSnackbar(`Unable to complete merge. Please try again.`, {
+        enqueueSnackbar(`Unable to complete migration. Please try again.`, {
           variant: 'error',
         });
         return;
@@ -107,8 +107,8 @@ export default function MergeAccountsDialog({ open, onClose }) {
             const symbol = tokenInfo.symbol
               ? tokenInfo.symbol
               : mint.toString();
-            console.log(`Merging ${symbol}`);
-            enqueueSnackbar(`Merging ${symbol}`, {
+            console.log(`Migrating ${symbol}`);
+            enqueueSnackbar(`Migrating ${symbol}`, {
               variant: 'info',
             });
             await mergeMint(
@@ -133,7 +133,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
       // Exit dialogue.
       close();
     } catch (err) {
-      console.error('There was a problem merging accounts', err);
+      console.error('There was a problem migrating accounts', err);
       enqueueSnackbar('Could not confirm transaction. Please wait.', {
         variant: 'info',
       });
@@ -141,7 +141,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
       // Sleep to give the RPC nodes some time to catch up.
       await sleep(10000);
 
-      enqueueSnackbar('Retrying merge', { variant: 'info' });
+      enqueueSnackbar('Retrying migration', { variant: 'info' });
       await mergeAccounts(retryCount - 1);
     }
   };
@@ -149,7 +149,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
     setMergeCheck('');
     onClose();
   };
-  const disabled = mergeCheck.toLowerCase() !== 'merge';
+  const disabled = mergeCheck.toLowerCase() !== 'migrate';
 
   return (
     <Dialog disableBackdropClick={isMerging} open={open} onClose={onClose}>
@@ -170,14 +170,14 @@ export default function MergeAccountsDialog({ open, onClose }) {
         </DialogContent>
       ) : (
         <>
-          <DialogTitle>Are you sure you want to merge tokens?</DialogTitle>
+          <DialogTitle>Are you sure you want to migrate tokens?</DialogTitle>
           <DialogContent>
             <DialogContentText>
               <b>WARNING</b>: This action may break apps that depend on your
               existing token accounts.
             </DialogContentText>
             <DialogContentText>
-              Merging sends all tokens to{' '}
+              Migrating sends all tokens to{' '}
               <Link
                 href={'https://spl.solana.com/associated-token-account'}
                 target="_blank"
@@ -189,13 +189,13 @@ export default function MergeAccountsDialog({ open, onClose }) {
               associated token accounts do not exist, then they will be created.
             </DialogContentText>
             <DialogContentText>
-              If merging fails during a period of high network load, you will
-              not have lost your funds. Just recontinue the merge from where you
-              left off. If you have a lot of accounts, merging might take a
+              If migrating fails during a period of high network load, you will
+              not have lost your funds. Just recontinue the migration from where you
+              left off. If you have a lot of accounts, migrating might take a
               while.
             </DialogContentText>
             <TextField
-              label={`Please type "merge" to confirm`}
+              label={`Please type "migrate" to confirm`}
               fullWidth
               variant="outlined"
               margin="normal"
@@ -213,7 +213,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
                 setIsMerging(true);
                 mergeAccounts()
                   .then(() => {
-                    enqueueSnackbar('Account merge complete', {
+                    enqueueSnackbar('Account migrate complete', {
                       variant: 'success',
                     });
                     setIsMerging(false);
@@ -229,7 +229,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
               color="secondary"
               autoFocus
             >
-              Merge
+              Migrate
             </Button>
           </DialogActions>
         </>

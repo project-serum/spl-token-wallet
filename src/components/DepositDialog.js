@@ -96,6 +96,8 @@ export default function DepositDialog({
                 This address can only be used to receive{' '}
                 {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
                 this address.
+                <br />
+                <b style={{ color: 'red' }}>WARNING</b>: You are using a deprecated account type. Please migrate your tokens. Ideally, create a new wallet. If you send to this address from a poorly implemented wallet, you may burn tokens.
               </DialogContentText>
             ) : (
               <DialogContentText>

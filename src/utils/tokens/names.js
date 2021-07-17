@@ -278,6 +278,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://i.imgur.com/RxxI1Tr.png',
     },
+    {
+      tokenSymbol: 'SAMO',
+      mintAddress: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+      tokenName: 'Samoyed Coin',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/logo.png',
+    },
   ],
 };
 
