@@ -266,9 +266,6 @@ const Navbar = () => {
                 >
                   {wallet?.publicKey.toBase58()}
                 </Title>
-                <Title color={theme.customPalette.green.main} fontSize="1rem">
-                  {/* <TotalBalance /> */}
-                </Title>
               </Row>
               <RedButton
                 width="10rem"
