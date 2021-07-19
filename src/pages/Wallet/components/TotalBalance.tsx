@@ -7,20 +7,12 @@ import {
 } from '../../../utils/utils';
 
 const TotalBalance = ({
-  isNavbar = true,
   allTokensData,
   marketsData,
 }: {
-  isNavbar: boolean;
   allTokensData: Map<string, TokenInfo>;
   marketsData: Map<string, any>;
 }) => {
-  // const wallet = useWallet();
-  // const connection = useConnection();
-  // const tokenInfos = useTokenInfos();
-
-  // const walletPubkey = wallet?.publicKey?.toString();
-
   const totalUSD = [...allTokensData.values()].reduce((acc, cur) => {
     const isTokenUSDT = isUSDToken(cur.symbol);
 
@@ -35,7 +27,7 @@ const TotalBalance = ({
 
   return (
     <>
-      <span key={`${isNavbar}-total-balance`}>
+      <span key={`total-balance`}>
         ${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}
       </span>
     </>
