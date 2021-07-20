@@ -244,7 +244,6 @@ const AccountInfo = ({
               allTokensData={allTokensData}
               marketsData={marketsData}
               key="navbarfalse"
-              isNavbar={false}
             />
           </Title>
         </BalanceCard>

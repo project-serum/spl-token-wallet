@@ -16,7 +16,6 @@ import { CSSProperties } from '@material-ui/styles';
 import WalletIcon from '../../images/walletIcon.svg';
 import Lock from '../../images/lock.svg';
 import NetworkDropdown from './NetworkDropdown';
-import TotalBalance from '../../pages/Wallet/components/TotalBalance';
 
 import { useWallet } from '../../utils/wallet';
 import {
@@ -263,11 +262,9 @@ const Navbar = () => {
                   fontFamily="Avenir Next"
                   color={theme.customPalette.grey.dark}
                   fontSize="1rem"
+                  style={{ paddingBottom: '1rem' }}
                 >
                   {wallet?.publicKey.toBase58()}
-                </Title>
-                <Title color={theme.customPalette.green.main} fontSize="1rem">
-                  <TotalBalance />
                 </Title>
               </Row>
               <RedButton
