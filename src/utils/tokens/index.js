@@ -26,6 +26,7 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
     {
       commitment: connection.commitment,
       filters,
+      encoding: 'base64'
     },
   ]);
   if (resp.error) {
@@ -40,7 +41,7 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
     .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
       publicKey: new PublicKey(pubkey),
       accountInfo: {
-        data: bs58.decode(data),
+        data: bs58.decode(bs58.encode(Uint8Array.from(atob(data[0]), c => c.charCodeAt(0)))),
         executable,
         owner: new PublicKey(owner),
         lamports,
