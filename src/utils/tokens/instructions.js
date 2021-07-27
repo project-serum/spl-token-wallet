@@ -73,7 +73,7 @@ export function initializeMint({
         decimals,
         mintAuthority: mintAuthority.toBuffer(),
         freezeAuthorityOption: !!freezeAuthority,
-        freezeAuthority: (freezeAuthority || new PublicKey()).toBuffer(),
+        freezeAuthority: (freezeAuthority || PublicKey.default).toBuffer(),
       },
     }),
     programId: TOKEN_PROGRAM_ID,
