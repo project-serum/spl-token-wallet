@@ -1,7 +1,6 @@
 import * as BufferLayout from 'buffer-layout';
 import {
   PublicKey,
-  Keypair,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
@@ -74,7 +73,7 @@ export function initializeMint({
         decimals,
         mintAuthority: mintAuthority.toBuffer(),
         freezeAuthorityOption: !!freezeAuthority,
-        freezeAuthority: (freezeAuthority || Keypair.generate().publicKey).toBuffer(),
+        freezeAuthority: (freezeAuthority || PublicKey.default).toBuffer(),
       },
     }),
     programId: TOKEN_PROGRAM_ID,
