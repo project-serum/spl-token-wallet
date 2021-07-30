@@ -20,9 +20,9 @@ import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
 
 export async function getOwnedTokenAccounts(connection, publicKey) {
   let filters = getOwnedAccountsFilters(publicKey);
-  let resp = await connection.getProgramAccounts(TOKEN_PROGRAM_ID,
+  let resp = await connection.getProgramAccounts(
+    TOKEN_PROGRAM_ID,
     {
-      commitment: connection.commitment,
       filters,
     },
   );
