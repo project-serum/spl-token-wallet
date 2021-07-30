@@ -195,7 +195,7 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
+            {/* <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
               <NavLinkButton
                 theme={theme}
                 page={'addressbook'}
@@ -203,7 +203,7 @@ const Navbar = () => {
               >
                 Addressbook
               </NavLinkButton>
-            </StyledLink>
+            </StyledLink> */}
           </RowContainer>
         </RowContainer>
         <Row height={'100%'}>
