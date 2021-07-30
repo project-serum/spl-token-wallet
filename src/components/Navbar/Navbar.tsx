@@ -169,6 +169,25 @@ const HeaderContainer = styled(RowContainer)`
     width: 40%;
   }
 `;
+
+const TokenLink = styled.a`
+  font-family: Avenir Next Demi;
+  text-transform: capitalize;
+  text-decoration: none;
+  font-size: 1.4rem;
+  background: linear-gradient(
+    106.89deg,
+    rgba(94, 181, 168, 0.8) 17.87%,
+    rgba(56, 98, 193, 0.8) 82.13%
+  );
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 100%;
+  border-radius: 0.6rem;
+  color: #f8faff;
+`;
+
 const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
@@ -231,7 +250,7 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
+            {/* <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
               <NavLinkButton
                 theme={theme}
                 page={'addressbook'}
@@ -239,7 +258,14 @@ const Navbar = () => {
               >
                 Addressbook
               </NavLinkButton>
-            </StyledLink>
+            </StyledLink> */}
+            <TokenLink
+              href="https://ccai.cryptocurrencies.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Token
+            </TokenLink>
           </LinksContainer>
         </HeaderContainer>
         <WalletLoginContainer>
