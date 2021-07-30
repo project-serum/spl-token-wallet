@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { BtnCustom } from '../BtnCustom';
 import { useWallet } from '../../utils/wallet';
-import { hasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
+import { useHasLockedMnemonicAndSeed } from '../../utils/wallet-seed';
 
 export const StyledDropdown = styled.div`
   display: flex;
@@ -20,6 +20,9 @@ export const StyledDropdown = styled.div`
   }
   padding: 1rem 3rem 1rem 0;
   border-right: ${(props) => props.theme.customPalette.border.new};
+  @media (max-width: 540px) {
+    border: none;
+  }
 `;
 
 export const StyledPaper = styled(
@@ -35,9 +38,12 @@ export const StyledPaper = styled(
   &&& {
     z-index: 11;
     position: absolute;
-    top: calc(6rem - 0.1rem);
+    top: ${(props) =>
+      props.popupPage ? 'calc(6.9rem)' : 'calc(6rem - 0.1rem)'};
     right: ${(props) =>
-      props.isWalletConnected
+      props.popupPage
+        ? '23.5rem'
+        : props.isWalletConnected
         ? props.customActiveRem
           ? props.customActiveRem
           : `9rem`
@@ -54,6 +60,12 @@ export const StyledPaper = styled(
     border-top-right-radius: 0; */
     /* padding-left: 8px;
     padding-right: 8px; */
+
+    @media (max-width: 540px) {
+      right: ${(props) => (props.popupPage ? '23.5rem' : '8rem')};
+      top: ${(props) =>
+        props.popupPage ? 'calc(6.9rem)' : 'calc(10rem - 0.1rem)'};
+    }
   }
 `;
 
@@ -92,32 +104,41 @@ export const StyledMenuItem = styled(MenuItem)`
 const WalletStatusButton = ({
   connection,
   theme,
+  width,
 }: {
   connection: string;
   theme: Theme;
+  width: string;
 }) => (
   <BtnCustom
     btnColor={theme.customPalette.white.main}
     borderWidth={'0'}
     textTransform={'capitalize'}
-    btnWidth={'10rem'}
+    btnWidth={width ? width : '10rem'}
     height={'3.5rem'}
     padding={'1.25rem 0'}
     fontSize={'1.2rem'}
+    style={{ whiteSpace: 'nowrap' }}
   >
     {connection}
     <ExpandMoreIcon fontSize="small" style={{ marginLeft: '.5rem' }} />
   </BtnCustom>
 );
 
-const NetworkDropdown = () => {
+const NetworkDropdown = ({
+  width = '10rem',
+  popupPage = false,
+}: {
+  width: string;
+  popupPage: boolean;
+}) => {
   const theme = useTheme();
   const wallet = useWallet();
   const { endpoint, setEndpoint } = useConnectionConfig();
 
   const networkLabels = [
     { name: 'Mainnet Beta', endpoint: MAINNET_URL },
-    { name: 'Devnet', endpoint: clusterApiUrl('devnet') },
+    { name: 'Devnet', endpoint: 'https://api.devnet.solana.com' },
     { name: 'Testnet', endpoint: clusterApiUrl('testnet') },
   ];
 
@@ -125,8 +146,8 @@ const NetworkDropdown = () => {
     value: endpoint,
     label: networkLabels.find((a) => a.endpoint === endpoint)?.name || '',
   };
-
-  const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed();
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
+  const isUserHasLockedMnemonicAndSeed = hasLockedMnemonicAndSeed;
 
   return (
     <StyledDropdown
@@ -139,12 +160,18 @@ const NetworkDropdown = () => {
       <WalletStatusButton
         connection={currentConnectionEndpoint.label}
         theme={theme}
+        width={width}
       />
       <StyledPaper
         theme={theme}
         isWalletConnected={false}
+        popupPage={popupPage}
         customNotActiveRem={
-          !!wallet ? '37rem' : isUserHasLockedMnemonicAndSeed ? '22rem' : '38rem'
+          !!wallet
+            ? '37rem'
+            : isUserHasLockedMnemonicAndSeed
+            ? '22rem'
+            : '38rem'
         }
       >
         <MenuList style={{ padding: 0 }}>

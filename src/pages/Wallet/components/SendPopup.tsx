@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DialogForm from './DialogForm';
 import {
-  useBalanceInfo,
   useWallet,
   useWalletAddressForMint,
 } from '../../../utils/wallet';
@@ -98,26 +97,20 @@ const getTabs = (mint, swapCoinInfo, theme) => {
   }
 };
 
-export default function SendDialog({ open, onClose, publicKey }) {
-  const balanceInfo = useBalanceInfo(publicKey) || {
-    amount: 0,
-    decimals: 8,
-    mint: null,
-    tokenName: 'Loading...',
-    tokenSymbol: '--',
-  };
+export default function SendDialog({ open, onClose, publicKey, balanceInfo, refreshTokensData }) {
+  const { mint: rawMint, symbol: tokenSymbol } = balanceInfo;
+  const mint = new PublicKey(rawMint)
 
   const isProdNetwork = useIsProdNetwork();
   const [tab, setTab] = useState('spl');
 
   const [swapCoinInfo] = useSwapApiGet(
     showSwapAddress && balanceInfo.mint && isProdNetwork
-      ? `coins/sol/${balanceInfo.mint.toBase58()}`
+      ? `coins/sol/${mint.toBase58()}`
       : null,
   );
   const ethAccount = useEthAccount();
 
-  const { mint, tokenSymbol } = balanceInfo;
   const theme = useTheme();
   const tokenSymbolForCheck =
     tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
@@ -167,6 +160,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               onClose={onClose}
               publicKey={publicKey}
               balanceInfo={balanceInfo}
+              refreshTokensData={refreshTokensData}
             />
           ) : tab === 'wusdcToSplUsdc' ? (
             <SendSwapDialog
@@ -174,6 +168,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               ethAccount={''}
               tab={tab}
               onClose={onClose}
+              refreshTokensData={refreshTokensData}
               publicKey={publicKey}
               balanceInfo={balanceInfo}
               swapCoinInfo={swapCoinInfo}
@@ -188,6 +183,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               publicKey={publicKey}
               balanceInfo={balanceInfo}
               swapCoinInfo={swapCoinInfo}
+              refreshTokensData={refreshTokensData}
               wusdtToSplUsdt
             />
           ) : (
@@ -199,6 +195,7 @@ export default function SendDialog({ open, onClose, publicKey }) {
               balanceInfo={balanceInfo}
               swapCoinInfo={swapCoinInfo}
               ethAccount={ethAccount}
+              refreshTokensData={refreshTokensData}
             />
           )}
         </>
@@ -211,9 +208,12 @@ export default function SendDialog({ open, onClose, publicKey }) {
   );
 }
 
-function SendSplDialog({ onClose, publicKey, balanceInfo }) {
+function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
+  const { decimals, mint: rawMint } = balanceInfo;
+  const mint = new PublicKey(rawMint)
+
   const defaultAddressHelperText =
-    !balanceInfo.mint || balanceInfo.mint.equals(WRAPPED_SOL_MINT)
+    !mint || mint.equals(WRAPPED_SOL_MINT)
       ? 'Enter Solana Address'
       : 'Enter SPL token or Solana address';
 
@@ -237,8 +237,8 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     transferAmountString,
     validAmount,
   } = useForm(balanceInfo, addressHelperText, passValidation, 'spl', false);
-  const { decimals, mint } = balanceInfo;
-  const mintString = mint && mint.toBase58();
+  
+  const mintString = mint.toString();
 
   const theme = useTheme();
 
@@ -283,6 +283,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
 
   async function makeTransaction() {
     let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
+
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }
@@ -290,7 +291,8 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
       publicKey,
       new PublicKey(destinationAddress),
       amount,
-      balanceInfo.mint,
+      mint,
+      decimals,
       null,
       overrideDestinationCheck,
     );
@@ -304,7 +306,10 @@ function SendSplDialog({ onClose, publicKey, balanceInfo }) {
     return (
       typeof sendTransaction === 'function' &&
       sendTransaction(makeTransaction(), {
-        onSuccess: onClose,
+        onSuccess: () => {
+          refreshTokensData()
+          onClose();
+        },
         onError: () => {},
       })
     );
@@ -367,6 +372,7 @@ function SendSwapDialog({
   balanceInfo,
   swapCoinInfo,
   ethAccount,
+  refreshTokensData,
   wusdcToSplUsdc = false,
   wusdtToSplUsdt = false,
 }) {
@@ -383,7 +389,9 @@ function SendSwapDialog({
 
   const theme = useTheme();
 
-  const { tokenName, decimals, mint } = balanceInfo;
+  const { name: tokenName, decimals, mint: rawMint } = balanceInfo;
+  const mint = new PublicKey(rawMint)
+
   const blockchain =
     wusdcToSplUsdc || wusdtToSplUsdt
       ? 'sol'
@@ -465,7 +473,8 @@ function SendSwapDialog({
       publicKey,
       new PublicKey(swapInfo.address),
       amount,
-      balanceInfo.mint,
+      mint,
+      decimals,
       swapInfo.memo,
     );
   }
@@ -488,6 +497,7 @@ function SendSwapDialog({
         key={signature}
         publicKey={publicKey}
         signature={signature}
+        refreshTokensData={refreshTokensData}
         blockchain={blockchain}
         onClose={onClose}
       />
@@ -564,7 +574,7 @@ function SendSwapDialog({
   );
 }
 
-function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
+function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTokensData }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [showResult, setShowResult] = useState(false);
@@ -587,9 +597,10 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain }) {
     if (showResult && !showedResult) {
       setIsResultShowed(true);
       enqueueSnackbar('Success!', { variant: 'success' });
+      refreshTokensData()
       onClose();
     }
-  }, [showResult, enqueueSnackbar, onClose, showedResult]);
+  }, [showResult, enqueueSnackbar, refreshTokensData, onClose, showedResult]);
 
   let step = 1;
   let ethTxid = null;
@@ -664,9 +675,9 @@ function useForm(
 ) {
   const [destinationAddress, setDestinationAddress] = useState('');
   const [transferAmountString, setTransferAmountString] = useState('');
-  const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
+  const { amount: balanceAmount, symbol: tokenSymbol } = balanceInfo;
 
-  const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
+  const parsedAmount = parseFloat(transferAmountString);
   const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
   const theme = useTheme();
   const tokenSymbolForCheck =
@@ -676,7 +687,7 @@ function useForm(
 
   const isConvertTab = tab === 'wusdcToSplUsdc' || tab === 'wusdtToSplUsdt';
   let maxBalance = String(
-    stripDigitPlaces(balanceAmountToUserAmount(balanceAmount, decimals), 8),
+    stripDigitPlaces(balanceAmount, 8)
   );
 
   // minus fee for transfering
@@ -750,10 +761,6 @@ function useForm(
     setDestinationAddress,
     validAmount,
   };
-}
-
-function balanceAmountToUserAmount(balanceAmount, decimals) {
-  return (balanceAmount / Math.pow(10, decimals)).toFixed(decimals);
 }
 
 function EthWithdrawalCompleter({ ethAccount, publicKey }) {

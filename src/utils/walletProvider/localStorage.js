@@ -9,6 +9,7 @@ export const DERIVATION_PATH = {
   deprecated: undefined,
   bip44: 'bip44',
   bip44Change: 'bip44Change',
+  bip44Root: 'bip44Root',
 };
 
 export function getAccountFromSeed(
@@ -39,8 +40,14 @@ function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
 
 export class LocalStorageWalletProvider {
   constructor(args) {
-    const { seed } = getUnlockedMnemonicAndSeed();
+    // const { seed } = getUnlockedMnemonicAndSeed();
+
     this.account = args.account;
+  }
+
+  init = async () => {
+    const { seed } = await getUnlockedMnemonicAndSeed();
+
     this.listAddresses = async (walletCount) => {
       const seedBuffer = Buffer.from(seed, 'hex');
       return [...Array(walletCount).keys()].map((walletIndex) => {
@@ -49,9 +56,7 @@ export class LocalStorageWalletProvider {
         return { index: walletIndex, address, name };
       });
     };
-  }
 
-  init = async () => {
     return this;
   };
 

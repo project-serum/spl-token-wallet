@@ -1,17 +1,36 @@
 import React from 'react';
+import styled from 'styled-components';
 import { useTheme } from '@material-ui/core';
 import { TableContainer, HeadRow, GreyTitle } from './AssetsTable';
 import { RowContainer, Title } from '../../commonStyles';
 
-const ActivityTable = () => {
+const StyledActivityTable = styled(TableContainer)`
+  width: calc(15% - 1rem);
+  flex-direction: column;
+  @media (max-width: 540px) {
+    display: ${(props) => (props.isActive ? 'block' : 'none')};
+  }
+`;
+
+const ActivityHeaderRow = styled(RowContainer)`
+  height: 5rem;
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
+const ComingSoonTitle = styled(Title)`
+  @media (max-width: 540px) {
+    font-size: 2rem;
+    white-space: nowrap;
+  }
+`;
+
+const ActivityTable = ({ isActive }: { isActive?: boolean }) => {
   const theme = useTheme();
   return (
-    <TableContainer
-      theme={theme}
-      width="calc(15% - 1rem)"
-      direction="column"
-    >
-      <RowContainer height="5rem">
+    <StyledActivityTable isActive={isActive} theme={theme}>
+      <ActivityHeaderRow>
         <HeadRow
           theme={theme}
           justify="flex-start"
@@ -19,13 +38,11 @@ const ActivityTable = () => {
         >
           <GreyTitle theme={theme}>Activity</GreyTitle>
         </HeadRow>
-      </RowContainer>
+      </ActivityHeaderRow>
       <RowContainer height="100%">
-        <Title>
-          Coming Soon
-        </Title>
+        <ComingSoonTitle>Coming Soon</ComingSoonTitle>
       </RowContainer>
-    </TableContainer>
+    </StyledActivityTable>
   );
 };
 

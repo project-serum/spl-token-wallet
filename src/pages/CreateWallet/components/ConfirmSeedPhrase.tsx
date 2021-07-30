@@ -18,6 +18,14 @@ import { sleep } from '../../../utils/utils';
 import FakeInputs from '../../../components/FakeInputs';
 import { BtnCustom } from '../../../components/BtnCustom';
 
+const ConfirmAnswer = styled(RowContainer)`
+  height: auto;
+  padding: 1rem 0 0 0;
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
 const SmallButton = styled(({ theme, isSelected, ...props }) => (
   <BtnCustom
     theme={theme}
@@ -90,14 +98,24 @@ const ConfirmSeedPhrase = ({
   return (
     <>
       <FakeInputs />
-      <Card height="55rem" width="55rem" justify={'space-around'}>
-        <RowContainer height={'auto'} padding="1rem 0 0 0">
+      <Card
+        minHeight={'50rem'}
+        height="55rem"
+        width="55rem"
+        justify={'space-around'}
+      >
+        <ConfirmAnswer>
           <BoldTitle>Confirm the seed phrase</BoldTitle>
-        </RowContainer>
+        </ConfirmAnswer>
         <Row width={'90%'}>
-          <ColorText background={'rgba(164, 231, 151, 0.5)'} height={'6rem'}>
+          <ColorText
+            background={'rgba(164, 231, 151, 0.5)'}
+            height={'6rem'}
+            needBackground={true}
+            style={{ background: 'rgba(164, 231, 151, 0.5)' }}
+          >
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
-              Place the words from your Seed Phrase in the correct order by
+              Place first 12 words from your Seed Phrase in the correct order by
               clicking on the words.
             </Title>
           </ColorText>

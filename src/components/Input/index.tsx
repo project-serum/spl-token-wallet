@@ -14,6 +14,7 @@ import Loupe from '../../images/Loupe.svg';
 import Copy from '../../images/copy.svg';
 import { useTheme } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
+import { isExtension } from '../../utils/utils';
 
 const ImagesPath = {
   closedEye: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxOCAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjUgNi41QzExLjUgNy4xNjMwNCAxMS4yMzY2IDcuNzk4OTMgMTAuNzY3OCA4LjI2Nzc3QzEwLjI5ODkgOC43MzY2MSA5LjY2MzA0IDkgOSA5QzguMzM2OTYgOSA3LjcwMTA3IDguNzM2NjEgNy4yMzIyMyA4LjI2Nzc3QzYuNzYzMzkgNy43OTg5MyA2LjUgNy4xNjMwNCA2LjUgNi41QzYuNSA1LjgzNjk2IDYuNzYzMzkgNS4yMDEwNyA3LjIzMjIzIDQuNzMyMjNDNy43MDEwNyA0LjI2MzM5IDguMzM2OTYgNCA5IDRDOS42NjMwNCA0IDEwLjI5ODkgNC4yNjMzOSAxMC43Njc4IDQuNzMyMjNDMTEuMjM2NiA1LjIwMTA3IDExLjUgNS44MzY5NiAxMS41IDYuNVoiIGZpbGw9IiM5Njk5OUMiLz4KPHBhdGggZD0iTTEgNi41QzEgNi41IDQgMSA5IDFDMTQgMSAxNyA2LjUgMTcgNi41QzE3IDYuNSAxNCAxMiA5IDEyQzQgMTIgMSA2LjUgMSA2LjVaTTkgMTBDOS45MjgyNiAxMCAxMC44MTg1IDkuNjMxMjUgMTEuNDc0OSA4Ljk3NDg3QzEyLjEzMTMgOC4zMTg1IDEyLjUgNy40MjgyNiAxMi41IDYuNUMxMi41IDUuNTcxNzQgMTIuMTMxMyA0LjY4MTUgMTEuNDc0OSA0LjAyNTEzQzEwLjgxODUgMy4zNjg3NSA5LjkyODI2IDMgOSAzQzguMDcxNzQgMyA3LjE4MTUgMy4zNjg3NSA2LjUyNTEzIDQuMDI1MTNDNS44Njg3NSA0LjY4MTUgNS41IDUuNTcxNzQgNS41IDYuNUM1LjUgNy40MjgyNiA1Ljg2ODc1IDguMzE4NSA2LjUyNTEzIDguOTc0ODdDNy4xODE1IDkuNjMxMjUgOC4wNzE3NCAxMCA5IDEwWiIgZmlsbD0iIzk2OTk5QyIvPgo8cGF0aCBkPSJNMSAxMkwxNyAxIiBzdHJva2U9IiMzQTQ3NUMiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K",
@@ -129,6 +130,7 @@ const InputWithPaste = ({
   return (
     <InputWithComponent
       ComponentToShow={
+        isExtension ? null :
         <TextButton
           color={theme.customPalette.blue.new}
           onClick={() => {

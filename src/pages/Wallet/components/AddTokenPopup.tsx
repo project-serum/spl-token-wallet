@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
-  refreshWalletPublicKeys,
-  useBalanceInfo,
   useWallet,
-  useWalletTokenAccounts,
 } from '../../../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../../../utils/tokens/names';
@@ -19,7 +16,7 @@ import {
 } from '../../../utils/utils';
 import { usePopularTokens } from '../../../utils/tokens/names';
 import Link from '@material-ui/core/Link';
-import DialogForm from '../../../pages/Wallet/components/DialogForm';
+import DialogForm from './DialogForm';
 // import { showSwapAddress } from '../../../utils/config';
 import { swapApiRequest } from '../../../utils/swap/api';
 import TokenIcon from '../../../components/TokenIcon';
@@ -51,14 +48,13 @@ export const feeFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 6,
 });
 
-export default function AddTokenDialog({ open, onClose }) {
+export default function AddTokenDialog({ open, onClose, allTokensData, balanceInfo, refreshTokensData }) {
   let wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
     wallet.tokenAccountCost,
   );
   let updateTokenName = useUpdateTokenName();
-  const [walletAccounts] = useWalletTokenAccounts();
 
   const [sendTransaction, sending] = useSendTransaction();
   const popularTokens = usePopularTokens();
@@ -72,14 +68,9 @@ export default function AddTokenDialog({ open, onClose }) {
   const [selectedTokens, setSelectedTokens] = useState([]);
 
   const theme = useTheme();
-  const balanceInfo = useBalanceInfo(wallet.publicKey);
   let { amount, decimals } = balanceInfo || {
     amount: 0,
     decimals: 8,
-    mint: null,
-    tokenName: 'Loading...',
-    tokenSymbol: '--',
-    tokenLogoUri: null,
   };
 
   let valid = true;
@@ -112,7 +103,7 @@ export default function AddTokenDialog({ open, onClose }) {
       Promise.all(
         selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
       ).then(() => {
-        refreshWalletPublicKeys(wallet);
+        refreshTokensData()
         onClose();
       });
 
@@ -121,7 +112,7 @@ export default function AddTokenDialog({ open, onClose }) {
 
     sendTransaction(addToken(params), {
       onSuccess: () => {
-        refreshWalletPublicKeys(wallet);
+        refreshTokensData()
         onClose();
       },
     });
@@ -139,8 +130,7 @@ export default function AddTokenDialog({ open, onClose }) {
           8,
         );
 
-  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost;
-
+  const isBalanceLowerCost = amount < cost;
   const isDisabled = sending || !valid || isBalanceLowerCost;
 
   const handleKeyDown = (event: any) => {
@@ -235,7 +225,7 @@ export default function AddTokenDialog({ open, onClose }) {
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. CCAI Token)'}
+                placeholder={'Token Name (e.g. Cryptocurrencies.Ai)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}
@@ -312,12 +302,11 @@ export default function AddTokenDialog({ open, onClose }) {
                       key={tokenInfo.address}
                       {...tokenInfo}
                       mintAddress={tokenInfo.address}
-                      existingAccount={(walletAccounts || []).find(
-                        (account) =>
-                          account.parsed.mint.toBase58() === tokenInfo.address,
+                      existingAccount={([...allTokensData.values()] || []).find(
+                        (tokenData) =>
+                        tokenData.mint === tokenInfo.address,
                       )}
-                      onSubmit={onSubmit}
-                      disalbed={sending}
+                      disabled={sending}
                       selectedTokens={selectedTokens}
                       setSelectedTokens={setSelectedTokens}
                     />
@@ -362,7 +351,7 @@ export default function AddTokenDialog({ open, onClose }) {
               }}
             >
               {formatNumberToUSFormat(
-                stripDigitPlaces(amount / Math.pow(10, decimals), decimals),
+                stripDigitPlaces(amount, decimals),
               )}{' '}
               SOL
             </WhiteText>
@@ -402,6 +391,15 @@ export function TokenListItem({
   existingAccount,
   selectedTokens,
   setSelectedTokens,
+}: {
+  name: string,
+  logoUri: string,
+  symbol: string,
+  mintAddress: string,
+  disabled: boolean,
+  existingAccount: boolean,
+  selectedTokens: any[],
+  setSelectedTokens: any
 }) {
   const alreadyExists = !!existingAccount;
 
@@ -411,7 +409,7 @@ export function TokenListItem({
   );
   const checked = selectedTokenIndex !== -1;
   const isDisabled = disabled || alreadyExists;
-  const address = new PublicKey(mintAddress)
+  const address = new PublicKey(mintAddress);
 
   return (
     <>
@@ -421,6 +419,7 @@ export function TokenListItem({
         style={{
           borderBottom: theme.customPalette.border.new,
           cursor: 'pointer',
+          minHeight: '4.5rem',
         }}
         onClick={() => {
           if (isDisabled) return;

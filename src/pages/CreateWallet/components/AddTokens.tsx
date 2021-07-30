@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import {
   Card,
@@ -23,9 +24,7 @@ import {
   useWalletPublicKeys,
   useWalletTokenAccounts,
 } from '../../../utils/wallet';
-import {
-  refreshAccountInfo,
-} from '../../../utils/connection';
+import { refreshAccountInfo } from '../../../utils/connection';
 
 import {
   TokenListItem,
@@ -36,10 +35,23 @@ import {
   formatNumberToUSFormat,
   stripDigitPlaces,
 } from '../../../utils/utils';
-import { usePopularTokens, useUpdateTokenName } from '../../../utils/tokens/names';
+import {
+  usePopularTokens,
+  useUpdateTokenName,
+} from '../../../utils/tokens/names';
 import { useSendTransaction } from '../../../utils/notifications';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useAsyncData } from '../../../utils/fetch-loop';
+
+const RowForStepComponents = styled(RowContainer)`
+  @media (max-width: 540px) {
+    flex-direction: column;
+  }
+`;
+
+const StyledColorText = styled(ColorText)`
+  height: 20rem;
+`;
 
 const AddTokens = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -92,12 +104,12 @@ const AddTokens = () => {
     (+feeFormat.format(tokenAccountCost / LAMPORTS_PER_SOL) || 0.002039) *
     selectedTokens.length;
 
-  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost
+  const isBalanceLowerCost = amount / Math.pow(10, decimals) < cost;
 
   return (
     <>
-      <Card width={'100rem'}>
-        <RowContainer height={'100%'}>
+      <Card width={'100rem'} minWidth={'100%'} minHeight="85rem">
+        <RowForStepComponents height={'100%'}>
           {' '}
           <RowContainer
             style={{ borderRight: '0.2rem solid #383B45' }}
@@ -125,7 +137,7 @@ const AddTokens = () => {
               />
             </Row>
             <Row width={'85%'}>
-              <ColorText
+              <StyledColorText
                 width={'100%'}
                 height={'12rem'}
                 background={'rgba(242, 154, 54, 0.5)'}
@@ -151,10 +163,11 @@ const AddTokens = () => {
                     up your wallet.
                   </Title>
                 </span>
-              </ColorText>
+              </StyledColorText>
             </Row>
             <Row width={'85%'} justify={'space-between'}>
               <VioletButton
+                style={{ height: '3.5rem' }}
                 theme={theme}
                 btnWidth={'31%'}
                 height={'3.5rem'}
@@ -173,10 +186,9 @@ const AddTokens = () => {
                 <BoldTitle
                   fontSize={'1.5rem'}
                   style={{
-                    color:
-                    isBalanceLowerCost
-                        ? theme.customPalette.red.main
-                        : theme.customPalette.green.light,
+                    color: isBalanceLowerCost
+                      ? theme.customPalette.red.main
+                      : theme.customPalette.green.light,
                   }}
                 >
                   {formatNumberToUSFormat(
@@ -245,8 +257,7 @@ const AddTokens = () => {
                         (account) =>
                           account.parsed.mint.toBase58() === token.address,
                       )}
-                      onSubmit={onSubmit}
-                      disalbed={sending}
+                      disabled={sending}
                       selectedTokens={selectedTokens}
                       setSelectedTokens={setSelectedTokens}
                     />
@@ -268,15 +279,22 @@ const AddTokens = () => {
               </Row>
               <VioletButton
                 theme={theme}
+                style={{ height: '3.5rem' }}
                 background={'#366CE5'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
-                onClick={() => onSubmit()}
+                onClick={() => {
+                  chrome.runtime.sendMessage(
+                    { message: 'buttonClicked' },
+                    () => {},
+                  );
+                  onSubmit();
+                }}
               >
                 Finish
               </VioletButton>
             </Row>
           </RowContainer>
-        </RowContainer>
+        </RowForStepComponents>
       </Card>{' '}
       <BottomLink
         needOr={false}

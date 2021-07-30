@@ -24,7 +24,15 @@ import AddHardwareWalletPopup from './AddHardwareWalletPopup';
 import ExportAccount, { ExportMnemonicDialog } from './ExportAccount';
 import ForgetWallet from './ForgetWallet';
 
-const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
+const ExportPrivateKeyButton = styled(BtnCustom)`
+  @media (max-width: 540px) {
+    font-size: 1.2rem;
+  }
+`;
+
+export const StyledCard = styled(({ isFromPopup, ...props }) => (
+  <Card {...props} />
+))`
   position: absolute;
   top: 100%;
   ${(props) => (props.isFromPopup ? 'right: 0' : 'left: 0')};
@@ -32,9 +40,18 @@ const StyledCard = styled(({ isFromPopup, ...props }) => <Card {...props} />)`
   height: auto;
   display: none;
   z-index: 2;
+  background: #222429;
+  border: 0.1rem solid #3a475c;
+  box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
+
+  @media (max-width: 540px) {
+    width: 35rem;
+  }
 `;
 
-const RowWithSelector = styled(({ isFromPopup, ...props }) => <Row {...props} />)`
+const RowWithSelector = styled(({ isFromPopup, ...props }) => (
+  <Row {...props} />
+))`
   position: relative;
   bottom: ${(props) => (props.isFromPopup ? '0' : '1rem')};
   padding: ${(props) => (props.isFromPopup ? '2rem' : '1rem 3rem 2rem 0')};
@@ -43,9 +60,13 @@ const RowWithSelector = styled(({ isFromPopup, ...props }) => <Row {...props} />
   &:hover #accountSelector {
     display: flex;
   }
+
+  @media (max-width: 540px) {
+    padding: 1rem 0;
+  }
 `;
 
-const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
+export const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
   return (
     <BtnCustom
       textTransform={'capitalize'}
@@ -83,11 +104,15 @@ const AccountsSelector = ({
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
   const theme = useTheme();
-  const { accounts, addAccount, setWalletSelector } = useWalletSelector();
+  const {
+    accounts,
+    hardwareWalletAccount,
+    setHardwareWalletAccount,
+    setWalletSelector,
+    addAccount,
+  } = useWalletSelector();
 
-  const accountsToShow = accounts.filter((acc) =>
-    isFromPopup ? !acc.selector.ledger : true,
-  );
+  const accountsToShow = hardwareWalletAccount ? accounts.concat(hardwareWalletAccount) : accounts;
   const selectedAccount = accounts.find((a) => a.isSelected);
 
   return (
@@ -95,7 +120,7 @@ const AccountsSelector = ({
       <Title
         fontSize={accountNameSize}
         fontFamily="Avenir Next Demi"
-        style={{ textTransform: 'capitalize', marginRight: '1rem' }}
+        style={{ textTransform: 'capitalize', marginRight: '1rem', whiteSpace: 'nowrap' }}
       >
         {selectedAccount && selectedAccount.name}
       </Title>
@@ -127,6 +152,7 @@ const AccountsSelector = ({
             {accountsToShow.map(({ isSelected, name, selector }, i) => {
               return (
                 <RowContainer
+                  key={`${name}-${i}`}
                   direction="row"
                   align={'center'}
                   justify={isFromPopup ? 'flex-start' : 'space-between'}
@@ -161,7 +187,7 @@ const AccountsSelector = ({
                   </Row>
                   {!isFromPopup && (
                     <Row>
-                      <BtnCustom
+                      <ExportPrivateKeyButton
                         btnWidth="auto"
                         textTransform="capitalize"
                         color={theme.customPalette.blue.serum}
@@ -171,41 +197,39 @@ const AccountsSelector = ({
                         onClick={() => setIsExportAccountOpen(true)}
                       >
                         Export Private Key
-                      </BtnCustom>
+                      </ExportPrivateKeyButton>
                     </Row>
                   )}
                 </RowContainer>
               );
             })}
           </RowContainer>
-          {!isFromPopup && (
-            <RowContainer padding="0 1.6rem" direction="column">
-              <WalletActionButton
-                theme={theme}
-                icon={AddIcon}
-                buttonText={'Add Account'}
-                openPopup={() => setIsAddAccountOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ImportHardwareIcon}
-                buttonText={'Import Hardware Wallet'}
-                openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={ExportMnemonicIcon}
-                buttonText={'Export Seed Phrase'}
-                openPopup={() => setIsExportMnemonicOpen(true)}
-              />
-              <WalletActionButton
-                theme={theme}
-                icon={DeleteAccountIcon}
-                buttonText={'Forget wallet for this device'}
-                openPopup={() => setIsDeleteAccountOpen(true)}
-              />
-            </RowContainer>
-          )}
+          <RowContainer padding="0 1.6rem" direction="column">
+            <WalletActionButton
+              theme={theme}
+              icon={AddIcon}
+              buttonText={'Add Account'}
+              openPopup={() => setIsAddAccountOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ImportHardwareIcon}
+              buttonText={'Import Hardware Wallet'}
+              openPopup={() => setIsAddHardwareWalletDialogOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={ExportMnemonicIcon}
+              buttonText={'Export Seed Phrase'}
+              openPopup={() => setIsExportMnemonicOpen(true)}
+            />
+            <WalletActionButton
+              theme={theme}
+              icon={DeleteAccountIcon}
+              buttonText={'Forget wallet for this device'}
+              openPopup={() => setIsDeleteAccountOpen(true)}
+            />
+          </RowContainer>
         </RowContainer>
       </StyledCard>
 
@@ -231,16 +255,23 @@ const AccountsSelector = ({
       <AddHardwareWalletPopup
         open={isAddHardwareWalletDialogOpen}
         onClose={() => setIsAddHardwareWalletDialogOpen(false)}
-        onAdd={(pubKey) => {
-          addAccount({
+        onAdd={({ publicKey, derivationPath, account, change }) => {
+          setHardwareWalletAccount({
             name: 'Hardware wallet',
-            importedAccount: pubKey.toString(),
+            publicKey,
+            importedAccount: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
           setWalletSelector({
             walletIndex: undefined,
-            importedPubkey: pubKey.toString(),
+            importedPubkey: publicKey.toString(),
             ledger: true,
+            derivationPath,
+            account,
+            change,
           });
         }}
       />

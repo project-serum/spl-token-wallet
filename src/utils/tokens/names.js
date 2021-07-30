@@ -7,6 +7,24 @@ import { useCallback } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { TokenListProvider } from '@solana/spl-token-registry';
 
+const CCAI_TOKEN_INFO = {
+  "chainId": 101,
+  "address": "E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp",
+  "symbol": "CCAI",
+  "tokenName": "Cryptocurrencies.Ai",
+  "name": "Cryptocurrencies.Ai",
+  "decimals": 9,
+  "logoUri": "https://cryptocurrencies.ai/logo.png",
+  "tags": [
+    "serum"
+  ],
+  "extensions": {
+    "website": "https://cryptocurrencies.ai",
+    "twitter": "https://twitter.com/CCAI_Official",
+    "serumV3Usdc": "7gZNLDbWE73ueAoHuAeFoSu7JqmorwCLpNTBXHtYSFTa"
+  }
+}
+
 // This list is used for deciding what to display in the popular tokens list
 // in the `AddTokenDialog`.
 //
@@ -299,12 +317,12 @@ export function getTokenInfo(mint, endpoint, tokenInfos) {
     (tokenInfo) => tokenInfo.address === mint.toBase58(),
   );
   if (match) {
-    if (!info) {
-      info = { ...match, logoUri: match.logoURI };
+    if (!info?.address) {
+      info = { ...match, name: match.name.replace(' (Sollet)', ''), logoUri: match.logoURI };
     }
     // The user has overridden a name locally.
     else {
-      info = { ...info, logoUri: match.logoURI };
+      info = { ...info, name: info.name.replace(' (Sollet)', ''), logoUri: match.logoURI };
     }
   }
   return { ...info };
@@ -340,7 +358,9 @@ export function useUpdateTokenName() {
 export function usePopularTokens() {
   const tokenInfos = useTokenInfos();
   const { endpoint } = useConnectionConfig();
-  return (!TOKENS[endpoint] ? [] : TOKENS[endpoint]).map((tok) =>
+  const tokens = (!TOKENS[endpoint] ? [] : TOKENS[endpoint]).map((tok) =>
     getTokenInfo(new PublicKey(tok.mintAddress), endpoint, tokenInfos),
   );
+
+  return [CCAI_TOKEN_INFO].concat(tokens)
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@material-ui/core';
 
@@ -16,6 +17,12 @@ import FakeInputs from '../../../components/FakeInputs';
 import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
+const StyledTitle = styled(BoldTitle)`
+  @media (max-width: 540px) {
+    font-size: 4.5rem;
+  }
+`;
+
 const Warning = ({
   onSubmit,
   showBottomLink = true,
@@ -28,10 +35,10 @@ const Warning = ({
   const theme = useTheme();
 
   const submit = async () => {
-    const origin = localStorage.getItem('origin');
-    
+    const origin = sessionStorage.getItem('origin');
+
     if (!!origin) {
-      console.log('add to location')
+      console.log('add to location');
       window.location.href += `#origin=${origin}`;
     }
 
@@ -50,11 +57,11 @@ const Warning = ({
   return (
     <>
       <FakeInputs />
-      <Card justify={'space-evenly'}>
+      <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
-          <BoldTitle style={{ fontSize: '2.4rem', marginBottom: '1.5rem' }}>
+          <StyledTitle fontSize={'2.4rem'} style={{ marginBottom: '1.5rem' }}>
             Warning
-          </BoldTitle>
+          </StyledTitle>
         </RowContainer>
         <RowContainer width="90%">
           <AttentionComponent

@@ -10,7 +10,7 @@ export const CLUSTERS = [
   },
   {
     name: 'devnet',
-    apiUrl: clusterApiUrl('devnet'),
+    apiUrl: 'https://api.devnet.solana.com',
     label: 'Devnet'
   },
   {
@@ -26,5 +26,5 @@ export const CLUSTERS = [
 ];
 
 export function clusterForEndpoint(endpoint) {
-  return CLUSTERS.find(({ apiUrl }) => apiUrl === endpoint);
+  return CLUSTERS.find(({ apiUrl }) => apiUrl === endpoint) || CLUSTERS[0];
 }

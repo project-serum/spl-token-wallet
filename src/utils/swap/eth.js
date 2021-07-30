@@ -5,6 +5,7 @@ import SWAP_ABI from './swap-abi.json';
 import { useCallAsync } from '../notifications';
 import { VioletButton } from '../../pages/commonStyles';
 import { useTheme } from '@material-ui/core';
+import { isExtension } from '../utils';
 
 const web3 = new Web3(window.ethereum);
 // Change to use estimated gas limit
@@ -239,12 +240,12 @@ export function ConnectToMetamaskButton() {
       <VioletButton
         theme={theme}
         component="a"
-        href="https://metamask.io/"
+        href={isExtension ? 'https://wallet.cryptocurrencies.ai' : 'https://metamask.io/'}
         target="_blank"
         rel="noopener"
         width={'calc(50% - .5rem)'}
       >
-        Connect to MetaMask
+        {isExtension ? 'Open CCAI Wallet' : 'Connect to MetaMask'}
       </VioletButton>
     );
   }

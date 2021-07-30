@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useMemo, useState } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
@@ -11,8 +11,11 @@ import { ConnectionProvider } from './utils/connection';
 import { useWallet, WalletProvider } from './utils/wallet';
 import LoadingIndicator from './components/LoadingIndicator';
 import SnackbarProvider from './components/SnackbarProvider';
-import { hasLockedMnemonicAndSeed } from './utils/wallet-seed';
+import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
+import { isExtension } from './utils/utils';
+import { ConnectedWalletsProvider } from './utils/connected-wallets';
+import { DevUrlPopup } from '../src/components/DevUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -36,6 +39,9 @@ declare module '@material-ui/core/styles/createMuiTheme' {
     customPalette: any;
   }
 }
+
+const LOCAL_BUILD = window.location.href.includes('localhost');
+const DEVELOP_BUILD = window.location.href.includes('develop');
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -145,6 +151,18 @@ export default function App() {
     return null;
   }
 
+  let appElement = (
+    <NavigationFrame>
+      <Pages />
+    </NavigationFrame>
+  );
+
+  if (isExtension) {
+    appElement = (
+      <ConnectedWalletsProvider>{appElement}</ConnectedWalletsProvider>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingIndicator />}>
@@ -153,11 +171,7 @@ export default function App() {
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>
-                <WalletProvider>
-                  <NavigationFrame>
-                    <Pages />
-                  </NavigationFrame>
-                </WalletProvider>
+                <WalletProvider>{appElement}</WalletProvider>
               </SnackbarProvider>
             </TokenRegistryProvider>
           </ConnectionProvider>
@@ -169,49 +183,57 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  
+  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
+  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
-    const origin = params.get('origin')
+    const origin = params.get('origin');
+    const hash = window.location.hash;
 
     if (origin) {
-      localStorage.setItem('origin', origin)
+      sessionStorage.setItem('origin', origin);
     } else {
-      localStorage.removeItem('origin')
+      sessionStorage.removeItem('origin');
+    }
+
+    if (hash) {
+      sessionStorage.setItem('hash', hash);
+    } else {
+      sessionStorage.removeItem('hash');
     }
   }, []);
 
   return (
-    <Switch>
-      {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
-      <Route path="/wallet" component={Wallet} />
-      <Route 
-        path="/restore_wallet" 
-        component={RestorePage}
-      />
-      <Route path="/welcome" component={WelcomePage} />
-      <Route path="/create_wallet" 
-        component={CreateWalletPage}
-      />
-      {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
-      <Route exact path="/welcome_back" component={WelcomeBackPage} />
-      <Route
-        path="/connect_popup"
-        component={ConnectPopup}
-      />
-
-      {/* popup if connecting from dex UI */}
-      {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
-
-      {/* if wallet exists - for case when we'll have unlocked wallet */}
-      {!!wallet && <Redirect from="/" to="/wallet" />}
-
-      {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-      {hasLockedMnemonicAndSeed() ? (
-        <Redirect from="/" to="/welcome_back" />
-      ) : (
-        <Redirect from="/" to="/welcome" />
+    <>
+      {DEVELOP_BUILD && !LOCAL_BUILD && (
+        <DevUrlPopup
+          open={isDevUrlPopupOpen}
+          close={() => openDevUrlPopup(false)}
+        />
       )}
-    </Switch>
+      <Switch>
+        {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
+        <Route path="/wallet" component={Wallet} />
+        <Route path="/restore_wallet" component={RestorePage} />
+        <Route path="/welcome" component={WelcomePage} />
+        <Route path="/create_wallet" component={CreateWalletPage} />
+        {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
+        <Route exact path="/welcome_back" component={WelcomeBackPage} />
+        <Route path="/connect_popup" component={ConnectPopup} />
+
+        {/* popup if connecting from dex UI */}
+        {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
+
+        {/* if wallet exists - for case when we'll have unlocked wallet */}
+        {!!wallet && <Redirect from="/" to="/wallet" />}
+
+        {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
+        {hasLockedMnemonicAndSeed ? (
+          <Redirect from="/" to="/welcome_back" />
+        ) : (
+          <Redirect from="/" to="/welcome" />
+        )}
+      </Switch>
+    </>
   );
 };
