@@ -26,14 +26,6 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
       filters,
     },
   );
-  if (resp.error) {
-    throw new Error(
-      'failed to get token accounts owned by ' +
-        publicKey.toBase58() +
-        ': ' +
-        resp.error.message,
-    );
-  }
   return resp
     .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
       publicKey: new PublicKey(pubkey),
