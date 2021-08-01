@@ -223,24 +223,28 @@ export default function PopupPage({ opener }) {
     (!isExtension && mustConnect)
   ) {
     // Approve the parent page to connect to this wallet.
-    function connect(autoApprove) {
+    async function connect(autoApprove) {
       setConnectedAccount(wallet.publicKey);
       if (isExtension) {
-        chrome.storage.local.get('connectedWallets', (result) => {
-          // TODO better way to do this
-          const account = accounts.find((account) =>
-            account.address.equals(wallet.publicKey),
-          );
-          const connectedWallets = {
-            ...(result.connectedWallets || {}),
-            [origin]: {
-              publicKey: wallet.publicKey.toBase58(),
-              selector: account.selector,
-              autoApprove,
-            },
-          };
-          chrome.storage.local.set({ connectedWallets });
-        });
+        // Wait for chrome storage to set connectedWallets before
+        // disconnected and closing the popup to prevent race condition
+        await new Promise((resolve) => {
+          chrome.storage.local.get('connectedWallets', (result) => {
+            // TODO better way to do this
+            const account = accounts.find((account) =>
+              account.address.equals(wallet.publicKey),
+            );
+            const connectedWallets = {
+              ...(result.connectedWallets || {}),
+              [origin]: {
+                publicKey: wallet.publicKey.toBase58(),
+                selector: account.selector,
+                autoApprove,
+              },
+            };
+            chrome.storage.local.set({ connectedWallets }, resolve);
+          });
+        })
       }
       postMessage({
         method: 'connected',
