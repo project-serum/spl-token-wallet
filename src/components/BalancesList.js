@@ -45,12 +45,14 @@ import {
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { serumMarkets, priceStore } from '../utils/markets';
 import { swapApiRequest } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
 import { useAsyncData } from '../utils/fetch-loop';
 import { showTokenInfoDialog } from '../utils/config';
 import { useConnection } from '../utils/connection';
+import { shortenAddress } from '../utils/utils';
 import CloseTokenAccountDialog from './CloseTokenAccountButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TokenIcon from './TokenIcon';
@@ -112,6 +114,7 @@ export default function BalancesList() {
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const [showDomains, setShowDomains] = useState(false);
   const { accounts, setAccountName } = useWalletSelector();
+  const [isCopied, setIsCopied] = useState(false);
   const isExtensionWidth = useIsExtensionWidth();
   // Dummy var to force rerenders on demand.
   const [, setForceUpdate] = useState(false);
@@ -195,17 +198,39 @@ export default function BalancesList() {
     <Paper>
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
-          <Typography
-            variant="h6"
-            style={{ flexGrow: 1, fontSize: isExtensionWidth && '1rem' }}
-            component="h2"
+          <CopyToClipboard
+            text={selectedAccount.address.toBase58()}
+            onCopy={() => {
+              setIsCopied(true)
+              setTimeout(() => {
+                setIsCopied(false)
+              }, 1000)
+            }}
           >
-            {selectedAccount && selectedAccount.name}
-            {isExtensionWidth ? '' : ' Balances'}{' '}
-            {allTokensLoaded && (
-              <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
-            )}
-          </Typography>
+            <Tooltip
+              title={
+                <Typography>
+                  {isCopied
+                  ? 'Copied'
+                  : 'Copy to clipboard'}
+                </Typography>
+              }
+              style={{fontSize: '10rem'}}
+            >
+              <Typography
+                variant="h6"
+                style={{ flexGrow: 1, fontSize: isExtensionWidth && '1rem', cursor: 'pointer' }}
+                hover={true}
+                component="h2"
+              >
+                {selectedAccount && selectedAccount.name}
+                {isExtensionWidth ? '' : ` (${shortenAddress(selectedAccount.address.toBase58())})`}{' '}
+                {allTokensLoaded && (
+                  <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
+                )}
+              </Typography>
+            </Tooltip>
+          </CopyToClipboard>
           {selectedAccount &&
             selectedAccount.name !== 'Main account' &&
             selectedAccount.name !== 'Hardware wallet' && (
