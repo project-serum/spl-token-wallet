@@ -60,8 +60,8 @@ export const GridContainer = styled(({ wallet, theme, ...rest }) => (
   background: ${(props) => props.theme.customPalette.dark.background};
 
   @media (max-width: 850px) {
-    display: ${(props) => (props.wallet ? 'flex' : 'none')};
-    height: 10rem;
+    display: flex;
+    height: 12rem;
     background: #222429;
   }
 `;

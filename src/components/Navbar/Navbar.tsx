@@ -149,7 +149,7 @@ const WalletLoginButtonContainer = styled(Row)`
   @media (max-width: 540px) {
     height: 100%;
     display: flex;
-    width: 45%;
+    width: ${(props) => (props.wallet ? '45%' : 'auto')};
   }
 `;
 
@@ -349,18 +349,20 @@ const Navbar = () => {
           )}
         </WalletLoginContainer>
 
-        <WalletLoginButtonContainer>
+        <WalletLoginButtonContainer wallet={wallet}>
           <NetworkDropdown width={'10rem'} popupPage={false} />
-          <img
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              sessionStorage.removeItem('unlocked');
-              reloadWallet();
-            }}
-            src={Lock}
-            width={'20%'}
-            alt={'lock wallet'}
-          />
+          {!!wallet ? (
+            <img
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                sessionStorage.removeItem('unlocked');
+                reloadWallet();
+              }}
+              src={Lock}
+              width={'20%'}
+              alt={'lock wallet'}
+            />
+          ) : null}
         </WalletLoginButtonContainer>
       </RowContainer>
     </GridContainer>

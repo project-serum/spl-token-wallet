@@ -28,6 +28,7 @@ import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 import { Row } from '../../pages/commonStyles';
 import { isExtension } from '../../utils/utils';
+import { MobileFooter } from '../Footer/MobileFooter';
 
 export const footerHeight = isExtension ? 0 : 6;
 
@@ -60,7 +61,7 @@ const StyledMain = styled.main`
     height: calc(100%);
   }
   @media (max-width: 540px) {
-    height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
+    height: calc(100% - 24rem);
   }
 `;
 
@@ -86,6 +87,7 @@ export default function NavigationFrame({ children }) {
       <Navbar />
       <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
+      <MobileFooter/>
     </>
   );
 }

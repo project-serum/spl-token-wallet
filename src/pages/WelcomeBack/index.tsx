@@ -50,6 +50,12 @@ const UnlockButton = styled(VioletButton)`
   }
 `;
 
+const StyledLogoContainer = styled(RowContainer)`
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
+
 const WelcomeBack = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -88,7 +94,9 @@ const WelcomeBack = () => {
       <FakeInputs />
       {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
       {!!wallet && <Redirect to={'/wallet'} />}
-      <Logo />
+      <StyledLogoContainer>
+        <Logo />
+      </StyledLogoContainer>
       <RowContainer height={'80%'} direction={'column'}>
         <Card minHeight={'50rem'}>
           <RowContainer
