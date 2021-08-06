@@ -81,6 +81,7 @@ export const DevUrlPopup = ({
           alt="Warning."
           style={{ width: '4rem', height: '4rem' }}
           src={Warning}
+          onClick={close}
         />
       </Row>
       <RowContainer margin={'3rem 0'} align={'start'} direction={'column'}>
@@ -124,7 +125,7 @@ export const DevUrlPopup = ({
             theme={theme}
             onClick={() => {}}
           >
-            Go to dex.cryptocurrencies.ai
+            Go to wallet.cryptocurrencies.ai
           </BlueButton>
         </a>
       </RowContainer>

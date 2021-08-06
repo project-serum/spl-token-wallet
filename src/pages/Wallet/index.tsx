@@ -16,6 +16,7 @@ import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
 import { MarketsDataSingleton } from '../../components/MarketsDataSingleton';
 import { useConnection } from '../../utils/connection';
 import { useTokenInfos } from '../../utils/tokens/names';
+import CloseTokenAccountDialog from './components/CloseTokenAccountPopup';
 
 const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
@@ -77,6 +78,10 @@ const Wallet = () => {
   });
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [
+    closeTokenAccountDialogOpen,
+    setCloseTokenAccountDialogOpen,
+  ] = useState(false);
 
   const hash = sessionStorage.getItem('hash');
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(
@@ -93,8 +98,10 @@ const Wallet = () => {
   );
 
   const walletPubkey = wallet?.publicKey?.toString();
-
   const refreshTokensData = () => changeRefreshCounter(refreshCounter + 1);
+  const isTokenSelected =
+    allTokensData.get(selectedTokenData.publicKey.toString()) &&
+    selectedTokenData.publicKey;
 
   useInterval(refreshTokensData, 5 * 1000);
 
@@ -117,7 +124,6 @@ const Wallet = () => {
   return (
     <MainWalletContainer>
       {window.opener && <Redirect to={'/connect_popup'} />}
-
       <AccountInfo marketsData={marketsData} allTokensData={allTokensData} />
       <TableContainer>
         <SwitcherRow>
@@ -148,24 +154,23 @@ const Wallet = () => {
           setSendDialogOpen={setSendDialogOpen}
           setDepositDialogOpen={setDepositDialogOpen}
           setShowAddTokenDialog={setShowAddTokenDialog}
+          setCloseTokenAccountDialogOpen={setCloseTokenAccountDialogOpen}
         />
 
         <ActivityTable isActive={activeTab === 'activity'} />
       </TableContainer>
-
-      {allTokensData.get(selectedTokenData.publicKey.toString()) &&
-        selectedTokenData.publicKey && (
-          <SendDialog
-            open={sendDialogOpen}
-            balanceInfo={allTokensData.get(
-              selectedTokenData.publicKey.toString(),
-            )}
-            refreshTokensData={refreshTokensData}
-            onClose={() => setSendDialogOpen(false)}
-            publicKey={selectedTokenData.publicKey}
-          />
-        )}
-      {selectedTokenData.publicKey && (
+      {isTokenSelected && (
+        <SendDialog
+          open={sendDialogOpen}
+          balanceInfo={allTokensData.get(
+            selectedTokenData.publicKey.toString(),
+          )}
+          refreshTokensData={refreshTokensData}
+          onClose={() => setSendDialogOpen(false)}
+          publicKey={selectedTokenData.publicKey}
+        />
+      )}
+      {isTokenSelected && (
         <ReceiveDialog
           open={depositDialogOpen}
           onClose={() => setDepositDialogOpen(false)}
@@ -181,18 +186,22 @@ const Wallet = () => {
         refreshTokensData={refreshTokensData}
         onClose={() => setShowAddTokenDialog(false)}
       />
-
-      {/* 
-      <TokenInfoDialog
+      {/* <TokenInfoDialog
         open={tokenInfoDialogOpen}
         onClose={() => setTokenInfoDialogOpen(false)}
         publicKey={selectedPublicKey}
-      />
-      <CloseTokenAccountDialog
-        open={closeTokenAccountDialogOpen}
-        onClose={() => setCloseTokenAccountDialogOpen(false)}
-        publicKey={selectedPublicKey}
       /> */}
+      {isTokenSelected && (
+        <CloseTokenAccountDialog
+          open={closeTokenAccountDialogOpen}
+          onClose={() => setCloseTokenAccountDialogOpen(false)}
+          publicKey={selectedTokenData.publicKey}
+          refreshTokensData={refreshTokensData}
+          balanceInfo={allTokensData.get(
+            selectedTokenData.publicKey.toString(),
+          )}
+        />
+      )}
     </MainWalletContainer>
   );
 };

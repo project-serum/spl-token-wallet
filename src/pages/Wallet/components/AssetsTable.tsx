@@ -8,9 +8,7 @@ import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 import TokenIcon from '../../../components/TokenIcon';
 import { useWallet } from '../../../utils/wallet';
 
-import {
-  useSolanaExplorerUrlSuffix,
-} from '../../../utils/connection';
+import { useSolanaExplorerUrlSuffix } from '../../../utils/connection';
 import {
   formatNumberToUSFormat,
   isUSDToken,
@@ -29,6 +27,7 @@ import ActivitiesDropdown from './ActivitiesDropdown';
 import { findAssociatedTokenAddress } from '../../../utils/tokens';
 import { CCAI_MINT } from '../../../utils/tokens/instructions';
 import { Loading } from '../../../components/Loading';
+import { MASTER_BUILD } from '../../../utils/config';
 
 export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
@@ -279,6 +278,7 @@ const AssetsTable = ({
   setSendDialogOpen,
   setDepositDialogOpen,
   setShowAddTokenDialog,
+  setCloseTokenAccountDialogOpen,
 }: {
   isActive?: boolean;
   allTokensData: Map<string, TokenInfo>;
@@ -294,6 +294,7 @@ const AssetsTable = ({
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
   setShowAddTokenDialog: (isOpen: boolean) => void;
+  setCloseTokenAccountDialogOpen: (isOpen: boolean) => void;
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
@@ -404,6 +405,7 @@ const AssetsTable = ({
                 selectToken={selectToken}
                 setSendDialogOpen={setSendDialogOpen}
                 setDepositDialogOpen={setDepositDialogOpen}
+                setCloseTokenAccountDialogOpen={setCloseTokenAccountDialogOpen}
               />
             ))}
             {sortedPublicKeys.length === 0 && (
@@ -435,6 +437,7 @@ const AssetItem = ({
   selectToken,
   setSendDialogOpen,
   setDepositDialogOpen,
+  setCloseTokenAccountDialogOpen,
   marketsData = new Map(),
   balanceInfo,
 }: {
@@ -451,6 +454,7 @@ const AssetItem = ({
   }) => void;
   setSendDialogOpen: (isOpen: boolean) => void;
   setDepositDialogOpen: (isOpen: boolean) => void;
+  setCloseTokenAccountDialogOpen: (isOpen: boolean) => void;
 }) => {
   const wallet = useWallet();
   const urlSuffix = useSolanaExplorerUrlSuffix();
@@ -713,6 +717,28 @@ const AssetItem = ({
             Send
           </VioletButton>
 
+          {!MASTER_BUILD && mint && amount === 0 && (
+            <VioletButton
+              theme={theme}
+              height="50%"
+              width="7rem"
+              background={
+                'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
+              }
+              hoverBackground={
+                'linear-gradient(140.41deg, #F26D68 0%, #F69894 92.17%)'
+              }
+              margin="0 2rem 0 0"
+              onClick={() => {
+                selectToken({ publicKey, isAssociatedToken });
+                setCloseTokenAccountDialogOpen(true);
+              }}
+            >
+              <img src={SendIcon} alt="send" style={{ marginRight: '.5rem' }} />
+              Delete
+            </VioletButton>
+          )}
+
           <VioletButton
             theme={theme}
             component="a"
@@ -785,7 +811,9 @@ const AssetItem = ({
 export default React.memo(AssetsTable, (prev, next) => {
   return (
     prev.isActive === next.isActive &&
-    JSON.stringify([...prev.allTokensData.values()]) === JSON.stringify([...next.allTokensData.values()]) &&
-    JSON.stringify([...prev.marketsData.values()]) === JSON.stringify([...next.marketsData.values()])
+    JSON.stringify([...prev.allTokensData.values()]) ===
+      JSON.stringify([...next.allTokensData.values()]) &&
+    JSON.stringify([...prev.marketsData.values()]) ===
+      JSON.stringify([...next.marketsData.values()])
   );
 });

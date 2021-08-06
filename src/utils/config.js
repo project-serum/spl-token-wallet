@@ -3,3 +3,4 @@ export const showTokenInfoDialog = !!localStorage.getItem(
 );
 
 export const showSwapAddress = true;
+export const MASTER_BUILD = process.env.MASTER_BUILD
