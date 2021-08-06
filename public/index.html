@@ -5,7 +5,10 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Wallet™ with support for SPL tokens." />
+    <meta
+      name="description"
+      content="Wallet™ with support for SPL tokens."
+    />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -58,7 +61,7 @@
       crossorigin="anonymous"
     />
 
-    <title>Solana SPL Token Wallet by Cryptocurrencies.Ai</title>
+    <title>Wallet by Cryptocurrencies.Ai</title>
     <style>
       @font-face {
         font-family: 'Avenir Next';
@@ -124,11 +127,6 @@
         }
       }
 
-      @media screen and (max-width: 450px) {
-        html {
-          font-size: 7px;
-        }
-      }
 
       @media screen and (min-width: 1920px) {
         html {
@@ -148,7 +146,13 @@
         }
       }
 
-      
+      @media screen and (min-width: 2560px) {
+        html {
+          font-size: 15px;
+        }
+      }
+
+
 
       body {
         margin: 0;
@@ -156,29 +160,23 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         background: #17181a !important;
-        overflow-x: hidden;
-
       }
 
       html,
       body,
       #root {
-        min-height: 600px;
         height: 100%;
-        min-width: 375px;
       }
 
-      a,
-      a:hover {
+      a, a:hover {
         text-decoration: none;
       }
 
-      input,
-      textarea {
+      input, textarea {
         resize: none;
       }
 
-      .MuiTabs-indicator.MuiTabs-indicator {
+      .MuiTabs-indicator.MuiTabs-indicator  {
         background: transparent;
       }
 
@@ -188,13 +186,14 @@
       }
 
       ::-webkit-scrollbar-thumb {
-        background: #366ce5;
+        background: #366CE5;
       }
 
       #client-snackbar {
         font-size: 1.6rem;
         color: #fff;
       }
+    
     </style>
   </head>
   <body>
