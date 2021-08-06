@@ -199,7 +199,7 @@ export default function BalancesList() {
       <AppBar position="static" color="default" elevation={1}>
         <Toolbar>
           <CopyToClipboard
-            text={selectedAccount.address.toBase58()}
+            text={selectedAccount && selectedAccount.address.toBase58()}
             onCopy={() => {
               setIsCopied(true)
               setTimeout(() => {
@@ -224,7 +224,7 @@ export default function BalancesList() {
                 component="h2"
               >
                 {selectedAccount && selectedAccount.name}
-                {isExtensionWidth ? '' : ` (${shortenAddress(selectedAccount.address.toBase58())})`}{' '}
+                {isExtensionWidth ? '' : ` (${selectedAccount && shortenAddress(selectedAccount.address.toBase58())})`}{' '}
                 {allTokensLoaded && (
                   <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
                 )}
