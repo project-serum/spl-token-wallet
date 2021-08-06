@@ -16,7 +16,7 @@ import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { DevUrlPopup } from '../src/components/DevUrlPopup';
-import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
+// import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -185,9 +185,9 @@ export default function App() {
 const Pages = () => {
   const wallet = useWallet();
   const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
-  const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
-    true,
-  );
+  // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
+  //   true,
+  // );
 
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
@@ -207,9 +207,6 @@ const Pages = () => {
       sessionStorage.removeItem('hash');
     }
   }, []);
-  const isMigrationToNewUrlPopupDone = localStorage.getItem(
-    'isMigrationToNewUrlPopupDone',
-  );
 
   return (
     <>
@@ -219,12 +216,12 @@ const Pages = () => {
           close={() => openDevUrlPopup(false)}
         />
       )}{' '}
-      {!isMigrationToNewUrlPopupDone && (
+      {/* {!isMigrationToNewUrlPopupDone && (
         <MigrationToNewUrlPopup
           open={isMigrationToNewUrlPopupOpen}
           close={() => openMigrationToNewUrlPopup(false)}
         />
-      )}
+      )} */}
       <Switch>
         {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
         <Route path="/wallet" component={Wallet} />

@@ -73,7 +73,7 @@ export const CreateWalletPage = () => {
   return (
     <Body>
       <Helmet>
-        <title>Create new SunWallet</title>
+        <title>Create new CCAI Wallet</title>
       </Helmet>
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>

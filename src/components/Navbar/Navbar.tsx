@@ -2,10 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
+import { Theme } from '@material-ui/core';
+import { useLocation } from 'react-router-dom';
 
-// import { Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
-// import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@material-ui/styles';
 import Lock from '../../images/lock.svg';
 import NetworkDropdown from './NetworkDropdown';
 
@@ -27,115 +29,116 @@ import DiscordIcon from './DiscordIcon';
 //   }
 // `;
 
-// const StyledButton = styled(Button)`
-//   font-size: 12px;
+const StyledButton = styled(Button)`
+  font-size: 12px;
 
-//   @media only screen and (max-width: 1100px) {
-//     font-size: 9px;
-//   }
-//   @media only screen and (min-width: 2367px) {
-//     font-size: 1rem;
-//   }
-// `;
+  @media only screen and (max-width: 1100px) {
+    font-size: 9px;
+  }
+  @media only screen and (min-width: 2367px) {
+    font-size: 1rem;
+  }
+`;
 
 // const StyledLink = styled.a`
 //   height: 100%;
 // `;
 
-// const SButton = styled(
-//   ({
-//     isActivePage,
-//     type,
-//     white,
-//     black,
-//     style,
-//     borderColor,
-//     btnWidth,
-//     ...rest
-//   }) => <StyledButton {...rest} />,
-// )`
-//   && {
-//     color: ${(props) => (props.isActivePage ? props.dark : props.grey)};
-//     background: ${(props) =>
-//       props.isActivePage ? props.borderColor : props.theme.palette.grey.main};
-//     font-family: Avenir Next Demi;
-//     letter-spacing: 0.05rem;
-//     font-size: 1.2rem;
-//     transition: 0.35s all;
-//     width: 10rem;
-//     margin-right: 1rem;
-//     height: 100%;
-//     padding: 0;
-//     border-radius: 0.6rem;
-//     text-transform: capitalize;
+const SButton = styled(
+  ({
+    isActivePage,
+    type,
+    white,
+    black,
+    style,
+    borderColor,
+    btnWidth,
+    ...rest
+  }) => <StyledButton {...rest} />,
+)`
+  && {
+    color: ${(props) => (props.isActivePage ? props.dark : props.grey)};
+    background: ${(props) =>
+      props.isActivePage ? props.borderColor : props.theme.palette.grey.main};
+    font-family: Avenir Next Demi;
+    letter-spacing: 0.05rem;
+    font-size: 1.2rem;
+    transition: 0.35s all;
+    width: 10rem;
+    margin-right: 1rem;
+    height: 100%;
+    padding: 0;
+    border-radius: 0.6rem;
+    text-transform: capitalize;
 
-//     @media only screen and (max-width: 1100px) {
-//       margin: 0;
-//     }
+    @media only screen and (max-width: 1100px) {
+      margin: 0;
+    }
 
-//     &:hover {
-//       color: ${(props) => props.dark};
-//       background: ${(props) => props.borderColor};
-//     }
+    &:hover {
+      color: ${(props) => props.dark};
+      background: ${(props) => props.borderColor};
+    }
 
-//     ${(props) => props.style}
-//   }
-// `;
+    ${(props) => props.style}
+  }
+`;
 
-// const NavLinkButton = ({
-//   component,
-//   children,
-//   pathname,
-//   theme,
-//   theme: { customPalette },
-//   page,
-//   style,
-//   onClick,
-// }: {
-//   component?: any;
-//   children: React.ReactChild;
-//   pathname: string;
-//   theme: Theme;
-//   page: string;
-//   style?: CSSProperties;
-//   onClick?: () => void;
-// }) => {
-//   const isActivePage = new RegExp(page, 'i').test(pathname);
+const NavLinkButton = ({
+  component,
+  children,
+  pathname,
+  theme,
+  theme: { customPalette },
+  page,
+  style,
+  onClick,
+}: {
+  component?: any;
+  children: React.ReactChild;
+  pathname: string;
+  theme: Theme;
+  page: string;
+  style?: CSSProperties;
+  onClick?: () => void;
+}) => {
+  const isActivePage = new RegExp(page, 'i').test(pathname);
 
-//   return (
-//     <SButton
-//       theme={theme}
-//       pathname={pathname}
-//       component={component}
-//       isActivePage={isActivePage}
-//       grey={customPalette.grey.light}
-//       dark={customPalette.white.main}
-//       borderColor={customPalette.grey.border}
-//       btnWidth={'14rem'}
-//       size="medium"
-//       color="default"
-//       variant="text"
-//       style={style}
-//       onClick={onClick}
-//     >
-//       {children}
-//     </SButton>
-//   );
-// };
+  return (
+    <SButton
+      theme={theme}
+      pathname={pathname}
+      component={component}
+      isActivePage={isActivePage}
+      grey={customPalette.grey.light}
+      dark={customPalette.white.main}
+      borderColor={customPalette.grey.border}
+      btnWidth={'14rem'}
+      size="medium"
+      color="default"
+      variant="text"
+      style={style}
+      onClick={onClick}
+    >
+      {children}
+    </SButton>
+  );
+};
 
-// const LinksContainer = styled(RowContainer)`
-//   padding: 1rem 4rem 1rem 4rem;
-//   height: 100%;
-//   margin: 0 0 0 4rem;
-//   border-right: ${(props) => props.theme.customPalette.border.main};
-//   border-left: ${(props) => props.theme.customPalette.border.main};
-//   @media (max-width: 540px) {
-//     display: none;
-//   }
-// `;
+const LinksContainer = styled(RowContainer)`
+  padding: 1rem 4rem 1rem 4rem;
+  height: 100%;
+  margin: 0 0 0 4rem;
+  border-right: ${(props) => props.theme.customPalette.border.main};
+  border-left: ${(props) => props.theme.customPalette.border.main};
+  @media (max-width: 540px) {
+    display: none;
+  }
+`;
 
 const WalletLoginContainer = styled(Row)`
   height: 100%;
+  margin-left: 4rem;
   @media (max-width: 540px) {
     display: none;
   }
@@ -150,7 +153,7 @@ const WalletLoginButtonContainer = styled(Row)`
   @media (max-width: 540px) {
     height: 100%;
     display: flex;
-    width: 45%;
+    width: ${(props) => (props.wallet ? '45%' : 'auto')};
   }
 `;
 
@@ -159,7 +162,6 @@ const LogoLink = styled(Link)`
   align-items: center;
   width: 12%;
   padding: 0.5rem 0;
-  margin-top: 1rem;
   @media (max-width: 540px) {
     width: 100%;
   }
@@ -184,8 +186,27 @@ const HeaderContainer = styled(RowContainer)`
     width: 40%;
   }
 `;
+
+const TokenLink = styled.a`
+  font-family: Avenir Next Demi;
+  text-transform: capitalize;
+  text-decoration: none;
+  font-size: 1.4rem;
+  background: linear-gradient(
+    106.89deg,
+    rgba(94, 181, 168, 0.8) 17.87%,
+    rgba(56, 98, 193, 0.8) 82.13%
+  );
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 100%;
+  border-radius: 0.6rem;
+  color: #f8faff;
+`;
+
 const Navbar = () => {
-  // const location = useLocation();
+  const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
@@ -203,7 +224,7 @@ const Navbar = () => {
           <LogoLink to={'/'}>
             <LogoComponent width="100%" height="auto" margin="0" />
           </LogoLink>
-          {/* <LinksContainer theme={theme}>
+          <LinksContainer theme={theme}>
             <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
               <NavLinkButton
                 theme={theme}
@@ -255,7 +276,14 @@ const Navbar = () => {
                 Addressbook
               </NavLinkButton>
             </StyledLink>
-          </LinksContainer> */}
+            <TokenLink
+              href="https://ccai.cryptocurrencies.ai/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Token
+            </TokenLink>
+          </LinksContainer>
         </HeaderContainer>
         <WalletLoginContainer>
           {/* {!!wallet ? (
@@ -286,18 +314,16 @@ const Navbar = () => {
               <Row direction="column" align="flex-start">
                 <Title fontSize="1rem" fontFamily="Avenir Next">
                   <span style={{ fontFamily: 'Avenir Next Demi' }}>
-                    SunWallet Connected
+                    CCAI Wallet Connected
                   </span>
                 </Title>
                 <Title
                   fontFamily="Avenir Next"
                   color={theme.customPalette.grey.dark}
                   fontSize="1rem"
+                  style={{ paddingBottom: '1rem' }}
                 >
                   {wallet?.publicKey.toBase58()}
-                </Title>
-                <Title color={theme.customPalette.green.main} fontSize="1rem">
-                  <TotalBalance />
                 </Title>
               </Row>
               <RedButton
@@ -376,18 +402,20 @@ const Navbar = () => {
           {/* )} */}
         </WalletLoginContainer>
 
-        <WalletLoginButtonContainer>
+        <WalletLoginButtonContainer wallet={wallet}>
           <NetworkDropdown width={'10rem'} popupPage={false} />
-          <img
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              sessionStorage.removeItem('unlocked');
-              reloadWallet();
-            }}
-            src={Lock}
-            width={'20%'}
-            alt={'lock wallet'}
-          />
+          {!!wallet ? (
+            <img
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                sessionStorage.removeItem('unlocked');
+                reloadWallet();
+              }}
+              src={Lock}
+              width={'20%'}
+              alt={'lock wallet'}
+            />
+          ) : null}
         </WalletLoginButtonContainer>
       </RowContainer>
     </GridContainer>

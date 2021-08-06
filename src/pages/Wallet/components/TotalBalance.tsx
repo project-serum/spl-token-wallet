@@ -35,7 +35,7 @@ const TotalBalance = ({
 
   return (
     <>
-      <span key={`${isNavbar}-total-balance`}>
+      <span key={`total-balance`}>
         ${formatNumberToUSFormat(stripDigitPlaces(totalUSD, 2))}
       </span>
     </>

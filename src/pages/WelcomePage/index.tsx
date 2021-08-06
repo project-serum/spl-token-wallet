@@ -104,7 +104,7 @@ export const WelcomePage = () => {
   return (
     <Body>
       <Helmet>
-        <title>SunWallet | Solana Wallet made by Cryptocurrencies.Ai</title>
+        <title>CCAI Wallet | Wallet made by Cryptocurrencies.Ai</title>
       </Helmet>
       {isExtension && <Logo />}
       <RowContainer height={'80%'} direction={'column'}>
@@ -165,6 +165,7 @@ export const WelcomePage = () => {
             {!isExtension && (
               <Row>
                 <a
+                  href={'/restore_wallet'}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ margin: '0 0 0 2rem' }}

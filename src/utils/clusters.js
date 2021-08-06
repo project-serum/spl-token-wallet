@@ -26,5 +26,5 @@ export const CLUSTERS = [
 ];
 
 export function clusterForEndpoint(endpoint) {
-  return CLUSTERS.find(({ apiUrl }) => apiUrl === endpoint);
+  return CLUSTERS.find(({ apiUrl }) => apiUrl === endpoint) || CLUSTERS[0];
 }

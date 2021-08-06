@@ -1,6 +1,6 @@
 {
-  "name": "SunWallet",
-  "description": "Sunwallet is a web-based cryptocurrency wallet and browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain. Made with love by Cryptocurrencies.Ai team.",
+  "name": "Cryptocurrencies.Ai Wallet™",
+  "description": "Cryptocurrencies.Ai Wallet™ is a web-based cryptocurrency wallet and browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain. Made with love by Cryptocurrencies.Ai team.",
   "version": "0.1",
   "browser_action": {
     "default_popup": "index.html",

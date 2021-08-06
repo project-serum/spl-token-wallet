@@ -24,6 +24,7 @@ import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
 import Navbar from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
+import { MobileFooter } from '../Footer/MobileFooter';
 
 export const footerHeight = isExtension ? 0 : 6;
 
@@ -56,8 +57,7 @@ const StyledMain = styled.main`
     height: calc(100%);
   }
   @media (max-width: 540px) {
-    height: ${(props) =>
-      props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
+    height: calc(100% - 27rem);
   }
 `;
 
@@ -81,6 +81,7 @@ export default function NavigationFrame({ children }) {
       <Navbar />
       <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
+      <MobileFooter/>
     </>
   );
 }
