@@ -117,6 +117,7 @@ const toInstruction = async (
       );
     } else if (programId.equals(RAYDIUM_STAKE_PROGRAM_ID)) {
       console.log('[' + index + '] Handled as raydium stake instruction');
+      // @ts-ignore
       const decodedInstruction = decodeStakeInstruction(decoded);
       return await handleRayStakeInstruction(
         connection,
@@ -126,6 +127,7 @@ const toInstruction = async (
       );
     } else if (programId.equals(RAYDIUM_LP_PROGRAM_ID)) {
       console.log('[' + index + '] Handled as raydium lp instruction');
+      // @ts-ignore
       const decodedInstruction = decodeLpInstruction(decoded);
       return await handleRayLpInstruction(
         connection,
@@ -135,6 +137,7 @@ const toInstruction = async (
       );
     } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
       console.log('[' + index + '] Handled as mango markets instruction');
+      // @ts-ignore
       let decodedInstruction = decodeMangoInstruction(decoded);
       return await handleMangoInstruction(
         connection,

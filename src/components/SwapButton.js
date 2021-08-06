@@ -10,7 +10,6 @@ import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import Swap from '@project-serum/swap-ui';
 import { Provider } from '@project-serum/anchor';
-import { Connection, TransactionSignature } from '@solana/web3.js';
 import { TokenListContainer } from '@solana/spl-token-registry';
 import { useTokenInfos } from '../utils/tokens/names';
 import { useSendTransaction } from '../utils/notifications';
@@ -22,9 +21,9 @@ import DialogForm from './DialogForm';
 export default function SwapButton({ size }) {
   const isExtensionWidth = useIsExtensionWidth();
   if (isExtensionWidth) {
-    return <SwapButtonDialog />;
+    return <SwapButtonDialog size={size} />;
   } else {
-    return <SwapButtonPopover />;
+    return <SwapButtonPopover size={size} />;
   }
 }
 
@@ -119,9 +118,9 @@ function SwapButtonPopover({ size }) {
 
 class NotifyingProvider extends Provider {
   constructor(
-    connection: Connection,
-    wallet: Wallet,
-    sendTransaction: (Promise<TransactionSignature>, Function) => void,
+    connection,
+    wallet,
+    sendTransaction,
   ) {
     super(connection, wallet, {
       commitment: 'recent',
@@ -130,10 +129,10 @@ class NotifyingProvider extends Provider {
   }
 
   async send(
-    tx: Transaction,
-    signers?: Array<Signer | undefined>,
-    opts?: ConfirmOptions,
-  ): Promise<TransactionSignature> {
+    tx,
+    signers,
+    opts,
+  ) {
     return new Promise((onSuccess, onError) => {
       this.sendTransaction(super.send(tx, signers, opts), {
         onSuccess,
@@ -143,11 +142,11 @@ class NotifyingProvider extends Provider {
   }
 
   async sendAll(
-    txs: Array<{ tx: Transaction, signers: Array<Signer | undefined> }>,
-    opts?: ConfirmOptions,
-  ): Promise<Array<TransactionSignature>> {
+    txs,
+    opts,
+  ) {
     return new Promise(async (resolve, onError) => {
-      let txSigs: Array<TransactionSignature> = [];
+      let txSigs = [];
       for (const tx of txs) {
         txSigs.push(
           await new Promise((onSuccess) => {
