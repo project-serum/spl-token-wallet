@@ -336,7 +336,8 @@ export default function PopupPage() {
  */
 function focusParent() {
   try {
-    window.open('', 'parent')?.focus();
+    window.opener?.focus()
+    // window.open('', window.opener?.name)?.focus();
   } catch (err) {
     console.log('err', err);
   }
