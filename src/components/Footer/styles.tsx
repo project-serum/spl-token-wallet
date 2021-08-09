@@ -12,8 +12,8 @@ export const FooterComponent = styled(RowContainer)`
   }
 `;
 export const StyledLink = styled(Link)`
-  width: 7rem;
-  height: 7rem;
+  width: 4rem;
+  height: 6rem;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -27,8 +27,8 @@ export const StyledLink = styled(Link)`
   }
 `;
 export const StyledA = styled.a`
-  width: 7rem;
-  height: 7rem;
+  width: 4rem;
+  height: 6rem;
   display: flex;
   justify-content: center;
   flex-direction: column;

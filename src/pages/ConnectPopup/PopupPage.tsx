@@ -34,7 +34,6 @@ const StyledCard = styled(Card)`
   color: #ecf0f3;
   text-align: center;
   width: 50rem;
-  padding: 3rem;
   margin: 0 auto;
   box-shadow: none;
 `;
@@ -421,7 +420,7 @@ function ApproveConnectionForm({
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <LogoComponent width="12rem" height="auto" margin="0" />{' '}
+          <LogoComponent width="12rem" height="auto" margin="0" />
           <NetworkDropdown popupPage={true} width={'14rem'} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
@@ -463,7 +462,7 @@ function ApproveConnectionForm({
               htmlFor="autoApprove"
               style={{ fontSize: '1.6rem' }}
             >
-              Automatically approve transactions from{' '}
+              Automatically approve transactions from
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>

@@ -61,7 +61,7 @@ export const GridContainer = styled(({ wallet, theme, ...rest }) => (
 
   @media (max-width: 850px) {
     display: flex;
-    height: 12rem;
+    height: 10rem;
     background: #222429;
   }
 `;
