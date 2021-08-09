@@ -57,7 +57,8 @@ const StyledMain = styled.main`
     height: calc(100%);
   }
   @media (max-width: 540px) {
-    height: calc(100% - 27rem);
+    height: ${(props) =>
+      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 27rem)'};
   }
 `;
 
@@ -81,7 +82,7 @@ export default function NavigationFrame({ children }) {
       <Navbar />
       <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
-      <MobileFooter/>
+      <MobileFooter />
     </>
   );
 }

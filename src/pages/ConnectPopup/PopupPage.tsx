@@ -405,7 +405,9 @@ function ApproveConnectionForm({
   const classes = useStyles();
   const { accounts, hardwareWalletAccount } = useWalletSelector();
   // TODO better way to do this
-  const allAccounts = hardwareWalletAccount ? [hardwareWalletAccount, ...accounts] : accounts
+  const allAccounts = hardwareWalletAccount
+    ? [hardwareWalletAccount, ...accounts]
+    : accounts;
 
   const account = allAccounts.find((account) =>
     account.address.equals(wallet.publicKey),
@@ -419,7 +421,7 @@ function ApproveConnectionForm({
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <LogoComponent width="100%" height="auto" margin="0" />{' '}
+          <LogoComponent width="12rem" height="auto" margin="0" />{' '}
           <NetworkDropdown popupPage={true} width={'14rem'} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>

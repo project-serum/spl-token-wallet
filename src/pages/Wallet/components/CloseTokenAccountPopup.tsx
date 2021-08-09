@@ -24,13 +24,11 @@ export default function CloseTokenAccountDialog({
 
   const { mint, symbol } = balanceInfo || { mint: '', symbol: '' };
 
-  console.log('balanceInfo', balanceInfo);
-
   function onSubmit() {
     sendTransaction(wallet.closeTokenAccount(publicKey), {
       onSuccess: () => {
         refreshWalletPublicKeys(wallet);
-        refreshTokensData()
+        refreshTokensData();
         onClose();
       },
     });
