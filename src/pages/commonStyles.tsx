@@ -255,6 +255,7 @@ export const Title = styled(
 
   @media (max-width: 540px) {
     font-size: ${(props) => props.maxFont || '1.6rem'};
+    text-align: ${(props) => props.mediaTextAlign || 'auto'};
   }
 `;
 

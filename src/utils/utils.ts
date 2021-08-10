@@ -246,3 +246,11 @@ export function useInterval(callback, delay) {
 }
 
 export const extensionUrl = 'https://chrome.google.com/webstore/detail/cryptocurrenciesai-wallet/oomlbhdllfeiglglhhaacafbkkbibhel'
+
+export const encode = (data) => {
+  return Object.keys(data)
+    .map(
+      (key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    )
+    .join('&')
+}

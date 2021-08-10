@@ -22,7 +22,6 @@ import FakeInputs from '../../components/FakeInputs';
 
 const MainRow = styled(RowContainer)`
   @media (max-width: 540px) {
-    padding-bottom: 3rem;
     overflow-x: auto;
     height: 80%;
   }
@@ -69,7 +68,7 @@ export const CreateWalletPage = () => {
       },
     );
   };
-
+  console.log('currentStep', currentStep);
   return (
     <Body>
       <Helmet>
@@ -77,7 +76,11 @@ export const CreateWalletPage = () => {
       </Helmet>
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>
-        <Logo />
+        <Logo
+          currentStep={
+            currentStep === 0 || currentStep === 1 || currentStep === 2
+          }
+        />
         <MainRow direction={'column'}>
           {/* margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} */}
           {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}

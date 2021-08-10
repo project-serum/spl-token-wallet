@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { GridContainer, RowContainer, Row } from '../../pages/commonStyles';
+import {
+  GridContainer,
+  RowContainer,
+  Row,
+  WhiteButton,
+} from '../../pages/commonStyles';
 import { Theme } from '@material-ui/core';
 import { useLocation } from 'react-router-dom';
 
@@ -22,6 +27,7 @@ import { extensionUrl } from '../../utils/utils';
 import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
+import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
 
 // const ButtonsContainer = styled(Row)`
 //   @media (max-width: 1200px) {
@@ -205,12 +211,22 @@ const TokenLink = styled.a`
   color: #f8faff;
 `;
 
+const FeedbackButtonContainer = styled(Row)`
+  border-left: ${(props) => props.theme.customPalette.border.new};
+  margin: 0 0 0 4rem;
+  justify-content: flex-end;
+  padding: 0 0rem 0 4rem;
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
 const Navbar = () => {
   const location = useLocation();
   const theme = useTheme();
   const wallet = useWallet();
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
-
+  const [isFeedBackPopupOpen, setIsFeedBackPopupOpen] = useState(false);
   const showButtons = !hasLockedMnemonicAndSeed || !!wallet;
 
   return (
@@ -224,6 +240,20 @@ const Navbar = () => {
           <LogoLink to={'/'}>
             <LogoComponent width="100%" height="auto" margin="0" />
           </LogoLink>
+          <FeedbackButtonContainer theme={theme}>
+            <WhiteButton
+              style={{
+                borderRadius: '1.7rem',
+                width: 'auto',
+                padding: '0 2rem',
+                whiteSpace: 'nowrap',
+              }}
+              theme={theme}
+              onClick={() => setIsFeedBackPopupOpen(true)}
+            >
+              Leave feedback
+            </WhiteButton>
+          </FeedbackButtonContainer>
           <LinksContainer theme={theme}>
             <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
               <NavLinkButton
@@ -285,6 +315,11 @@ const Navbar = () => {
             </TokenLink>
           </LinksContainer>
         </HeaderContainer>
+        <FeedbackPopup
+          theme={theme}
+          open={isFeedBackPopupOpen}
+          onClose={() => setIsFeedBackPopupOpen(false)}
+        />
         <WalletLoginContainer>
           {/* {!!wallet ? (
             <NetworkDropdown width={'10rem'} popupPage={false} />

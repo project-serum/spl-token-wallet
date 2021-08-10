@@ -3,7 +3,7 @@ import { StyledLink, StyledA } from './styles';
 
 export const TradeLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to={'/chart/spot/CCAI_USDC'}>
+    <StyledA href={'https://dex.cryptocurrencies.ai/chart/spot/CCAI_USDC'}>
       <svg
         width="100%"
         height="100%"
@@ -31,7 +31,7 @@ export const TradeLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#366CE5' : '#F5F5FB' }}>Trade</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
