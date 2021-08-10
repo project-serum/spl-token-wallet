@@ -208,6 +208,8 @@ const Pages = () => {
     }
   }, []);
 
+  window.name = 'child'
+
   return (
     <>
       {DEVELOP_BUILD && !LOCAL_BUILD && (
