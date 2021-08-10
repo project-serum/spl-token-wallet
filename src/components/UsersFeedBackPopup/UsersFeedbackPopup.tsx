@@ -137,7 +137,7 @@ export const FeedbackPopup = ({
           name="walletFeedback"
           data-netlify="true"
           method={'post'}
-          action="/"
+          action="/success"
         >
           <input type="hidden" name="form-name" value="walletFeedback" />
           <RowContainer direction={'column'} margin={'1rem 0'}>
