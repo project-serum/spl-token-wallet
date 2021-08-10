@@ -199,7 +199,7 @@ export const Input = styled(({ style, ...props }) => (
   ${(props) => props.style};
 
   @media (max-width: 540px) {
-    font-size: 1.4rem;
+    font-size: 16px;
     height: 6rem;
   }
 `;
