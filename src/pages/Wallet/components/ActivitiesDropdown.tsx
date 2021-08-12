@@ -152,7 +152,7 @@ const ActivitiesDropdown = ({
                     !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`))
                 }
                 rel="noopener"
-                href={`https://dex.cryptocurrencies.ai/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
+                href={`https://dex.aldrin.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
                 style={{
                   width: '100%',
                   height: '5rem',

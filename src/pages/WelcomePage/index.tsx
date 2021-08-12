@@ -122,7 +122,7 @@ export const WelcomePage = () => {
   return (
     <Body>
       <Helmet>
-        <title>CCAI Wallet | Wallet made by Cryptocurrencies.Ai</title>
+        <title>Aldrin Wallet | Wallet made by Aldrin</title>
       </Helmet>
       {isExtension && <Logo />}
       <RowContainer height={'80%'} direction={'column'}>
@@ -133,7 +133,7 @@ export const WelcomePage = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={'https://wallet.cryptocurrencies.ai/create_wallet'}
+                  href={'http://wallet.aldrin.com/create_wallet'}
                   onClick={() => {
                     window.close();
                   }}

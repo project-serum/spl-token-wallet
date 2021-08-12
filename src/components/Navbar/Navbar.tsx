@@ -189,7 +189,7 @@ const HeaderContainer = styled(RowContainer)`
   height: 100%;
   justify-content: end;
   @media (max-width: 540px) {
-    width: 40%;
+    width: 30%;
   }
 `;
 
@@ -255,7 +255,7 @@ const Navbar = () => {
             </WhiteButton>
           </FeedbackButtonContainer>
           <LinksContainer theme={theme}>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
+            <StyledLink href={`https://dex.aldrin.com/`}>
               <NavLinkButton
                 theme={theme}
                 data-tut="farming"
@@ -276,7 +276,7 @@ const Navbar = () => {
               </NavLinkButton>
             </Link>
             <StyledLink
-              href={`https://dex.cryptocurrencies.ai/chart${
+              href={`https://dex.aldrin.com/chart${
                 !!wallet ? '#connect_wallet' : ''
               }`}
             >
@@ -288,7 +288,7 @@ const Navbar = () => {
                 Trading
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/analytics`}>
+            <StyledLink href={`https://dex.aldrin.com/analytics`}>
               <NavLinkButton
                 theme={theme}
                 page={'analytics'}
@@ -297,7 +297,7 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
+            <StyledLink href={`https://dex.aldrin.com/addressbook`}>
               <NavLinkButton
                 theme={theme}
                 page={'addressbook'}
@@ -307,7 +307,7 @@ const Navbar = () => {
               </NavLinkButton>
             </StyledLink>
             <TokenLink
-              href="https://ccai.cryptocurrencies.ai/"
+              href="http://rin.aldrin.com/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -349,7 +349,7 @@ const Navbar = () => {
               <Row direction="column" align="flex-start">
                 <Title fontSize="1rem" fontFamily="Avenir Next">
                   <span style={{ fontFamily: 'Avenir Next Demi' }}>
-                    CCAI Wallet Connected
+                    Aldrin Wallet Connected
                   </span>
                 </Title>
                 <Title

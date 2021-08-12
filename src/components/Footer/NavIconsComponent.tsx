@@ -3,7 +3,7 @@ import { StyledLink, StyledA } from './styles';
 
 export const TradeLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA href={'https://dex.cryptocurrencies.ai/chart/spot/CCAI_USDC'}>
+    <StyledA href={'https://dex.aldrin.com/chart/spot/RIN_USDC'}>
       <svg
         width="100%"
         height="100%"
@@ -147,7 +147,7 @@ export const RebalanceLink = ({ isActive }: { isActive: boolean }) => {
 
 export const WalletLink = ({ isActive }) => {
   return (
-    <StyledA href="https://wallet.cryptocurrencies.ai/welcome_back">
+    <StyledA href="https://wallet.aldrin.com/welcome_back">
       <svg
         width="100%"
         height="100%"
