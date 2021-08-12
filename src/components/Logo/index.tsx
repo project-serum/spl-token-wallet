@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const LogoContainer = styled.div`
-  width: ${(props) => props.width || '32rem'};
+  width: ${(props) => props.width || '28rem'};
   height: ${(props) => props.width || 'auto'};
   margin: ${(props) => (props.currentStep ? '0 0 4rem 0' : '0')};
 `;
