@@ -18,7 +18,7 @@ import {
   // StyledCheckbox,
 } from '../commonStyles';
 
-import Logo from '../../components/Logo';
+// import Logo from '../../components/Logo';
 import { InputWithEye } from '../../components/Input';
 
 import { useTheme } from '@material-ui/core';
@@ -94,9 +94,7 @@ const WelcomeBack = () => {
       <FakeInputs />
       {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
       {!!wallet && <Redirect to={'/wallet'} />}
-      <StyledLogoContainer>
-        <Logo />
-      </StyledLogoContainer>
+      <StyledLogoContainer>{/* <Logo /> */}</StyledLogoContainer>
       <RowContainer height={'80%'} direction={'column'}>
         <Card minHeight={'50rem'}>
           <RowContainer

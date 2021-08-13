@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Body, RowContainer } from '../commonStyles';
 import Helmet from 'react-helmet';
 
-import Logo from '../../components/Logo';
+// import Logo from '../../components/Logo';
 
 import ProgressBar from './components/ProgressBar';
 import CreatePassword from './components/CreatePassword';
@@ -76,11 +76,11 @@ export const CreateWalletPage = () => {
       </Helmet>
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>
-        <Logo
+        {/* <Logo
           currentStep={
             currentStep === 0 || currentStep === 1 || currentStep === 2
           }
-        />
+        /> */}
         <MainRow direction={'column'}>
           {/* margin={currentStep !== 0 ? '0 0 3rem 0' : '0 0 8rem 0'} */}
           {currentStep !== 0 && <ProgressBar currentStep={currentStep} />}

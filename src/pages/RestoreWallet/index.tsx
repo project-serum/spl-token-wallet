@@ -19,7 +19,6 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
@@ -69,7 +68,7 @@ export const RestorePage = () => {
       </Helmet>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
-      <Logo />
+      {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}
       <RowContainer height={'80%'} direction={'column'}>
         {hasLockedMnemonicAndSeed ? (

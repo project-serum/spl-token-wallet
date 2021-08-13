@@ -22,18 +22,12 @@ import {
   useHasLockedMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
-import { extensionUrl } from '../../utils/utils';
+// import { extensionUrl } from '../../utils/utils';
 
 import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
-
-// const ButtonsContainer = styled(Row)`
-//   @media (max-width: 1200px) {
-//     display: none;
-//   }
-// `;
 
 const StyledButton = styled(Button)`
   font-size: 12px;
@@ -45,10 +39,6 @@ const StyledButton = styled(Button)`
     font-size: 1rem;
   }
 `;
-
-// const StyledLink = styled.a`
-//   height: 100%;
-// `;
 
 const SButton = styled(
   ({
@@ -144,7 +134,6 @@ const LinksContainer = styled(RowContainer)`
 
 const WalletLoginContainer = styled(Row)`
   height: 100%;
-  margin-left: 4rem;
   @media (max-width: 540px) {
     display: none;
   }
@@ -321,10 +310,7 @@ const Navbar = () => {
           onClose={() => setIsFeedBackPopupOpen(false)}
         />
         <WalletLoginContainer>
-          {/* {!!wallet ? (
-            <NetworkDropdown width={'10rem'} popupPage={false} />
-          ) : ( */}
-          <a
+          {/* <a
             href={extensionUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -337,81 +323,12 @@ const Navbar = () => {
             }}
           >
             Install Extension
-          </a>
-          {/* )} */}
-          {/* {!!wallet ? (
-            <RowContainer>
-              <img
-                src={WalletIcon}
-                alt="wallet icon"
-                style={{ margin: '0 2rem', height: '100%' }}
-              />
-              <Row direction="column" align="flex-start">
-                <Title fontSize="1rem" fontFamily="Avenir Next">
-                  <span style={{ fontFamily: 'Avenir Next Demi' }}>
-                    Aldrin Wallet Connected
-                  </span>
-                </Title>
-                <Title
-                  fontFamily="Avenir Next"
-                  color={theme.customPalette.grey.dark}
-                  fontSize="1rem"
-                  style={{ paddingBottom: '1rem' }}
-                >
-                  {wallet?.publicKey.toBase58()}
-                </Title>
-              </Row>
-              <RedButton
-                width="10rem"
-                height="2rem"
-                theme={theme}
-                fontSize="1.2rem"
-                onClick={() => {
-                  sessionStorage.removeItem('unlocked');
-                  reloadWallet();
-                }}
-                style={{
-                  position: 'absolute',
-                  right: '0',
-                  bottom: '.5rem',
-                  fontFamily: 'Avenir Next Demi',
-                }}
-              >
-                Lock Wallet
-              </RedButton>
-            </RowContainer>
-          ) : !hasLockedMnemonicAndSeed ? (
-            <ButtonsContainer>
-              <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
-                <VioletButton
-                  theme={theme}
-                  width={'14rem'}
-                  height={'3.5rem'}
-                  borderRadius=".6rem"
-                  margin={'0 0 0 3rem'}
-                  padding="1rem"
-                >
-                  Restore Wallet
-                </VioletButton>
-              </Link>
-              <Link style={{ textDecoration: 'none' }} to={'/create_wallet'}>
-                <VioletButton
-                  theme={theme}
-                  width={'14rem'}
-                  height={'3.5rem'}
-                  color={theme.customPalette.blue.serum}
-                  borderColor={theme.customPalette.blue.serum}
-                  background={'transparent'}
-                  margin={'0 0 0 3rem'}
-                >
-                  Create Wallet
-                </VioletButton>
-              </Link>
-            </ButtonsContainer>
-          ) : ( */}
-          <RowContainer>
+          </a> */}
+
+          <RowContainer padding="0 0 0 3rem">
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
+                style={{ marginRight: '1.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://twitter.com/CCAI_Official"
@@ -419,6 +336,7 @@ const Navbar = () => {
                 <TwitterIcon />
               </StyledLink>
               <StyledLink
+                style={{ marginRight: '1.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://t.me/CryptocurrenciesAi"

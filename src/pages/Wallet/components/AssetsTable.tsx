@@ -745,7 +745,7 @@ const AssetItem = ({
             target="_blank"
             rel="noopener"
             href={
-              `https://explorer.solana.com/account/${publicKey.toBase58()}` +
+              `https://solanabeach.io/address/${publicKey.toBase58()}` +
               urlSuffix
             }
             height="50%"
