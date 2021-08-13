@@ -91,12 +91,12 @@ const ButtonCardsContainer = styled(Row)`
   }
 `;
 
-const StyledButtonContainer = styled.a`
-  margin: 0 0 0 2rem;
-  @media (max-width: 540px) {
-    margin: 2rem 0 0 0;
-  }
-`;
+// const StyledButtonContainer = styled.a`
+//   margin: 0 0 0 2rem;
+//   @media (max-width: 540px) {
+//     margin: 2rem 0 0 0;
+//   }
+// `;
 
 const CreateWalletButtonInner = () => (
   <CreateWalletButton width="35rem" height="35rem">
@@ -179,7 +179,7 @@ export const WelcomePage = () => {
                 </StyledCardButton>
               </Link>
             </ButtonCardsContainer>
-
+{/* 
             {!isExtension && (
               <Row>
                 <StyledButtonContainer
@@ -205,7 +205,7 @@ export const WelcomePage = () => {
                         />
                       </StyledIcon>
                       <RestoreTitle>
-                        <BoldTitle>Instal Extension</BoldTitle>
+                        <BoldTitle>Install Extension</BoldTitle>
                         <Title mediaTextAlign={'left'}>
                           for chrome-based browsers
                         </Title>
@@ -214,7 +214,7 @@ export const WelcomePage = () => {
                   </StyledCardButton>
                 </StyledButtonContainer>
               </Row>
-            )}
+            )} */}
           </ButtonCardsContainer>
 
           {/* <Row direction={'column'} justify={'space-between'} height={'100%'}> */}

@@ -28,6 +28,8 @@ import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
+import { BetaLabel } from '../BetaLabel/BetaLabel';
+import { MASTER_BUILD } from '../../utils/config';
 
 const StyledButton = styled(Button)`
   font-size: 12px;
@@ -155,14 +157,13 @@ const WalletLoginButtonContainer = styled(Row)`
 const LogoLink = styled(Link)`
   display: flex;
   align-items: center;
-  width: 12%;
-  padding: 0.5rem 0;
+  width: 15rem;
+  padding: 0 3rem 0 0;
   @media (max-width: 540px) {
     width: 100%;
   }
 `;
 const Socials = styled(Row)`
-  margin: 1rem 0 0 0;
   & a:hover {
     svg {
       g {
@@ -182,27 +183,8 @@ const HeaderContainer = styled(RowContainer)`
   }
 `;
 
-const TokenLink = styled.a`
-  font-family: Avenir Next Demi;
-  text-transform: capitalize;
-  text-decoration: none;
-  font-size: 1.4rem;
-  background: linear-gradient(
-    106.89deg,
-    rgba(94, 181, 168, 0.8) 17.87%,
-    rgba(56, 98, 193, 0.8) 82.13%
-  );
-  display: flex;
-  align-items: center;
-  padding: 0 2rem;
-  height: 100%;
-  border-radius: 0.6rem;
-  color: #f8faff;
-`;
-
 const FeedbackButtonContainer = styled(Row)`
   border-left: ${(props) => props.theme.customPalette.border.new};
-  margin: 0 0 0 4rem;
   justify-content: flex-end;
   padding: 0 0rem 0 4rem;
   @media (max-width: 600px) {
@@ -244,26 +226,6 @@ const Navbar = () => {
             </WhiteButton>
           </FeedbackButtonContainer>
           <LinksContainer theme={theme}>
-            <StyledLink href={`https://dex.aldrin.com/`}>
-              <NavLinkButton
-                theme={theme}
-                data-tut="farming"
-                pathname={location.pathname}
-                page={'home'}
-              >
-                Home
-              </NavLinkButton>
-            </StyledLink>
-
-            <Link to={`/`} style={{ height: '100%' }}>
-              <NavLinkButton
-                theme={theme}
-                pathname={location.pathname}
-                page={''}
-              >
-                Wallet
-              </NavLinkButton>
-            </Link>
             <StyledLink
               href={`https://dex.aldrin.com/chart${
                 !!wallet ? '#connect_wallet' : ''
@@ -286,22 +248,43 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.aldrin.com/addressbook`}>
+            {!MASTER_BUILD && (
+              <StyledLink href={`https://dex.aldrin.com/rebalance`}>
+                <NavLinkButton
+                  theme={theme}
+                  page={'rebalance'}
+                  pathname={location.pathname}
+                  style={{ width: '14rem' }}
+                >
+                  <>
+                    Rebalance{' '}
+                    <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
+                  </>
+                </NavLinkButton>
+              </StyledLink>
+            )}
+            <Link to={`/`} style={{ height: '100%' }}>
+              <NavLinkButton
+                theme={theme}
+                pathname={location.pathname}
+                page={''}
+              >
+                Wallet
+              </NavLinkButton>
+            </Link>
+            <StyledLink
+              href={`http://rin.aldrin.com/`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <NavLinkButton
                 theme={theme}
                 page={'addressbook'}
                 pathname={location.pathname}
               >
-                Addressbook
+                Token
               </NavLinkButton>
             </StyledLink>
-            <TokenLink
-              href="http://rin.aldrin.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Token
-            </TokenLink>
           </LinksContainer>
         </HeaderContainer>
         <FeedbackPopup
@@ -328,7 +311,7 @@ const Navbar = () => {
           <RowContainer padding="0 0 0 3rem">
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
-                style={{ marginRight: '1.5rem' }}
+                style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://twitter.com/CCAI_Official"
@@ -336,7 +319,7 @@ const Navbar = () => {
                 <TwitterIcon />
               </StyledLink>
               <StyledLink
-                style={{ marginRight: '1.5rem' }}
+                style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://t.me/CryptocurrenciesAi"
@@ -347,6 +330,7 @@ const Navbar = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://discord.gg/2EaKvrs"
+                style={{ height: '2.5rem' }}
               >
                 <DiscordIcon />
               </StyledLink>
