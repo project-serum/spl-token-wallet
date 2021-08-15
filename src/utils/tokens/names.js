@@ -278,6 +278,20 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/logo.png',
     },
+    {
+      tokenSymbol: 'SAIL',
+      mintAddress: '6kwTqmdQkJd8qRr9RjSnUX9XJ24RmJRSrU1rsragP97Y',
+      tokenName: 'SAIL Token',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6kwTqmdQkJd8qRr9RjSnUX9XJ24RmJRSrU1rsragP97Y/logo.png',
+    },
+    {
+      tokenSymbol: 'gSAIL',
+      mintAddress: 'GSaiLQxREzaxUcE3v28HxBacoUQPZNtXx1eQsCFsX9Bg',
+      tokenName: 'gSAIL Governance Token',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/GSaiLQxREzaxUcE3v28HxBacoUQPZNtXx1eQsCFsX9Bg/logo.png',
+    },
   ],
 };
 
