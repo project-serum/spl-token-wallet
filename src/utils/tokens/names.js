@@ -278,6 +278,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/logo.png',
     },
+    {
+      tokenSymbol: 'DXL',
+      mintAddress: 'GsNzxJfFn6zQdJGeYsupJWzUAm57Ba7335mfhWvFiE9Z',
+      tokenName: 'Dexlab',
+      icon:
+        'https://raw.githubusercontent.com/dexlab-project/assets/master/tokens/solana/dxl/symbol.png',
+    },
   ],
 };
 
