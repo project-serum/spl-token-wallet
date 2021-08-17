@@ -472,6 +472,14 @@ const AssetItem = ({
     symbol: '--',
     tokenLogoUri: undefined,
   };
+  
+  if (tokenName === 'CCAI') {
+    tokenName = 'RIN'
+  }
+
+  if (tokenSymbol === 'Cryptocurrencies.Ai') {
+    tokenSymbol = 'Aldrin'
+  }
 
   // Fetch and cache the associated token address.
   if (wallet && wallet.publicKey && mint) {
