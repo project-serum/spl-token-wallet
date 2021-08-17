@@ -25,7 +25,7 @@ export default function TokenIcon({
   
   if (mint === CCAI_MINT.toString()) {
     tokenLogoUri =
-    'https://develop.cryptocurrencies.ai/logo.png';
+    'https://develop.cryptocurrencies.ai/logo_rounded.png';
   }
 
   if (hasError || !tokenLogoUri) {
