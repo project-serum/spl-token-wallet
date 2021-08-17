@@ -28,8 +28,6 @@ import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
-import { BetaLabel } from '../BetaLabel/BetaLabel';
-import { MASTER_BUILD } from '../../utils/config';
 
 const StyledButton = styled(Button)`
   font-size: 12px;
@@ -248,21 +246,6 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            {!MASTER_BUILD && (
-              <StyledLink href={`https://dex.aldrin.com/rebalance`}>
-                <NavLinkButton
-                  theme={theme}
-                  page={'rebalance'}
-                  pathname={location.pathname}
-                  style={{ width: '14rem' }}
-                >
-                  <>
-                    Rebalance{' '}
-                    <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
-                  </>
-                </NavLinkButton>
-              </StyledLink>
-            )}
             <Link to={`/`} style={{ height: '100%' }}>
               <NavLinkButton
                 theme={theme}
