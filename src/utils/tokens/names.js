@@ -20,7 +20,7 @@ const CCAI_TOKEN_INFO = {
   ],
   "extensions": {
     "website": "https://aldrin.com",
-    "twitter": "https://twitter.com/CCAI_Official",
+    "twitter": "https://twitter.com/Aldrin_Exchange",
     "serumV3Usdc": "7gZNLDbWE73ueAoHuAeFoSu7JqmorwCLpNTBXHtYSFTa"
   }
 }
