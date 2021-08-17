@@ -248,21 +248,6 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            {!MASTER_BUILD && (
-              <StyledLink href={`https://dex.aldrin.com/rebalance`}>
-                <NavLinkButton
-                  theme={theme}
-                  page={'rebalance'}
-                  pathname={location.pathname}
-                  style={{ width: '14rem' }}
-                >
-                  <>
-                    Rebalance{' '}
-                    <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
-                  </>
-                </NavLinkButton>
-              </StyledLink>
-            )}
             <Link to={`/`} style={{ height: '100%' }}>
               <NavLinkButton
                 theme={theme}
