@@ -102,21 +102,18 @@ const RebrandingPopup = ({
           </Title>
         </RowContainer>
         <RowContainer direction={'column'} align={'flex-start'}>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text }}>
-            We are happy to announce that we have rebranded after a long and
-            painstaking work and are ready to present you our new name – Aldrin!
+          <WhiteText theme={theme} style={{ color: theme.palette.white.text, marginBottom: '2rem' }}>
+            We are happy to announce that we have rebranded CCAI and are ready to present – Aldrin!
           </WhiteText>
-          <WhiteText
-            style={{ marginTop: '5rem', color: theme.customPalette.white.text }}
-          >
-            The CCAI token has also been renamed. It is now called RIN. You
-            don't need to exchange anything, CCAI tokens in your wallets are
-            automatically changed to RIN.
+          <WhiteText theme={theme} style={{ color: theme.palette.white.text, marginBottom: '2rem' }}>
+            The CCAI token has also been renamed to RIN. CCAI tokens in your wallets are automatically changed to RIN.
+          </WhiteText>
+          <WhiteText theme={theme} style={{ color: theme.palette.white.text, marginBottom: '2rem' }}>
+            The new name comes with exciting developments for future holders of tokens and traders like you, so make sure to follow us on twitter as we announce these new features.
           </WhiteText>
           <WhiteText
             style={{
-              marginTop: '5rem',
-              color: theme.customPalette.white.text,
+              color: theme.palette.white.text,
               fontFamily: 'Avenir Next Demi',
             }}
           >
