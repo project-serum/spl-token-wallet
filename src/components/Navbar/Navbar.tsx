@@ -297,7 +297,7 @@ const Navbar = () => {
                 style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://twitter.com/CCAI_Official"
+                href="https://twitter.com/Aldrin_Exchange"
               >
                 <TwitterIcon />
               </StyledLink>
@@ -305,14 +305,14 @@ const Navbar = () => {
                 style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://t.me/CryptocurrenciesAi"
+                href="https://t.me/Aldrin_Exchange"
               >
                 <TelegramIcon />
               </StyledLink>
               <StyledLink
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://discord.gg/2EaKvrs"
+                href="https://discord.gg/4VZyNxT2WU"
                 style={{ height: '2.5rem' }}
               >
                 <DiscordIcon />
