@@ -56,10 +56,6 @@ const ActivitiesDropdown = ({
   marketsData,
   quote,
 }) => {
-  if (tokenSymbol === 'CCAI') {
-    tokenSymbol = 'RIN'
-  }
-
   return (
     <ActivitiesStyledCard>
       <RowContainer>
