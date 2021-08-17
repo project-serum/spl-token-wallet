@@ -28,8 +28,6 @@ import TwitterIcon from './TwitterIcon';
 import TelegramIcon from './TelegramIcon';
 import DiscordIcon from './DiscordIcon';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
-import { BetaLabel } from '../BetaLabel/BetaLabel';
-import { MASTER_BUILD } from '../../utils/config';
 
 const StyledButton = styled(Button)`
   font-size: 12px;
