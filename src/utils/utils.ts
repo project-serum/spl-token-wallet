@@ -192,13 +192,16 @@ export const getAllTokensData = async (
 
   parsedTokenAccounts.value.forEach((el) => {
     const tokenMintInfo = ALL_TOKENS_MINTS_MAP.get(el.account.data.parsed.info.mint)
+    const name = tokenMintInfo
+    ? tokenMintInfo.name.replace(' (Sollet)', '')
+    : ''
+    const symbol = tokenMintInfo
+    ? tokenMintInfo.symbol
+    : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint))
+
     const dataForToken = {
-      name: tokenMintInfo
-        ? tokenMintInfo.name.replace(' (Sollet)', '')
-        : '',
-      symbol: tokenMintInfo
-        ? tokenMintInfo.symbol
-        : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint)),
+      name: name === 'Cryptocurrencies.Ai' ? 'Aldrin' : name,
+      symbol: symbol === 'CCAI' ? 'RIN' : symbol,
       decimals: el.account.data.parsed.info.tokenAmount.decimals,
       amount: el.account.data.parsed.info.tokenAmount.uiAmount,
       mint: el.account.data.parsed.info.mint,
