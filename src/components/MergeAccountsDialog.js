@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { useSnackbar } from 'notistack';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogForm, { StyledPaper } from '../pages/Wallet/components/DialogForm';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
 import { TokenInstructions } from '@project-serum/serum';
 import { useWalletPublicKeys } from '../utils/wallet';
+import { useTheme } from '@material-ui/core';
+import AttentionComponent from '../components/Attention';
+import {
+  Card,
+  VioletButton,
+  RowContainer,
+  Input,
+  WhiteButton,
+  Title,
+} from '../pages/commonStyles';
 import {
   useConnection,
   refreshAccountInfo,
@@ -27,6 +30,7 @@ import { sleep } from '../utils/utils';
 import { useTokenInfos, getTokenInfo } from '../utils/tokens/names';
 
 export default function MergeAccountsDialog({ open, onClose }) {
+  const theme = useTheme();
   const [publicKeys] = useWalletPublicKeys();
   const connection = useConnection();
   const wallet = useWallet();
@@ -152,10 +156,20 @@ export default function MergeAccountsDialog({ open, onClose }) {
   const disabled = mergeCheck.toLowerCase() !== 'merge';
 
   return (
-    <Dialog disableBackdropClick={isMerging} open={open} onClose={onClose}>
+    <DialogForm
+      theme={theme}
+      PaperComponent={StyledPaper}
+      fullScreen={false}
+      onClose={() => {}}
+      maxWidth={'md'}
+      open={open}
+      aria-labelledby="responsive-dialog-title"
+    >
       {isMerging ? (
-        <DialogContent>
-          <DialogContentText style={{ marginBottom: 0, textAlign: 'center' }}>
+        <Card>
+          <DialogContentText
+            style={{ marginBottom: 0, textAlign: 'center', color: 'pink' }}
+          >
             Merging Accounts
           </DialogContentText>
           <div
@@ -167,48 +181,75 @@ export default function MergeAccountsDialog({ open, onClose }) {
           >
             <CircularProgress />
           </div>
-        </DialogContent>
+        </Card>
       ) : (
-        <>
-          <DialogTitle>Are you sure you want to merge tokens?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              <b>WARNING</b>: This action may break apps that depend on your
-              existing token accounts.
-            </DialogContentText>
-            <DialogContentText>
-              Merging sends all tokens to{' '}
-              <Link
-                href={'https://spl.solana.com/associated-token-account'}
-                target="_blank"
-                rel="noopener"
-              >
-                associated token accounts
-              </Link>{' '}
-              <FingerprintIcon style={{ marginBottom: '-7px' }} />. If
+        <RowContainer justify={'space-between'} height={'100%'} direction={'column'}>
+          <Title
+            maxFont={'2.1rem'}
+            fontSize="2.4rem"
+            fontFamily={'Avenir Next Demi'}
+            style={{ marginBottom: 0 }}
+          >
+            Are you sure you want to merge tokens?
+          </Title>
+          <RowContainer padding={'2rem 0'} direction={'column'}>
+            <Title
+              color={'#fbf2f2'}
+              style={{
+                fontSize: '1.4rem',
+                marginTop: '1rem',
+                textAlign: 'initial',
+              }}
+            >
+              Merging sends all tokens to associated token accounts . If
               associated token accounts do not exist, then they will be created.
-            </DialogContentText>
-            <DialogContentText>
+            </Title>
+            <Title
+              color={'#fbf2f2'}
+              style={{
+                fontSize: '1.4rem',
+                margin: '2rem 0',
+                textAlign: 'initial',
+              }}
+            >
               If merging fails during a period of high network load, you will
               not have lost your funds. Just recontinue the merge from where you
               left off. If you have a lot of accounts, merging might take a
               while.
-            </DialogContentText>
-            <TextField
-              label={`Please type "merge" to confirm`}
+            </Title>
+            <AttentionComponent
+              blockHeight="8rem"
+              iconStyle={{ margin: '0 2rem 0 3rem' }}
+              textStyle={{
+                fontSize: '1.4rem',
+              }}
+              text={
+                'This action may break apps that depend on your existing token accounts.'
+              }
+            />
+            <Input
+              style={{ marginTop: '2rem' }}
               fullWidth
               variant="outlined"
               margin="normal"
               value={mergeCheck}
               onChange={(e) => setMergeCheck(e.target.value.trim())}
+              placeholder={'Type "merge" to confirm'}
             />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={close} color="primary">
+          </RowContainer>
+          <RowContainer padding={'1rem 0'} justify={'space-between'}>
+            <WhiteButton
+              style={{ width: '49%' }}
+              theme={theme}
+              onClick={close}
+              color="primary"
+            >
               Cancel
-            </Button>
-            <Button
+            </WhiteButton>
+            <VioletButton
+              theme={theme}
               disabled={disabled}
+              style={{ width: '49%' }}
               onClick={() => {
                 setIsMerging(true);
                 mergeAccounts()
@@ -230,11 +271,11 @@ export default function MergeAccountsDialog({ open, onClose }) {
               autoFocus
             >
               Merge
-            </Button>
-          </DialogActions>
-        </>
+            </VioletButton>
+          </RowContainer>
+        </RowContainer>
       )}
-    </Dialog>
+    </DialogForm>
   );
 }
 

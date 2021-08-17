@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, Redirect } from 'react-router-dom';
+import Helmet from 'react-helmet';
 
 import {
   mnemonicToSeed,
@@ -18,7 +19,6 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@material-ui/core';
@@ -63,9 +63,12 @@ export const RestorePage = () => {
 
   return (
     <Body>
+      <Helmet>
+        <title>Restore Aldrin Wallet by seed phrase</title>
+      </Helmet>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}
-      <Logo />
+      {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}
       <RowContainer height={'80%'} direction={'column'}>
         {hasLockedMnemonicAndSeed ? (

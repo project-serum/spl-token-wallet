@@ -13,9 +13,11 @@ import LoadingIndicator from './components/LoadingIndicator';
 import SnackbarProvider from './components/SnackbarProvider';
 import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
-import { isExtension } from './utils/utils';
+import { isExtension, useLocalStorageState } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { DevUrlPopup } from '../src/components/DevUrlPopup';
+import { RebrandingPopup } from './components/RebrandingPopup/RebrandingPopup';
+// import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
@@ -184,6 +186,14 @@ export default function App() {
 const Pages = () => {
   const wallet = useWallet();
   const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
+  const [
+    isRebrandingPopupOpen,
+    setIsRebrandingPopupOpen,
+  ] = useLocalStorageState('isRebrandingPopupOpen', true);
+  // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
+  //   true,
+  // );
+
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
@@ -211,6 +221,16 @@ const Pages = () => {
           close={() => openDevUrlPopup(false)}
         />
       )}
+      {/* {!isMigrationToNewUrlPopupDone && (
+        <MigrationToNewUrlPopup
+          open={isMigrationToNewUrlPopupOpen}
+          close={() => openMigrationToNewUrlPopup(false)}
+        />
+      )} */}
+      <RebrandingPopup
+        open={isRebrandingPopupOpen}
+        onClose={() => setIsRebrandingPopupOpen(false)}
+      />
       <Switch>
         {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
         <Route path="/wallet" component={Wallet} />

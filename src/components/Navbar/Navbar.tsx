@@ -1,19 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useLocation, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   GridContainer,
   RowContainer,
   Row,
-  VioletButton,
-  RedButton,
-  Title,
+  WhiteButton,
 } from '../../pages/commonStyles';
+import { Theme } from '@material-ui/core';
+import { useLocation } from 'react-router-dom';
 
-import { Button, Theme } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import { CSSProperties } from '@material-ui/styles';
-import WalletIcon from '../../images/walletIcon.svg';
 import Lock from '../../images/lock.svg';
 import NetworkDropdown from './NetworkDropdown';
 
@@ -23,12 +22,14 @@ import {
   useHasLockedMnemonicAndSeed,
 } from '../../utils/wallet-seed';
 import LogoComponent from '../Logo';
+// import { extensionUrl } from '../../utils/utils';
 
-const ButtonsContainer = styled(Row)`
-  @media (max-width: 1200px) {
-    display: none;
-  }
-`;
+import TwitterIcon from './TwitterIcon';
+import TelegramIcon from './TelegramIcon';
+import DiscordIcon from './DiscordIcon';
+import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
+import { BetaLabel } from '../BetaLabel/BetaLabel';
+import { MASTER_BUILD } from '../../utils/config';
 
 const StyledButton = styled(Button)`
   font-size: 12px;
@@ -39,10 +40,6 @@ const StyledButton = styled(Button)`
   @media only screen and (min-width: 2367px) {
     font-size: 1rem;
   }
-`;
-
-const StyledLink = styled.a`
-  height: 100%;
 `;
 
 const SButton = styled(
@@ -144,48 +141,55 @@ const WalletLoginContainer = styled(Row)`
   }
 `;
 
+const StyledLink = styled.a`
+  height: 100%;
+`;
+
 const WalletLoginButtonContainer = styled(Row)`
   display: none;
   @media (max-width: 540px) {
     height: 100%;
     display: flex;
-    width: 45%;
+    width: ${(props) => (props.wallet ? '45%' : 'auto')};
   }
 `;
 
 const LogoLink = styled(Link)`
   display: flex;
   align-items: center;
-  width: 15%;
-  padding: 0.5rem 0;
+  width: 15rem;
+  padding: 0 3rem 0 0;
   @media (max-width: 540px) {
     width: 100%;
+  }
+`;
+const Socials = styled(Row)`
+  & a:hover {
+    svg {
+      g {
+        path {
+          fill: #4679f4;
+        }
+      }
+    }
   }
 `;
 
 const HeaderContainer = styled(RowContainer)`
   height: 100%;
+  justify-content: end;
   @media (max-width: 540px) {
-    width: 40%;
+    width: 30%;
   }
 `;
 
-const TokenLink = styled.a`
-  font-family: Avenir Next Demi;
-  text-transform: capitalize;
-  text-decoration: none;
-  font-size: 1.4rem;
-  background: linear-gradient(
-    106.89deg,
-    rgba(94, 181, 168, 0.8) 17.87%,
-    rgba(56, 98, 193, 0.8) 82.13%
-  );
-  display: flex;
-  align-items: center;
-  padding: 0 2rem;
-  height: 100%;
-  border-radius: 0.6rem;
-  color: #f8faff;
+const FeedbackButtonContainer = styled(Row)`
+  border-left: ${(props) => props.theme.customPalette.border.new};
+  justify-content: flex-end;
+  padding: 0 0rem 0 4rem;
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const Navbar = () => {
@@ -193,43 +197,37 @@ const Navbar = () => {
   const theme = useTheme();
   const wallet = useWallet();
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
-
+  const [isFeedBackPopupOpen, setIsFeedBackPopupOpen] = useState(false);
   const showButtons = !hasLockedMnemonicAndSeed || !!wallet;
 
   return (
     <GridContainer
       wallet={!!wallet}
       theme={theme}
-      style={{ paddingRight: !showButtons && '0' }}
+      style={{ paddingRight: !showButtons && '3rem' }}
     >
       <RowContainer justify={'space-between'} height={'100%'}>
         <HeaderContainer theme={theme}>
           <LogoLink to={'/'}>
             <LogoComponent width="100%" height="auto" margin="0" />
           </LogoLink>
+          <FeedbackButtonContainer theme={theme}>
+            <WhiteButton
+              style={{
+                borderRadius: '1.7rem',
+                width: 'auto',
+                padding: '0 2rem',
+                whiteSpace: 'nowrap',
+              }}
+              theme={theme}
+              onClick={() => setIsFeedBackPopupOpen(true)}
+            >
+              Leave feedback
+            </WhiteButton>
+          </FeedbackButtonContainer>
           <LinksContainer theme={theme}>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/`}>
-              <NavLinkButton
-                theme={theme}
-                data-tut="farming"
-                pathname={location.pathname}
-                page={'home'}
-              >
-                Home
-              </NavLinkButton>
-            </StyledLink>
-
-            <Link to={`/`} style={{ height: '100%' }}>
-              <NavLinkButton
-                theme={theme}
-                pathname={location.pathname}
-                page={''}
-              >
-                Wallet
-              </NavLinkButton>
-            </Link>
             <StyledLink
-              href={`https://dex.cryptocurrencies.ai/chart${
+              href={`https://dex.aldrin.com/chart${
                 !!wallet ? '#connect_wallet' : ''
               }`}
             >
@@ -241,7 +239,7 @@ const Navbar = () => {
                 Trading
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.cryptocurrencies.ai/analytics`}>
+            <StyledLink href={`https://dex.aldrin.com/analytics`}>
               <NavLinkButton
                 theme={theme}
                 page={'analytics'}
@@ -250,117 +248,111 @@ const Navbar = () => {
                 Analytics
               </NavLinkButton>
             </StyledLink>
-            {/* <StyledLink href={`https://dex.cryptocurrencies.ai/addressbook`}>
+            {!MASTER_BUILD && (
+              <StyledLink href={`https://dex.aldrin.com/rebalance`}>
+                <NavLinkButton
+                  theme={theme}
+                  page={'rebalance'}
+                  pathname={location.pathname}
+                  style={{ width: '14rem' }}
+                >
+                  <>
+                    Rebalance{' '}
+                    <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
+                  </>
+                </NavLinkButton>
+              </StyledLink>
+            )}
+            <Link to={`/`} style={{ height: '100%' }}>
+              <NavLinkButton
+                theme={theme}
+                pathname={location.pathname}
+                page={''}
+              >
+                Wallet
+              </NavLinkButton>
+            </Link>
+            <StyledLink
+              href={`http://rin.aldrin.com/`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <NavLinkButton
                 theme={theme}
                 page={'addressbook'}
                 pathname={location.pathname}
               >
-                Addressbook
+                Token
               </NavLinkButton>
-            </StyledLink> */}
-            <TokenLink
-              href="https://ccai.cryptocurrencies.ai/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Token
-            </TokenLink>
+            </StyledLink>
           </LinksContainer>
         </HeaderContainer>
+        <FeedbackPopup
+          theme={theme}
+          open={isFeedBackPopupOpen}
+          onClose={() => setIsFeedBackPopupOpen(false)}
+        />
         <WalletLoginContainer>
-          <NetworkDropdown width={'10rem'} popupPage={false} />
-          {!!wallet ? (
-            <RowContainer>
-              <img
-                src={WalletIcon}
-                alt="wallet icon"
-                style={{ margin: '0 2rem', height: '100%' }}
-              />
-              <Row direction="column" align="flex-start">
-                <Title fontSize="1rem" fontFamily="Avenir Next">
-                  <span style={{ fontFamily: 'Avenir Next Demi' }}>
-                    Wallet™
-                  </span>
-                  by Cryptocurrencies.Ai
-                </Title>
-                <Title
-                  fontFamily="Avenir Next"
-                  color={theme.customPalette.grey.dark}
-                  fontSize="1rem"
-                  style={{ paddingBottom: '1rem' }}
-                >
-                  {wallet?.publicKey.toBase58()}
-                </Title>
-              </Row>
-              <RedButton
-                width="10rem"
-                height="2rem"
-                theme={theme}
-                fontSize="1.2rem"
-                onClick={() => {
-                  sessionStorage.removeItem('unlocked');
-                  reloadWallet();
-                }}
-                style={{
-                  position: 'absolute',
-                  right: '0',
-                  bottom: '.5rem',
-                  fontFamily: 'Avenir Next Demi',
-                }}
+          {/* <a
+            href={extensionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              whiteSpace: 'nowrap',
+              fontSize: '1.3rem',
+              color: '#fbf2f2',
+              textTransform: 'none',
+              fontFamily: 'Avenir Next medium',
+            }}
+          >
+            Install Extension
+          </a> */}
+
+          <RowContainer padding="0 0 0 3rem">
+            <Socials justify={'space-around'} height="100%" width={'auto'}>
+              <StyledLink
+                style={{ marginRight: '3rem', height: '2.5rem' }}
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://twitter.com/CCAI_Official"
               >
-                Lock Wallet
-              </RedButton>
-            </RowContainer>
-          ) : !hasLockedMnemonicAndSeed ? (
-            <ButtonsContainer>
-              <Link style={{ textDecoration: 'none' }} to={'/restore_wallet'}>
-                <VioletButton
-                  theme={theme}
-                  width={'14rem'}
-                  height={'3.5rem'}
-                  borderRadius=".6rem"
-                  margin={'0 0 0 3rem'}
-                  padding="1rem"
-                >
-                  Restore Wallet
-                </VioletButton>
-              </Link>
-              <Link style={{ textDecoration: 'none' }} to={'/create_wallet'}>
-                <VioletButton
-                  theme={theme}
-                  width={'14rem'}
-                  height={'3.5rem'}
-                  color={theme.customPalette.blue.serum}
-                  borderColor={theme.customPalette.blue.serum}
-                  background={'transparent'}
-                  margin={'0 0 0 3rem'}
-                >
-                  Create Wallet
-                </VioletButton>
-              </Link>
-            </ButtonsContainer>
-          ) : (
-            <RowContainer padding="0 2rem">
-              <Title style={{ whiteSpace: 'nowrap' }}>
-                Please, unlock your Wallet
-              </Title>
-            </RowContainer>
-          )}
+                <TwitterIcon />
+              </StyledLink>
+              <StyledLink
+                style={{ marginRight: '3rem', height: '2.5rem' }}
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://t.me/CryptocurrenciesAi"
+              >
+                <TelegramIcon />
+              </StyledLink>
+              <StyledLink
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://discord.gg/2EaKvrs"
+                style={{ height: '2.5rem' }}
+              >
+                <DiscordIcon />
+              </StyledLink>
+            </Socials>
+          </RowContainer>
+          {/* )} */}
         </WalletLoginContainer>
 
-        <WalletLoginButtonContainer>
+        <WalletLoginButtonContainer wallet={wallet}>
           <NetworkDropdown width={'10rem'} popupPage={false} />
-          <img
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              sessionStorage.removeItem('unlocked');
-              reloadWallet();
-            }}
-            src={Lock}
-            width={'20%'}
-            alt={'lock wallet'}
-          />
+          {!!wallet ? (
+            <img
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                sessionStorage.removeItem('unlocked');
+                reloadWallet();
+              }}
+              src={Lock}
+              width={'20%'}
+              alt={'lock wallet'}
+            />
+          ) : null}
         </WalletLoginButtonContainer>
       </RowContainer>
     </GridContainer>

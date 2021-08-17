@@ -60,7 +60,7 @@ export const GridContainer = styled(({ wallet, theme, ...rest }) => (
   background: ${(props) => props.theme.customPalette.dark.background};
 
   @media (max-width: 850px) {
-    display: ${(props) => (props.wallet ? 'flex' : 'none')};
+    display: flex;
     height: 10rem;
     background: #222429;
   }
@@ -199,7 +199,7 @@ export const Input = styled(({ style, ...props }) => (
   ${(props) => props.style};
 
   @media (max-width: 540px) {
-    font-size: 1.4rem;
+    font-size: 16px;
     height: 6rem;
   }
 `;
@@ -255,6 +255,7 @@ export const Title = styled(
 
   @media (max-width: 540px) {
     font-size: ${(props) => props.maxFont || '1.6rem'};
+    text-align: ${(props) => props.mediaTextAlign || 'auto'};
   }
 `;
 

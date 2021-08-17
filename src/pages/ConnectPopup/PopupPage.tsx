@@ -34,7 +34,6 @@ const StyledCard = styled(Card)`
   color: #ecf0f3;
   text-align: center;
   width: 50rem;
-  padding: 3rem;
   margin: 0 auto;
   box-shadow: none;
 `;
@@ -337,7 +336,9 @@ export default function PopupPage() {
  */
 function focusParent() {
   try {
-    window.open('', 'parent');
+    // window.opener?.focus()
+    const parent = window.open('', 'parent')
+    parent?.focus()
   } catch (err) {
     console.log('err', err);
   }
@@ -403,9 +404,13 @@ function ApproveConnectionForm({
 }) {
   const wallet = useWallet();
   const classes = useStyles();
-  const { accounts } = useWalletSelector();
+  const { accounts, hardwareWalletAccount } = useWalletSelector();
   // TODO better way to do this
-  const account = accounts.find((account) =>
+  const allAccounts = hardwareWalletAccount
+    ? [hardwareWalletAccount, ...accounts]
+    : accounts;
+
+  const account = allAccounts.find((account) =>
     account.address.equals(wallet.publicKey),
   );
   // const [autoApprove, setAutoApprove] = useState(true);
@@ -417,7 +422,7 @@ function ApproveConnectionForm({
       {(!window.opener || !wallet) && <Redirect to="/" />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
-          <LogoComponent width="100%" height="auto" margin="0" />{' '}
+          <LogoComponent width="12rem" height="auto" margin="0" />
           <NetworkDropdown popupPage={true} width={'14rem'} />
           <AccountsSelector isFromPopup accountNameSize={'1.6rem'} />
         </RowContainer>
@@ -442,7 +447,7 @@ function ApproveConnectionForm({
             style={{ margin: '2rem 0' }}
             src={ImportExportIcon}
           />
-          <Title fontSize="1.6rem">{account.name}</Title>
+          <Title fontSize="1.6rem">{account?.name}</Title>
           <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
         </RowContainer>
 
@@ -459,7 +464,7 @@ function ApproveConnectionForm({
               htmlFor="autoApprove"
               style={{ fontSize: '1.6rem' }}
             >
-              Automatically approve transactions from{' '}
+              Automatically approve transactions from
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>

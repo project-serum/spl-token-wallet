@@ -7,7 +7,7 @@ import { BtnCustom } from '../BtnCustom';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
 import { useTheme, Paper } from '@material-ui/core';
 
-const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
+export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   height: auto;
   padding: 2rem 4rem;
   width: 55rem;
@@ -81,6 +81,7 @@ export const DevUrlPopup = ({
           alt="Warning."
           style={{ width: '4rem', height: '4rem' }}
           src={Warning}
+          onClick={close}
         />
       </Row>
       <RowContainer margin={'3rem 0'} align={'start'} direction={'column'}>
@@ -98,9 +99,9 @@ export const DevUrlPopup = ({
             }}
             target="_blank"
             rel="noopener noreferrer"
-            href={'https://wallet.cryptocurrencies.ai'}
+            href={'https://wallet.aldrin.com'}
           >
-            wallet.cryptocurrencies.ai{' '}
+            wallet.aldrin.com{' '}
           </a>
           .
         </Text>
@@ -110,7 +111,7 @@ export const DevUrlPopup = ({
           style={{ textDecoration: 'none', width: '100%' }}
           target="_blank"
           rel="noopener noreferrer"
-          href={'https://wallet.cryptocurrencies.ai'}
+          href={'https://wallet.aldrin.com'}
         >
           {' '}
           <BlueButton
@@ -124,7 +125,7 @@ export const DevUrlPopup = ({
             theme={theme}
             onClick={() => {}}
           >
-            Go to dex.cryptocurrencies.ai
+            Go to wallet.aldrin.com
           </BlueButton>
         </a>
       </RowContainer>

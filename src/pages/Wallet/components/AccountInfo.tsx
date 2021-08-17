@@ -127,7 +127,7 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.orange.dark}
+          color={theme.customPalette.green.main}
           style={{ whiteSpace: 'nowrap' }}
         >
           SOL is the fuel for transactions on Solana.
@@ -135,7 +135,7 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.orange.dark}
+          color={theme.customPalette.green.main}
           style={{ whiteSpace: 'nowrap' }}
         >
           You must have some SOL in your wallet for
@@ -143,13 +143,18 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.orange.dark}
+          color={theme.customPalette.green.main}
           style={{ whiteSpace: 'nowrap' }}
         >
           DEX trading or other transactions.
         </InstructionTitle>
       </Row>
-      <ExclamationMark theme={theme} margin={'0 0 0 2rem'} fontSize="7rem" />
+      <ExclamationMark
+        color={theme.customPalette.green.main}
+        theme={theme}
+        margin={'0 0 0 2rem'}
+        fontSize="7rem"
+      />
     </Instruction>
   );
 };
@@ -244,6 +249,7 @@ const AccountInfo = ({
               allTokensData={allTokensData}
               marketsData={marketsData}
               key="navbarfalse"
+              isNavbar={false}
             />
           </Title>
         </BalanceCard>

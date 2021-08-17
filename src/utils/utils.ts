@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum'
+import { useMediaQuery } from '@material-ui/core';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -191,13 +192,16 @@ export const getAllTokensData = async (
 
   parsedTokenAccounts.value.forEach((el) => {
     const tokenMintInfo = ALL_TOKENS_MINTS_MAP.get(el.account.data.parsed.info.mint)
+    const name = tokenMintInfo
+    ? tokenMintInfo.name.replace(' (Sollet)', '')
+    : ''
+    const symbol = tokenMintInfo
+    ? tokenMintInfo.symbol
+    : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint))
+
     const dataForToken = {
-      name: tokenMintInfo
-        ? tokenMintInfo.name.replace(' (Sollet)', '')
-        : '',
-      symbol: tokenMintInfo
-        ? tokenMintInfo.symbol
-        : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint)),
+      name: name === 'Cryptocurrencies.Ai' ? 'Aldrin' : name,
+      symbol: symbol === 'CCAI' ? 'RIN' : symbol,
       decimals: el.account.data.parsed.info.tokenAmount.decimals,
       amount: el.account.data.parsed.info.tokenAmount.uiAmount,
       mint: el.account.data.parsed.info.mint,
@@ -209,6 +213,10 @@ export const getAllTokensData = async (
   })
 
   return allTokensMap
+}
+
+export function useIsExtensionWidth() {
+  return useMediaQuery('(max-width:450px)');
 }
 
 export const isUSDToken = (token: string): boolean => {
@@ -238,4 +246,14 @@ export function useInterval(callback, delay) {
       };
     }
   }, [delay]);
+}
+
+export const extensionUrl = 'https://chrome.google.com/webstore/detail/cryptocurrenciesai-wallet/oomlbhdllfeiglglhhaacafbkkbibhel'
+
+export const encode = (data) => {
+  return Object.keys(data)
+    .map(
+      (key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    )
+    .join('&')
 }

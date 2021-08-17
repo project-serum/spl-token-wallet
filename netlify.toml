@@ -1,0 +1,15 @@
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+
+# Production context: All deploys to the main
+# repository branch will inherit these settings.
+[context.production]
+  command = "yarn buildMaster"
+
+[context.master]
+  command = "yarn buildMaster"
+
+[context.develop]
+  command = "yarn build"

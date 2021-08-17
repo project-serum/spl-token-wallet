@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import {
-  AppBar,
   Button,
   Collapse,
   List,
@@ -9,30 +9,49 @@ import {
   ListItemText,
   makeStyles,
   Paper,
-  Toolbar,
-  Typography,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DoneAll, ExpandLess, ExpandMore } from '@material-ui/icons';
 import { useConnectedWallets } from '../../utils/connected-wallets';
 import { useWalletSelector } from '../../utils/wallet';
+import DialogForm from '../../pages/Wallet/components/DialogForm';
+import { RowContainer } from '../commonStyles';
 
-export default function ConnectionsList() {
+const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
+  height: auto;
+  min-height: 70rem;
+  padding: 2rem 4rem;
+  width: 35rem;
+  background: #222429;
+  border: 0.1rem solid #3a475c;
+  box-shadow: 0px 0px 16px rgb(125 125 131, 10%);
+  border-radius: 2rem;
+`;
+
+const Text = styled.span`
+  font-size: ${(props) => props.fontSize || '1.5rem'};
+  padding-bottom: ${(props) => props.paddingBottom || ''};
+  text-transform: none;
+  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
+  color: ${(props) => props.color || '#ecf0f3'};
+`;
+
+export default function ConnectionsList({ theme, close, open }) {
   const connectedWallets = useConnectedWallets();
-
+  console.log('connectedWallets', connectedWallets);
   return (
-    <Paper>
-      <AppBar position="static" color="default" elevation={1}>
-        <Toolbar>
-          <Typography
-            variant="h6"
-            style={{ flexGrow: 1 }}
-            component="h2"
-          >
-            Connected Dapps
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <DialogForm
+      theme={theme}
+      PaperComponent={StyledPaper}
+      fullScreen={false}
+      onClose={() => close()}
+      maxWidth={'md'}
+      open={open}
+      aria-labelledby="responsive-dialog-title"
+    >
+      <RowContainer>
+        <Text fontSize={'2rem'}>Connected Dapps</Text>
+      </RowContainer>
       <List disablePadding>
         {Object.entries(connectedWallets).map(([origin, connectedWallet]) => (
           <ConnectionsListItem
@@ -42,7 +61,7 @@ export default function ConnectionsList() {
           />
         ))}
       </List>
-    </Paper>
+    </DialogForm>
   );
 }
 
@@ -113,7 +132,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
               src={iconUrl}
               onError={() => setIconUrl(faviconUrl)}
               className={classes.listItemImage}
-              alt={origin}
+              alt=""
             />
           </div>
         </ListItemIcon>

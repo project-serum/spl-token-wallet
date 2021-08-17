@@ -240,12 +240,12 @@ export function ConnectToMetamaskButton() {
       <VioletButton
         theme={theme}
         component="a"
-        href={isExtension ? 'https://wallet.cryptocurrencies.ai' : 'https://metamask.io/'}
+        href={isExtension ? 'http://wallet.aldrin.com/' : 'https://metamask.io/'}
         target="_blank"
         rel="noopener"
         width={'calc(50% - .5rem)'}
       >
-        {isExtension ? 'Open CCAI Wallet' : 'Connect to MetaMask'}
+        {isExtension ? 'Open Aldrin Wallet' : 'Connect to MetaMask'}
       </VioletButton>
     );
   }

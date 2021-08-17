@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,7 +15,6 @@ import UsbIcon from '@material-ui/icons/Usb';
 import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import CodeIcon from '@material-ui/icons/Code';
 import Tooltip from '@material-ui/core/Tooltip';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import AddAccountDialog from '../AddAccountDialog';
@@ -23,11 +22,9 @@ import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
 import AddHardwareWalletDialog from '../AddHarwareWalletDialog';
 import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
 import Navbar from './Navbar';
-import TwitterIcon from './TwitterIcon';
-import TelegramIcon from './TelegramIcon';
-import DiscordIcon from './DiscordIcon';
-import { Row } from '../../pages/commonStyles';
 import { isExtension } from '../../utils/utils';
+import { useLocation } from 'react-router-dom';
+import { MobileFooter } from '../Footer/MobileFooter';
 
 export const footerHeight = isExtension ? 0 : 6;
 
@@ -60,12 +57,9 @@ const StyledMain = styled.main`
     height: calc(100%);
   }
   @media (max-width: 540px) {
-    height: ${props => props.isWalletConnected ? 'calc(100% - 10rem)' : '100%'};
+    height: ${(props) =>
+      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 23rem)'};
   }
-`;
-
-const StyledLink = styled.a`
-  height: 100%;
 `;
 
 export const StyledImg = styled.img`
@@ -78,7 +72,9 @@ export default function NavigationFrame({ children }) {
 
   return isConnectPopup ? (
     <>
-      <StyledMain isWalletConnected={false} isConnectPopup>{children}</StyledMain>
+      <StyledMain isWalletConnected={false} isConnectPopup>
+        {children}
+      </StyledMain>
       <Footer />
     </>
   ) : (
@@ -86,6 +82,7 @@ export default function NavigationFrame({ children }) {
       <Navbar />
       <StyledMain isWalletConnected={!!wallet}>{children}</StyledMain>
       <Footer />
+      <MobileFooter />
     </>
   );
 }
@@ -247,73 +244,104 @@ const useFooterStyles = makeStyles((theme) => ({
   },
 }));
 
-const Socials = styled(Row)`
-  & a:hover {
-    svg {
-      g {
-        path {
-          fill: #4679f4;
-        }
-      }
-    }
-  }
-`;
-
 const FooterComponent = styled.footer`
   height: 6rem;
-  padding: 0 0 0 3rem;
+  padding: 0 3rem 0 3rem;
+  display: flex;
+  justify-content: space-between;
   @media (max-width: 540px) {
     padding: 0;
     height: 0;
     display: none;
   }
 `;
+const FooterComponentForExtension = styled.footer`
+  display: none;
+  @media (max-width: 540px) {
+    display: flex;
+    justify-content: space-between;
+    height: 3rem;
+  }
+`;
 
 function Footer() {
   const classes = useFooterStyles();
-  const theme = useTheme();
+  // const theme = useTheme();
+  const location = useLocation();
+  console.log('location', location);
 
   return (
-    <FooterComponent className={classes.footer}>
-      <Button
-        variant="outlined"
-        color="primary"
-        component="a"
-        target="_blank"
-        rel="noopener"
-        href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
-        startIcon={<CodeIcon />}
-        style={{
-          border: '0',
-          height: '50%',
-          color: theme.customPalette.blue.serum,
-        }}
-      >
-        View Source
-      </Button>
-      <Socials justify={'space-around'} height="100%" width={'auto'}>
-        <StyledLink
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://twitter.com/CCAI_Official"
+    <>
+      <FooterComponent className={classes.footer}>
+        <span
+          style={{
+            fontSize: '1.3rem',
+            color: '#fbf2f2',
+            textTransform: 'none',
+            fontFamily: 'Avenir Next medium',
+          }}
         >
-          <TwitterIcon />
-        </StyledLink>
-        <StyledLink
+          {location.pathname.includes('restore')
+            ? 'Restore your wallet using seed phrase to get access for SPL assets management and interaction with dApps on the Solana blockchain.'
+            : location.pathname.includes('create')
+            ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
+            : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
+        </span>{' '}
+        <Button
+          variant="outlined"
+          color="primary"
+          component="a"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener"
+          href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
+          style={{
+            border: '0',
+            fontSize: '1.3rem',
+            height: '50%',
+            color: '#fbf2f2',
+            textTransform: 'none',
+          }}
+        >
+          Source
+        </Button>
+      </FooterComponent>
+      <FooterComponentForExtension>
+        {' '}
+        <Button
+          variant="outlined"
+          color="primary"
+          component="a"
+          target="_blank"
+          rel="noopener"
           href="https://t.me/CryptocurrenciesAi"
+          style={{
+            border: '0',
+            fontSize: '1.3rem',
+            height: '50%',
+            color: '#fbf2f2',
+            textTransform: 'none',
+          }}
         >
-          <TelegramIcon />
-        </StyledLink>
-        <StyledLink
+          Need help?
+        </Button>{' '}
+        <Button
+          variant="outlined"
+          color="primary"
+          component="a"
           target="_blank"
-          rel="noopener noreferrer"
-          href="https://discord.gg/2EaKvrs"
+          rel="noopener"
+          href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
+          style={{
+            border: '0',
+            fontSize: '1.3rem',
+            height: '50%',
+            color: '#fbf2f2',
+            textTransform: 'none',
+          }}
         >
-          <DiscordIcon />
-        </StyledLink>
-      </Socials>
-    </FooterComponent>
+          Source
+        </Button>
+      </FooterComponentForExtension>
+    </>
   );
 }

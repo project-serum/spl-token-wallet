@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {
-  useWallet,
-} from '../../../utils/wallet';
+import { useWallet } from '../../../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../../../utils/tokens/names';
 import { useAsyncData } from '../../../utils/fetch-loop';
@@ -48,7 +46,13 @@ export const feeFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 6,
 });
 
-export default function AddTokenDialog({ open, onClose, allTokensData, balanceInfo, refreshTokensData }) {
+export default function AddTokenDialog({
+  open,
+  onClose,
+  allTokensData,
+  balanceInfo,
+  refreshTokensData,
+}) {
   let wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
@@ -103,7 +107,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
       Promise.all(
         selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
       ).then(() => {
-        refreshTokensData()
+        refreshTokensData();
         onClose();
       });
 
@@ -112,7 +116,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
 
     sendTransaction(addToken(params), {
       onSuccess: () => {
-        refreshTokensData()
+        refreshTokensData();
         onClose();
       },
     });
@@ -225,7 +229,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. Cryptocurrencies.Ai)'}
+                placeholder={'Token Name (e.g. Aldrin)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}
@@ -241,7 +245,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
             )}
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Symbol (e.g. CCAI)'}
+                placeholder={'Token Symbol (e.g. RIN)'}
                 value={tokenSymbol}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenSymbol(e.target.value)}
@@ -303,8 +307,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
                       {...tokenInfo}
                       mintAddress={tokenInfo.address}
                       existingAccount={([...allTokensData.values()] || []).find(
-                        (tokenData) =>
-                        tokenData.mint === tokenInfo.address,
+                        (tokenData) => tokenData.mint === tokenInfo.address,
                       )}
                       disabled={sending}
                       selectedTokens={selectedTokens}
@@ -350,10 +353,7 @@ export default function AddTokenDialog({ open, onClose, allTokensData, balanceIn
                   : theme.customPalette.green.light,
               }}
             >
-              {formatNumberToUSFormat(
-                stripDigitPlaces(amount, decimals),
-              )}{' '}
-              SOL
+              {formatNumberToUSFormat(stripDigitPlaces(amount, decimals))} SOL
             </WhiteText>
           </WhiteText>
           <WhiteText theme={theme}>
@@ -392,14 +392,14 @@ export function TokenListItem({
   selectedTokens,
   setSelectedTokens,
 }: {
-  name: string,
-  logoUri: string,
-  symbol: string,
-  mintAddress: string,
-  disabled: boolean,
-  existingAccount: boolean,
-  selectedTokens: any[],
-  setSelectedTokens: any
+  name: string;
+  logoUri: string;
+  symbol: string;
+  mintAddress: string;
+  disabled: boolean;
+  existingAccount: boolean;
+  selectedTokens: any[];
+  setSelectedTokens: any;
 }) {
   const alreadyExists = !!existingAccount;
 

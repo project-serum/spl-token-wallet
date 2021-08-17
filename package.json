@@ -33,6 +33,7 @@
     "qrcode.react": "^1.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
     "react-hot-loader": "^4.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
@@ -48,6 +49,7 @@
     "fix:prettier": "prettier \"src/**/*.js\" \"extension/src/*.js\" --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "buildMaster": "cross-env MASTER_BUILD=TRUE && react-scripts build",
     "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
     "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "react-scripts test",
@@ -90,6 +92,7 @@
     }
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "gh-pages": "^3.1.0",
     "git-format-staged": "^2.1.0",
     "husky": "^4.3.6",
