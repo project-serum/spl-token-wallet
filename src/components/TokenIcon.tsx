@@ -22,6 +22,11 @@ export default function TokenIcon({
     tokenLogoUri =
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
   }
+  
+  if (mint === CCAI_MINT) {
+    tokenLogoUri =
+    'https://develop.cryptocurrencies.ai/logo.png';
+  }
 
   if (hasError || !tokenLogoUri) {
     tokenLogoUri = CoinPlaceholder;
