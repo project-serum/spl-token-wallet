@@ -473,12 +473,12 @@ const AssetItem = ({
     tokenLogoUri: undefined,
   };
   
-  if (tokenName === 'CCAI') {
-    tokenName = 'RIN'
+  if (tokenSymbol === 'CCAI') {
+    tokenSymbol = 'RIN'
   }
 
-  if (tokenSymbol === 'Cryptocurrencies.Ai') {
-    tokenSymbol = 'Aldrin'
+  if (tokenName === 'Cryptocurrencies.Ai') {
+    tokenName = 'Aldrin'
   }
 
   // Fetch and cache the associated token address.
