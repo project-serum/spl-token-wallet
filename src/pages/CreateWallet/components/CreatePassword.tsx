@@ -41,7 +41,7 @@ const CreatePassword = ({
       <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
           <BoldTitle style={{ marginBottom: '1.5rem' }}>
-            Create a password or type your addressbook
+            Create a password or type your
           </BoldTitle>
           <BoldTitle>password if you have created it already:</BoldTitle>
         </RowContainer>
