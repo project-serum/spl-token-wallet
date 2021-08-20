@@ -201,30 +201,37 @@ export default function BalancesList() {
           <CopyToClipboard
             text={selectedAccount && selectedAccount.address.toBase58()}
             onCopy={() => {
-              setIsCopied(true)
+              setIsCopied(true);
               setTimeout(() => {
-                setIsCopied(false)
-              }, 1000)
+                setIsCopied(false);
+              }, 1000);
             }}
           >
             <Tooltip
               title={
                 <Typography>
-                  {isCopied
-                  ? 'Copied'
-                  : 'Copy to clipboard'}
+                  {isCopied ? 'Copied' : 'Copy to clipboard'}
                 </Typography>
               }
-              style={{fontSize: '10rem'}}
+              style={{ fontSize: '10rem' }}
             >
               <Typography
                 variant="h6"
-                style={{ flexGrow: 1, fontSize: isExtensionWidth && '1rem', cursor: 'pointer' }}
+                style={{
+                  flexGrow: 1,
+                  fontSize: isExtensionWidth && '1rem',
+                  cursor: 'pointer',
+                }}
                 hover={true}
                 component="h2"
               >
                 {selectedAccount && selectedAccount.name}
-                {isExtensionWidth ? '' : ` (${selectedAccount && shortenAddress(selectedAccount.address.toBase58())})`}{' '}
+                {isExtensionWidth
+                  ? ''
+                  : ` (${
+                      selectedAccount &&
+                      shortenAddress(selectedAccount.address.toBase58())
+                    })`}{' '}
                 {allTokensLoaded && (
                   <>({numberFormat.format(totalUsdValue.toFixed(2))})</>
                 )}
@@ -367,6 +374,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-evenly',
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+  },
+  viewDetails: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
 }));
 
@@ -572,6 +584,7 @@ function BalanceListItemDetails({
     closeTokenAccountDialogOpen,
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const wallet = useWallet();
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
@@ -620,24 +633,13 @@ function BalanceListItemDetails({
       <Typography variant="body2">
         Token Symbol: {tokenSymbol ?? 'Unknown'}
       </Typography>
-      {mint ? (
-        <Typography variant="body2" className={classes.address}>
-          Token Address: {mint.toBase58()}
-        </Typography>
-      ) : null}
-      {!isSolAddress && (
-        <Typography variant="body2" className={classes.address}>
-          {isAssociatedToken ? 'Associated' : ''} Token Metadata:{' '}
-          {publicKey.toBase58()}
-        </Typography>
-      )}
-      {!isSolAddress && isAssociatedToken === false && (
-        <div style={{ display: 'flex' }}>
-          This is an auxiliary token account.
-        </div>
-      )}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
+          {!isSolAddress && isAssociatedToken === false && (
+            <div style={{ display: 'flex' }}>
+              This is an auxiliary token account.
+            </div>
+          )}
           <Typography variant="body2">
             <Link
               href={
@@ -672,6 +674,28 @@ function BalanceListItemDetails({
               >
                 View on Ethereum
               </Link>
+            </Typography>
+          )}
+          {!isSolAddress && (
+            <Typography variant="body2">
+              <Link
+                className={classes.viewDetails}
+                onClick={() => setShowDetails(!showDetails)}
+              >
+                View Details
+              </Link>
+            </Typography>
+          )}
+          {showDetails &&
+            (mint ? (
+              <Typography variant="body2" className={classes.address}>
+                Mint Address: {mint.toBase58()}
+              </Typography>
+            ) : null)}
+          {!isSolAddress && showDetails && (
+            <Typography variant="body2" className={classes.address}>
+              {isAssociatedToken ? 'Associated' : ''} Token Metadata:{' '}
+              {publicKey.toBase58()}
             </Typography>
           )}
         </div>
