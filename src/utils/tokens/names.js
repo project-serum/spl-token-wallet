@@ -287,10 +287,10 @@ const POPULAR_TOKENS = {
     },
     {
       tokenSymbol: 'gSAIL',
-      mintAddress: 'GSaiLQxREzaxUcE3v28HxBacoUQPZNtXx1eQsCFsX9Bg',
+      mintAddress: 'Gsai2KN28MTGcSZ1gKYFswUpFpS7EM9mvdR9c8f6iVXJ',
       tokenName: 'gSAIL Governance Token',
       icon:
-        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/GSaiLQxREzaxUcE3v28HxBacoUQPZNtXx1eQsCFsX9Bg/logo.png',
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Gsai2KN28MTGcSZ1gKYFswUpFpS7EM9mvdR9c8f6iVXJ/logo.png',
     },
   ],
 };
