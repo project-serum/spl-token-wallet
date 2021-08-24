@@ -1,4 +1,5 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
+import { makeStyles } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
@@ -6,6 +7,12 @@ import {
   unstable_createMuiStrictModeTheme as createMuiTheme,
 } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import DialogForm from './components/DialogForm';
 import NavigationFrame from './components/NavigationFrame';
 import { ConnectionProvider } from './utils/connection';
 import WalletPage from './pages/WalletPage';
@@ -77,8 +84,17 @@ export default function App() {
 function PageContents() {
   const wallet = useWallet();
   const [page] = usePage();
+  const [showWalletSuggestion, setShowWalletSuggestion] = useState(true);
   if (!wallet) {
-    return <LoginPage />;
+    return (
+      <>
+        <WalletSuggestionDialog
+          open={showWalletSuggestion}
+          onClose={() => setShowWalletSuggestion(false)}
+        />
+        <LoginPage />
+      </>
+    );
   }
   if (window.opener) {
     return <PopupPage opener={window.opener} />;
@@ -88,4 +104,103 @@ function PageContents() {
   } else if (page === 'connections') {
     return <ConnectionsPage />;
   }
+}
+
+const useStyles = makeStyles(() => ({
+  walletButton: {
+    padding: '16px',
+    '&:hover': {
+      cursor: 'pointer',
+      background: '#f7f7f7',
+    },
+  },
+}));
+
+function WalletSuggestionDialog({ open, onClose }) {
+  const classes = useStyles();
+  return (
+    <DialogForm open={open} onClose={onClose} fullWidth>
+      <DialogTitle>Looking for a Wallet?</DialogTitle>
+      <DialogContent>
+        <Typography>
+          Sollet is an{' '}
+          <a
+            style={{ color: 'inherit' }}
+            href="https://github.com/project-serum/spl-token-wallet"
+            target="__blank"
+          >
+            {' '}
+            open source
+          </a>{' '}
+          wallet for advanced users and developers. For the best Solana
+          experience and user support, it is recommended to use <b>
+            Phantom
+          </b>{' '}
+          or <b>Solflare</b>.
+        </Typography>
+        <div
+          className={classes.walletButton}
+          style={{ display: 'flex', marginTop: '16px' }}
+          onClick={() => {
+            window.location = 'https://phantom.app/';
+          }}
+        >
+          <div>
+            <img
+              style={{ height: '39px' }}
+              src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
+            />
+          </div>
+          <div>
+            <Typography
+              style={{
+                marginLeft: '16px',
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                height: '39px',
+                fontWeight: 'bold',
+              }}
+            >
+              Phantom
+            </Typography>
+          </div>
+        </div>
+        <div
+          onClick={() => {
+            window.location = 'https://solflare.com/';
+          }}
+          className={classes.walletButton}
+          style={{ display: 'flex' }}
+        >
+          <div>
+            <img
+              style={{ height: '39px' }}
+              src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
+            />
+          </div>
+          <div>
+            <Typography
+              style={{
+                marginLeft: '16px',
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                height: '39px',
+                fontWeight: 'bold',
+              }}
+            >
+              Solflare
+            </Typography>
+          </div>
+        </div>
+        <Typography></Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button type="submit" color="primary" onClick={onClose}>
+          Ok
+        </Button>
+      </DialogActions>
+    </DialogForm>
+  );
 }
