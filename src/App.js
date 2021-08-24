@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, List, ListItem } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import {
@@ -108,10 +108,10 @@ function PageContents() {
 
 const useStyles = makeStyles(() => ({
   walletButton: {
+    width: '100%',
     padding: '16px',
     '&:hover': {
       cursor: 'pointer',
-      background: '#f7f7f7',
     },
   },
 }));
@@ -138,63 +138,68 @@ function WalletSuggestionDialog({ open, onClose }) {
           </b>{' '}
           or <b>Solflare</b>.
         </Typography>
-        <div
-          className={classes.walletButton}
-          style={{ display: 'flex', marginTop: '16px' }}
-          onClick={() => {
-            window.location = 'https://phantom.app/';
-          }}
-        >
-          <div>
-            <img
-              style={{ height: '39px' }}
-              src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
-            />
-          </div>
-          <div>
-            <Typography
-              style={{
-                marginLeft: '16px',
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                height: '39px',
-                fontWeight: 'bold',
+        <List disablePadding style={{ marginTop: '16px' }}>
+          <ListItem button disablePadding style={{ padding: 0 }}>
+            <div
+              className={classes.walletButton}
+              style={{ display: 'flex' }}
+              onClick={() => {
+                window.location = 'https://phantom.app/';
               }}
             >
-              Phantom
-            </Typography>
-          </div>
-        </div>
-        <div
-          onClick={() => {
-            window.location = 'https://solflare.com/';
-          }}
-          className={classes.walletButton}
-          style={{ display: 'flex' }}
-        >
-          <div>
-            <img
-              style={{ height: '39px' }}
-              src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
-            />
-          </div>
-          <div>
-            <Typography
-              style={{
-                marginLeft: '16px',
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                height: '39px',
-                fontWeight: 'bold',
+              <div>
+                <img
+                  style={{ height: '39px' }}
+                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
+                />
+              </div>
+              <div>
+                <Typography
+                  style={{
+                    marginLeft: '16px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    height: '39px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Phantom
+                </Typography>
+              </div>
+            </div>
+          </ListItem>
+          <ListItem button disablePadding style={{ padding: 0 }}>
+            <div
+              onClick={() => {
+                window.location = 'https://solflare.com/';
               }}
+              className={classes.walletButton}
+              style={{ display: 'flex' }}
             >
-              Solflare
-            </Typography>
-          </div>
-        </div>
-        <Typography></Typography>
+              <div>
+                <img
+                  style={{ height: '39px' }}
+                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
+                />
+              </div>
+              <div>
+                <Typography
+                  style={{
+                    marginLeft: '16px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    height: '39px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Solflare
+                </Typography>
+              </div>
+            </div>
+          </ListItem>
+        </List>
       </DialogContent>
       <DialogActions>
         <Button type="submit" color="primary" onClick={onClose}>
