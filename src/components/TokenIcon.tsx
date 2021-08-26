@@ -22,6 +22,11 @@ export default function TokenIcon({
     tokenLogoUri =
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
   }
+  
+  if (mint === CCAI_MINT.toString()) {
+    tokenLogoUri =
+    'https://aldrin.com/logo_rounded.png';
+  }
 
   if (hasError || !tokenLogoUri) {
     tokenLogoUri = CoinPlaceholder;
