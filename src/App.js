@@ -85,13 +85,21 @@ function PageContents() {
   const wallet = useWallet();
   const [page] = usePage();
   const [showWalletSuggestion, setShowWalletSuggestion] = useState(true);
+  const suggestionKey = 'private-irgnore-wallet-suggestion';
+  const ignoreSuggestion = window.localStorage.getItem(suggestionKey);
   if (!wallet) {
     return (
       <>
-        <WalletSuggestionDialog
-          open={showWalletSuggestion}
-          onClose={() => setShowWalletSuggestion(false)}
-        />
+        {!ignoreSuggestion && (
+          <WalletSuggestionDialog
+            open={showWalletSuggestion}
+            onClose={() => setShowWalletSuggestion(false)}
+            onIgnore={() => {
+              window.localStorage.setItem(suggestionKey, true);
+              setShowWalletSuggestion(false);
+            }}
+          />
+        )}
         <LoginPage />
       </>
     );
@@ -116,7 +124,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function WalletSuggestionDialog({ open, onClose }) {
+function WalletSuggestionDialog({ open, onClose, onIgnore }) {
   const classes = useStyles();
   return (
     <DialogForm open={open} onClose={onClose} fullWidth>
@@ -202,6 +210,9 @@ function WalletSuggestionDialog({ open, onClose }) {
         </List>
       </DialogContent>
       <DialogActions>
+        <Button type="submit" color="primary" onClick={onIgnore}>
+          Ignore Future Dialog
+        </Button>
         <Button type="submit" color="primary" onClick={onClose}>
           Ok
         </Button>
