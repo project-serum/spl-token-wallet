@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
