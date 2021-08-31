@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
@@ -15,8 +15,9 @@ import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension, useLocalStorageState } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
-import { DevUrlPopup } from '../src/components/DevUrlPopup';
+// import { DevUrlPopup } from '../src/components/DevUrlPopup';
 import { RebrandingPopup } from './components/RebrandingPopup/RebrandingPopup';
+// import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
@@ -42,8 +43,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
-const LOCAL_BUILD = window.location.href.includes('localhost');
-const DEVELOP_BUILD = window.location.href.includes('develop');
+// const LOCAL_BUILD = window.location.href.includes('localhost');
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -185,7 +185,7 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
+  // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
   const [
     isRebrandingPopupOpen,
     setIsRebrandingPopupOpen,
@@ -215,12 +215,12 @@ const Pages = () => {
 
   return (
     <>
-      {DEVELOP_BUILD && !LOCAL_BUILD && (
+      {/* {!MASTER_BUILD && !LOCAL_BUILD && (
         <DevUrlPopup
           open={isDevUrlPopupOpen}
           close={() => openDevUrlPopup(false)}
         />
-      )}
+      )} */}
       {/* {!isMigrationToNewUrlPopupDone && (
         <MigrationToNewUrlPopup
           open={isMigrationToNewUrlPopupOpen}
