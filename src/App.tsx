@@ -15,7 +15,7 @@ import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension, useLocalStorageState } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
-import { DevUrlPopup } from '../src/components/DevUrlPopup';
+// import { DevUrlPopup } from '../src/components/DevUrlPopup';
 import { RebrandingPopup } from './components/RebrandingPopup/RebrandingPopup';
 // import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
@@ -43,7 +43,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
-const LOCAL_BUILD = window.location.href.includes('localhost');
+// const LOCAL_BUILD = window.location.href.includes('localhost');
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -185,7 +185,7 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
-  const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
+  // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
   const [
     isRebrandingPopupOpen,
     setIsRebrandingPopupOpen,

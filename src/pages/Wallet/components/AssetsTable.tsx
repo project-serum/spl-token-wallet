@@ -27,7 +27,7 @@ import ActivitiesDropdown from './ActivitiesDropdown';
 import { findAssociatedTokenAddress } from '../../../utils/tokens';
 import { CCAI_MINT } from '../../../utils/tokens/instructions';
 import { Loading } from '../../../components/Loading';
-import { MASTER_BUILD } from '../../../utils/config';
+// import { MASTER_BUILD } from '../../../utils/config';
 
 export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
