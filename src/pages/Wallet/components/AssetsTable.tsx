@@ -725,7 +725,7 @@ const AssetItem = ({
             Send
           </VioletButton>
 
-          {!MASTER_BUILD && mint && amount === 0 && (
+          {false && mint && amount === 0 && (
             <VioletButton
               theme={theme}
               height="50%"

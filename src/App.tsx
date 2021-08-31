@@ -17,6 +17,7 @@ import { isExtension, useLocalStorageState } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { DevUrlPopup } from '../src/components/DevUrlPopup';
 import { RebrandingPopup } from './components/RebrandingPopup/RebrandingPopup';
+// import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
@@ -43,7 +44,6 @@ declare module '@material-ui/core/styles/createMuiTheme' {
 }
 
 const LOCAL_BUILD = window.location.href.includes('localhost');
-const DEVELOP_BUILD = window.location.href.includes('develop');
 
 export default function App() {
   // TODO: add toggle for dark mode
@@ -215,12 +215,12 @@ const Pages = () => {
 
   return (
     <>
-      {DEVELOP_BUILD && !LOCAL_BUILD && (
+      {/* {!MASTER_BUILD && !LOCAL_BUILD && (
         <DevUrlPopup
           open={isDevUrlPopupOpen}
           close={() => openDevUrlPopup(false)}
         />
-      )}
+      )} */}
       {/* {!isMigrationToNewUrlPopupDone && (
         <MigrationToNewUrlPopup
           open={isMigrationToNewUrlPopupOpen}
