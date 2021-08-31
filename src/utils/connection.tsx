@@ -124,6 +124,7 @@ export function useAccountInfo(publicKey?: PublicKey) {
     // @ts-ignore
     const rawConnection =
       endpoint === MAINNET_BETA_ENDPOINT
+          // @ts-ignore
         ? connection.getConnection()
         : connection;
     let previousInfo: AccountInfo<Buffer> | null = null;
