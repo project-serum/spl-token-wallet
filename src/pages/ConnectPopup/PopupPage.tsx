@@ -167,6 +167,7 @@ export default function PopupPage() {
             ? 'Submitting...'
             : 'Please keep this window open in the background.'}
         </Title>
+        <button onClick={()=>focusParent()}>open dex</button>
       </RowContainer>
     );
   }
@@ -337,8 +338,8 @@ export default function PopupPage() {
 function focusParent() {
   try {
     // window.opener?.focus()
-    const parent = window.open('', 'parent')
-    parent?.focus()
+    const parent = window.open('', 'parent');
+    parent?.focus();
   } catch (err) {
     console.log('err', err);
   }
