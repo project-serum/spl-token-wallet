@@ -167,7 +167,6 @@ export default function PopupPage() {
             ? 'Submitting...'
             : 'Please keep this window open in the background.'}
         </Title>
-        <button onClick={()=>focusParent()}>open dex</button>
       </RowContainer>
     );
   }
