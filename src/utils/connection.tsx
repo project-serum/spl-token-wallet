@@ -42,9 +42,10 @@ export function ConnectionProvider({ children }) {
         ? // multi connection only for mainnet
           new MultiEndpointsConnection(
             [
+              { url: 'https://api-cryptocurrencies-ai.rpcpool.com', RPS: 20 },
               // { url: 'https://mango.rpcpool.com/', RPS: 10 },
               { url: 'https://solana-api.projectserum.com', RPS: 2 },
-              { url: 'https://api.mainnet-beta.solana.com', RPS: 4 },
+              // { url: 'https://api.mainnet-beta.solana.com', RPS: 4 },
               // { url: 'https://raydium.rpcpool.com/', RPS: 10 },
               // { url: 'https://orca.rpcpool.com/', RPS: 10 },
               // { url: 'https://api.rpcpool.com', RPS: 10 },
@@ -107,7 +108,7 @@ export function useSolanaExplorerUrlSuffix() {
 
 export function useAccountInfo(publicKey?: PublicKey) {
   const connection = useConnection();
-  const { endpoint } = useConnectionConfig()
+  const { endpoint } = useConnectionConfig();
   const cacheKey = tuple(connection, publicKey?.toBase58());
   const [accountInfo, loaded] = useAsyncData(
     async () => (publicKey ? connection.getAccountInfo(publicKey) : null),
@@ -121,7 +122,11 @@ export function useAccountInfo(publicKey?: PublicKey) {
 
     // multi-connection only in mainnet beta, we should use same connection for removeAccountChange
     // @ts-ignore
-    const rawConnection = endpoint === MAINNET_BETA_ENDPOINT ? connection.getConnection() : connection
+    const rawConnection =
+      endpoint === MAINNET_BETA_ENDPOINT
+          // @ts-ignore
+        ? connection.getConnection()
+        : connection;
     let previousInfo: AccountInfo<Buffer> | null = null;
 
     const id = rawConnection.onAccountChange(publicKey, (info) => {
