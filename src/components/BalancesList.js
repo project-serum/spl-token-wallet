@@ -45,6 +45,7 @@ import {
   refreshAccountInfo,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
+import { useRegion } from '../utils/region';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { serumMarkets, priceStore } from '../utils/markets';
 import { swapApiRequest } from '../utils/swap/api';
@@ -118,6 +119,7 @@ export default function BalancesList() {
   const isExtensionWidth = useIsExtensionWidth();
   // Dummy var to force rerenders on demand.
   const [, setForceUpdate] = useState(false);
+  const region = useRegion();
   const selectedAccount = accounts.find((a) => a.isSelected);
   const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
   let sortedPublicKeys = publicKeys;
@@ -272,7 +274,7 @@ export default function BalancesList() {
             </IconButton>
           </Tooltip>
           <DomainsList open={showDomains} setOpen={setShowDomains} />
-          <SwapButton size={iconSize} />
+          {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
           <Tooltip title="Migrate Tokens" arrow>
             <IconButton
               size={iconSize}
