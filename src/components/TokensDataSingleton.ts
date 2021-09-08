@@ -1,9 +1,9 @@
-import { getMarketsData } from "../utils/ccai";
+import { getTokensData } from "../utils/ccai";
 import { sleep } from "../utils/utils";
 
-export class MarketsDataSingleton {
+export class TokensDataSingleton {
   public static isDataLoading = false
-  private static marketsDataMap = new Map();
+  private static tokensDataMap = new Map();
 
   public static async getData() {
     if (this.isDataLoading) {
@@ -12,20 +12,20 @@ export class MarketsDataSingleton {
       return this.getData()
     }
 
-    if (this.marketsDataMap.size === 0) {
+    if (this.tokensDataMap.size === 0) {
         return await this.requestData()
     }
 
-    return this.marketsDataMap;
+    return this.tokensDataMap;
   }
 
   private static async requestData() {
       this.isDataLoading = true
-      await getMarketsData().then((data) => {
+      await getTokensData().then((data) => {
         console.log('set to false', data)
         this.isDataLoading = false
-        this.marketsDataMap = data
+        this.tokensDataMap = data
       });
-      return this.marketsDataMap;
+      return this.tokensDataMap;
   }
 }

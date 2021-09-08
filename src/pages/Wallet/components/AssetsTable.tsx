@@ -206,6 +206,8 @@ const AssetName = styled(Title)`
   font-size: 1.4rem;
   font-family: Avenir Next;
   margin-left: 0.5rem;
+  width: 3rem;
+  white-space: nowrap;
 `;
 
 const AssetAmount = styled(Title)`
@@ -272,7 +274,7 @@ export const associatedTokensCache = {};
 const AssetsTable = ({
   isActive,
   allTokensData,
-  marketsData,
+  tokensData,
   refreshTokensData,
   selectToken,
   setSendDialogOpen,
@@ -282,7 +284,7 @@ const AssetsTable = ({
 }: {
   isActive?: boolean;
   allTokensData: Map<string, TokenInfo>;
-  marketsData: Map<string, { closePrice: number; lastPriceDiff: number }>;
+  tokensData: Map<string, number>;
   refreshTokensData: () => void;
   selectToken: ({
     publicKey,
@@ -310,15 +312,9 @@ const AssetsTable = ({
         const isTokenAUSDT = isUSDToken(tokenA.symbol);
         const isTokenBUSDT = isUSDToken(tokenB.symbol);
 
-        let tokenAPrice = (
-          marketsData.get(`${tokenA.symbol}_USDC`) ||
-          marketsData.get(`${tokenA.symbol}_USDT`) || { closePrice: 0 }
-        ).closePrice;
+        let tokenAPrice = tokensData.get(`${tokenA.symbol}`) || 0;
         if (isTokenAUSDT) tokenAPrice = 1;
-        let tokenBPrice = (
-          marketsData.get(`${tokenB.symbol}_USDC`) ||
-          marketsData.get(`${tokenB.symbol}_USDT`) || { closePrice: 0 }
-        ).closePrice;
+        let tokenBPrice = tokensData.get(`${tokenB.symbol}`) || 0;
         if (isTokenBUSDT) tokenBPrice = 1;
 
         const aVal = tokenA.amount * tokenAPrice;
@@ -345,7 +341,7 @@ const AssetsTable = ({
           return tokenA.symbol.localeCompare(tokenB.symbol);
         }
       }),
-    [allTokensData, walletPubkey, marketsData],
+    [allTokensData, walletPubkey, tokensData],
   );
 
   return (
@@ -400,7 +396,7 @@ const AssetsTable = ({
                 key={`${balanceInfo.address}-${i}-table`}
                 publicKey={new PublicKey(balanceInfo.address)}
                 theme={theme}
-                marketsData={marketsData}
+                tokensData={tokensData}
                 balanceInfo={balanceInfo}
                 selectToken={selectToken}
                 setSendDialogOpen={setSendDialogOpen}
@@ -438,12 +434,12 @@ const AssetItem = ({
   setSendDialogOpen,
   setDepositDialogOpen,
   setCloseTokenAccountDialogOpen,
-  marketsData = new Map(),
+  tokensData = new Map(),
   balanceInfo,
 }: {
   publicKey: PublicKey;
   theme: Theme;
-  marketsData: Map<string, { lastPriceDiff: number; closePrice: number }>;
+  tokensData: Map<string, number>;
   balanceInfo?: TokenInfo;
   selectToken: ({
     publicKey,
@@ -472,13 +468,13 @@ const AssetItem = ({
     symbol: '--',
     tokenLogoUri: undefined,
   };
-  
+
   if (tokenSymbol === 'CCAI') {
-    tokenSymbol = 'RIN'
+    tokenSymbol = 'RIN';
   }
 
   if (tokenName === 'Cryptocurrencies.Ai') {
-    tokenName = 'Aldrin'
+    tokenName = 'Aldrin';
   }
 
   // Fetch and cache the associated token address.
@@ -500,12 +496,7 @@ const AssetItem = ({
     }
   }
 
-  let { lastPriceDiff, closePrice } = (!!marketsData &&
-    (marketsData.get(`${tokenSymbol?.toUpperCase()}_USDC`) ||
-      marketsData.get(`${tokenSymbol?.toUpperCase()}_USDT`))) || {
-    closePrice: 0,
-    lastPriceDiff: 0,
-  };
+  let closePrice = tokensData?.get(`${tokenSymbol?.toUpperCase()}`) || 0;
 
   let priceForCalculate = closePrice;
 
@@ -513,30 +504,7 @@ const AssetItem = ({
     priceForCalculate = 1;
   }
 
-  const prevClosePrice = (priceForCalculate || 0) + lastPriceDiff * -1;
-  const quote = !!marketsData
-    ? marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`)
-      ? 'USDC'
-      : marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)
-      ? 'USDT'
-      : 'USDT'
-    : 'USDT';
-
-  const priceChangePercentage = !!priceForCalculate
-    ? !!prevClosePrice
-      ? (priceForCalculate - prevClosePrice) / (prevClosePrice / 100)
-      : 100
-    : 0;
-
-  const sign24hChange =
-    +priceChangePercentage === 0 ? '' : +priceChangePercentage > 0 ? `+` : `-`;
-
-  const color =
-    +priceChangePercentage === 0
-      ? '#ecf0f3'
-      : +priceChangePercentage > 0
-      ? theme.customPalette.green.light
-      : theme.customPalette.red.main;
+  const quote = 'USDC';
 
   const usdValue =
     priceForCalculate === undefined // Not yet loaded.
@@ -625,36 +593,39 @@ const AssetItem = ({
 
       <StyledTd style={{ paddingRight: '2rem' }}>
         <RowContainer direction="column" align="flex-start">
-          <GreyTitle theme={theme}>Amount:</GreyTitle>
-          <AssetAmountUSD theme={theme}>{` $${stripDigitPlaces(
-            amount * priceForCalculate || 0,
-            2,
-          )}`}</AssetAmountUSD>
+          <GreyTitle theme={theme}>Total:</GreyTitle>
+          <AssetAmountUSD theme={theme}>
+            {priceForCalculate
+              ? ` $${stripDigitPlaces(amount * priceForCalculate || 0, 2)}`
+              : '-'}
+          </AssetAmountUSD>
         </RowContainer>
       </StyledTd>
-      <StyledTd style={{ paddingRight: '2rem' }}>
+      {/* <StyledTd style={{ paddingRight: '2rem' }}>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>P&L 24h:</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
             Soon
           </Title>
         </RowContainer>
-      </StyledTd>
+      </StyledTd> */}
       <StyledTd>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Price</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
-            $
-            {formatNumberToUSFormat(
+            {priceForCalculate
+              ? `$
+            ${formatNumberToUSFormat(
               stripDigitPlaces(
                 priceForCalculate || 0,
                 priceForCalculate < 1 ? 8 : 2,
               ),
-            )}
+            )}`
+              : '-'}
           </Title>
         </RowContainer>
       </StyledTd>
-      <StyledTd>
+      {/* <StyledTd>
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Change 24h:</GreyTitle>
           <RowContainer justify="flex-start">
@@ -678,7 +649,7 @@ const AssetItem = ({
             </Title>
           </RowContainer>
         </RowContainer>
-      </StyledTd>
+      </StyledTd> */}
       <StyledTd>
         <RowContainer justify="flex-end">
           <VioletButton
@@ -772,9 +743,9 @@ const AssetItem = ({
             component="a"
             target="_blank"
             disabled={
-              !marketsData ||
-              (!marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) &&
-                !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`)) ||
+              !tokensData ||
+              (!tokensData.has(`${tokenSymbol?.toUpperCase()}`) &&
+                !tokensData.has(`${tokenSymbol?.toUpperCase()}`)) ||
               tokenSymbol === 'USDC'
             }
             rel="noopener"
@@ -805,7 +776,7 @@ const AssetItem = ({
             setSendDialogOpen={setSendDialogOpen}
             setDepositDialogOpen={setDepositDialogOpen}
             publicKey={publicKey}
-            marketsData={marketsData}
+            tokensData={tokensData}
             tokenSymbol={tokenSymbol}
             theme={theme}
             quote={quote}
@@ -821,7 +792,7 @@ export default React.memo(AssetsTable, (prev, next) => {
     prev.isActive === next.isActive &&
     JSON.stringify([...prev.allTokensData.values()]) ===
       JSON.stringify([...next.allTokensData.values()]) &&
-    JSON.stringify([...prev.marketsData.values()]) ===
-      JSON.stringify([...next.marketsData.values()])
+    JSON.stringify([...prev.tokensData.values()]) ===
+      JSON.stringify([...next.tokensData.values()])
   );
 });
