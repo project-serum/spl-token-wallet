@@ -9,12 +9,18 @@ import {
   BlueButton,
   Form,
   Line,
+  StyledLabel,
   StyledPaper,
   StyledTextArea,
   SubmitButton,
   TextField,
 } from './styles';
-import { RowContainer, Title } from '../../pages/commonStyles';
+import {
+  Row,
+  RowContainer,
+  StyledRadio,
+  Title,
+} from '../../pages/commonStyles';
 import { Text } from './styles';
 import { useSnackbar } from 'notistack';
 import { encode } from '../../utils/utils';
@@ -31,6 +37,7 @@ export const FeedbackPopup = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [isFeedbackSubmitted, submitFeedback] = useState(false);
+  const [isProblemReport, setIsProblemReport] = useState(true);
 
   const [feedbackWalletData, setFeedbackWalletData] = useState({
     message: '',
@@ -64,7 +71,9 @@ export const FeedbackPopup = ({
     e.preventDefault();
   };
 
-  const isDisabled = feedbackWalletData.message === '';
+  const isDisabled = isProblemReport
+    ? feedbackWalletData.message === '' || feedbackWalletData.contact === ''
+    : feedbackWalletData.message === '';
 
   return (
     <DialogForm
@@ -116,8 +125,9 @@ export const FeedbackPopup = ({
               padding: '0 1rem 0 0',
             }}
           >
-            Thank you for your feedback, we will review it shortly and take
-            action.
+            {isProblemReport
+              ? 'Thank you for your feedback, please allow support team 24 hours to respond.'
+              : 'Thank you for your feedback, we will review it shortly and take action.'}
           </Text>
           <BlueButton
             style={{ width: '100%', margin: '6rem 0 0 0' }}
@@ -140,10 +150,42 @@ export const FeedbackPopup = ({
           action="/success"
         >
           <input type="hidden" name="form-name" value="walletFeedback" />
+          <RowContainer>
+            <Row justify="flex-start" width={'50%'}>
+              <StyledRadio
+                theme={theme}
+                checked={isProblemReport}
+                onChange={() => {
+                  setIsProblemReport(true);
+                }}
+                id="problem-report-btn"
+                style={{ padding: '1rem 1rem 1rem 0' }}
+              />
+              <StyledLabel htmlFor="problem-report-btn">
+                I want to report a problem.
+              </StyledLabel>
+            </Row>
+            <Row justify="flex-end" width={'50%'}>
+              <StyledRadio
+                theme={theme}
+                checked={!isProblemReport}
+                onChange={() => {
+                  setIsProblemReport(false);
+                }}
+                id="idea-suggest-btn"
+                style={{ padding: '1rem 1rem 1rem 0' }}
+              />
+              <StyledLabel htmlFor="idea-suggest-btn">
+                I want to suggest an idea.
+              </StyledLabel>
+            </Row>
+          </RowContainer>
           <RowContainer direction={'column'} margin={'1rem 0'}>
             <RowContainer wrap="nowrap">
               <Text padding={'0 1rem 0 0'} whiteSpace="nowrap">
-                Tell us how we can improve{' '}
+                {isProblemReport
+                  ? 'Tell us your problem'
+                  : 'Tell us how we can improve'}{' '}
               </Text>
               <Line />
             </RowContainer>
@@ -169,7 +211,9 @@ export const FeedbackPopup = ({
           <RowContainer direction={'column'} margin={'1rem 0'}>
             <RowContainer wrap="nowrap">
               <Text padding={'0 1rem 0 0'} whiteSpace="nowrap">
-                Would you like a representative to contact you? (optional){' '}
+                {isProblemReport
+                  ? 'How we can contact you to help?'
+                  : 'Would you like a representative to contact you? (optional)'}{' '}
               </Text>
               <Line />
             </RowContainer>

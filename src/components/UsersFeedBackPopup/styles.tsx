@@ -168,3 +168,11 @@ export const Line = styled.div`
   margin: 2rem 0;
   width: 100%;
 `;
+export const StyledLabel = styled.label`
+  color: #96999c;
+  font-size: 1.5rem;
+  font-family: Avenir Next Medium;
+  white-space: nowrap;
+  letter-spacing: 0.01rem;
+  cursor: pointer;
+`;
