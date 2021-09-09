@@ -13,7 +13,7 @@ import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../utils/wallet';
 import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
-import { MarketsDataSingleton } from '../../components/MarketsDataSingleton';
+import { TokensDataSingleton } from '../../components/TokensDataSingleton';
 import { useConnection } from '../../utils/connection';
 import { useTokenInfos } from '../../utils/tokens/names';
 import CloseTokenAccountDialog from './components/CloseTokenAccountPopup';
@@ -92,7 +92,7 @@ const Wallet = () => {
   const connection = useConnection();
   const tokenInfos = useTokenInfos();
   const [refreshCounter, changeRefreshCounter] = useState(0);
-  const [marketsData, setMarketsData] = useState<Map<string, any>>(new Map());
+  const [tokensData, setTokensData] = useState<Map<string, number>>(new Map());
   const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(
     new Map(),
   );
@@ -107,14 +107,14 @@ const Wallet = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const data = await MarketsDataSingleton.getData();
+      const data = await TokensDataSingleton.getData();
       const allTokensInfo = await getAllTokensData(
         new PublicKey(walletPubkey),
         connection,
         tokenInfos,
       );
 
-      setMarketsData(data);
+      setTokensData(data);
       setAllTokensData(allTokensInfo);
     };
 
@@ -124,7 +124,7 @@ const Wallet = () => {
   return (
     <MainWalletContainer>
       {window.opener && <Redirect to={'/connect_popup'} />}
-      <AccountInfo marketsData={marketsData} allTokensData={allTokensData} />
+      <AccountInfo tokensData={tokensData} allTokensData={allTokensData} />
       <TableContainer>
         <SwitcherRow>
           <Switcher
@@ -147,7 +147,7 @@ const Wallet = () => {
 
         <AssetsTable
           isActive={activeTab === 'assets'}
-          marketsData={marketsData}
+          tokensData={tokensData}
           allTokensData={allTokensData}
           refreshTokensData={refreshTokensData}
           selectToken={selectToken}

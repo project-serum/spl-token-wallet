@@ -53,7 +53,7 @@ const ActivitiesDropdown = ({
   setDepositDialogOpen,
   publicKey,
   tokenSymbol,
-  marketsData,
+  tokensData,
   quote,
 }) => {
   return (
@@ -147,9 +147,8 @@ const ActivitiesDropdown = ({
                 component="a"
                 target="_blank"
                 disabled={
-                  !marketsData ||
-                  (!marketsData.has(`${tokenSymbol?.toUpperCase()}_USDC`) &&
-                    !marketsData.has(`${tokenSymbol?.toUpperCase()}_USDT`))
+                  !tokensData ||
+                  !tokensData.has(`${tokenSymbol?.toUpperCase()}`)
                 }
                 rel="noopener"
                 href={`https://dex.aldrin.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}

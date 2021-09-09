@@ -7,13 +7,11 @@ import {
 } from '../../../utils/utils';
 
 const TotalBalance = ({
-  isNavbar = true,
   allTokensData,
-  marketsData,
+  tokensData,
 }: {
-  isNavbar: boolean;
   allTokensData: Map<string, TokenInfo>;
-  marketsData: Map<string, any>;
+  tokensData: Map<string, number>;
 }) => {
   // const wallet = useWallet();
   // const connection = useConnection();
@@ -24,10 +22,7 @@ const TotalBalance = ({
   const totalUSD = [...allTokensData.values()].reduce((acc, cur) => {
     const isTokenUSDT = isUSDToken(cur.symbol);
 
-    let tokenPrice = (
-      marketsData.get(`${cur.symbol}_USDC`) ||
-      marketsData.get(`${cur.symbol}_USDT`) || { closePrice: 0 }
-    ).closePrice;
+    let tokenPrice = tokensData.get(`${cur.symbol}`) || 0;
     if (isTokenUSDT) tokenPrice = 1;
 
     return acc + cur.amount * tokenPrice;
