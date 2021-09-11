@@ -238,7 +238,7 @@ const Navbar = () => {
                 Trading
               </NavLinkButton>
             </StyledLink>
-            <StyledLink href={`https://dex.aldrin.com/analytics`}>
+            {/* <StyledLink href={`https://dex.aldrin.com/analytics`}>
               <NavLinkButton
                 theme={theme}
                 page={'analytics'}
@@ -246,7 +246,7 @@ const Navbar = () => {
               >
                 Analytics
               </NavLinkButton>
-            </StyledLink>
+            </StyledLink> */}
             <StyledLink href={`https://dex.aldrin.com/rebalance`}>
               <NavLinkButton
                 theme={theme}
