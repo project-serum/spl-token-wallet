@@ -43,6 +43,24 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
     }))
 }
 
+export async function getTokenAccountsByOwner(connection, publicKey) {
+  const result = await connection.getTokenAccountsByOwner(
+    publicKey,
+    { programId: TOKEN_PROGRAM_ID },
+  );
+
+  return result.value
+    .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
+      publicKey: new PublicKey(pubkey),
+      accountInfo: {
+        data,
+        executable,
+        owner: new PublicKey(owner),
+        lamports,
+      },
+    }))
+}
+
 export async function signAndSendTransaction(
   connection,
   transaction,
@@ -302,7 +320,7 @@ export async function transferTokens({
     throw new Error('Cannot send to address with zero SOL balances');
   }
   const destinationSplTokenAccount = (
-    await getOwnedTokenAccounts(connection, destinationPublicKey)
+    await getTokenAccountsByOwner(connection, destinationPublicKey)
   )
     .map(({ publicKey, accountInfo }) => {
       return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };
