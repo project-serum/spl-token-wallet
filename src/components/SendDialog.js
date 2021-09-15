@@ -58,13 +58,18 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const [tab, setTab] = useState('spl');
   const onSubmitRef = useRef();
 
-  const [swapCoinInfo] = useSwapApiGet(
+  let [swapCoinInfo] = useSwapApiGet(
     showSwapAddress && balanceInfo.mint && isProdNetwork
       ? `coins/sol/${balanceInfo.mint.toBase58()}`
       : null,
   );
-  const ethAccount = useEthAccount();
 
+  // SwapInfos to ignore.
+  if (swapCoinInfo && swapCoinInfo.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0') {
+    swapCoinInfo = null;
+  }
+
+  const ethAccount = useEthAccount();
   const { mint, tokenName, tokenSymbol } = balanceInfo;
 
   const getTabs = (mint) => {
