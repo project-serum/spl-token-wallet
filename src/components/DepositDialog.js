@@ -45,6 +45,11 @@ export default function DepositDialog({
   const { mint, tokenName, tokenSymbol, owner } = balanceInfo;
   const [tab, setTab] = useState(0);
 
+  // SwapInfos to ignore.
+  if (swapInfo && swapInfo.coin && swapInfo.coin.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0') {
+    swapInfo = null;
+  }
+
   let tabs = null;
   if (swapInfo) {
     let firstTab = `SPL ${tokenSymbol ?? swapInfo.coin.ticker}`;

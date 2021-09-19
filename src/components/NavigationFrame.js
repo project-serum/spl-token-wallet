@@ -4,7 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig } from '../utils/connection';
-import { CLUSTERS, clusterForEndpoint } from '../utils/clusters';
+import {CLUSTERS, clusterForEndpoint, getClusters, addCustomCluster, customClusterExists} from '../utils/clusters';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -36,6 +36,7 @@ import { Badge } from '@material-ui/core';
 import { useConnectedWallets } from '../utils/connected-wallets';
 import { usePage } from '../utils/page';
 import { MonetizationOn, OpenInNew } from '@material-ui/icons';
+import AddCustomClusterDialog from "./AddCustomClusterDialog";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -203,10 +204,19 @@ function NetworkSelector() {
   const { endpoint, setEndpoint } = useConnectionConfig();
   const cluster = useMemo(() => clusterForEndpoint(endpoint), [endpoint]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [addCustomNetworkOpen, setCustomNetworkOpen] = useState(false);
   const classes = useStyles();
 
   return (
     <>
+      <AddCustomClusterDialog
+        open={addCustomNetworkOpen}
+        onClose={() => setCustomNetworkOpen(false)}
+        onAdd={({ name, apiUrl }) => {
+          addCustomCluster(name, apiUrl);
+          setCustomNetworkOpen(false);
+        }}
+      />
       <Hidden xsDown>
         <Button
           color="inherit"
@@ -233,7 +243,7 @@ function NetworkSelector() {
         }}
         getContentAnchorEl={null}
       >
-        {CLUSTERS.map((cluster) => (
+        {getClusters().map((cluster) => (
           <MenuItem
             key={cluster.apiUrl}
             onClick={() => {
@@ -252,6 +262,15 @@ function NetworkSelector() {
               : cluster.apiUrl}
           </MenuItem>
         ))}
+        <MenuItem
+          onClick={() => {
+            setCustomNetworkOpen(true);
+          }}
+        >
+          <ListItemIcon className={classes.menuItemIcon}>
+          </ListItemIcon>
+          {customClusterExists() ? 'Edit Custom Endpoint' : 'Add Custom Endpoint'}
+        </MenuItem>
       </Menu>
     </>
   );
