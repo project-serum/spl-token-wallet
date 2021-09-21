@@ -260,6 +260,19 @@ const Navbar = () => {
                 </>
               </NavLinkButton>
             </StyledLink>
+            <StyledLink href={`https://dex.aldrin.com/dashboard`}>
+              <NavLinkButton
+                theme={theme}
+                page={'dashboard'}
+                pathname={location.pathname}
+                style={{ width: '14rem' }}
+              >
+                <>
+                  Dashboard{' '}
+                  <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
+                </>
+              </NavLinkButton>
+            </StyledLink>
             <Link to={`/`} style={{ height: '100%' }}>
               <NavLinkButton
                 theme={theme}
