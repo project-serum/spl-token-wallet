@@ -161,10 +161,10 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
 
 const AccountInfo = ({
   allTokensData,
-  marketsData,
+  tokensData,
 }: {
   allTokensData: Map<string, TokenInfo>;
-  marketsData: Map<string, any>;
+  tokensData: Map<string, number>;
 }) => {
   const theme = useTheme();
   const wallet = useWallet();
@@ -247,9 +247,8 @@ const AccountInfo = ({
           >
             <TotalBalance
               allTokensData={allTokensData}
-              marketsData={marketsData}
+              tokensData={tokensData}
               key="navbarfalse"
-              isNavbar={false}
             />
           </Title>
         </BalanceCard>
@@ -283,7 +282,7 @@ export default React.memo(AccountInfo, (prev, next) => {
   return (
     JSON.stringify([...prev.allTokensData.values()]) ===
       JSON.stringify([...next.allTokensData.values()]) &&
-    JSON.stringify([...prev.marketsData.values()]) ===
-      JSON.stringify([...next.marketsData.values()])
+    JSON.stringify([...prev.tokensData.values()]) ===
+      JSON.stringify([...next.tokensData.values()])
   );
 });

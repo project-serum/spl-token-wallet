@@ -22,52 +22,43 @@ import {
   MINT_LAYOUT,
   parseTokenAccountData,
 } from './data';
-import bs58 from 'bs58';
 
 export async function getOwnedTokenAccounts(connection, publicKey) {
   let filters = getOwnedAccountsFilters(publicKey);
-  let resp = await connection._rpcRequest('getProgramAccounts', [
-    TOKEN_PROGRAM_ID.toBase58(),
+  let resp = await connection.getProgramAccounts(
+    TOKEN_PROGRAM_ID,
     {
-      commitment: connection.commitment,
       filters,
     },
-  ]);
-  if (resp.error) {
-    throw new Error(
-      'failed to get token accounts owned by ' +
-        publicKey.toBase58() +
-        ': ' +
-        resp.error.message,
-    );
-  }
-  return resp.result
+  );
+  return resp
     .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
       publicKey: new PublicKey(pubkey),
       accountInfo: {
-        data: bs58.decode(data),
+        data,
         executable,
         owner: new PublicKey(owner),
         lamports,
       },
     }))
-    .filter(({ accountInfo }) => {
-      // TODO: remove this check once mainnet is updated
-      return filters.every((filter) => {
-        if (filter.dataSize) {
-          return accountInfo.data.length === filter.dataSize;
-        } else if (filter.memcmp) {
-          let filterBytes = bs58.decode(filter.memcmp.bytes);
-          return accountInfo.data
-            .slice(
-              filter.memcmp.offset,
-              filter.memcmp.offset + filterBytes.length,
-            )
-            .equals(filterBytes);
-        }
-        return false;
-      });
-    });
+}
+
+export async function getTokenAccountsByOwner(connection, publicKey) {
+  const result = await connection.getTokenAccountsByOwner(
+    publicKey,
+    { programId: TOKEN_PROGRAM_ID },
+  );
+
+  return result.value
+    .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
+      publicKey: new PublicKey(pubkey),
+      accountInfo: {
+        data,
+        executable,
+        owner: new PublicKey(owner),
+        lamports,
+      },
+    }))
 }
 
 export async function signAndSendTransaction(
@@ -329,7 +320,7 @@ export async function transferTokens({
     throw new Error('Cannot send to address with zero SOL balances');
   }
   const destinationSplTokenAccount = (
-    await getOwnedTokenAccounts(connection, destinationPublicKey)
+    await getTokenAccountsByOwner(connection, destinationPublicKey)
   )
     .map(({ publicKey, accountInfo }) => {
       return { publicKey, parsed: parseTokenAccountData(accountInfo.data) };

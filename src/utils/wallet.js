@@ -11,7 +11,7 @@ import {
   closeTokenAccount,
   createAndInitializeTokenAccount,
   createAssociatedTokenAccount,
-  getOwnedTokenAccounts,
+  getTokenAccountsByOwner,
   nativeTransfer,
   transferTokens,
 } from './tokens';
@@ -57,7 +57,7 @@ export class Wallet {
   }
 
   getTokenAccountInfo = async () => {
-    let accounts = await getOwnedTokenAccounts(this.connection, this.publicKey);
+    let accounts = await getTokenAccountsByOwner(this.connection, this.publicKey);
     return accounts
       .map(({ publicKey, accountInfo }) => {
         setInitialAccountInfo(this.connection, publicKey, accountInfo);
