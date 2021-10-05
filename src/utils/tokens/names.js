@@ -21,6 +21,13 @@ import { TokenListProvider } from '@solana/spl-token-registry';
 const POPULAR_TOKENS = {
   [MAINNET_URL]: [
     {
+      mintAddress: '2uRFEWRBQLEKpLmF8mohFZGDcFQmrkQEEZmHQvMUBvY7',
+      tokenName: 'Solberg',
+      tokenSymbol: 'SLB',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2uRFEWRBQLEKpLmF8mohFZGDcFQmrkQEEZmHQvMUBvY7/logo.svg',
+    },
+    {
       mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
       tokenName: 'Serum',
       tokenSymbol: 'SRM',
