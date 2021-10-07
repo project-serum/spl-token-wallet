@@ -276,7 +276,7 @@ const Navbar = () => {
                 page={'pools'}
                 pathname={location.pathname}
               >
-                  Liquidity pools
+                Liquidity pools
               </NavLinkButton>
             </StyledLink>
             <Link to={`/`} style={{ height: '100%' }}>
