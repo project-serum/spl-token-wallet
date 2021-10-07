@@ -460,7 +460,7 @@ export const ListCard = styled.div`
   border: 0.1rem solid #3a475c;
   border-radius: 1rem;
   display: flex;
-  justify-content: end;
+  justify-content: flex-start;
   flex-direction: column;
   align-items: center;
   overflow: auto;

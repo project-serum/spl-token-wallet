@@ -33,6 +33,7 @@ import {
 import {
   abbreviateAddress,
   formatNumberToUSFormat,
+  isExtension,
   stripDigitPlaces,
 } from '../../../utils/utils';
 import {
@@ -117,7 +118,7 @@ const AddTokens = () => {
             direction={'column'}
             justify={'space-evenly'}
           >
-            <Row width={'85%'} justify={'end'}>
+            <Row width={'85%'} justify={'flex-start'}>
               <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
                 Step 1:
               </BoldTitle>
@@ -201,10 +202,10 @@ const AddTokens = () => {
           </RowContainer>
           <RowContainer
             justify={'space-evenly'}
-            height={'96%'}
+            height={'100%'}
             direction={'column'}
           >
-            <Row margin={'1.5rem 0 0 0 '} width={'85%'} justify={'end'}>
+            <Row margin={'0'} width={'85%'} justify={'flex-start'}>
               <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
                 Step 2:
               </BoldTitle>
@@ -265,7 +266,7 @@ const AddTokens = () => {
               </ListCard>
             </Row>
             <Row
-              margin={'0 0 0.8rem 0'}
+              margin={'0.8rem 0 0 0'}
               width={'85%'}
               justify={'space-between'}
             >
@@ -283,10 +284,13 @@ const AddTokens = () => {
                 background={'#366CE5'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
                 onClick={() => {
-                  chrome.runtime.sendMessage(
-                    { message: 'buttonClicked' },
-                    () => {},
-                  );
+                  if (isExtension) {
+                    chrome.runtime.sendMessage(
+                      { message: 'buttonClicked' },
+                      () => {},
+                    );
+                  }
+
                   onSubmit();
                 }}
               >

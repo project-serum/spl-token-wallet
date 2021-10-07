@@ -4,10 +4,7 @@ import { Divider, Typography } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-import {
-  useWallet,
-  useWalletPublicKeys,
-} from '../../utils/wallet';
+import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
 import {
   useConnection,
