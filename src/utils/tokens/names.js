@@ -285,6 +285,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj/logo.png',
     },
+    {
+      tokenSymbol: 'ARDX',
+      mintAddress: '7zsKqN7Fg2s9VsqAq6XBoiShCVohpGshSUvoWBc6jKYh',
+      tokenName: 'ArdCoin',
+      icon:
+        'https://ardcoin.com/wp-content/themes/ardcoin/images/about/1.png',
+    },
   ],
 };
 
