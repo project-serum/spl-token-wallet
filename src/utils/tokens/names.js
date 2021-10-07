@@ -201,13 +201,6 @@ const POPULAR_TOKENS = {
         'https://raw.githubusercontent.com/dr497/awesome-serum-markets/master/icons/fida.svg',
     },
     {
-      tokenSymbol: 'ARDX',
-      mintAddress: '7zsKqN7Fg2s9VsqAq6XBoiShCVohpGshSUvoWBc6jKYh',
-      tokenName: 'ARDCOIN',
-      icon:
-        'https://ardcoin.com/wp-content/themes/ardcoin/images/about/1.png',
-    },
-    {
       tokenSymbol: 'LQID',
       mintAddress: 'A6aY2ceogBz1VaXBxm1j2eJuNZMRqrWUAnKecrMH85zj',
       tokenName: 'LQID',
@@ -291,6 +284,13 @@ const POPULAR_TOKENS = {
       tokenName: 'Lido Staked SOL',
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj/logo.png',
+    },
+    {
+      tokenSymbol: 'ARDX',
+      mintAddress: '7zsKqN7Fg2s9VsqAq6XBoiShCVohpGshSUvoWBc6jKYh',
+      tokenName: 'ArdCoin',
+      icon:
+        'https://ardcoin.com/wp-content/themes/ardcoin/images/about/1.png',
     },
   ],
 };
