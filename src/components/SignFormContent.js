@@ -44,6 +44,9 @@ export default function SignFormContent({
     case 'hex':
       messageTxt = '0x' + toHex(message);
       break;
+    case 'diffieHellman':
+      messageTxt = 'Create Diffie-Hellman keys';
+      break;
     default:
       throw new Error('Unexpected message type: ' + messageDisplay);
   }
@@ -64,6 +67,8 @@ export default function SignFormContent({
             {`Sign data with account ${wallet.publicKey}`}
           </>
         );
+      case 'diffieHellman':
+        return `Create Diffie-Hellman keys`;
       default:
         throw new Error('Unexpected message display type: ' + messageDisplay);
     }

@@ -157,6 +157,7 @@ function WalletSuggestionDialog({ open, onClose, onIgnore }) {
             >
               <div>
                 <img
+                  alt=""
                   style={{ height: '39px' }}
                   src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
                 />
@@ -187,6 +188,7 @@ function WalletSuggestionDialog({ open, onClose, onIgnore }) {
             >
               <div>
                 <img
+                  alt=""
                   style={{ height: '39px' }}
                   src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
                 />

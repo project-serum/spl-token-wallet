@@ -4,7 +4,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useConnectionConfig } from '../utils/connection';
-import {CLUSTERS, clusterForEndpoint, getClusters, addCustomCluster, customClusterExists} from '../utils/clusters';
+import {
+  clusterForEndpoint,
+  getClusters,
+  addCustomCluster,
+  customClusterExists,
+} from '../utils/clusters';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -36,7 +41,7 @@ import { Badge } from '@material-ui/core';
 import { useConnectedWallets } from '../utils/connected-wallets';
 import { usePage } from '../utils/page';
 import { MonetizationOn, OpenInNew } from '@material-ui/icons';
-import AddCustomClusterDialog from "./AddCustomClusterDialog";
+import AddCustomClusterDialog from './AddCustomClusterDialog';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -267,9 +272,10 @@ function NetworkSelector() {
             setCustomNetworkOpen(true);
           }}
         >
-          <ListItemIcon className={classes.menuItemIcon}>
-          </ListItemIcon>
-          {customClusterExists() ? 'Edit Custom Endpoint' : 'Add Custom Endpoint'}
+          <ListItemIcon className={classes.menuItemIcon}></ListItemIcon>
+          {customClusterExists()
+            ? 'Edit Custom Endpoint'
+            : 'Add Custom Endpoint'}
         </MenuItem>
       </Menu>
     </>
