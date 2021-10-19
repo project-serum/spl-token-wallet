@@ -254,10 +254,7 @@ const Navbar = () => {
                 pathname={location.pathname}
                 style={{ width: '14rem' }}
               >
-                <>
-                  Rebalance{' '}
-                  <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
-                </>
+                  Rebalance
               </NavLinkButton>
             </StyledLink>
             <StyledLink href={`https://dex.aldrin.com/dashboard`}>
@@ -271,6 +268,15 @@ const Navbar = () => {
                   Dashboard{' '}
                   <BetaLabel theme={theme} style={{ marginLeft: '1rem' }} />
                 </>
+              </NavLinkButton>
+            </StyledLink>
+            <StyledLink href={`https://dex.aldrin.com/pools`}>
+              <NavLinkButton
+                theme={theme}
+                page={'pools'}
+                pathname={location.pathname}
+              >
+                Liquidity pools
               </NavLinkButton>
             </StyledLink>
             <Link to={`/`} style={{ height: '100%' }}>

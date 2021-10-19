@@ -42,11 +42,17 @@ export function toDerivationPath(dPathMenuItem) {
 }
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
-  const [view, setView] = useState(AddHardwareView.Accounts);
+  const [view, setView] = useState(AddHardwareView.Splash);
   const [hardwareAccount, setHardwareAccount] = useState(null);
   return (
-    <DialogForm height="auto"
-    padding="2rem 0" onClose={onClose} open={open} onEnter={() => {}} fullWidth>
+    <DialogForm
+      height="auto"
+      padding="2rem 0"
+      onClose={onClose}
+      open={open}
+      onEnter={() => {}}
+      fullWidth
+    >
       {view === AddHardwareView.Splash ? (
         <AddHardwareWalletSplash
           onClose={onClose}
@@ -80,7 +86,8 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
 
 function ConfirmHardwareWallet({ account, onDone, onBack }) {
   const [didConfirm, setDidConfirm] = useState(false);
-  const theme = useTheme()
+  const theme = useTheme();
+
   useEffect(() => {
     if (!didConfirm) {
       account.provider
@@ -88,11 +95,11 @@ function ConfirmHardwareWallet({ account, onDone, onBack }) {
         .then(() => setDidConfirm(true))
         .catch((err) => {
           console.error('Error confirming', err);
-          onBack();
+          // onBack();
         });
     }
-  })
-  
+  });
+
   return (
     <>
       <RowContainer>
@@ -100,18 +107,16 @@ function ConfirmHardwareWallet({ account, onDone, onBack }) {
       </RowContainer>
       <RowContainer direction="column">
         <RowContainer direction="column" margin="2rem 0">
-              <Title>Check your ledger and confirm the address displayed is the address
-            chosen. Then click "done".</Title>
-              <RowContainer margin="1rem 0">
-                <Title>{account.publicKey.toString()}</Title>
-              </RowContainer>
+          <Title>
+            Check your ledger and confirm the address displayed is the address
+            chosen. Then click "done".
+          </Title>
+          <RowContainer margin="1rem 0">
+            <Title>{account.publicKey.toString()}</Title>
+          </RowContainer>
         </RowContainer>
         <RowContainer justify="space-between" width="90%">
-          <WhiteButton
-            theme={theme}
-            width="calc(50% - .5rem)"
-            onClick={onBack}
-          >
+          <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onBack}>
             Close
           </WhiteButton>
           <VioletButton
@@ -130,42 +135,37 @@ function ConfirmHardwareWallet({ account, onDone, onBack }) {
   );
 }
 
-
-
 function AddHardwareWalletSplash({ onContinue, onClose }) {
-  const theme = useTheme()
+  const theme = useTheme();
   return (
     <RowContainer direction="column" width="90%">
-            <RowContainer >
-        <Title style={{ fontSize: '2.4rem' }}>Confirm your wallet address</Title>
+      <RowContainer>
+        <Title style={{ fontSize: '2.4rem' }}>
+          Confirm your wallet address
+        </Title>
       </RowContainer>
       <RowContainer margin="2rem 0 0 0">
-        <RowContainer
-        >
+        <RowContainer>
           <Title>
             Connect your ledger and open the Solana application. When you are
             ready, click "continue".
           </Title>
         </RowContainer>
       </RowContainer>
-      <RowContainer margin="2rem 0 0 0" justify="space-between" >
-          <WhiteButton
-            theme={theme}
-            width="calc(50% - .5rem)"
-            onClick={onClose}
-          >
-            Close
-          </WhiteButton>
-          <VioletButton
-            width="calc(50% - .5rem)"
-            theme={theme}
-            type="submit"
-            color="primary"
-            onClick={onContinue}
-          >
-            Continue
-          </VioletButton>
-        </RowContainer>
+      <RowContainer margin="2rem 0 0 0" justify="space-between">
+        <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onClose}>
+          Close
+        </WhiteButton>
+        <VioletButton
+          width="calc(50% - .5rem)"
+          theme={theme}
+          type="submit"
+          color="primary"
+          onClick={onContinue}
+        >
+          Continue
+        </VioletButton>
+      </RowContainer>
     </RowContainer>
   );
 }
@@ -180,10 +180,7 @@ export function AccountsSelector({
 }) {
   return (
     <>
-      <RowContainer
-        width="90%"
-        justify="space-between"
-      >
+      <RowContainer width="90%" justify="space-between">
         <Title variant="h5" gutterBottom>
           Derivable Accounts
         </Title>
@@ -214,19 +211,19 @@ export function AccountsSelector({
         </FormControl>
       </RowContainer>
       <RowContainer direction="column" margin="2rem 0 0 0">
-      {accounts.map((acc) => {
-        return (
-          // @ts-ignore
-          <div onClick={onClick ? () => onClick(acc) : {}}>
-            <BalanceListItem
-              key={acc.publicKey.toString()}
-              expandable={false}
-              publicKey={acc.publicKey}
-              setUsdValue={() => {}}
-            />
-          </div>
-        );
-      })}
+        {accounts.map((acc) => {
+          return (
+            // @ts-ignore
+            <div onClick={onClick ? () => onClick(acc) : {}}>
+              <BalanceListItem
+                key={acc.publicKey.toString()}
+                expandable={false}
+                publicKey={acc.publicKey}
+                setUsdValue={() => {}}
+              />
+            </div>
+          );
+        })}
       </RowContainer>
     </>
   );
@@ -255,7 +252,7 @@ function LedgerAccounts({ onContinue, onClose, open }) {
           let provider = new LedgerWalletProvider({
             derivationPath: toDerivationPath(dPathMenuItem),
           });
-                      // @ts-ignore
+          // @ts-ignore
 
           accounts.push(await provider.init());
         } else {
@@ -276,11 +273,12 @@ function LedgerAccounts({ onContinue, onClose, open }) {
         console.log(`received error when attempting to connect ledger: ${err}`);
         if (err && err.statusCode === 0x6804) {
           enqueueSnackbar('Unlock ledger device', { variant: 'error' });
+          onClose();
         }
-        onClose();
       });
     }
   }, [dPathMenuItem, enqueueSnackbar, open, onClose]);
+
   return (
     <>
       {accounts === null ? (
