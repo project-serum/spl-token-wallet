@@ -191,7 +191,7 @@ const AccountInfo = ({
             <Title
               style={{
                 marginLeft: '2rem',
-                color: '#366CE5',
+                color: '#651CE4',
                 cursor: 'pointer',
               }}
               onClick={() => {
@@ -211,7 +211,7 @@ const AccountInfo = ({
             <Title
               style={{
                 marginLeft: '2rem',
-                color: '#366CE5',
+                color: '#651CE4',
                 cursor: 'pointer',
               }}
               onClick={() => {

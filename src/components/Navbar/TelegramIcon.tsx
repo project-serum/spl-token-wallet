@@ -1,13 +1,9 @@
 import React from 'react';
 import { StyledImg } from './NavigationFrame';
+import Telegram from '../../images/violetTelegram.svg';
 
 const TelergamIcon = () => {
-  return (
-    <StyledImg
-      src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMSAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE1LjM3NjggMC43MjAyMTVDNi44ODE4NyAwLjcyMDIxNSAwIDcuNTk1NTUgMCAxNi4wODAyQzAgMjQuNTY0OSA2Ljg4Mjg2IDMxLjQ0MDIgMTUuMzc2OCAzMS40NDAyQzIzLjg3MTggMzEuNDQwMiAzMC43NTM2IDI0LjU2NDkgMzAuNzUzNiAxNi4wODAyQzMwLjc1MzYgNy41OTU1NSAyMy44NzA4IDAuNzIwMjE1IDE1LjM3NjggMC43MjAyMTVaTTIyLjkyOTMgMTEuMjQzM0wyMC40MDU1IDIzLjEyM0MyMC4yMTkgMjMuOTY1MyAxOS43MTcxIDI0LjE2OTUgMTkuMDE2NyAyMy43NzMxTDE1LjE3MjUgMjAuOTQyOUwxMy4zMTgzIDIyLjcyNjZDMTMuMTEzOSAyMi45MzA4IDEyLjk0MDMgMjMuMTA0MiAxMi41NDM1IDIzLjEwNDJMMTIuODE2MyAxOS4xOTU4TDE5Ljk0MDMgMTIuNzY2NEMyMC4yNTA4IDEyLjQ5MzkgMTkuODcxOCAxMi4zMzkzIDE5LjQ2MjEgMTIuNjExOEwxMC42NTc2IDE4LjE0ODRMNi44NjMwMiAxNi45NjUxQzYuMDM4NjMgMTYuNzA1NSA2LjAxOTc4IDE2LjE0MTcgNy4wMzY2MyAxNS43NDUzTDIxLjg2MTkgMTAuMDM0M0MyMi41NTA0IDkuNzg2NTggMjMuMTUxNSAxMC4yMDE4IDIyLjkyODMgMTEuMjQyM0wyMi45MjkzIDExLjI0MzNaIiBmaWxsPSIjMzY2Q0U1Ii8+Cjwvc3ZnPgo="
-      alt="telegramIcon"
-    />
-  );
+  return <StyledImg src={Telegram} alt="telegramIcon" />;
 };
 
 export default TelergamIcon;

@@ -39,14 +39,14 @@ const BlueButton = styled(
   font-size: 1.4rem;
   height: 4.5rem;
   text-transform: capitalize;
-  background-color: #366ce5;
+  background-color: #651CE4;
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;
   color: #fbf2f2;
   border: none;
   &:hover {
-    background-color: #366ce5;
+    background-color: #651CE4;
   }
 `;
 
