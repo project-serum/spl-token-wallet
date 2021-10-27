@@ -70,7 +70,7 @@ export const Navbar = () => {
         </LogoBlock>
         <LinksBlock>{feedbackLinks}</LinksBlock>
         <MainLinksWrap>
-          <MainLinksBlock>
+          <MainLinksBlock> 
             <DropDown text="Trading" isActive={isTradingActive}>
               <NavLink to="/chart" activeClassName="selected">
                 Terminal
