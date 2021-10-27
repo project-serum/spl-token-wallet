@@ -1,21 +1,30 @@
 import { useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AldrinLogo from '../../images/Aldrin.svg';
 import StakeBtn from '../../images/stakeBtn.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
+import { COLORS } from '../variables';
 import DiscordIcon from './DiscordIcon';
 // TODO: Refactor popup
 import { DropDown } from './Dropdown';
 import {
-  Body, HeaderWrap, LinksBlock, Logo, LogoBlock, LogoLink, MainLinksBlock, MainLinksWrap, NavLink, WalletContainer
+  Body,
+  HeaderWrap,
+  LinksBlock,
+  Logo,
+  LogoBlock,
+  LogoLink,
+  MainLinksBlock,
+  MainLinksWrap,
+  NavLink,
+  WalletContainer,
 } from './styles';
 import TelegramIcon from './TelegramIcon';
 import TwitterIcon from './TwitterIcon';
-
 
 const Socials = styled(Row)`
   & a:hover {
@@ -37,10 +46,7 @@ export const Navbar = () => {
   const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
   const theme = useTheme();
 
-  const { pathname } = useLocation();
-
-  const isTradingActive =
-    pathname.includes('/chart') || pathname.includes('/swap');
+  // const { pathname } = useLocation();
 
   const feedbackLinks = (
     <>
@@ -71,26 +77,45 @@ export const Navbar = () => {
         <LinksBlock>{feedbackLinks}</LinksBlock>
         <MainLinksWrap>
           <MainLinksBlock>
-            <DropDown text="Trading" isActive={isTradingActive}>
-              <NavLink to="/chart" activeClassName="selected">
-                Terminal
-              </NavLink>
-              <NavLink to="/swap" activeClassName="selected">
+            {/* <DropDown text="Trading" isActive={isTradingActive}> */}
+            {/* <NavLink to="/swap" activeClassName="selected">
                 Swap
-              </NavLink>
-            </DropDown>
-            <NavLink to="/rebalance" activeClassName="selected">
+              </NavLink> */}
+            {/* </DropDown> */}
+            <NavLink
+              as="a"
+              href="https://dex.aldrin.com/chart/spot/RIN_USDC"
+              activeClassName="selected"
+            >
+              Terminal
+            </NavLink>
+            <NavLink
+              as="a"
+              href="https://dex.aldrin.com/rebalance"
+              activeClassName="selected"
+            >
               Rebalance
             </NavLink>
-            <NavLink to="/dashboard" activeClassName="selected">
+            <NavLink
+              as="a"
+              href="https://dex.aldrin.com/dashboard"
+              activeClassName="selected"
+            >
               Dashboard
             </NavLink>
-            <NavLink as="a" target="_blank" href="https://wallet.aldrin.com/">
+            <NavLink
+              style={{
+                color: COLORS.navLinkActive,
+                background: COLORS.navLinkActiveBg,
+              }}
+              to="/wallet"
+              activeClassName="selected"
+            >
               Wallet
             </NavLink>
-            <NavLink new show="md" to="/pools" activeClassName="selected">
+            {/* <NavLink new show="md" to="/pools" activeClassName="selected">
               Pools
-            </NavLink>
+            </NavLink> */}
             <NavLink
               show="md"
               as="a"
