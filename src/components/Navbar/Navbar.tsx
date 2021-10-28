@@ -77,18 +77,24 @@ export const Navbar = () => {
         <LinksBlock>{feedbackLinks}</LinksBlock>
         <MainLinksWrap>
           <MainLinksBlock>
-            {/* <DropDown text="Trading" isActive={isTradingActive}> */}
-            {/* <NavLink to="/swap" activeClassName="selected">
+            <DropDown text="Trading" isActive={false}>
+              {' '}
+              <NavLink
+                as="a"
+                href="https://dex.aldrin.com/chart/spot/RIN_USDC"
+                activeClassName="selected"
+              >
+                Terminal
+              </NavLink>
+              <NavLink
+                as="a"
+                href="https://dex.aldrin.com/swap"
+                activeClassName="selected"
+              >
                 Swap
-              </NavLink> */}
-            {/* </DropDown> */}
-            <NavLink
-              as="a"
-              href="https://dex.aldrin.com/chart/spot/RIN_USDC"
-              activeClassName="selected"
-            >
-              Terminal
-            </NavLink>
+              </NavLink>
+            </DropDown>
+
             <NavLink
               as="a"
               href="https://dex.aldrin.com/rebalance"
@@ -113,9 +119,9 @@ export const Navbar = () => {
             >
               Wallet
             </NavLink>
-            {/* <NavLink new show="md" to="/pools" activeClassName="selected">
+            <NavLink new show="md" to="/pools" activeClassName="selected">
               Pools
-            </NavLink> */}
+            </NavLink>
             <NavLink
               show="md"
               as="a"
