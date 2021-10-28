@@ -119,7 +119,13 @@ export const Navbar = () => {
             >
               Wallet
             </NavLink>
-            <NavLink new show="md" to="/pools" activeClassName="selected">
+            <NavLink
+              new
+              show="md"
+              as="a"
+              href="https://dex.aldrin.com/pools"
+              activeClassName="selected"
+            >
               Pools
             </NavLink>
             <NavLink
