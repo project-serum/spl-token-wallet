@@ -1,22 +1,20 @@
-import React, { Suspense, lazy, useMemo } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import blue from '@material-ui/core/colors/blue';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   ThemeProvider,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
+  unstable_createMuiStrictModeTheme as createMuiTheme
 } from '@material-ui/core/styles';
-import blue from '@material-ui/core/colors/blue';
-import NavigationFrame from './components/Navbar/NavigationFrame';
-import { ConnectionProvider } from './utils/connection';
-import { useWallet, WalletProvider } from './utils/wallet';
+import React, { lazy, Suspense, useMemo } from 'react';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import LoadingIndicator from './components/LoadingIndicator';
+import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
-import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
-import { TokenRegistryProvider } from './utils/tokens/names';
-import { isExtension, useLocalStorageState } from './utils/utils';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
-// import { DevUrlPopup } from '../src/components/DevUrlPopup';
-import { RebrandingPopup } from './components/RebrandingPopup/RebrandingPopup';
+import { ConnectionProvider } from './utils/connection';
+import { TokenRegistryProvider } from './utils/tokens/names';
+import { isExtension } from './utils/utils';
+import { useWallet, WalletProvider } from './utils/wallet';
+import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 // import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
@@ -78,8 +76,8 @@ export default function App() {
                   background: '#17181A',
                 },
                 blue: {
-                  serum: '#366CE5',
-                  new: '#366CE5',
+                  serum: '#651CE4',
+                  new: '#651CE4',
                 },
                 white: {
                   main: '#fff',
@@ -90,7 +88,7 @@ export default function App() {
                 },
                 green: {
                   main: '#97E873',
-                  light: '#A5E898',
+                  light: '#53DF11',
                 },
                 orange: {
                   dark: '#F8B567',
@@ -124,8 +122,8 @@ export default function App() {
                   background: '#17181A',
                 },
                 blue: {
-                  serum: '#366CE5',
-                  new: '#366CE5',
+                  serum: '#651CE4',
+                  new: '#651CE4',
                 },
                 white: {
                   main: '#fff',
@@ -136,7 +134,7 @@ export default function App() {
                 },
                 green: {
                   main: '#97E873',
-                  light: '#A5E898',
+                  light: '#53DF11',
                 },
                 orange: {
                   dark: '#F8B567',
@@ -186,10 +184,7 @@ export default function App() {
 const Pages = () => {
   const wallet = useWallet();
   // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
-  const [
-    isRebrandingPopupOpen,
-    setIsRebrandingPopupOpen,
-  ] = useLocalStorageState('isRebrandingPopupOpen', true);
+
   // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
   //   true,
   // );
@@ -221,16 +216,7 @@ const Pages = () => {
           close={() => openDevUrlPopup(false)}
         />
       )} */}
-      {/* {!isMigrationToNewUrlPopupDone && (
-        <MigrationToNewUrlPopup
-          open={isMigrationToNewUrlPopupOpen}
-          close={() => openMigrationToNewUrlPopup(false)}
-        />
-      )} */}
-      <RebrandingPopup
-        open={isRebrandingPopupOpen}
-        onClose={() => setIsRebrandingPopupOpen(false)}
-      />
+
       <Switch>
         {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
         <Route path="/wallet" component={Wallet} />

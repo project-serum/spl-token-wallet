@@ -37,7 +37,7 @@ const ProgressBar = styled.div`
       ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
       : props.currentStep === 2
       ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
-      : 'linear-gradient(90deg, #366CE5, #366CE5 51%, #366CE5 90%)'};
+      : 'linear-gradient(90deg, #651CE4, #651CE4 51%, #651CE4 90%)'};
   border-image-slice: 1;
   z-index: -1;
 `;
@@ -66,7 +66,7 @@ const Steps = styled.div`
   align-items: center;
   width: 40rem;
   height: 0.1rem;
-  background: ${(props) => (props.isCompleted ? '#366CE5' : 'none')};
+  background: ${(props) => (props.isCompleted ? '#651CE4' : 'none')};
 `;
 
 const StepContainer = styled.div`

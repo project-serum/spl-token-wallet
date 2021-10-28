@@ -24,7 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@material-ui/core/Link';
 
-import CubeLogo from '../../images/oldCubeLogo.svg';
+import logoAstronaut from '../../images/logoAstronaut.svg';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
@@ -222,7 +222,7 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
   return (
     <RowContainer>
       <img
-        src={CubeLogo}
+        src={logoAstronaut}
         alt={'logo'}
         style={{
           borderRadius: '0',

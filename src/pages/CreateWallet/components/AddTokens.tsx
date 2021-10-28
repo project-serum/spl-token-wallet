@@ -172,7 +172,7 @@ const AddTokens = () => {
                 theme={theme}
                 btnWidth={'31%'}
                 height={'3.5rem'}
-                background={'#366CE5'}
+                background={'#651CE4'}
                 onClick={() => {
                   refreshWalletPublicKeys(wallet);
                   sortedPublicKeys.map((publicKey) =>
@@ -273,7 +273,7 @@ const AddTokens = () => {
               <Row>
                 <span style={{ display: 'flex' }}>
                   <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
-                  <BoldTitle fontSize={'1.5rem'} color={'#A5E898'}>
+                  <BoldTitle fontSize={'1.5rem'} color={'#53DF11'}>
                     {stripDigitPlaces(cost, 8)} SOL
                   </BoldTitle>
                 </span>
@@ -281,7 +281,7 @@ const AddTokens = () => {
               <VioletButton
                 theme={theme}
                 style={{ height: '3.5rem' }}
-                background={'#366CE5'}
+                background={'#651CE4'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
                 onClick={() => {
                   if (isExtension) {

@@ -406,7 +406,7 @@ const AssetsTable = ({
             ))}
             {sortedPublicKeys.length === 0 && (
               <Loading
-                color={'#366ce5'}
+                color={'#651CE4'}
                 style={{ padding: '2rem 0 2rem 4.8rem' }}
               />
             )}
@@ -656,11 +656,11 @@ const AssetItem = ({
             theme={theme}
             height="50%"
             width="10rem"
-            background={'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'}
+            background={'linear-gradient(135deg, #53DF11 0%, #97E873 100%)'}
             color={theme.customPalette.dark.background}
             hoverColor={theme.customPalette.white.main}
             hoverBackground={
-              'linear-gradient(135deg, #A5E898 0%, #97E873 100%)'
+              'linear-gradient(135deg, #53DF11 0%, #97E873 100%)'
             }
             margin="0 2rem 0 0"
             onClick={() => {
