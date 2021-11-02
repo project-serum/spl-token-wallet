@@ -58,7 +58,7 @@ const StyledMain = styled.main`
   }
   @media (max-width: 540px) {
     height: ${(props) =>
-      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 23rem)'};
+      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 13rem)'};
   }
 `;
 

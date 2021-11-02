@@ -9,11 +9,12 @@ export const FooterComponent = styled(RowContainer)`
     background-color: #222429;
     border-top: 0.1rem solid #383b45;
     padding: 0 2rem;
+    justify-content: space-between;
   }
 `;
 export const StyledLink = styled(Link)`
-  width: 4rem;
-  height: 6rem;
+  width: 6rem;
+  height: 5rem;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -21,14 +22,14 @@ export const StyledLink = styled(Link)`
   text-decoration: none;
   color: #fbf2f2;
   font-family: Avenir Next Medium;
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   span {
     margin-top: 1rem;
   }
 `;
 export const StyledA = styled.a`
-  width: 4rem;
-  height: 6rem;
+  width: 6rem;
+  height: 5rem;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -36,7 +37,7 @@ export const StyledA = styled.a`
   text-decoration: none;
   color: #fbf2f2;
   font-family: Avenir Next Medium;
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   span {
     margin-top: 1rem;
   }

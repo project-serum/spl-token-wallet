@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  //   AnalyticsLink,
-  //   PoolsLink,
-  //   RebalanceLink,
-  //   SwapsLink,
+  DashboardLink,
+  StakingLink,
+  SwapsLink,
   TradeLink,
   WalletLink,
 } from './NavIconsComponent';
@@ -11,12 +10,14 @@ import { FooterComponent } from './styles';
 
 export const MobileFooter = ({ pathname }) => {
   return (
-    <FooterComponent height={'10rem'} justify={'space-around'}>
+    <FooterComponent height="11em" justify="space-around">
       <TradeLink isActive={false} />
+      <DashboardLink isActive={false} />
       {/* <AnalyticsLink isActive={pathname.includes('analytics')} />
-      <PoolsLink isActive={pathname.includes('pools')} />
-      <SwapsLink isActive={pathname.includes('swaps')} />
-      <RebalanceLink isActive={pathname.includes('rebalance')} /> */}
+      <PoolsLink isActive={pathname.includes('pools')} /> */}
+      <SwapsLink isActive={false} />
+      {/* <RebalanceLink isActive={pathname.includes('rebalance')} /> */}
+      <StakingLink isActive={false} />
       <WalletLink isActive={true} />
     </FooterComponent>
   );
