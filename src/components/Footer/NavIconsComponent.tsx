@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyledLink } from './styles';
+import { StyledLink,StyledA } from './styles';
 
 export const TradeLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/chart/spot/CCAI_USDC">
+    <StyledA to="https://dex.aldrin.com/chart/spot/CCAI_USDC">
       <svg
         width="100%"
         height="100%"
@@ -31,7 +31,7 @@ export const TradeLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Trade</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
@@ -76,7 +76,7 @@ export const AnalyticsLink = ({ isActive }: { isActive: boolean }) => {
 
 export const PoolsLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/pools">
+    <StyledA to="https://dex.aldrin.com/pools">
       <svg
         width="100%"
         height="100%"
@@ -97,13 +97,13 @@ export const PoolsLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Pools</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
 export const SwapsLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/swap">
+    <StyledA to="https://dex.aldrin.com/swap">
       <svg
         width="100%"
         height="100%"
@@ -119,13 +119,13 @@ export const SwapsLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Swap</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
 export const RebalanceLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/rebalance">
+    <StyledA to="https://dex.aldrin.com/rebalance">
       <svg
         width="100%"
         height="100%"
@@ -141,7 +141,7 @@ export const RebalanceLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Rebalance</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
@@ -167,7 +167,7 @@ export const WalletLink = ({ isActive }) => {
 
 export const DashboardLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/dashboard">
+    <StyledA to="https://dex.aldrin.com/dashboard">
       <svg
         width="100%"
         height="100%"
@@ -194,13 +194,13 @@ export const DashboardLink = ({ isActive }: { isActive: boolean }) => {
       </svg>
 
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Dashboard</span>
-    </StyledLink>
+    </StyledA>
   );
 };
 
 export const StakingLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledLink to="/staking">
+    <StyledA to="https://dex.aldrin.com/staking">
       <svg
         width="100%"
         height="100%"
@@ -242,6 +242,6 @@ export const StakingLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
       <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Staking</span>
-    </StyledLink>
+    </StyledA>
   );
 };
