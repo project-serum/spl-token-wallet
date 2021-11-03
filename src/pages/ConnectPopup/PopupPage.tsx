@@ -464,7 +464,7 @@ function ApproveConnectionForm({
               htmlFor="autoApprove"
               style={{ fontSize: '1.6rem' }}
             >
-              Automatically approve transactions from
+              Automatically approve transactions from{' '}
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>
