@@ -73,7 +73,7 @@ const toInstruction = async (
   index: number,
 ) => {
   if (
-    !instruction?.data ||
+    instruction?.data == null ||
     !instruction?.accounts ||
     !instruction?.programIdIndex
   ) {
