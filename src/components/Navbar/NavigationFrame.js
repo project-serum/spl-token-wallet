@@ -266,9 +266,12 @@ const FooterComponentForExtension = styled.footer`
 
 function Footer() {
   const classes = useFooterStyles();
+  const isConnectPopup = window.opener;
   // const theme = useTheme();
   const location = useLocation();
   console.log('location', location);
+
+  if (isConnectPopup) return null
 
   return (
     <>
