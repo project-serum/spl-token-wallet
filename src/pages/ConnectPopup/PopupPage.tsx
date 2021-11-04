@@ -545,6 +545,7 @@ function ApproveSignatureForm({
           Cancel
         </WhiteButton>
         <VioletButton
+          ref={buttonRef}
           theme={theme}
           width="calc(50% - .5rem)"
           onClick={onApprove}
