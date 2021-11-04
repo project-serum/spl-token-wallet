@@ -58,7 +58,7 @@ const StyledMain = styled.main`
   }
   @media (max-width: 540px) {
     height: ${(props) =>
-      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 23rem)'};
+      props.isConnectPopup ? 'calc(100% - 3rem)' : 'calc(100% - 13rem)'};
   }
 `;
 
@@ -266,9 +266,12 @@ const FooterComponentForExtension = styled.footer`
 
 function Footer() {
   const classes = useFooterStyles();
+  const isConnectPopup = window.opener;
   // const theme = useTheme();
   const location = useLocation();
   console.log('location', location);
+
+  if (isConnectPopup) return null
 
   return (
     <>

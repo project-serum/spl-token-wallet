@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
-import { useTheme } from '@material-ui/core';
+import { Button, useTheme } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
@@ -36,6 +36,12 @@ const StyledCard = styled(Card)`
   width: 50rem;
   margin: 0 auto;
   box-shadow: none;
+`;
+
+const InvisibleButton = styled(Button)`
+  width: 0;
+  min-width: 0;
+  padding: 0;
 `;
 
 export default function PopupPage() {
@@ -314,19 +320,24 @@ export default function PopupPage() {
   }
 
   return (
-    <StyledCard
-      style={{ textAlign: 'left', overflowY: 'auto', height: '100%' }}
+    <RowContainer
+      style={{
+        overflowY: 'auto',
+        height: 'auto%',
+      }}
     >
-      <ApproveSignatureForm
-        key={request.id}
-        autoApprove={autoApprove}
-        origin={origin}
-        messages={messages}
-        messageDisplay={messageDisplay}
-        onApprove={onApprove}
-        onReject={sendReject}
-      />
-    </StyledCard>
+      <StyledCard style={{ textAlign: 'left' }}>
+        <ApproveSignatureForm
+          key={request.id}
+          autoApprove={autoApprove}
+          origin={origin}
+          messages={messages}
+          messageDisplay={messageDisplay}
+          onApprove={onApprove}
+          onReject={sendReject}
+        />
+      </StyledCard>
+    </RowContainer>
   );
 }
 
@@ -464,7 +475,7 @@ function ApproveConnectionForm({
               htmlFor="autoApprove"
               style={{ fontSize: '1.6rem' }}
             >
-              Automatically approve transactions from
+              Automatically approve transactions from{' '}
               <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>
@@ -540,17 +551,22 @@ function ApproveSignatureForm({
   return (
     <>
       <CardContent>{renderFormContent()}</CardContent>
-      <RowContainer justify="space-between">
-        <WhiteButton theme={theme} width="calc(50% - .5rem)" onClick={onReject}>
+      <RowContainer justify="space-between" margin="0 0 2rem 0">
+        <WhiteButton theme={theme} width="calc(50% - 1rem)" onClick={onReject}>
           Cancel
         </WhiteButton>
         <VioletButton
           theme={theme}
-          width="calc(50% - .5rem)"
+          width="calc(50% - 1rem)"
           onClick={onApprove}
         >
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
+        {/* TODO: add ref to approve button */}
+        <InvisibleButton
+          component={Button}
+          ref={(b) => (buttonRef.current = b)}
+        ></InvisibleButton>
       </RowContainer>
     </>
   );
