@@ -75,7 +75,7 @@ export const Label = styled.label`
 `;
 
 export const SubmitButton = styled.button`
-  width: 100%;
+  width: 48%;
   height: 4.5rem;
   background: ${(props) =>
     props.isDisabled ? '#93A0B2' : props.theme.customPalette.blue.serum};
@@ -102,6 +102,17 @@ export const StyledPaper = styled(Paper)`
   align-items: center;
   margin: 2rem;
   padding: 3rem;
+
+  @media (max-width: 600px) {
+    border: 0;
+    border-radius: 0;
+    width: 100%;
+    height: calc(100%);
+    max-height: 100%;
+    margin: 0;
+    justify-content: center;
+    background: #17181a;
+  }
 `;
 
 export const TextArea = styled.div`
