@@ -451,7 +451,7 @@ export const SearchInput = styled.input`
   @media (max-width: 540px) {
     height: 4.5rem;
   }
-`;
+`; 
 
 export const ListCard = styled.div`
   width: ${(props) => props.width || '100%'};

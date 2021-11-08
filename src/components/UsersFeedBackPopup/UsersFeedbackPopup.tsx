@@ -20,10 +20,12 @@ import {
   RowContainer,
   StyledRadio,
   Title,
+  WhiteButton,
 } from '../../pages/commonStyles';
 import { Text } from './styles';
 import { useSnackbar } from 'notistack';
 import { encode } from '../../utils/utils';
+import useMobileSize from '../../utils/hooks/useMobileSize';
 
 export const FeedbackPopup = ({
   theme,
@@ -43,6 +45,8 @@ export const FeedbackPopup = ({
     message: '',
     contact: '',
   });
+
+  const isMobile = useMobileSize();
 
   const setData = ({ fieldName, value }) => {
     return setFeedbackWalletData({ ...feedbackWalletData, [fieldName]: value });
@@ -92,7 +96,10 @@ export const FeedbackPopup = ({
       open={open}
       aria-labelledby="responsive-dialog-title"
     >
-      <RowContainer style={{ marginBottom: '2rem' }} justify={'space-between'}>
+      <RowContainer
+        style={{ marginBottom: '2rem' }}
+        justify={isMobile ? 'center' : 'space-between'}
+      >
         <Title fontSize={'2.8rem'}>
           {isFeedbackSubmitted
             ? 'Feedback Submitted'
@@ -101,27 +108,31 @@ export const FeedbackPopup = ({
         <img
           onClick={() => onClose()}
           src={CloseIcon}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', display: isMobile ? 'none' : 'auto' }}
           alt={'close'}
           width={'5%'}
           height={'auto'}
         />
       </RowContainer>
       {isFeedbackSubmitted ? (
-        <RowContainer direction={'column'}>
+        <RowContainer
+          direction={'column'}
+          justify={isMobile ? 'space-around' : 'center'}
+        >
           <img
             src={CoolIcon}
-            width={'25%'}
-            height={'auto'}
-            style={{ marginTop: '6rem' }}
+            width={isMobile ? '17rem' : '9rem'}
+            height={isMobile ? '19rem' : '10rem'}
+            style={{ marginTop: isMobile ? '15rem' : '6rem' }}
             alt={'cool'}
           />
           <Text
             style={{
               width: '50%',
-              marginTop: '2rem',
+              marginTop: isMobile ? '6rem' : '2rem',
               textAlign: 'center',
               whiteSpace: 'normal',
+              fontSize: isMobile ? '2rem' : '1.5rem',
               padding: '0 1rem 0 0',
             }}
           >
@@ -130,7 +141,11 @@ export const FeedbackPopup = ({
               : 'Thank you for your feedback, we will review it shortly and take action.'}
           </Text>
           <BlueButton
-            style={{ width: '100%', margin: '6rem 0 0 0' }}
+            isMobile={isMobile}
+            style={{
+              width: '100%',
+              margin: isMobile ? '15rem 0 0 0' : '6rem 0 0 0',
+            }}
             disabled={false}
             theme={theme}
             onClick={() => {
@@ -235,7 +250,21 @@ export const FeedbackPopup = ({
               />
             </RowContainer>
           </RowContainer>
-          <RowContainer>
+          <RowContainer justify={isMobile ? 'space-between' : 'center'}>
+            {isMobile ? (
+              <WhiteButton
+                style={{
+                  width: '48%',
+                  height: '4.5rem',
+                  marginTop: '4rem',
+                  fontSize: '1.5rem',
+                }}
+                theme={theme}
+                onClick={onClose}
+              >
+                Cancel
+              </WhiteButton>
+            ) : null}
             <SubmitButton
               isDisabled={isDisabled}
               disabled={isDisabled}

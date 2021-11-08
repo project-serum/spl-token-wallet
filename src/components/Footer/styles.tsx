@@ -42,3 +42,20 @@ export const StyledA = styled.a`
     margin-top: 1rem;
   }
 `;
+
+export const StyledButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 6rem;
+  height: 5rem;
+  text-align: center;
+  text-decoration: none;
+  color: #fbf2f2;
+  font-family: Avenir Next Medium;
+  font-size: 1.3rem;
+  span {
+    margin-top: 1rem;
+  }
+`;
