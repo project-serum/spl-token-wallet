@@ -138,6 +138,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/trustwallet/assets/4c82c2a409f18a4dd96a504f967a55a8fe47026d/blockchains/smartchain/assets/0xd4CB328A82bDf5f03eB737f37Fa6B370aef3e888/logo.png',
     },
+	{
+      tokenSymbol: 'SOB',
+      mintAddress: 'EkDf4Nt89x4Usnxkj4sGHX7sWxkmmpiBzA4qdDkgEN6b',
+      tokenName: 'SolaLambo',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EkDf4Nt89x4Usnxkj4sGHX7sWxkmmpiBzA4qdDkgEN6b2/logo.png,
+    },
     {
       tokenSymbol: 'UBXT',
       mintAddress: '873KLxCbz7s9Kc4ZzgYRtNmhfkQrhfyWGZJBmyCbC3ei',
