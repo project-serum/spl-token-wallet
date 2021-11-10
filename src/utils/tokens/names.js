@@ -143,7 +143,7 @@ const POPULAR_TOKENS = {
       mintAddress: 'EkDf4Nt89x4Usnxkj4sGHX7sWxkmmpiBzA4qdDkgEN6b',
       tokenName: 'SolaLambo',
       icon:
-        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EkDf4Nt89x4Usnxkj4sGHX7sWxkmmpiBzA4qdDkgEN6b2/logo.png,
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EkDf4Nt89x4Usnxkj4sGHX7sWxkmmpiBzA4qdDkgEN6b2/logo.png',
     },
     {
       tokenSymbol: 'UBXT',
