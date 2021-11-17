@@ -13,12 +13,6 @@ const TotalBalance = ({
   allTokensData: Map<string, TokenInfo>;
   tokensData: Map<string, number>;
 }) => {
-  // const wallet = useWallet();
-  // const connection = useConnection();
-  // const tokenInfos = useTokenInfos();
-
-  // const walletPubkey = wallet?.publicKey?.toString();
-
   const totalUSD = [...allTokensData.values()].reduce((acc, cur) => {
     const isTokenUSDT = isUSDToken(cur.symbol);
 

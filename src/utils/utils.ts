@@ -165,15 +165,11 @@ export interface TokenInfo {
 export const getAllTokensData = async (
   owner: PublicKey,
   connection: Connection,
-  tokenInfos: any,
+  tokenInfosMap: any,
 ): Promise<Map<string, TokenInfo>> => {
   const allTokensMap = new Map()
 
-  if (!tokenInfos) return allTokensMap
-
-  const ALL_TOKENS_MINTS_MAP = new Map()
-
-  tokenInfos.forEach(tokenInfo => ALL_TOKENS_MINTS_MAP.set(tokenInfo.address, tokenInfo))
+  if (!tokenInfosMap) return allTokensMap
 
   const [parsedTokenAccounts, solBalance] = await Promise.all([connection.getParsedTokenAccountsByOwner(
     owner,
@@ -191,7 +187,7 @@ export const getAllTokensData = async (
   allTokensMap.set(owner.toString(), SOLToken)
 
   parsedTokenAccounts.value.forEach((el) => {
-    const tokenMintInfo = ALL_TOKENS_MINTS_MAP.get(el.account.data.parsed.info.mint)
+    const tokenMintInfo = tokenInfosMap.get(el.account.data.parsed.info.mint)
     const name = tokenMintInfo
     ? tokenMintInfo.name.replace(' (Sollet)', '')
     : ''

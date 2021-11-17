@@ -88,7 +88,7 @@ export default function DepositDialog({
       ? (tokenSymbol ?? abbreviateAddress(mint)).replace('w', 'Wrapped ')
       : tokenSymbol ?? abbreviateAddress(mint);
 
-  const displaySolAddress = ((owner && publicKey.equals(owner)) || isAssociatedToken) && false;
+  const displaySolAddress = ((owner && publicKey.equals(owner)) || isAssociatedToken);
   const depositAddressStr = displaySolAddress
     ? owner.toBase58()
     : publicKey.toBase58();
