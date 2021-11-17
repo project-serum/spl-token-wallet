@@ -90,7 +90,7 @@ export default function DepositDialog({
 
   const displaySolAddress = ((owner && publicKey.equals(owner)) || isAssociatedToken);
   const depositAddressStr = displaySolAddress
-    ? owner.toBase58()
+    ? owner?.toBase58()
     : publicKey.toBase58();
 
   let firstTab;
