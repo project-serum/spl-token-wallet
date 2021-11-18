@@ -15,7 +15,7 @@ import { useWallet } from '../../utils/wallet';
 import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
 import { TokensDataSingleton } from '../../components/TokensDataSingleton';
 import { useConnection } from '../../utils/connection';
-import { useTokenInfos } from '../../utils/tokens/names';
+import { useTokenInfosMap } from '../../utils/tokens/names';
 import CloseTokenAccountDialog from './components/CloseTokenAccountPopup';
 
 const MainWalletContainer = styled(RowContainer)`
@@ -90,7 +90,7 @@ const Wallet = () => {
   const [activeTab, setTabActive] = useState('assets');
 
   const connection = useConnection();
-  const tokenInfos = useTokenInfos();
+  const tokenInfosMap = useTokenInfosMap();
   const [refreshCounter, changeRefreshCounter] = useState(0);
   const [tokensData, setTokensData] = useState<Map<string, number>>(new Map());
   const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(
@@ -111,7 +111,7 @@ const Wallet = () => {
       const allTokensInfo = await getAllTokensData(
         new PublicKey(walletPubkey),
         connection,
-        tokenInfos,
+        tokenInfosMap,
       );
 
       setTokensData(data);
@@ -119,7 +119,14 @@ const Wallet = () => {
     };
 
     getData();
-  }, [connection, walletPubkey, tokenInfos, refreshCounter]);
+    // eslint-disable-next-line
+  }, [
+    connection,
+    walletPubkey,
+    // eslint-disable-next-line
+    JSON.stringify([...tokenInfosMap.entries()]),
+    refreshCounter,
+  ]);
 
   return (
     <MainWalletContainer>

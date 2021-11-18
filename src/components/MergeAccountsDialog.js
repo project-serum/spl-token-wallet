@@ -27,7 +27,7 @@ import {
   findAssociatedTokenAddress,
 } from '../utils/tokens';
 import { sleep } from '../utils/utils';
-import { useTokenInfos, getTokenInfo } from '../utils/tokens/names';
+import { useTokenInfosMap, getTokenInfo } from '../utils/tokens/names';
 
 export default function MergeAccountsDialog({ open, onClose }) {
   const theme = useTheme();
@@ -37,7 +37,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
   const [isMerging, setIsMerging] = useState(false);
   const [mergeCheck, setMergeCheck] = useState('');
-  const tokenInfos = useTokenInfos();
+  const tokenInfosMap = useTokenInfosMap();
 
   // Merging accounts is a destructive operation that, for each mint,
   //
@@ -106,7 +106,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
             const tokenInfo = getTokenInfo(
               mint,
               connection._rpcEndpoint,
-              tokenInfos,
+              tokenInfosMap,
             );
             const symbol = tokenInfo.symbol
               ? tokenInfo.symbol

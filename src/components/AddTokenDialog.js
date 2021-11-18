@@ -11,7 +11,8 @@ import {
   useWalletTokenAccounts,
 } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { TOKENS, useUpdateTokenName } from '../utils/tokens/names';
+import { TOKENS } from '../utils/tokens/tokens'
+import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
 import { makeStyles, Tab, Tabs } from '@material-ui/core';

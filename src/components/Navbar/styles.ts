@@ -126,8 +126,9 @@ export const MainLinksBlock = styled.div`
 `;
 
 export const WalletContainer = styled.div`
+  width: 32rem;
   margin: 5px 0 5px auto;
-  padding: 0 0 0 ${SIZE.defaultPadding};
+  padding: 0 0 0 20px;
   border-left: 1px solid ${COLORS.border};
   display: flex;
   flex-direction: row;

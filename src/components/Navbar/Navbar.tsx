@@ -1,6 +1,5 @@
 import { useTheme } from '@material-ui/core';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AldrinLogo from '../../images/Aldrin.svg';
 import StakeBtn from '../../images/stakeBtn.png';
@@ -65,8 +64,8 @@ export const Navbar = () => {
           </LogoLink>
           <Button
             backgroundImage={StakeBtn}
-            as={Link}
-            to="/staking"
+            as="a"
+            href="https://dex.aldrin.com/staking"
             fontSize="xs"
             padding="md"
             borderRadius="xxl"
@@ -82,7 +81,7 @@ export const Navbar = () => {
               href="https://dex.aldrin.com/chart/spot/RIN_USDC"
               activeClassName="selected"
             >
-              Terminal
+              Trade
             </NavLink>
             <NavLink
               as="a"
