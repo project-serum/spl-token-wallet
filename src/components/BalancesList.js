@@ -107,9 +107,8 @@ export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
-  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
-    false,
-  );
+  const [showEditAccountNameDialog, setShowEditAccountNameDialog] =
+    useState(false);
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
   const [showFtxPayDialog, setShowFtxPayDialog] = useState(false);
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
@@ -274,7 +273,9 @@ export default function BalancesList() {
             </IconButton>
           </Tooltip>
           <DomainsList open={showDomains} setOpen={setShowDomains} />
-          {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
+          {region.result && !region.result.isRestricted && (
+            <SwapButton size={iconSize} />
+          )}
           <Tooltip title="Migrate Tokens" arrow>
             <IconButton
               size={iconSize}
@@ -436,14 +437,8 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     return <LoadingIndicator delay={0} />;
   }
 
-  let {
-    amount,
-    decimals,
-    mint,
-    tokenName,
-    tokenSymbol,
-    tokenLogoUri,
-  } = balanceInfo;
+  let { amount, decimals, mint, tokenName, tokenSymbol, tokenLogoUri } =
+    balanceInfo;
   tokenName = tokenName ?? abbreviateAddress(mint);
   let displayName;
   if (isExtensionWidth) {
@@ -582,10 +577,8 @@ function BalanceListItemDetails({
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
   const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
-  const [
-    closeTokenAccountDialogOpen,
-    setCloseTokenAccountDialogOpen,
-  ] = useState(false);
+  const [closeTokenAccountDialogOpen, setCloseTokenAccountDialogOpen] =
+    useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const wallet = useWallet();
   const isProdNetwork = useIsProdNetwork();

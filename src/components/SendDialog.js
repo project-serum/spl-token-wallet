@@ -65,7 +65,10 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   );
 
   // SwapInfos to ignore.
-  if (swapCoinInfo && swapCoinInfo.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0') {
+  if (
+    swapCoinInfo &&
+    swapCoinInfo.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0'
+  ) {
     swapCoinInfo = null;
   }
 
@@ -215,16 +218,11 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
-  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState(
-    false,
-  );
+  const [overrideDestinationCheck, setOverrideDestinationCheck] =
+    useState(false);
   const [shouldShowOverride, setShouldShowOverride] = useState();
-  let {
-    fields,
-    destinationAddress,
-    transferAmountString,
-    validAmount,
-  } = useForm(balanceInfo, addressHelperText, passValidation);
+  let { fields, destinationAddress, transferAmountString, validAmount } =
+    useForm(balanceInfo, addressHelperText, passValidation);
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
   const [isDomainName, setIsDomainName] = useState(false);

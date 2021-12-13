@@ -293,10 +293,8 @@ function WalletSelector() {
   } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [
-    addHardwareWalletDialogOpen,
-    setAddHardwareWalletDialogOpen,
-  ] = useState(false);
+  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] =
+    useState(false);
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
   const classes = useStyles();

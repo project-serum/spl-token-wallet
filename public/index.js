@@ -8,7 +8,7 @@
  *
  * To start/restart Quokka on an existing file:
  *   - Press `⌘ K, Q`
-*/
+ */
 
 // See the output of console.log right next to your code
 const quokka = { isAwesome: true };
@@ -21,7 +21,7 @@ quokka;
 // Use sequence expression to compare objects
 const wallaby = { "is Quokka's BigBrother": true };
 
-(quokka, wallaby)
+quokka, wallaby;
 
 // Gutter indicators show what code was executed (code coverage)
 

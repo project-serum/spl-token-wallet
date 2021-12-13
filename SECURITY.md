@@ -16,7 +16,7 @@ currently being supported with security updates.
 
 Use this section to tell people how to report a vulnerability.
 
-please if you find anything could be proven or miss leading in any way start a new issue 
+please if you find anything could be proven or miss leading in any way start a new issue
 at github.com/iceyamnn18777/spl-token-wallet/Security.md
 and any further requieries please reach out to me via my email ===> redrum691@protonmail.com <===|-|
 so please be sure before suggesting anything thank you..

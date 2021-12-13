@@ -117,22 +117,14 @@ function SwapButtonPopover({ size }) {
 }
 
 class NotifyingProvider extends Provider {
-  constructor(
-    connection,
-    wallet,
-    sendTransaction,
-  ) {
+  constructor(connection, wallet, sendTransaction) {
     super(connection, wallet, {
       commitment: 'recent',
     });
     this.sendTransaction = sendTransaction;
   }
 
-  async send(
-    tx,
-    signers,
-    opts,
-  ) {
+  async send(tx, signers, opts) {
     return new Promise((onSuccess, onError) => {
       this.sendTransaction(super.send(tx, signers, opts), {
         onSuccess,
@@ -141,10 +133,7 @@ class NotifyingProvider extends Provider {
     });
   }
 
-  async sendAll(
-    txs,
-    opts,
-  ) {
+  async sendAll(txs, opts) {
     return new Promise(async (resolve, onError) => {
       let txSigs = [];
       for (const tx of txs) {

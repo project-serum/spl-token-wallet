@@ -190,9 +190,9 @@ export default function MergeAccountsDialog({ open, onClose }) {
             </DialogContentText>
             <DialogContentText>
               If migrating fails during a period of high network load, you will
-              not have lost your funds. Just recontinue the migration from where you
-              left off. If you have a lot of accounts, migrating might take a
-              while.
+              not have lost your funds. Just recontinue the migration from where
+              you left off. If you have a lot of accounts, migrating might take
+              a while.
             </DialogContentText>
             <TextField
               label={`Please type "migrate" to confirm`}
