@@ -1,5 +1,12 @@
 import bs58 from 'bs58';
-import { Connection, Message, StakeInstruction, StakeProgram, SystemInstruction, SystemProgram } from '@solana/web3.js';
+import {
+  Connection,
+  Message,
+  StakeInstruction,
+  StakeProgram,
+  SystemInstruction,
+  SystemProgram,
+} from '@solana/web3.js';
 import {
   decodeInstruction,
   Market,
@@ -34,7 +41,11 @@ const marketCache = {};
 let marketCacheConnection = null;
 const cacheDuration = 15 * 1000;
 
-export const decodeMessage = async (connection: Connection, wallet: Wallet, message: Buffer) => {
+export const decodeMessage = async (
+  connection: Connection,
+  wallet: Wallet,
+  message: Buffer,
+) => {
   // get message object
   const transactionMessage = Message.from(message);
   if (!transactionMessage?.instructions || !transactionMessage?.accountKeys) {
@@ -135,7 +146,10 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
-    } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
+    } else if (
+      programId.equals(MANGO_PROGRAM_ID) ||
+      programId.equals(MANGO_PROGRAM_ID_V2)
+    ) {
       console.log('[' + index + '] Handled as mango markets instruction');
       // @ts-ignore
       let decodedInstruction = decodeMangoInstruction(decoded);
@@ -400,16 +414,22 @@ const handleStakeInstruction = (publicKey, instruction, accountKeys) => {
       decoded = StakeInstruction.decodeInitialize(stakeInstruction);
       // Lockup inactive if all zeroes
       const lockup = decoded.lockup;
-      if (lockup && lockup.unixTimestamp === 0 && lockup.epoch === 0 && lockup.custodian.equals(PublicKey.default)) {
+      if (
+        lockup &&
+        lockup.unixTimestamp === 0 &&
+        lockup.epoch === 0 &&
+        lockup.custodian.equals(PublicKey.default)
+      ) {
         decoded.lockup = 'Inactive';
-      }
-      else {
-        decoded.lockup = `unixTimestamp: ${lockup.unixTimestamp}, custodian: ${lockup.epoch}, custodian: ${lockup.custodian.toBase58()}`;
+      } else {
+        decoded.lockup = `unixTimestamp: ${lockup.unixTimestamp}, custodian: ${
+          lockup.epoch
+        }, custodian: ${lockup.custodian.toBase58()}`;
       }
       // flatten authorized to allow address render
-      decoded.authorizedStaker = decoded.authorized.staker
-      decoded.authorizedWithdrawer = decoded.authorized.withdrawer
-      delete decoded.authorized
+      decoded.authorizedStaker = decoded.authorized.staker;
+      decoded.authorizedWithdrawer = decoded.authorized.withdrawer;
+      delete decoded.authorized;
       break;
     case 'Split':
       decoded = StakeInstruction.decodeSplit(stakeInstruction);
@@ -458,7 +478,7 @@ const handleTokenInstruction = (
   return {
     type: decoded.type,
     data: decoded.params,
-  }
+  };
 };
 
 const getNewOrderData = (accounts, accountKeys) => {

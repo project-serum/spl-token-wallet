@@ -147,12 +147,8 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const [{
-    mnemonic,
-    seed,
-    importsEncryptionKey,
-    derivationPath,
-  }] = useUnlockedMnemonicAndSeed();
+  const [{ mnemonic, seed, importsEncryptionKey, derivationPath }] =
+    useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -218,9 +214,8 @@ export function WalletProvider({ children }) {
               )
             : new Account(
                 (() => {
-                  const { nonce, ciphertext } = privateKeyImports[
-                    walletSelector.importedPubkey
-                  ];
+                  const { nonce, ciphertext } =
+                    privateKeyImports[walletSelector.importedPubkey];
                   return nacl.secretbox.open(
                     bs58.decode(ciphertext),
                     bs58.decode(nonce),
@@ -287,8 +282,11 @@ export function WalletProvider({ children }) {
 
     const seedBuffer = Buffer.from(seed, 'hex');
     const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
-        .publicKey;
+      let address = getAccountFromSeed(
+        seedBuffer,
+        idx,
+        derivationPath,
+      ).publicKey;
       let name = localStorage.getItem(`name${idx}`);
       return {
         selector: {

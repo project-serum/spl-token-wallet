@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import DialogForm from './DialogForm';
-import { forgetWallet, normalizeMnemonic, useUnlockedMnemonicAndSeed } from '../utils/wallet-seed';
+import {
+  forgetWallet,
+  normalizeMnemonic,
+  useUnlockedMnemonicAndSeed,
+} from '../utils/wallet-seed';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { DialogContentText } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -36,8 +40,8 @@ export default function DeleteMnemonicDialog({ open, onClose }) {
             <br />
             <strong>
               To prevent loss of funds, please ensure you have the seed phrase
-              and the private key for all current accounts. You can view it by selecting
-              "Export Mnemonic" in the user menu.
+              and the private key for all current accounts. You can view it by
+              selecting "Export Mnemonic" in the user menu.
             </strong>
           </div>
           <TextField
