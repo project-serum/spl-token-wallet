@@ -30,7 +30,9 @@ import Tab from '@material-ui/core/Tab';
 import { DialogContentText, Tooltip } from '@material-ui/core';
 import { EthFeeEstimate } from './EthFeeEstimate';
 
-const DISABLED_MINTS = new Set(['ABE7D8RU1eHfCJWzHYZZeymeE8k9nPPXfqge2NQYyKoL']);
+const DISABLED_MINTS = new Set([
+  'ABE7D8RU1eHfCJWzHYZZeymeE8k9nPPXfqge2NQYyKoL',
+]);
 
 export default function DepositDialog({
   open,
@@ -46,7 +48,11 @@ export default function DepositDialog({
   const [tab, setTab] = useState(0);
 
   // SwapInfos to ignore.
-  if (swapInfo && swapInfo.coin && swapInfo.coin.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0') {
+  if (
+    swapInfo &&
+    swapInfo.coin &&
+    swapInfo.coin.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0'
+  ) {
     swapInfo = null;
   }
 
@@ -57,9 +63,13 @@ export default function DepositDialog({
     if (!mint) {
       firstTab = 'SOL';
     } else {
-      secondTab = `${
-        swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
-      } ${secondTab}`;
+      if (swapInfo.blockchain !== 'eth') {
+        secondTab = `${
+          swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
+        } ${secondTab}`;
+      } else {
+        secondTab = null;
+      }
     }
     tabs = (
       <Tabs
@@ -71,7 +81,8 @@ export default function DepositDialog({
       >
         <Tab label={firstTab} />
         {(!DISABLED_MINTS.has(mint && mint.toString()) ||
-          localStorage.getItem('sollet-private')) && <Tab label={secondTab} />}
+          localStorage.getItem('sollet-private')) &&
+          secondTab && <Tab label={secondTab} />}
       </Tabs>
     );
   }
@@ -102,7 +113,10 @@ export default function DepositDialog({
                 {tokenSymbol ?? abbreviateAddress(mint)}. Do not send SOL to
                 this address.
                 <br />
-                <b style={{ color: 'red' }}>WARNING</b>: You are using a deprecated account type. Please migrate your tokens. Ideally, create a new wallet. If you send to this address from a poorly implemented wallet, you may burn tokens.
+                <b style={{ color: 'red' }}>WARNING</b>: You are using a
+                deprecated account type. Please migrate your tokens. Ideally,
+                create a new wallet. If you send to this address from a poorly
+                implemented wallet, you may burn tokens.
               </DialogContentText>
             ) : (
               <DialogContentText>
@@ -119,8 +133,7 @@ export default function DepositDialog({
             <DialogContentText variant="body2">
               <Link
                 href={
-                  `https://solscan.io/account/${depositAddressStr}` +
-                  urlSuffix
+                  `https://solscan.io/account/${depositAddressStr}` + urlSuffix
                 }
                 target="_blank"
                 rel="noopener"
@@ -199,7 +212,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo, ethAccount }) {
     );
   }
 
-  if (blockchain === 'eth') {
+  if (false && blockchain === 'eth') {
     return (
       <>
         <DialogContentText>
