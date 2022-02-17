@@ -36,7 +36,11 @@ import {
 import { parseTokenAccountData } from '../utils/tokens/data';
 import { Switch, Tooltip } from '@material-ui/core';
 import { EthFeeEstimate } from './EthFeeEstimate';
-import { resolveDomainName, resolveTwitterHandle } from '../utils/name-service';
+import {
+  resolveDomainName,
+  resolveTwitterHandle,
+  getNameKey,
+} from '../utils/name-service';
 
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
@@ -65,7 +69,10 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   );
 
   // SwapInfos to ignore.
-  if (swapCoinInfo && swapCoinInfo.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0') {
+  if (
+    swapCoinInfo &&
+    swapCoinInfo.erc20Contract === '0x2b2e04bf86978b45bb2edf54aca876973bdd43c0'
+  ) {
     swapCoinInfo = null;
   }
 
@@ -247,12 +254,27 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         setDomainOwner(twitterOwner);
       }
       if (destinationAddress.endsWith('.sol')) {
-        const domainOwner = await resolveDomainName(
-          wallet.connection,
-          destinationAddress.slice(0, -4),
-        );
+        const name = destinationAddress.slice(0, -4);
+        const hasSub = name.split('.').length === 2;
+
+        let domainOwner;
+
+        if (hasSub) {
+          const sub = name.split('.')[0];
+          const parentKey = await getNameKey(name.split('.')[1]);
+          domainOwner = await resolveDomainName(
+            wallet.connection,
+            sub,
+            parentKey,
+          );
+        } else {
+          domainOwner = await resolveDomainName(wallet.connection, name);
+        }
+
         if (!domainOwner) {
-          setAddressHelperText(`This domain name is not registered`);
+          setAddressHelperText(
+            `This ${hasSub ? 'subdomain' : 'domain'} name is not registered`,
+          );
           setPassValidation(undefined);
           setShouldShowOverride(undefined);
           return;
