@@ -6,6 +6,7 @@ import {
   NameRegistryState,
   getFilteredProgramAccounts,
   NAME_PROGRAM_ID,
+  getDNSRecordAddress,
 } from '@bonfida/spl-name-service';
 import { useConnection } from '../connection';
 import { useWallet } from '../wallet';
@@ -35,21 +36,22 @@ export const resolveTwitterHandle = async (
   }
 };
 
+export const getNameKey = async (name: string, parent = SOL_TLD_AUTHORITY) => {
+  const hashedDomainName = await getHashedName(name);
+  const key = await getNameAccountKey(hashedDomainName, undefined, parent);
+  return key;
+};
+
 export const resolveDomainName = async (
   connection: Connection,
   domainName: string,
+  parent?: PublicKey,
 ): Promise<string | undefined> => {
-  let hashedDomainName = await getHashedName(domainName);
-  let inputDomainKey = await getNameAccountKey(
-    hashedDomainName,
-    undefined,
-    SOL_TLD_AUTHORITY,
-  );
+  const key = parent
+    ? await getDNSRecordAddress(parent, domainName)
+    : await getNameKey(domainName);
   try {
-    const registry = await NameRegistryState.retrieve(
-      connection,
-      inputDomainKey,
-    );
+    const registry = await NameRegistryState.retrieve(connection, key);
     return registry.owner.toBase58();
   } catch (err) {
     console.warn(err);
