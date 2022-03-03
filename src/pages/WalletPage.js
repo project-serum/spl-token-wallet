@@ -12,12 +12,12 @@ const useStyles = makeStyles((theme) => ({
     },
     [theme.breakpoints.up(theme.ext)]: {
       maxWidth: 'md',
-    },
+    }    
   },
   balancesContainer: {
     [theme.breakpoints.down(theme.ext)]: {
       marginBottom: 24,
-    },
+    }    
   },
 }));
 
@@ -25,10 +25,13 @@ export default function WalletPage() {
   const classes = useStyles();
   const isExtensionWidth = useIsExtensionWidth();
   return (
-    <Container fixed maxWidth="md" className={classes.container}>
+    <Container             
+      fixed maxWidth="md" 
+      className={classes.container}
+    >
       <Grid container spacing={isExtensionWidth ? 0 : 3}>
         <Grid item xs={12} className={classes.balancesContainer}>
-          <BalancesList />
+          <BalancesList style="border-radius:20"/>
         </Grid>
       </Grid>
     </Container>

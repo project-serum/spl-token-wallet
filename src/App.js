@@ -34,8 +34,45 @@ export default function App() {
     () =>
       createMuiTheme({
         palette: {
-          type: prefersDarkMode ? 'dark' : 'light',
-          primary: blue,
+          text: {
+            primary: '#0D1F3C',
+            secondary: '#78839C',
+          },
+          background: {
+            default: '#EEE',
+            paper: '#FFEDE8',
+          },
+          primary: {
+            light: '#757ce8',
+            main: '#FF855F',
+            dark: '#D25C37',
+            contrastText: '#fff',
+          },
+          secondary: {
+            light: '#ff7961',
+            main: '#f44336',
+            dark: '#ba000d',
+            contrastText: '#fff',
+          },
+        },
+        typography: {
+          fontFamily: ['Montserrat', 'sans-serif'],
+          h1: {
+            fontSize: '36px',
+            fontWeight: '600',
+          },
+          h3: {
+            fontSize: '36px',
+            fontWeight: '600',
+          },
+          paragraph: {
+            fontSize: '15px',
+            fontWeight: '400',
+            lineHeight: '24px',
+          },
+        },
+        shape: {
+          borderRadius: 20,
         },
         // TODO consolidate popup dimensions
         ext: '450',
@@ -84,22 +121,11 @@ export default function App() {
 function PageContents() {
   const wallet = useWallet();
   const [page] = usePage();
-  const [showWalletSuggestion, setShowWalletSuggestion] = useState(true);
   const suggestionKey = 'private-irgnore-wallet-suggestion';
   const ignoreSuggestion = window.localStorage.getItem(suggestionKey);
   if (!wallet) {
     return (
       <>
-        {!ignoreSuggestion && (
-          <WalletSuggestionDialog
-            open={showWalletSuggestion}
-            onClose={() => setShowWalletSuggestion(false)}
-            onIgnore={() => {
-              window.localStorage.setItem(suggestionKey, true);
-              setShowWalletSuggestion(false);
-            }}
-          />
-        )}
         <LoginPage />
       </>
     );
@@ -123,102 +149,3 @@ const useStyles = makeStyles(() => ({
     },
   },
 }));
-
-function WalletSuggestionDialog({ open, onClose, onIgnore }) {
-  const classes = useStyles();
-  return (
-    <DialogForm open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Looking for a Wallet?</DialogTitle>
-      <DialogContent>
-        <Typography>
-          Sollet is an{' '}
-          <a
-            style={{ color: 'inherit' }}
-            href="https://github.com/project-serum/spl-token-wallet"
-            target="__blank"
-          >
-            {' '}
-            open source
-          </a>{' '}
-          wallet for advanced users and developers. For the best Solana
-          experience and user support, it is recommended to use <b>
-            Phantom
-          </b>{' '}
-          or <b>Solflare</b>.
-        </Typography>
-        <List disablePadding style={{ marginTop: '16px' }}>
-          <ListItem button disablePadding style={{ padding: 0 }}>
-            <div
-              className={classes.walletButton}
-              style={{ display: 'flex' }}
-              onClick={() => {
-                window.location = 'https://phantom.app/';
-              }}
-            >
-              <div>
-                <img
-                  alt=""
-                  style={{ height: '39px' }}
-                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
-                />
-              </div>
-              <div>
-                <Typography
-                  style={{
-                    marginLeft: '16px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    height: '39px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Phantom
-                </Typography>
-              </div>
-            </div>
-          </ListItem>
-          <ListItem button disablePadding style={{ padding: 0 }}>
-            <div
-              onClick={() => {
-                window.location = 'https://solflare.com/';
-              }}
-              className={classes.walletButton}
-              style={{ display: 'flex' }}
-            >
-              <div>
-                <img
-                  alt=""
-                  style={{ height: '39px' }}
-                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
-                />
-              </div>
-              <div>
-                <Typography
-                  style={{
-                    marginLeft: '16px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    height: '39px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Solflare
-                </Typography>
-              </div>
-            </div>
-          </ListItem>
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button type="submit" color="primary" onClick={onIgnore}>
-          Ignore Future Dialog
-        </Button>
-        <Button type="submit" color="primary" onClick={onClose}>
-          Ok
-        </Button>
-      </DialogActions>
-    </DialogForm>
-  );
-}

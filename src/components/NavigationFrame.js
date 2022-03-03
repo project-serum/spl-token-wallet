@@ -75,25 +75,8 @@ export default function NavigationFrame({ children }) {
   const isExtensionWidth = useIsExtensionWidth();
   return (
     <>
-      <AppBar position="static">
-        {!isExtension && (
-          <div
-            style={{
-              textAlign: 'center',
-              background: '#fafafa',
-              color: 'black',
-              paddingLeft: '24px',
-              paddingRight: '24px',
-              fontSize: '14px',
-            }}
-          >
-            <Typography>
-              Beware of sites attempting to impersonate sollet.io or other DeFi
-              services.
-            </Typography>
-          </div>
-        )}
-        <Toolbar>
+      <AppBar position="static">        
+        <Toolbar style={{ background: '#2E3B55' }}>
           <Typography variant="h6" className={classes.title} component="h1">
             {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
           </Typography>

@@ -16,7 +16,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import { BalanceListItem } from '../components/BalancesList.js';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { DialogActions, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
+import { DialogActions, DialogContentText, DialogTitle, Typography, CardMedia, CardHeader, Box } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
@@ -29,6 +29,8 @@ import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
 import DialogForm from '../components/DialogForm';
+import './login-page.css';
+
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
@@ -44,16 +46,76 @@ export default function LoginPage() {
         <RestoreWalletForm goBack={() => setRestore(false)} />
       ) : (
         <>
-          {hasLockedMnemonicAndSeed ? <LoginForm /> : <CreateWalletForm />}
-          <br />
-          <Link style={{ cursor: 'pointer' }} onClick={() => setRestore(true)}>
-            Restore existing wallet
-          </Link>
+          {hasLockedMnemonicAndSeed ? <LoginForm /> : <WelcomeForm />}
         </>
       )}
     </Container>
   );
 }
+
+function WelcomeForm() {
+  const [createWallet, setCreateWallet] = useState(false);
+  const [restoreWallet, setRestoreWallet] = useState(false);
+
+  if(createWallet)
+    return <CreateWalletMessagges/>
+
+  if(restoreWallet)
+    return <RestoreWalletForm/>
+
+  if(!createWallet)
+    return (
+      <Card>
+        <Box p={8}>        
+    <Typography align="center" variant="h1" gutterBottom>
+      Welcome to Salmon Wallet!
+    </Typography>
+    <CardMedia style={styles.welcomeCard} image="images/logo.jpg" component="img"/>      
+    <Box style={styles.buttonStack} display="flex" flexDirection="column">
+      <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
+          Create new Wallet
+        </Button>
+      <Button variant="outlined" style={styles.button} color="primary" onClick={() => setRestoreWallet(true)}>
+          Restore Wallet
+      </Button>
+    </Box>
+  </Box>
+</Card>  
+    );
+
+}
+
+function CreateWalletMessagges() {
+  const [createWallet, setCreateWallet] = useState(false);
+
+  if(createWallet)
+    return <CreateWalletForm/>
+
+  return (
+    <Card>
+      <Box p={8}>         
+        <CardMedia style={styles.welcomeCard} image="images/welcome.png" component="img"/>      
+        <Box m={3}> 
+          <Typography align="center" variant="h1">Keep your seed safe!</Typography>
+        </Box>
+        <Box m={2}> 
+          <Typography align="center" variant="paragraph">
+                Your private keys are only stored on your current computer or device.
+                You will need these words to restore your wallet if your browser's
+                storage is cleared or your device is damaged or lost.          
+          </Typography>
+        </Box>
+        <Box style={styles.buttonStack} display="flex" flexDirection="column">
+          <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
+              Continue
+            </Button>
+          
+        </Box>
+      </Box>
+    </Card>
+  )
+}
+
 
 function CreateWalletForm() {
   const [mnemonicAndSeed, setMnemonicAndSeed] = useState(null);
@@ -97,6 +159,26 @@ function CreateWalletForm() {
   );
 }
 
+const styles = ({
+  welcomeCard: {
+    width : '80%',
+    margin: '40px auto',    
+  },
+  button: {
+    fontSize: '19px',
+    fontWeight: 600,
+    textTransform: 'unset',
+    lineHeight: '24px',
+    padding: '11px 13.5px',
+    margin: '10px',
+  },
+  buttonStack: {
+    width: '100%',
+    maxWidth: '300px',
+    margin: 'auto'
+  }
+})
+
 function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
@@ -113,12 +195,13 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   }
 
   return (
-    <>
+    <>      
       <Card>
         <CardContent>
-          <Typography variant="h5" gutterBottom>
+          <Typography align="center" variant="h1" gutterBottom>
             Create New Wallet
           </Typography>
+          <CardMedia style={styles.welcomeCard} image="images/create_account.png" component="img"/>      
           <Typography paragraph>
             Create a new wallet to hold Solana and SPL tokens.
           </Typography>
@@ -288,9 +371,9 @@ function LoginForm() {
   const toggleStayLoggedIn = (e) => setStayLoggedIn(e.target.checked);
 
   return (
-    <Card>
+    <Card className="card">
       <CardContent>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Unlock Wallet
         </Typography>
         <TextField
