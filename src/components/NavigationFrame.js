@@ -12,6 +12,8 @@ import {
 } from '../utils/clusters';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useWalletSelector } from '../utils/wallet';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -75,14 +77,12 @@ export default function NavigationFrame({ children }) {
   const isExtensionWidth = useIsExtensionWidth();
   return (
     <>
-      <AppBar position="static">        
-        <Toolbar style={{ background: '#2E3B55' }}>
-          <Typography variant="h6" className={classes.title} component="h1">
-            {isExtensionWidth ? 'Sollet' : 'Solana SPL Token Wallet'}
-          </Typography>
-          <NavigationButtons />
-        </Toolbar>
-      </AppBar>
+      
+        <Grid container justify="flex-end">
+          <Box m={1}>
+            <NavigationButtons />     
+          </Box>
+        </Grid>      
       <main className={classes.content}>{children}</main>
       {!isExtensionWidth && <Footer />}
     </>
@@ -205,13 +205,14 @@ function NetworkSelector() {
           setCustomNetworkOpen(false);
         }}
       />
-      <Hidden xsDown>
+      <Hidden xsDown>        
         <Button
-          color="inherit"
+          color="primary"
+          variant="outlined"
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
-          {cluster?.label ?? 'Network'}
+          Network: {cluster?.label ?? 'Network'}
         </Button>
       </Hidden>
       <Hidden smUp>
@@ -337,7 +338,8 @@ function WalletSelector() {
       />
       <Hidden xsDown>
         <Button
-          color="inherit"
+          variant="contained"
+          color="primary"
           onClick={(e) => setAnchorEl(e.target)}
           className={classes.button}
         >
