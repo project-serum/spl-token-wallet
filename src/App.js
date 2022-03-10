@@ -22,7 +22,7 @@ import { TokenRegistryProvider } from './utils/tokens/names';
 import LoadingIndicator from './components/LoadingIndicator';
 import { SnackbarProvider } from 'notistack';
 import PopupPage from './pages/PopupPage';
-import LoginPage from './pages/LoginPage';
+import OnboardingPage from './pages/OnboardingPage';
 import ConnectionsPage from './pages/ConnectionsPage';
 import { isExtension } from './utils/utils';
 import { PageProvider, usePage } from './utils/page';
@@ -30,12 +30,12 @@ import { PageProvider, usePage } from './utils/page';
 export default function App() {
   // TODO: add toggle for dark mode
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const theme = React.useMemo(
+  const lightTheme = React.useMemo(
     () =>
       createMuiTheme({
         palette: {
           text: {
-            primary: '#0D1F3C',
+            primary: '#485068',
             secondary: '#78839C',
           },
           background: {
@@ -50,29 +50,111 @@ export default function App() {
           },
           secondary: {
             light: '#ff7961',
-            main: '#f44336',
-            dark: '#ba000d',
-            contrastText: '#fff',
+            main: '#FFF',
+            dark: '#FFDFD7',
+            contrastText: '#FF855F',
           },
         },
         typography: {
           fontFamily: ['Montserrat', 'sans-serif'],
           h1: {
             fontSize: '36px',
+            fontWeight: 'bold',
+            color: '#0D1F3C',
+          },
+          h2: {
+            fontSize: '32px',
             fontWeight: '600',
           },
           h3: {
-            fontSize: '36px',
+            fontSize: '26px',
             fontWeight: '600',
           },
           paragraph: {
             fontSize: '15px',
-            fontWeight: '400',
+            fontWeight: 'normal',
+            lineHeight: '24px',
+            color: '#485068',
+          },
+        },
+        shape: {
+          borderRadius: 2,
+        },
+        overrides: {
+          MuiButton: {
+            root: {
+              borderRadius: 20,
+            },
+          },
+        },
+        // TODO consolidate popup dimensions
+        ext: '450',
+      }),
+    [prefersDarkMode],
+  );
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          text: {
+            primary: '#FFF',
+            secondary: '#FF855F',
+          },
+          background: {
+            default: '#111',
+            paper: '#333',
+            tokens: '#222',
+            token: '#363E48',
+          },
+          primary: {
+            light: '#757ce8',
+            main: '#FF855F',
+            dark: '#D25C37',
+            contrastText: '#fff',
+          },
+          secondary: {
+            light: '#ff7961',
+            main: '#FFF',
+            dark: '#FFDFD7',
+            contrastText: '#FF855F',
+          },
+        },
+        typography: {
+          fontFamily: ['Montserrat', 'sans-serif'],
+          h1: {
+            fontSize: '36px',
+            fontWeight: 'bold',
+          },
+          h2: {
+            fontSize: '32px',
+            fontWeight: '600',
+          },
+          h3: {
+            fontSize: '26px',
+            fontWeight: '600',
+            color: '#FF855F',
+          },
+          h4: {
+            fontWeight: 600,
+            fontSize: '15px',
+            color: '#FFF',
+          },
+          caption: {
+            fontSize: '15px',
+            fontWeight: '300',
             lineHeight: '24px',
           },
         },
         shape: {
-          borderRadius: 20,
+          borderRadius: 2,
+        },
+        overrides: {
+          MuiButton: {
+            root: {
+              borderRadius: 20,
+            },
+          },
         },
         // TODO consolidate popup dimensions
         ext: '450',
@@ -126,7 +208,7 @@ function PageContents() {
   if (!wallet) {
     return (
       <>
-        <LoginPage />
+        <OnboardingPage />
       </>
     );
   }

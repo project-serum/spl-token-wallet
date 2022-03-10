@@ -32,7 +32,39 @@ import DialogForm from '../components/DialogForm';
 import './login-page.css';
 
 
-export default function LoginPage() {
+const styles = ({
+  welcomeCard: {
+    width : '80%',
+    margin: '40px auto',    
+  },
+  button: {
+    fontSize: '19px',
+    fontWeight: 600,
+    textTransform: 'unset',
+    lineHeight: '24px',
+    padding: '11px 13.5px',
+    margin: '10px',
+  },
+  buttonStack: {
+    width: '100%',
+    maxWidth: '300px',
+    margin: 'auto'
+  },
+  welcomeFirst: {
+    color: '#979797',
+    fontWeight: '300',
+    fontSize: '28px',
+    lineHieght: '54px'
+  },
+  welcomeSecond: {
+    color: '#FF855F',
+    fontWeight: '300',
+    fontSize: '48px',
+    lineHieght: '54px'
+  }
+})
+
+export default function WelcomePage() {
   const [restore, setRestore] = useState(false);
   const [hasLockedMnemonicAndSeed, loading] = useHasLockedMnemonicAndSeed();
 
@@ -41,7 +73,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       {restore ? (
         <RestoreWalletForm goBack={() => setRestore(false)} />
       ) : (
@@ -66,23 +98,29 @@ function WelcomeForm() {
   if(!createWallet)
     return (
       <Card>
-        <Box p={8}>        
-    <Typography align="center" variant="h1" gutterBottom>
-      Welcome to Salmon Wallet!
-    </Typography>
-    <CardMedia style={styles.welcomeCard} image="images/logo.jpg" component="img"/>      
-    <Box style={styles.buttonStack} display="flex" flexDirection="column">
-      <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
-          Create new Wallet
-        </Button>
-      <Button variant="outlined" style={styles.button} color="primary" onClick={() => setRestoreWallet(true)}>
-          Restore Wallet
-      </Button>
-    </Box>
-  </Box>
-</Card>  
+        <Box px={8} py={14}>        
+          <Box px={4} py={1}>
+            <CardMedia style={styles.welcomeCard} image="images/logo.png" component="img"/>      
+          </Box>
+          <Box mb={8}>
+            <Typography style={styles.welcomeFirst} align="center" variant="h1" gutterBottom>
+              Welcome to
+            </Typography>          
+            <Typography style={styles.welcomeSecond} align="center" variant="h1" gutterBottom>
+              SALMON
+            </Typography>
+          </Box>          
+          <Box style={styles.buttonStack} display="flex" flexDirection="column">
+            <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
+                Create Wallet
+              </Button>
+            <Button variant="contained" style={styles.button} color="secondary">
+                Recover Wallet
+            </Button>
+          </Box>
+        </Box>
+      </Card>  
     );
-
 }
 
 function CreateWalletMessagges() {
@@ -94,7 +132,7 @@ function CreateWalletMessagges() {
   return (
     <Card>
       <Box p={8}>         
-        <CardMedia style={styles.welcomeCard} image="images/welcome.png" component="img"/>      
+        <CardMedia style={styles.welcomeCard} image="images/logo.png" component="img"/>      
         <Box m={3}> 
           <Typography align="center" variant="h1">Keep your seed safe!</Typography>
         </Box>
@@ -159,26 +197,6 @@ function CreateWalletForm() {
   );
 }
 
-const styles = ({
-  welcomeCard: {
-    width : '80%',
-    margin: '40px auto',    
-  },
-  button: {
-    fontSize: '19px',
-    fontWeight: 600,
-    textTransform: 'unset',
-    lineHeight: '24px',
-    padding: '11px 13.5px',
-    margin: '10px',
-  },
-  buttonStack: {
-    width: '100%',
-    maxWidth: '300px',
-    margin: 'auto'
-  }
-})
-
 function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   const [confirmed, setConfirmed] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
@@ -195,16 +213,13 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
   }
 
   return (
-    <>      
+    <>    
       <Card>
-        <CardContent>
+        <Box p={4}>
+        <CardMedia style={styles.welcomeCard} image="images/logo.png" component="img"/>
           <Typography align="center" variant="h1" gutterBottom>
             Create New Wallet
-          </Typography>
-          <CardMedia style={styles.welcomeCard} image="images/create_account.png" component="img"/>      
-          <Typography paragraph>
-            Create a new wallet to hold Solana and SPL tokens.
-          </Typography>
+          </Typography>        
           <Typography>
             Please write down the following twenty four words and keep them in a
             safe place:
@@ -222,16 +237,6 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           ) : (
             <LoadingIndicator />
           )}
-          <Typography paragraph>
-            Your private keys are only stored on your current computer or device.
-            You will need these words to restore your wallet if your browser's
-            storage is cleared or your device is damaged or lost.
-          </Typography>
-          <Typography paragraph>
-            By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
-            derivation path for the main wallet. To use an alternative path, try
-            restoring an existing wallet.
-          </Typography>
           <FormControlLabel
             control={
               <Checkbox
@@ -242,15 +247,17 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             }
             label="I have saved these words in a safe place."
           />
-          <Typography paragraph>
-          <Button variant="contained" color="primary" style={{ marginTop: 20 }} onClick={() => {
-            downloadMnemonic(mnemonicAndSeed?.mnemonic);
-            setDownloaded(true);
-          }}>
-            Download Backup Mnemonic File (Required)
-          </Button>
-          </Typography>
-        </CardContent>
+          
+          <Box mt={4} align="center">
+            <Button variant="contained" color="primary" style={styles.button} onClick={() => {
+              downloadMnemonic(mnemonicAndSeed?.mnemonic);
+              setDownloaded(true);
+            }}>
+              Download File (Required)
+            </Button>
+          </Box>
+          
+        </Box>
         <CardActions style={{ justifyContent: 'flex-end' }}>
           <Button color="primary" disabled={!confirmed || !downloaded} onClick={() => setShowDialog(true)}>
             Continue
@@ -283,10 +290,11 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           />
         </DialogContentText>
         <DialogActions>
-          <Button onClick={() => setShowDialog(false)}>Close</Button>
+          <Button variant="outlined" color="secondary" onClick={() => setShowDialog(false)}>Close</Button>
           <Button
             type="submit"
-            color="secondary"
+            color="primary"
+            variant="contained"
             disabled={normalizeMnemonic(seedCheck) !== mnemonicAndSeed?.mnemonic}
           >
             Continue

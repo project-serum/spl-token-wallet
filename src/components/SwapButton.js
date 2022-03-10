@@ -5,6 +5,8 @@ import {
   IconButton,
   DialogActions,
   Button,
+  Typography,
+  Box,
 } from '@material-ui/core';
 import SwapHoriz from '@material-ui/icons/SwapHoriz';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -16,6 +18,7 @@ import { useSendTransaction } from '../utils/notifications';
 import { useWallet } from '../utils/wallet';
 import { useConnection } from '../utils/connection';
 import { useIsExtensionWidth } from '../utils/utils';
+import {actionButtons} from './styles/buttons'
 import DialogForm from './DialogForm';
 
 export default function SwapButton({ size }) {
@@ -84,11 +87,14 @@ function SwapButtonPopover({ size }) {
       <PopupState variant="popover">
         {(popupState) => (
           <div style={{ display: 'flex' }}>
-            <Tooltip title="Swap Tokens">
-              <IconButton {...bindTrigger(popupState)} size={size}>
-                <SwapHoriz />
-              </IconButton>
-            </Tooltip>
+            <Box align='center'>
+              <Tooltip title="Swap Tokens">
+                <Button style={actionButtons.button} variant="contained" color="primary" {...bindTrigger(popupState)} size={size} >
+                  <SwapHoriz />
+                </Button>                 
+              </Tooltip>
+              <Typography style={actionButtons.buttonText}>Swap</Typography>       
+            </Box>
             <Popover
               {...bindPopover(popupState)}
               anchorOrigin={{

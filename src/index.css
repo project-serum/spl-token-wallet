@@ -11,8 +11,7 @@ body,
 #root {
   min-width: 375px;
   min-height: 600px;
-  height: 100%;  
-  font-family: 'Source Sans Pro', sans-serif;
+  height: 100%;
 }
 
 /* TODO consolidate popup dimensions */

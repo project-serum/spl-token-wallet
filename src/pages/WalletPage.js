@@ -26,7 +26,7 @@ export default function WalletPage() {
   const isExtensionWidth = useIsExtensionWidth();
   return (
     <Container             
-      fixed maxWidth="md" 
+      fixed maxWidth="xs" 
       className={classes.container}
     >
       <Grid container spacing={isExtensionWidth ? 0 : 3}>

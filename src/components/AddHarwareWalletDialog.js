@@ -11,7 +11,7 @@ import {
   AccountsSelector,
   DerivationPathMenuItem,
   toDerivationPath,
-} from '../pages/LoginPage.js';
+} from '../pages/WelcomePage.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useSnackbar } from 'notistack';
 
