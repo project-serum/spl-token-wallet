@@ -114,7 +114,7 @@ function WelcomeForm() {
             <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
                 Create Wallet
               </Button>
-            <Button variant="contained" style={styles.button} color="secondary">
+            <Button variant="contained" style={styles.button} color="secondary" onClick={() => setRestoreWallet(true)}>
                 Recover Wallet
             </Button>
           </Box>
