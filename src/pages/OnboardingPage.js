@@ -5,6 +5,7 @@ import {
 } from '../utils/wallet-seed';
 import { DialogActions, Button, Card, Typography, CardMedia, Box, MobileStepper } from '@material-ui/core';
 import WelcomePage from './WelcomePage';
+import NftPage from './NftPage';
 
 const styles = ({
   welcomeCard: {
@@ -55,6 +56,7 @@ export default function OnboardingPage() {
   
   const [step, setStep] = useState(0);
   const [skip, setSkip] = useState(false);
+  const [nft, setNft] = useState(false);
 
   const text = [
     {
@@ -70,6 +72,12 @@ export default function OnboardingPage() {
       paragraph: "It’s VERY IMPORTANT to keep the seed-phrase you’re about to see in a safe place. Loosing it may prevent you from accesing your funds."
     }
   ]
+
+  if(nft){
+    return (
+      <NftPage/>
+    )
+  }
 
   if(hasLockedMnemonicAndSeed)
     return (<WelcomePage/>)
