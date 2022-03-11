@@ -56,6 +56,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [skip, setSkip] = useState(false);
 
+
   const text = [
     {
       title : "Welcome to Salmon",
