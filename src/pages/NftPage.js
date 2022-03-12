@@ -68,14 +68,14 @@ export default function NftPage() {
   return (
     <>
       <Paper style={{ display: data ? "block" : "none" }}>
-        <Box sx={{position:'relative'}} align="center" py={5} px={3}>
-          <Box sx={{position:'absolute', left:'15px', cursor: 'pointer'}} onClick={() => setBack(true)}>
+        <Box style={{position:'relative'}} align="center" py={5} px={3}>
+          <Box style={{position:'absolute', left:'15px', cursor: 'pointer'}} onClick={() => setBack(true)}>
             <Typography variant="h3"><ArrowBackIos/></Typography>
           </Box>
           <Typography variant="h3">NFTs</Typography>
         </Box>
         <Card>
-          <Box sx={{bgcolor: 'background.tokens', borderRadius: '20px 20px 0 0'}} px={2} py={2}>            
+          <Box style={{bgcolor: 'background.tokens', borderRadius: '20px 20px 0 0'}} px={2} py={2}>            
             { data && data.length > 0 && 
               <Grid container spacing={2}>
                 {data.map((nft) => (
