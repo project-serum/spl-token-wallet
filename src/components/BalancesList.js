@@ -503,10 +503,9 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   }
 
   return (
-    <>
-      <Box px={2} py={1} sx={{bgcolor: 'background.token', borderRadius: '30px'}}>        
-        <Box sx={{display:'flex', flexDirection: 'row', justifyContent:'space-between'}}>
-          <Box sx={{width: '15%', display: 'flex', flexDirection: 'row', alignItems:'center'}} >
+      <Box px={2} py={1} style={{backgroundColor: '#363E48', borderRadius: '30px'}}>        
+        <Box style={{display:'flex', flexDirection: 'row', justifyContent:'space-between'}}>
+          <Box style={{width: '15%', display: 'flex', flexDirection: 'row', alignItems:'center'}} >
             <TokenIcon
               mint={mint}
               tokenName={tokenName}
@@ -514,8 +513,8 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
               size={36}
             />
           </Box >
-          <Box sx={{display:'flex', flexDirection: 'column',  justifyContent:'flex-start', width: '60%'}}>
-            <Typography variant='h4'>{displayName}</Typography>
+          <Box style={{display:'flex', flexDirection: 'column',  justifyContent:'flex-start', width: '60%'}}>
+            <Typography styl={{color: '#D8D8D8'}} variant='h4'>{displayName}</Typography>
             <Typography variant='caption'>{balanceFormat.format(amount / Math.pow(10, decimals))}{' '}</Typography>                    
           </Box>  
           <Box sx={{width: '25%'}}>
@@ -534,9 +533,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
             balanceInfo={balanceInfo}
           />
             */}
-      </Box>
-          
-    </>
+      </Box>              
   );
 }
 
