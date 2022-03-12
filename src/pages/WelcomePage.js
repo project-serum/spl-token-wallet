@@ -93,7 +93,7 @@ function WelcomeForm() {
     return <CreateWalletMessagges/>
 
   if(restoreWallet)
-    return <RestoreWalletForm/>
+    return <RestoreWalletForm goBack={() => setRestoreWallet(false)}/>
 
   if(!createWallet)
     return (
@@ -439,12 +439,12 @@ function RestoreWalletForm({ goBack }) {
           <CardContent>
             <Box mb={4}>
               <Typography align="center" variant="h3" gutterBottom>
-                Restore Existing Wallet
+                Recover Existing Wallet
               </Typography>
             </Box>
             <Box align="center" my={2}>
               <Typography variant="paragraph">
-                Restore your wallet using your twelve or twenty-four seed words.
+                Recover your wallet using your twelve or twenty-four seed words.
                 Note that this will delete any existing wallet on this device.
               </Typography>
             </Box>

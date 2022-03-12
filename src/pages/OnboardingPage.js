@@ -34,8 +34,7 @@ const styles = ({
     fontSize: "19px",
     fontWeight: "600",    
     lineHeight: "24px",
-    textTransform: "unset",   
-    color: "#347AF0"
+    textTransform: "unset"    
   },
   buttonStack: {
     width: '100%',
