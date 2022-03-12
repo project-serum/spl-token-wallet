@@ -58,6 +58,7 @@ export default function OnboardingPage() {
   const [skip, setSkip] = useState(false);
   const [nft, setNft] = useState(false);
 
+
   const text = [
     {
       title : "Welcome to Salmon",

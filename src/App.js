@@ -133,7 +133,7 @@ export default function App() {
           h3: {
             fontSize: '26px',
             fontWeight: '600',
-            color: '#FF855F',
+            color: '#FFF',
           },
           h4: {
             fontWeight: 600,
@@ -153,6 +153,31 @@ export default function App() {
           MuiButton: {
             root: {
               borderRadius: 20,
+            },
+          },
+          MuiDialogContentText: {
+            root: {
+              fontSize: '13px',
+              color: '#FFEDE8',
+              lineHeight: '18.5px',
+              fontWeight: '400',
+            },
+          },
+          MuiDialogTitle: {
+            root: {
+              '& h2': {
+                fontSize: '15px',
+                fontWeight: '600',
+                lineHeight: '24px',
+                color: '#FFF',
+              },
+            },
+          },
+          MuiTextField: {
+            root: {
+              '& label': {
+                color: '#FFF',
+              },
             },
           },
         },

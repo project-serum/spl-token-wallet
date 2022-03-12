@@ -114,7 +114,7 @@ function WelcomeForm() {
             <Button variant="contained" style={styles.button} color="primary" onClick={() => setCreateWallet(true)}>
                 Create Wallet
               </Button>
-            <Button variant="contained" style={styles.button} color="secondary">
+            <Button variant="contained" style={styles.button} color="secondary" onClick={() => setRestoreWallet(true)}>
                 Recover Wallet
             </Button>
           </Box>
@@ -381,7 +381,7 @@ function LoginForm() {
   return (
     <Card className="card">
       <CardContent>
-        <Typography variant="h3" gutterBottom>
+        <Typography align="center" variant="h1" gutterBottom>
           Unlock Wallet
         </Typography>
         <TextField
@@ -437,33 +437,43 @@ function RestoreWalletForm({ goBack }) {
       ) : (
         <Card>
           <CardContent>
-            <Typography variant="h5" gutterBottom>
-              Restore Existing Wallet
-            </Typography>
-            <Typography>
-              Restore your wallet using your twelve or twenty-four seed words.
-              Note that this will delete any existing wallet on this device.
-            </Typography>
-            <br />
-            <Typography fontWeight="fontWeightBold">
-              <b>Do not enter your hardware wallet seedphrase here.</b> Hardware
-              wallets can be optionally connected after a web wallet is created.
-            </Typography>
-            {displayInvalidMnemonic && (
-               <Typography fontWeight="fontWeightBold" style={{ color: 'red' }}>
-                 Mnemonic validation failed. Please enter a valid BIP 39 seed phrase.
-               </Typography>
-            )}
+            <Box mb={4}>
+              <Typography align="center" variant="h3" gutterBottom>
+                Restore Existing Wallet
+              </Typography>
+            </Box>
+            <Box align="center" my={2}>
+              <Typography variant="paragraph">
+                Restore your wallet using your twelve or twenty-four seed words.
+                Note that this will delete any existing wallet on this device.
+              </Typography>
+            </Box>
+            <Box align="center">
+              <Typography variant="paragraph" fontWeight="fontWeightBold">
+                <b>Do not enter your hardware wallet seedphrase here.</b>
+              </Typography>
+            </Box>
+            <Box align="center" mb={4}>
+              <Typography variant="paragraph" fontWeight="fontWeightBold">
+                Hardware wallets can be optionally connected after a web wallet is created.
+              </Typography>
+            </Box>
+
             <TextField
-              variant="outlined"
+              variant="outlined"              
               fullWidth
               multiline
-              rows={3}
+              rows={5}
               margin="normal"
               label="Seed Words"
               value={rawMnemonic}
               onChange={(e) => setRawMnemonic(e.target.value)}
             />
+            {displayInvalidMnemonic && (
+               <Typography fontWeight="fontWeightBold" style={{ fontSize: '12px', color: 'red' }}>
+                 Mnemonic validation failed. Please enter a valid BIP 39 seed phrase.
+               </Typography>
+            )}
             <TextField
               variant="outlined"
               fullWidth

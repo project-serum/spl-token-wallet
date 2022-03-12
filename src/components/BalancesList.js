@@ -219,7 +219,8 @@ export default function BalancesList() {
   }
 
   return (
-    <Paper>
+    <>
+    <Paper style={{ display: allTokensLoaded ? "block" : "none" }}>
       {/*
       <Menu
         selectedAccount={selectedAccount}
@@ -323,6 +324,13 @@ export default function BalancesList() {
         onClose={() => setShowMergeAccounts(false)}
       />
     </Paper>
+    <Paper style={{ display: allTokensLoaded ? " none" : "block" }}>     
+      <Box align="center" p={10}>
+        <CircularProgress disableShrink/>
+      </Box>
+    </Paper>
+    
+    </>
   );
 }
 

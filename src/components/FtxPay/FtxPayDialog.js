@@ -60,7 +60,7 @@ export default function FtxPayDialog({ open, onClose }) {
   };
 
   return (
-    <DialogForm open={open} onClose={onClose} fullWidth>
+    <DialogForm maxWidth='xs' open={open} onClose={onClose} fullWidth>
       <DialogTitle>
         Deposit funds with{' '}
         <Link target="_blank" href={'https://ftx.com/pay'}>
@@ -115,14 +115,14 @@ export default function FtxPayDialog({ open, onClose }) {
                 ))}
             </Select>
           </FormControl>
-          <Button onClick={onSubmit} size="large" color="primary">
+          <Button onClick={onSubmit} variant="outlined" size="medium" color="primary">
             Open FTX Pay
           </Button>
         </div>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button variant="outlined" color="secondary" size="medium" onClick={onClose}>Close</Button>
       </DialogActions>
     </DialogForm>
   );
