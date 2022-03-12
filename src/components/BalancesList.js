@@ -503,7 +503,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   }
 
   return (
-      <Box px={2} py={1} style={{backgroundColor: '#363E48', borderRadius: '30px'}}>        
+      <Box px={2} py={1} my={1} style={{backgroundColor: '#363E48', borderRadius: '30px'}}>        
         <Box style={{display:'flex', flexDirection: 'row', justifyContent:'space-between'}}>
           <Box style={{width: '15%', display: 'flex', flexDirection: 'row', alignItems:'center'}} >
             <TokenIcon
