@@ -133,7 +133,7 @@ export default function App() {
           h3: {
             fontSize: '26px',
             fontWeight: '600',
-            color: '#FFF',
+            color: '#FF855F',
           },
           h4: {
             fontWeight: 600,

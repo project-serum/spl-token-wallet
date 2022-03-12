@@ -35,6 +35,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
+import LayersIcon from '@material-ui/icons/Layers';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -233,9 +234,11 @@ export default function BalancesList() {
       />
       <Box sx={{bgcolor: 'background.tokens', borderRadius: '20px 20px 0 0'}} px={2} py={2}>
         <Box display='flex' justifyContent='center'>
+          {/*
           <Box mx={2}>
             {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
           </Box>
+          */}
           <Box mx={2} align="center">
             <Tooltip title="Sort Tokens" arrow>
               <Button 
@@ -281,10 +284,18 @@ export default function BalancesList() {
             </Tooltip>  
             <Typography style={actionButtons.buttonText}>Refresh</Typography>       
           </Box>
-          <Box>
-            <Button style={styles.button} variant="outlined" color="primary" px={5} onClick={() => setNft(true)}>
-              NFT
-            </Button>
+          <Box mx={2} align="center">
+            <Tooltip title="NFT" arrow>
+              <Button 
+                style={actionButtons.button} 
+                variant="contained" 
+                color="primary"                           
+                onClick={() => {setNft(true)}}
+              >
+                <LayersIcon />
+              </Button>            
+            </Tooltip>
+            <Typography style={actionButtons.buttonText}>NFT</Typography>       
           </Box>
 
         </Box>
