@@ -571,12 +571,14 @@ function BalanceListItemDetails({
   const isSolAddress = publicKey.equals(owner);
   const additionalInfo = isExtensionWidth ? undefined : (
     <>
-      <Typography variant="body2">
-        Token Name: {tokenName ?? 'Unknown'}
-      </Typography>
-      <Typography variant="body2">
-        Token Symbol: {tokenSymbol ?? 'Unknown'}
-      </Typography>
+      <Box style={{display: "flex", flexDirection: "row", justifyContent:"space-between"}}>
+        <Typography variant="caption" style={{fontSize:"12px"}}>
+          Token Name: {tokenName ?? 'Unknown'}
+        </Typography>
+        <Typography variant="caption" style={{fontSize:"12px"}}>
+          Token Symbol: {tokenSymbol ?? 'Unknown'}
+        </Typography>
+      </Box>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
           {!isSolAddress && isAssociatedToken === false && (
@@ -584,7 +586,7 @@ function BalanceListItemDetails({
               This is an auxiliary token account.
             </div>
           )}
-          <Typography variant="body2">
+          <Typography variant="body2" style={{fontSize:"10px"}}>
             <Link
               href={
                 `https://solscan.io/account/${publicKey.toBase58()}` + urlSuffix
@@ -596,7 +598,7 @@ function BalanceListItemDetails({
             </Link>
           </Typography>
           {market && (
-            <Typography variant="body2">
+            <Typography variant="body2" style={{fontSize:"10px"}}>
               <Link
                 href={`https://dex.projectserum.com/#/market/${market}`}
                 target="_blank"
@@ -607,7 +609,7 @@ function BalanceListItemDetails({
             </Typography>
           )}
           {swapInfo && swapInfo.coin.erc20Contract && (
-            <Typography variant="body2">
+            <Typography variant="body2 " style={{fontSize:"10px"}}>
               <Link
                 href={
                   `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
@@ -621,7 +623,7 @@ function BalanceListItemDetails({
             </Typography>
           )}
           {!isSolAddress && (
-            <Typography variant="body2">
+            <Typography variant="body2" style={{fontSize:"10px"}}>
               <Link
                 className={classes.viewDetails}
                 onClick={() => setShowDetails(!showDetails)}
@@ -645,7 +647,7 @@ function BalanceListItemDetails({
         </div>
         {exportNeedsDisplay && wallet.allowsExport && (
           <div>
-            <Typography variant="body2">
+            <Typography variant="body2" style={{fontSize:"10px"}}>
               <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
                 Export
               </Link>
@@ -665,7 +667,7 @@ function BalanceListItemDetails({
         />
       )}
       <div className={classes.itemDetails}>
-        <div className={classes.buttonContainer}>
+        <div className={classes.buttonContainer} style={{display:"flex",justifyContent:"space-between"}}>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (
             <Button
               variant="outlined"
@@ -677,7 +679,7 @@ function BalanceListItemDetails({
             </Button>
           ) : null}
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<ReceiveIcon />}
             onClick={() => setDepositDialogOpen(true)}
@@ -685,7 +687,7 @@ function BalanceListItemDetails({
             Receive
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<SendIcon />}
             onClick={() => setSendDialogOpen(true)}

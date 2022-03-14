@@ -141,7 +141,7 @@ export default function App() {
             color: '#FFF',
           },
           caption: {
-            fontSize: '15px',
+            fontSize: '12px',
             fontWeight: '300',
             lineHeight: '24px',
           },
