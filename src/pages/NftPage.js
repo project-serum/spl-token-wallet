@@ -2,7 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useConnection } from '../utils/connection';
 import NFTs from '@primenums/solana-nft-tools';
 import ArrowBackIos from '@material-ui/icons/ArrowBackIos';
-import { Container, Button, Card, Typography, CardMedia, Box, Grid, Paper, CircularProgress } from '@material-ui/core';
+import DialogForm from '../components/DialogForm';
+import { 
+  Container,
+  Button,
+  Card,
+  Typography,
+  CardMedia,
+  Box,
+  Grid,
+  Paper,
+  CircularProgress,
+  Link,  
+  DialogTitle,
+  DialogContent,
+  DialogActions 
+} from '@material-ui/core';
 import {  
   useWallet,  
 } from '../utils/wallet';
@@ -46,10 +61,17 @@ export default function NftPage() {
   const conn = useConnection();  
   const wallet = useWallet();
   const [back, setBack] = useState(false);
+  const [currentNft, setCurrentNft] = useState(false);
+  const [detail, setDetail] = useState(false);
 
   //const publicKey = wallet.publicKey.toString();  
   const publicKey = 'EaeLkUWHDXBRcLfvBXhczgavxPtCBASYYXB9rBrYN1b6';
   
+  const showDetail = (nft) => {
+    setCurrentNft(nft);
+    setDetail(true);
+  }
+
   useEffect(() => {
     async function fetchMyAPI() {
       console.log(wallet.publicKey.toString());      
@@ -80,15 +102,23 @@ export default function NftPage() {
               <Grid container spacing={2}>
                 {data.map((nft) => (
                   <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
+                    <Link  
+                      variant="body2"
+                      component="button"
+                      onClick={() => {
+                        showDetail(nft)
+                      }}
+                    >
+                      <Box style={styles.mediaContainer}>
+                        <CardMedia style={styles.image} image={nft.image} component="img"/>  
+                        <Box style={styles.overlay} p={1}>
+                          <Box style={styles.overlayTextContainer}>
+                            <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
+                          </Box>
+                          
+                        </Box>                             
+                      </Box>   
+                    </Link>                                       
                   </Grid>
                 ))}  
 
@@ -167,6 +197,14 @@ export default function NftPage() {
             }
           </Box>
         </Card>
+        { detail &&
+          <NftDetailDialog 
+          open={detail}
+          onClose={() => setDetail(false)}
+          nft = {currentNft}
+          />
+        }
+        
       </Paper>
       <Paper style={{ display: data ? " none" : "block" }}>     
         <Box align="center" p={10}>
@@ -176,3 +214,48 @@ export default function NftPage() {
     </>
   )
 }
+
+function NftDetailDialog({ open, onClose, nft }) {
+  return (
+    <DialogForm
+      open={open}
+      onClose={onClose}    
+      maxWidth='xs'              
+    >
+      
+      <DialogContent style={{ maxWidth: '400px'}}>
+        <Paper>
+          <Box style={{position:'relative'}} align="center" py={5} px={1}>     
+            <Box style={{position:'absolute', left:'15px', cursor: 'pointer'}} onClick={onClose}>
+              <Typography variant="h3"><ArrowBackIos/></Typography>
+            </Box>       
+            <Typography variant="h3">NFT  {nft.name}</Typography>
+          </Box>
+          <Box >
+            <Box>
+              <CardMedia style={styles.mediaContainer} image={nft.image} component="img"/>                
+            </Box>
+            <Box my={1}>
+              <Typography variant="paragraph">{nft.description}</Typography>
+            </Box>  
+            <Box align="center" style={{backgroundColor: '#4E4E4E', borderRadius:'10px'}} py={1}>
+              <Box p={1}>
+                <Typography variant="paragraph">Properties</Typography>
+              </Box>
+              <Box px={3}>
+                <Typography variant="paragraph">
+                  {nft.attributes.map((attribute) => {
+                    return(
+                      <><b>{attribute.trait_type}</b> {attribute.value} </>
+                    )
+                  })}
+                </Typography>       
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
+      </DialogContent>      
+    </DialogForm>
+  );
+}
+
