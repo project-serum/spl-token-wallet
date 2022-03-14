@@ -35,6 +35,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import MergeType from '@material-ui/icons/MergeType';
 import SortIcon from '@material-ui/icons/Sort';
+import LayersIcon from '@material-ui/icons/Layers';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddTokenDialog from './AddTokenDialog';
 import ExportAccountDialog from './ExportAccountDialog';
@@ -64,6 +65,7 @@ import SwapButton from './SwapButton';
 import DnsIcon from '@material-ui/icons/Dns';
 import DomainsList from './DomainsList';
 import {actionButtons} from './styles/buttons'
+import NftPage from '../pages/NftPage';
 
 
 
@@ -124,6 +126,7 @@ export default function BalancesList() {
   const region = useRegion();
   const selectedAccount = accounts.find((a) => a.isSelected);
   const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
+  const [nft, setNft] = useState(false);
   let sortedPublicKeys = publicKeys;
   if (allTokensLoaded && sortAccounts !== SortAccounts.None) {
     sortedPublicKeys = [...publicKeys];
@@ -210,6 +213,12 @@ export default function BalancesList() {
 
   const iconSize = isExtensionWidth ? 'small' : 'medium';
 
+  if(nft){
+    return (
+      <NftPage/>
+    )
+  }
+
   return (
     <>
     <Paper style={{ display: allTokensLoaded ? "block" : "none" }}>
@@ -225,9 +234,11 @@ export default function BalancesList() {
       />
       <Box sx={{bgcolor: 'background.tokens', borderRadius: '20px 20px 0 0'}} px={2} py={2}>
         <Box display='flex' justifyContent='center'>
+          {/*
           <Box mx={2}>
-          {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
+            {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
           </Box>
+          */}
           <Box mx={2} align="center">
             <Tooltip title="Sort Tokens" arrow>
               <Button 
@@ -273,6 +284,20 @@ export default function BalancesList() {
             </Tooltip>  
             <Typography style={actionButtons.buttonText}>Refresh</Typography>       
           </Box>
+          <Box mx={2} align="center">
+            <Tooltip title="NFT" arrow>
+              <Button 
+                style={actionButtons.button} 
+                variant="contained" 
+                color="primary"                           
+                onClick={() => {setNft(true)}}
+              >
+                <LayersIcon />
+              </Button>            
+            </Tooltip>
+            <Typography style={actionButtons.buttonText}>NFT</Typography>       
+          </Box>
+
         </Box>
         <Box m={2}>
           <Typography variant='h4'>Tokens</Typography>
