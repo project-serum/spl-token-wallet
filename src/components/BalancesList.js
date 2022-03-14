@@ -525,14 +525,14 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
               )}
           </Box>     
         </Box>
-        {/*}
+        
         <BalanceListItemDetails
             isAssociatedToken={isAssociatedToken}
             publicKey={publicKey}
             serumMarkets={serumMarkets}
             balanceInfo={balanceInfo}
           />
-            */}
+        
       </Box>              
   );
 }
