@@ -74,7 +74,6 @@ export default function NftPage() {
 
   useEffect(() => {
     async function fetchMyAPI() {
-      console.log(wallet.publicKey.toString());      
       const response = await NFTs.getNFTsByOwner(conn, publicKey, 1, 100, 1);
       const result = response
         // remove errors

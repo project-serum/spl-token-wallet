@@ -306,12 +306,15 @@ export default function BalancesList() {
           <Memoized />
         ))}
         {loaded ? null : <LoadingIndicator />}
+        {/*
         <Box m={2} align='center'>
           <Button size='large' variant="outlined" style={styles.deposit} onClick={() => setShowFtxPayDialog(true)}>
               + Deposit
           </Button>       
         </Box>
+        */}
       </Box>
+       
       <AddTokenDialog
         open={showAddTokenDialog}
         onClose={() => setShowAddTokenDialog(false)}
@@ -554,8 +557,7 @@ function BalanceListItemDetails({
     setCloseTokenAccountDialogOpen,
   ] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const wallet = useWallet();
-  console.log(wallet)
+  const wallet = useWallet();  
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
     if (!showSwapAddress || !isProdNetwork) {
