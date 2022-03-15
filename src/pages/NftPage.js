@@ -64,9 +64,8 @@ export default function NftPage() {
   const [currentNft, setCurrentNft] = useState(false);
   const [detail, setDetail] = useState(false);
 
-  //const publicKey = wallet.publicKey.toString();  
-  //const publicKey = 'EaeLkUWHDXBRcLfvBXhczgavxPtCBASYYXB9rBrYN1b6';
-  const publicKey = '6cZh6TNJMBe7xvUCab9WUXzDdVxpxBADwkDszaocqSb8';
+  const publicKey = wallet.publicKey.toString();  
+  //const publicKey = 'EaeLkUWHDXBRcLfvBXhczgavxPtCBASYYXB9rBrYN1b6';  
   
   const showDetail = (nft) => {
     setCurrentNft(nft);
