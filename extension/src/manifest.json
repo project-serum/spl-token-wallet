@@ -1,22 +1,19 @@
 {
-  "name": "Sollet",
-  "description": "Solana SPL Token Wallet",
-  "version": "0.3.1",
-  "browser_action": {
+  "name": "Salmon",
+  "description": "Salmon Solana Wallet",
+  "version": "0.0.1",
+  "action": {
     "default_popup": "index.html",
     "default_title": "Open the popup"
   },
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "favicon.ico",
     "192": "logo192.png",
     "512": "logo512.png"
   },
-  "background": {
-    "persistent": true,
-    "scripts": [
-      "background.js"
-    ]
+  "background": {    
+    "service_worker": "background.js"
   },
   "permissions": [
     "storage"
@@ -35,8 +32,7 @@
       "all_frames": true
     }
   ],
-  "web_accessible_resources": [
-    "script.js"
-  ],
-  "content_security_policy": "script-src 'self' 'sha256-ek+jXksbUr00x+EdLLqiv69t8hATh5rPjHVvVVGA9ms='; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
