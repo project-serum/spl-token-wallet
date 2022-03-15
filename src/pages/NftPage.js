@@ -64,8 +64,9 @@ export default function NftPage() {
   const [currentNft, setCurrentNft] = useState(false);
   const [detail, setDetail] = useState(false);
 
-  const publicKey = wallet.publicKey.toString();  
+  //const publicKey = wallet.publicKey.toString();  
   //const publicKey = 'EaeLkUWHDXBRcLfvBXhczgavxPtCBASYYXB9rBrYN1b6';
+  const publicKey = '6cZh6TNJMBe7xvUCab9WUXzDdVxpxBADwkDszaocqSb8';
   
   const showDetail = (nft) => {
     setCurrentNft(nft);
@@ -101,7 +102,7 @@ export default function NftPage() {
             { data && data.length > 0 && 
               <Grid container spacing={2}>
                 {data.map((nft) => (
-                  <Grid item xs={6}> 
+                  <Grid item> 
                     <Link  
                       variant="body2"
                       component="button"
@@ -120,74 +121,7 @@ export default function NftPage() {
                       </Box>   
                     </Link>                                       
                   </Grid>
-                ))}  
-
-                {data.map((nft) => (
-                  <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
-                  </Grid>
-                ))} 
-                                {data.map((nft) => (
-                  <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
-                  </Grid>
-                ))} 
-                                {data.map((nft) => (
-                  <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
-                  </Grid>
-                ))} 
-                                {data.map((nft) => (
-                  <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
-                  </Grid>
-                ))} 
-                                {data.map((nft) => (
-                  <Grid item xs={6}> 
-                    <Box style={styles.mediaContainer}>
-                      <CardMedia style={styles.image} image={nft.image} component="img"/>  
-                      <Box style={styles.overlay} p={1}>
-                        <Box style={styles.overlayTextContainer}>
-                          <Typography style={styles.nftName} variant='caption'>{nft.name}</Typography>
-                        </Box>
-                        
-                      </Box>                             
-                    </Box>                                          
-                  </Grid>
-                ))} 
-                
+                ))}                                                                                                    
               </Grid>    
             } 
             { data && data.length ==  0 && 

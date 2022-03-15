@@ -555,6 +555,7 @@ function BalanceListItemDetails({
   ] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const wallet = useWallet();
+  console.log(wallet)
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
     if (!showSwapAddress || !isProdNetwork) {
@@ -670,7 +671,7 @@ function BalanceListItemDetails({
             </Typography>
           )}
         </div>
-        {exportNeedsDisplay && wallet.allowsExport && (
+        {wallet && exportNeedsDisplay && wallet.allowsExport && (
           <div>
             <Typography variant="body2" style={{fontSize:"10px"}}>
               <Link href={'#'} onClick={(e) => setExportAccDialogOpen(true)}>
@@ -685,7 +686,7 @@ function BalanceListItemDetails({
 
   return (
     <>
-      {wallet.allowsExport && (
+      {wallet && wallet.allowsExport && (
         <ExportAccountDialog
           onClose={() => setExportAccDialogOpen(false)}
           open={exportAccDialogOpen}
