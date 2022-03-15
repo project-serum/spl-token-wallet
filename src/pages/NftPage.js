@@ -76,9 +76,15 @@ export default function NftPage() {
   useEffect(() => {
     async function fetchMyAPI() {
       console.log(wallet.publicKey.toString());      
-      const response = await NFTs.getNFTsByOwner(conn, publicKey);
+      const response = await NFTs.getNFTsByOwner(conn, publicKey, 1, 100, 1);
+      const result = response
+        // remove errors
+        .filter(nft => !nft.error)
+        // remove duplicates
+        .filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i)
       console.log(response);
-      dataSet(response)
+      console.log(result);
+      dataSet(result)
     }
 
     fetchMyAPI()
@@ -100,9 +106,9 @@ export default function NftPage() {
         <Card>
           <Box style={{bgcolor: 'background.tokens', borderRadius: '20px 20px 0 0'}} px={2} py={2}>            
             { data && data.length > 0 && 
-              <Grid container spacing={2}>
+              <Grid container spacing={2} align="center">
                 {data.map((nft) => (
-                  <Grid item> 
+                  <Grid item xs="6"> 
                     <Link  
                       variant="body2"
                       component="button"
