@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useConnection } from '../utils/connection';
-import NFTs from '@primenums/solana-nft-tools';
 import ArrowBackIos from '@material-ui/icons/ArrowBackIos';
 import DialogForm from '../components/DialogForm';
 import { 
@@ -21,9 +20,10 @@ import {
 import {  
   useWallet,  
 } from '../utils/wallet';
-import WalletPage from './WalletPage';
 import BalancesList from '../components/BalancesList';
-import { useIsExtensionWidth } from '../utils/utils';
+import {  
+  getParsedNftAccountsByOwner
+} from "@nfteyez/sol-rayz";
 
 const styles = {
   mediaContainer: {
@@ -64,8 +64,7 @@ export default function NftPage() {
   const [currentNft, setCurrentNft] = useState(false);
   const [detail, setDetail] = useState(false);
 
-  const publicKey = wallet.publicKey.toString();  
-  //const publicKey = 'EaeLkUWHDXBRcLfvBXhczgavxPtCBASYYXB9rBrYN1b6';  
+  const publicKey = wallet.publicKey.toString(); 
   
   const showDetail = (nft) => {
     setCurrentNft(nft);
@@ -73,19 +72,21 @@ export default function NftPage() {
   }
 
   useEffect(() => {
-    async function fetchMyAPI() {
-      const response = await NFTs.getNFTsByOwner(conn, publicKey, 1, 100, 1);
-      const result = response
-        // remove errors
-        .filter(nft => !nft.error)
-        // remove duplicates
-        .filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i)
-      console.log(response);
-      console.log(result);
-      dataSet(result)
+    async function fetchNftList() {
+      const response = await getParsedNftAccountsByOwner({publicAddress:publicKey});      
+      const data = await Promise.all(
+        response.map( async(item) => { 
+          return await fetchDetail(item.data.uri)})
+      );      
+      dataSet(data)
     }
 
-    fetchMyAPI()
+    async function fetchDetail(uri){
+      const response = await fetch(uri);
+      const detail = await response.json();      
+      return detail;
+    }
+    fetchNftList()
   }, [])
 
   if(back){
