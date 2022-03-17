@@ -450,6 +450,7 @@ function Footer() {
       >
         View Source
       </Button>
+      <Typography style={{fontSize: "11px", color:"#CCC", position: "absolute", left: "20px"}}>Beta Version 0.1.0</Typography>
     </footer>
   );
 }
