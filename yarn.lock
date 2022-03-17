@@ -2206,6 +2206,15 @@
     prop-types "^15.7.2"
     react-is "^16.8.0 || ^17.0.0"
 
+"@nfteyez/sol-rayz-react@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@nfteyez/sol-rayz-react/-/sol-rayz-react-0.10.2.tgz#1b93b7f6583717f2f4a53860f02ab41f30528769"
+  integrity sha512-w/GyF18Z1iqea16sJw6YMSeY9H8FHsF3VA3cHmOshx5/pSsFxU8kmQMoOo6eM7veTJQRYFtclYlWzQkchfQ51A==
+  dependencies:
+    "@nfteyez/sol-rayz" "^0.10.2"
+    "@solana/web3.js" "^1.33.0"
+    swr "^1.0.1"
+
 "@nfteyez/sol-rayz@^0.10.2":
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@nfteyez/sol-rayz/-/sol-rayz-0.10.2.tgz#a059b8e8b9cb0956ea0c5a4ca51f5dc12819a3b2"
@@ -2543,7 +2552,7 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solana/web3.js@^1.12.0":
+"@solana/web3.js@^1.12.0", "@solana/web3.js@^1.33.0":
   version "1.36.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.36.0.tgz#79d7d5217b49b80139f4de68953adc5b9a9a264f"
   integrity sha512-RNT1451iRR7TyW7EJKMCrH/0OXawIe4zVm0DWQASwXlR/u1jmW6FrmH0lujIh7cGTlfOVbH+2ZU9AVUPLBFzwA==
@@ -13375,6 +13384,11 @@ swarm-js@^0.1.40:
     setimmediate "^1.0.5"
     tar "^4.0.2"
     xhr-request "^1.0.1"
+
+swr@^1.0.1:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-1.2.2.tgz#6cae09928d30593a7980d80f85823e57468fac5d"
+  integrity sha512-ky0BskS/V47GpW8d6RU7CPsr6J8cr7mQD6+do5eky3bM0IyJaoi3vO8UhvrzJaObuTlGhPl2szodeB2dUd76Xw==
 
 symbol-observable@1.2.0:
   version "1.2.0"

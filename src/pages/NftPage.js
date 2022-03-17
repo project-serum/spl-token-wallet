@@ -20,10 +20,13 @@ import {
 import {  
   useWallet,  
 } from '../utils/wallet';
+import WalletPage from './WalletPage';
 import BalancesList from '../components/BalancesList';
+import { useIsExtensionWidth } from '../utils/utils';
 import {  
   getParsedNftAccountsByOwner
 } from "@nfteyez/sol-rayz";
+
 
 const styles = {
   mediaContainer: {
@@ -63,7 +66,7 @@ export default function NftPage() {
   const [back, setBack] = useState(false);
   const [currentNft, setCurrentNft] = useState(false);
   const [detail, setDetail] = useState(false);
-
+  
   const publicKey = wallet.publicKey.toString(); 
   
   const showDetail = (nft) => {
@@ -73,11 +76,14 @@ export default function NftPage() {
 
   useEffect(() => {
     async function fetchNftList() {
-      const response = await getParsedNftAccountsByOwner({publicAddress:publicKey});      
+      const response = await getParsedNftAccountsByOwner({publicAddress:publicKey, connection: conn});      
       const data = await Promise.all(
         response.map( async(item) => { 
           return await fetchDetail(item.data.uri)})
-      );      
+      );     
+      console.debug("NFTS DEBUG");
+      console.debug(publicKey); 
+      console.debug(data); 
       dataSet(data)
     }
 
