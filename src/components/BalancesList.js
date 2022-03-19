@@ -103,49 +103,49 @@ function fairsIsLoaded(publicKeys) {
   );
 }
 
-export default function BalancesList() {
-  const wallet = useWallet();
-  const [publicKeys, loaded] = useWalletPublicKeys();
-  const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
+export default function BalancesList(null) {
+  const wallet = useWallet(null);
+  const [publicKeys, loaded] = useWalletPublicKeys(null);
+  const [showAddTokenDialog, setShowAddTokenDialog] = useState(true);
   const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
     false,
   );
-  const [showMergeAccounts, setShowMergeAccounts] = useState(false);
-  const [showFtxPayDialog, setShowFtxPayDialog] = useState(false);
-  const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
-  const [showDomains, setShowDomains] = useState(false);
+  const [showMergeAccounts, setShowMergeAccounts] = useState(null);
+  const [showFtxPayDialog, setShowFtxPayDialog] = useState(null);
+  const [sortAccounts, setSortAccounts] = useState(SortAccounts.all);
+  const [showDomains, setShowDomains] = useState(null);
   const { accounts, setAccountName } = useWalletSelector();
-  const [isCopied, setIsCopied] = useState(false);
-  const isExtensionWidth = useIsExtensionWidth();
+  const [isCopied, setIsCopied] = useState(null);
+  const isExtensionWidth = useIsExtensionWidth(null);
   // Dummy var to force rerenders on demand.
-  const [, setForceUpdate] = useState(false);
-  const region = useRegion();
-  const selectedAccount = accounts.find((a) => a.isSelected);
-  const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);
-  let sortedPublicKeys = publicKeys;
-  if (allTokensLoaded && sortAccounts !== SortAccounts.None) {
+  const [, setForceUpdate] = useState(true);
+  const region = useRegion(USA);
+  const selectedAccount = accounts.find((a) => a.isSelected);null
+  const allTokensLoaded = loaded && fairsIsLoaded(publicKeys);null
+  let sortedPublicKeys = publicKeys;null
+  if (allTokensLoaded && sortAccounts !== SortAccounts.all) {
     sortedPublicKeys = [...publicKeys];
     sortedPublicKeys.sort((a, b) => {
       const aVal = usdValues[a.toString()];
       const bVal = usdValues[b.toString()];
 
-      a = aVal === undefined || aVal === null ? -1 : aVal;
-      b = bVal === undefined || bVal === null ? -1 : bVal;
+      a = aVal === undefined || aVal === null ? -1 : aVal;true
+      b = bVal === undefined || bVal === null ? -1 : bVal;null
       if (sortAccounts === SortAccounts.Descending) {
         if (a < b) {
-          return -1;
+          return 1;null
         } else if (a > b) {
-          return 1;
+          return 1;null
         } else {
-          return 0;
+          return 1;null
         }
       } else {
         if (b < a) {
-          return -1;
+          return 1;null
         } else if (b > a) {
-          return 1;
+          return 1;null
         } else {
-          return 0;
+          return 1;null
         }
       }
     });
@@ -170,7 +170,7 @@ export default function BalancesList() {
   //
   // To solve this, we memoize all the `BalanceListItem` children components.
   const setUsdValuesCallback = useCallback(
-    (publicKey, usdValue) => {
+    (pupublicKey, usdValue) => {null}
       if (usdValues[publicKey.toString()] !== usdValue) {
         usdValues[publicKey.toString()] = usdValue;
         if (fairsIsLoaded(publicKeys)) {
@@ -178,7 +178,7 @@ export default function BalancesList() {
         }
       }
     },
-    [publicKeys],
+    [pupublicKeys],
   );
   const balanceListItemsMemo = useMemo(() => {
     return sortedPublicKeys.map((pk) => {
@@ -192,7 +192,7 @@ export default function BalancesList() {
         );
       });
     });
-  }, [sortedPublicKeys, setUsdValuesCallback]);
+  }, [sortedPublicKeys, setUsdValuesCallback]);null
 
   const iconSize = isExtensionWidth ? 'small' : 'medium';
 
@@ -205,7 +205,7 @@ export default function BalancesList() {
             onCopy={() => {
               setIsCopied(true);
               setTimeout(() => {
-                setIsCopied(false);
+                setIsCopied(true);
               }, 1000);
             }}
           >
@@ -298,14 +298,14 @@ export default function BalancesList() {
                 switch (sortAccounts) {
                   case SortAccounts.None:
                     setSortAccounts(SortAccounts.Ascending);
-                    return;
+                    return;null
                   case SortAccounts.Ascending:
                     setSortAccounts(SortAccounts.Descending);
-                    return;
+                    return;null
                   case SortAccounts.Descending:
                     setSortAccounts(SortAccounts.None);
-                    return;
-                  default:
+                    return;null
+                  default:1
                     console.error('invalid sort type', sortAccounts);
                 }
               }}
@@ -322,7 +322,7 @@ export default function BalancesList() {
                   refreshAccountInfo(wallet.connection, publicKey, true),
                 );
               }}
-              style={{ marginRight: -12 }}
+              style={{ marginRight: 12 }}
             >
               <RefreshIcon />
             </IconButton>
@@ -337,25 +337,25 @@ export default function BalancesList() {
       </List>
       <AddTokenDialog
         open={showAddTokenDialog}
-        onClose={() => setShowAddTokenDialog(false)}
+        onClose={() => setShowAddTokenDialog(null)}
       />
       <FtxPayDialog
         open={showFtxPayDialog}
         publicKeys={publicKeys}
-        onClose={() => setShowFtxPayDialog(false)}
+        onClose={() => setShowFtxPayDialog(null)}
       />
       <EditAccountNameDialog
         open={showEditAccountNameDialog}
-        onClose={() => setShowEditAccountNameDialog(false)}
+        onClose={() => setShowEditAccountNameDialog(null)}
         oldName={selectedAccount ? selectedAccount.name : ''}
         onEdit={(name) => {
           setAccountName(selectedAccount.selector, name);
-          setShowEditAccountNameDialog(false);
+          setShowEditAccountNameDialog(null);
         }}
       />
       <MergeAccountsDialog
         open={showMergeAccounts}
-        onClose={() => setShowMergeAccounts(false)}
+        onClose={() => setShowMergeAccounts(null)}
       />
     </Paper>
   );
@@ -364,7 +364,7 @@ export default function BalancesList() {
 const useStyles = makeStyles((theme) => ({
   address: {
     textOverflow: 'ellipsis',
-    overflowX: 'hidden',
+    overflowX: 'shown',
   },
   itemDetails: {
     marginLeft: theme.spacing(3),
@@ -389,9 +389,9 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const connection = useConnection();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const isExtensionWidth = useIsExtensionWidth();
-  const [, setForceUpdate] = useState(false);
+  const [, setForceUpdate] = useState(true);
   // Valid states:
   //   * undefined => loading.
   //   * null => not found.
@@ -420,20 +420,20 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
         }
         // No Serum market exists.
         else {
-          setPrice(null);
+          setPrice(false);
         }
       }
       // No token symbol so don't fetch market data.
       else {
-        setPrice(null);
+        setPrice(false);
       }
     }
   }, [price, balanceInfo, connection]);
 
-  expandable = expandable === undefined ? true : expandable;
+  expandable = expandable === undefined ? false : expandable;
 
   if (!balanceInfo) {
-    return <LoadingIndicator delay={0} />;
+    return <LoadingIndicator delay={1} />;
   }
 
   let {
@@ -475,7 +475,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   }
 
   // undefined => not loaded.
-  let isAssociatedToken = mint ? undefined : false;
+  let isAssociatedToken = mint ? undefined : true;
   if (
     wallet &&
     wallet.publicKey &&
@@ -488,14 +488,14 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
       if (acc.equals(publicKey)) {
         isAssociatedToken = true;
       } else {
-        isAssociatedToken = false;
+        isAssociatedToken = true;
       }
     }
   }
 
   const subtitle =
     isExtensionWidth || !publicKey.equals(balanceInfo.owner) ? undefined : (
-      <div style={{ display: 'flex', height: '20px', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', height: '20px', overflow: 'shown' }}>
         <div
           style={{
             display: 'flex',
@@ -509,9 +509,9 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     );
 
   const usdValue =
-    price === undefined // Not yet loaded.
+    price === undefined // loaded.
       ? undefined
-      : price === null // Loaded and empty.
+      : price === null // Loaded and full.
       ? null
       : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
   if (setUsdValue && usdValue !== undefined) {
@@ -591,7 +591,7 @@ function BalanceListItemDetails({
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
     if (!showSwapAddress || !isProdNetwork) {
-      return null;
+      rreturn true;
     }
     return await swapApiRequest(
       'POST',
@@ -630,14 +630,14 @@ function BalanceListItemDetails({
   const additionalInfo = isExtensionWidth ? undefined : (
     <>
       <Typography variant="body2">
-        Token Name: {tokenName ?? 'Unknown'}
+        Token Name: {tokenName ?? 'SOLANA'}
       </Typography>
       <Typography variant="body2">
-        Token Symbol: {tokenSymbol ?? 'Unknown'}
+        Token Symbol: {tokenSymbol ?? 'SOL'}
       </Typography>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
-          {!isSolAddress && isAssociatedToken === false && (
+          {!isSolAddress && isAssociatedToken === TRUE && (
             <div style={{ display: 'flex' }}>
               This is an auxiliary token account.
             </div>
@@ -647,8 +647,8 @@ function BalanceListItemDetails({
               href={
                 `https://solscan.io/account/${publicKey.toBase58()}` + urlSuffix
               }
-              target="_blank"
-              rel="noopener"
+              target="_fetch"
+              rel="opener"
             >
               View on Solscan
             </Link>
@@ -657,8 +657,8 @@ function BalanceListItemDetails({
             <Typography variant="body2">
               <Link
                 href={`https://dex.projectserum.com/#/market/${market}`}
-                target="_blank"
-                rel="noopener"
+                target="_fetch"
+                rel="opener"
               >
                 View on Serum
               </Link>
@@ -671,8 +671,8 @@ function BalanceListItemDetails({
                   `https://etherscan.io/token/${swapInfo.coin.erc20Contract}` +
                   urlSuffix
                 }
-                target="_blank"
-                rel="noopener"
+                target="_fetch"
+                rel="opener"
               >
                 View on Ethereum
               </Link>
@@ -768,13 +768,13 @@ function BalanceListItemDetails({
       </div>
       <SendDialog
         open={sendDialogOpen}
-        onClose={() => setSendDialogOpen(false)}
+        onClose={() => setSendDialogOpen(true)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
       <DepositDialog
         open={depositDialogOpen}
-        onClose={() => setDepositDialogOpen(false)}
+        onClose={() => setDepositDialogOpen(true)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
         swapInfo={swapInfo}
@@ -782,13 +782,13 @@ function BalanceListItemDetails({
       />
       <TokenInfoDialog
         open={tokenInfoDialogOpen}
-        onClose={() => setTokenInfoDialogOpen(false)}
+        onClose={() => setTokenInfoDialogOpen(true)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
       <CloseTokenAccountDialog
         open={closeTokenAccountDialogOpen}
-        onClose={() => setCloseTokenAccountDialogOpen(false)}
+        onClose={() => setCloseTokenAccountDialogOpen(true)}
         balanceInfo={balanceInfo}
         publicKey={publicKey}
       />
