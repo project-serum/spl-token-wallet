@@ -16,7 +16,12 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import { BalanceListItem } from '../components/BalancesList.js';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { DialogActions, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
+import {
+  DialogActions,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
@@ -29,6 +34,7 @@ import { useCallAsync } from '../utils/notifications';
 import Link from '@material-ui/core/Link';
 import { validateMnemonic } from 'bip39';
 import DialogForm from '../components/DialogForm';
+import { useMultipleSolBalance } from '../utils/tokens/rpc';
 
 export default function LoginPage() {
   const [restore, setRestore] = useState(false);
@@ -110,7 +116,7 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
     link.setAttribute('download', 'sollet.bak');
     document.body.appendChild(link);
     link.click();
-  }
+  };
 
   return (
     <>
@@ -140,9 +146,9 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             <LoadingIndicator />
           )}
           <Typography paragraph>
-            Your private keys are only stored on your current computer or device.
-            You will need these words to restore your wallet if your browser's
-            storage is cleared or your device is damaged or lost.
+            Your private keys are only stored on your current computer or
+            device. You will need these words to restore your wallet if your
+            browser's storage is cleared or your device is damaged or lost.
           </Typography>
           <Typography paragraph>
             By default, sollet will use <code>m/44'/501'/0'/0'</code> as the
@@ -160,16 +166,25 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             label="I have saved these words in a safe place."
           />
           <Typography paragraph>
-          <Button variant="contained" color="primary" style={{ marginTop: 20 }} onClick={() => {
-            downloadMnemonic(mnemonicAndSeed?.mnemonic);
-            setDownloaded(true);
-          }}>
-            Download Backup Mnemonic File (Required)
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: 20 }}
+              onClick={() => {
+                downloadMnemonic(mnemonicAndSeed?.mnemonic);
+                setDownloaded(true);
+              }}
+            >
+              Download Backup Mnemonic File (Required)
+            </Button>
           </Typography>
         </CardContent>
         <CardActions style={{ justifyContent: 'flex-end' }}>
-          <Button color="primary" disabled={!confirmed || !downloaded} onClick={() => setShowDialog(true)}>
+          <Button
+            color="primary"
+            disabled={!confirmed || !downloaded}
+            onClick={() => setShowDialog(true)}
+          >
             Continue
           </Button>
         </CardActions>
@@ -204,7 +219,9 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           <Button
             type="submit"
             color="secondary"
-            disabled={normalizeMnemonic(seedCheck) !== mnemonicAndSeed?.mnemonic}
+            disabled={
+              normalizeMnemonic(seedCheck) !== mnemonicAndSeed?.mnemonic
+            }
           >
             Continue
           </Button>
@@ -276,14 +293,14 @@ function LoginForm() {
       progressMessage: 'Unlocking wallet...',
       successMessage: 'Wallet unlocked',
     });
-  }
+  };
   const submitOnEnter = (e) => {
-    if (e.code === "Enter" || e.code === "NumpadEnter") {
+    if (e.code === 'Enter' || e.code === 'NumpadEnter') {
       e.preventDefault();
       e.stopPropagation();
       submit();
     }
-  }
+  };
   const setPasswordOnChange = (e) => setPassword(e.target.value);
   const toggleStayLoggedIn = (e) => setStayLoggedIn(e.target.checked);
 
@@ -306,10 +323,7 @@ function LoginForm() {
         />
         <FormControlLabel
           control={
-            <Checkbox
-              checked={stayLoggedIn}
-              onChange={toggleStayLoggedIn}
-            />
+            <Checkbox checked={stayLoggedIn} onChange={toggleStayLoggedIn} />
           }
           label="Keep wallet unlocked"
         />
@@ -333,7 +347,8 @@ function RestoreWalletForm({ goBack }) {
   const mnemonic = normalizeMnemonic(rawMnemonic);
   const isNextBtnEnabled =
     password === passwordConfirm && validateMnemonic(mnemonic);
-  const displayInvalidMnemonic = validateMnemonic(mnemonic) === false && mnemonic.length > 0;
+  const displayInvalidMnemonic =
+    validateMnemonic(mnemonic) === false && mnemonic.length > 0;
   return (
     <>
       {next ? (
@@ -359,9 +374,10 @@ function RestoreWalletForm({ goBack }) {
               wallets can be optionally connected after a web wallet is created.
             </Typography>
             {displayInvalidMnemonic && (
-               <Typography fontWeight="fontWeightBold" style={{ color: 'red' }}>
-                 Mnemonic validation failed. Please enter a valid BIP 39 seed phrase.
-               </Typography>
+              <Typography fontWeight="fontWeightBold" style={{ color: 'red' }}>
+                Mnemonic validation failed. Please enter a valid BIP 39 seed
+                phrase.
+              </Typography>
             )}
             <TextField
               variant="outlined"
@@ -465,6 +481,10 @@ export function AccountsSelector({
   setDPathMenuItem,
   onClick,
 }) {
+  const [balancesInfo] = useMultipleSolBalance(
+    accounts.map((e) => e.publicKey),
+  );
+
   return (
     <CardContent>
       <div
@@ -502,7 +522,7 @@ export function AccountsSelector({
           </Select>
         </FormControl>
       </div>
-      {accounts.map((acc) => {
+      {accounts.map((acc, idx) => {
         return (
           <div onClick={onClick ? () => onClick(acc) : {}}>
             <BalanceListItem
@@ -510,6 +530,7 @@ export function AccountsSelector({
               onClick={onClick}
               publicKey={acc.publicKey}
               expandable={false}
+              balanceInfo={balancesInfo ? balancesInfo[idx] : undefined}
             />
           </div>
         );

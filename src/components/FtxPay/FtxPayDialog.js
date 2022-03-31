@@ -69,7 +69,9 @@ export default function FtxPayDialog({ open, onClose }) {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Send funds to your Sollet wallet from an FTX account, where you can add funds using crypto on multiple blockchains, credit cards, and more.
+          Send funds to your Sollet wallet from an FTX account, where you can
+          add funds using crypto on multiple blockchains, credit cards, and
+          more.
         </DialogContentText>
         <DialogContentText>
           If you don't have an FTX account, it may take a few moments to get up.
@@ -108,7 +110,12 @@ export default function FtxPayDialog({ open, onClose }) {
                           urlSuffix
                         }
                       >
-                        {(isExtensionWidth ? '' : `${tokenInfo.name ?? abbreviateAddress(tokenInfo.address)} `) + tokenInfo.symbol}
+                        {(isExtensionWidth
+                          ? ''
+                          : `${
+                              tokenInfo.name ??
+                              abbreviateAddress(tokenInfo.address)
+                            } `) + tokenInfo.symbol}
                       </Link>
                     </div>
                   </MenuItem>

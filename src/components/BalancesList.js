@@ -62,6 +62,7 @@ import MergeAccountsDialog from './MergeAccountsDialog';
 import SwapButton from './SwapButton';
 import DnsIcon from '@material-ui/icons/Dns';
 import DomainsList from './DomainsList';
+import { useSolBalance, useMultipleBalanceInfo } from '../utils/tokens/rpc';
 
 const balanceFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 4,
@@ -106,6 +107,9 @@ function fairsIsLoaded(publicKeys) {
 export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
+  const [solBalance] = useSolBalance(publicKeys[0]);
+  const balancesInfo = useMultipleBalanceInfo(publicKeys?.slice(1));
+
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
   const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
     false,
@@ -182,17 +186,21 @@ export default function BalancesList() {
   );
   const balanceListItemsMemo = useMemo(() => {
     return sortedPublicKeys.map((pk) => {
-      return React.memo((props) => {
+      return React.memo(() => {
+        const balanceInfo = pk.equals(wallet.publicKey)
+          ? solBalance
+          : balancesInfo?.find((e) => e.pubkey.equals(pk));
         return (
           <BalanceListItem
             key={pk.toString()}
             publicKey={pk}
             setUsdValue={setUsdValuesCallback}
+            balanceInfo={balanceInfo}
           />
         );
       });
     });
-  }, [sortedPublicKeys, setUsdValuesCallback]);
+  }, [sortedPublicKeys, setUsdValuesCallback, balancesInfo, solBalance]);
 
   const iconSize = isExtensionWidth ? 'small' : 'medium';
 
@@ -274,7 +282,9 @@ export default function BalancesList() {
             </IconButton>
           </Tooltip>
           <DomainsList open={showDomains} setOpen={setShowDomains} />
-          {region.result && !region.result.isRestricted && <SwapButton size={iconSize} />}
+          {region.result && !region.result.isRestricted && (
+            <SwapButton size={iconSize} />
+          )}
           <Tooltip title="Migrate Tokens" arrow>
             <IconButton
               size={iconSize}
@@ -384,9 +394,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
+export function BalanceListItem({
+  publicKey,
+  expandable,
+  setUsdValue,
+  balanceInfo,
+}) {
   const wallet = useWallet();
-  const balanceInfo = useBalanceInfo(publicKey);
   const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);

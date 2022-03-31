@@ -7,7 +7,7 @@ import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 
 export function normalizeMnemonic(mnemonic) {
-  return mnemonic.trim().split(/\s+/g).join(" ");
+  return mnemonic.trim().split(/\s+/g).join(' ');
 }
 
 export async function generateMnemonicAndSeed() {
@@ -32,11 +32,14 @@ async function getExtensionUnlockedMnemonic() {
   }
 
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage({
-      channel: 'sollet_extension_mnemonic_channel',
-      method: 'get',
-    }, resolve);
-  })
+    chrome.runtime.sendMessage(
+      {
+        channel: 'sollet_extension_mnemonic_channel',
+        method: 'get',
+      },
+      resolve,
+    );
+  });
 }
 
 const EMPTY_MNEMONIC = {
@@ -55,7 +58,7 @@ let unlockedMnemonicAndSeed = (async () => {
   }
   const stored = JSON.parse(
     (await getExtensionUnlockedMnemonic()) ||
-    sessionStorage.getItem('unlocked') ||
+      sessionStorage.getItem('unlocked') ||
       localStorage.getItem('unlocked') ||
       'null',
   );
@@ -77,13 +80,13 @@ export function getUnlockedMnemonicAndSeed() {
 // returns [mnemonic, loading]
 export function useUnlockedMnemonicAndSeed() {
   const [currentUnlockedMnemonic, setCurrentUnlockedMnemonic] = useState(null);
-  
+
   useEffect(() => {
     walletSeedChanged.addListener('change', setCurrentUnlockedMnemonic);
     unlockedMnemonicAndSeed.then(setCurrentUnlockedMnemonic);
     return () => {
       walletSeedChanged.removeListener('change', setCurrentUnlockedMnemonic);
-    }
+    };
   }, []);
 
   return !currentUnlockedMnemonic
