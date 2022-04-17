@@ -285,6 +285,13 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj/logo.png',
     },
+    {
+      tokenSymbol: 'OXY',
+      mintAddress: 'z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M',
+      tokenName: 'Oxygen Protocol',
+      icon:
+        'https://raw.githubusercontent.com/nathanielparke/awesome-serum-markets/master/icons/oxy.svg'
+    },
   ],
 };
 
