@@ -25,7 +25,7 @@ import SendIcon from '../../../images/send.svg';
 import ExplorerIcon from '../../../images/explorer.svg';
 import ActivitiesDropdown from './ActivitiesDropdown';
 import { findAssociatedTokenAddress } from '../../../utils/tokens';
-import { CCAI_MINT } from '../../../utils/tokens/instructions';
+// import { CCAI_MINT } from '../../../utils/tokens/instructions';
 import { Loading } from '../../../components/Loading';
 // import { MASTER_BUILD } from '../../../utils/config';
 
@@ -327,8 +327,8 @@ const AssetsTable = ({
           return 1;
 
         // CCAI always second
-        if (new PublicKey(tokenA.mint).equals(CCAI_MINT)) return -1;
-        if (new PublicKey(tokenB.mint).equals(CCAI_MINT)) return 1;
+        // if (new PublicKey(tokenA.mint).equals(CCAI_MINT)) return -1;
+        // if (new PublicKey(tokenB.mint).equals(CCAI_MINT)) return 1;
 
         const totalA = aVal === undefined || aVal === null ? -1 : aVal;
         const totalB = bVal === undefined || bVal === null ? -1 : bVal;
