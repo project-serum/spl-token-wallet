@@ -1,8 +1,10 @@
 # SPL Token Wallet
 
+Note. This repository is used as a developer tool. Non security related issues and PRs will not be actively supported. For a wallet, it's recommended to use Phantom or Solflare.
+
 Example Solana wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
 
-See [sollet.io](https://www.sollet.io) for a demo.
+See [sollet.io](https://www.sollet.io) or the [Sollet Chrome Extension](https://chrome.google.com/webstore/detail/sollet/fhmfendgdocmcbmfikdcogofphimnkno) for a demo.
 
 Wallet keys are stored in `localStorage`, optionally encrypted by a password.
 
