@@ -149,6 +149,16 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             derivation path for the main wallet. To use an alternative path, try
             restoring an existing wallet.
           </Typography>
+          <Typography paragraph>
+            <b>Note:</b> For certain users, Sollet may <b>NOT</b> be secure. See{' '}
+            <a
+              style={{ color: 'inherit'}}
+              href="https://medium.com/metamask/security-notice-extension-disk-encryption-issue-d437d4250863"
+              target="__blank"
+            >
+              this article
+            </a>{' '}to understand if you are at risk.
+          </Typography>
           <FormControlLabel
             control={
               <Checkbox
