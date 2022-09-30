@@ -41,6 +41,9 @@ class PriceStore {
   }
 
   async getPrice(connection, marketName): Promise<number | undefined> {
+    return Promise.resolve(undefined);
+
+    /*
     return new Promise((resolve, reject) => {
       if (connection._rpcEndpoint !== MAINNET_URL) {
         resolve(undefined);
@@ -74,6 +77,7 @@ class PriceStore {
         return resolve(this.cache[marketName]);
       }
     });
+    */
   }
 }
 

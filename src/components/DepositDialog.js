@@ -63,7 +63,7 @@ export default function DepositDialog({
     if (!mint) {
       firstTab = 'SOL';
     } else {
-      if (swapInfo.blockchain !== 'eth') {
+      if (localStorage.getItem('sollet-private') || swapInfo.blockchain !== 'eth') {
         secondTab = `${
           swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
         } ${secondTab}`;
@@ -212,7 +212,7 @@ function SolletSwapDepositAddress({ balanceInfo, swapInfo, ethAccount }) {
     );
   }
 
-  if (false && blockchain === 'eth') {
+  if (localStorage.getItem('sollet-private') && blockchain === 'eth') {
     return (
       <>
         <DialogContentText>
