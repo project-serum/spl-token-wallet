@@ -282,6 +282,24 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         setIsDomainName(true);
         setDomainOwner(domainOwner);
       }
+
+      if (!domainOwner && destinationAddress.split('.').length === 2) {
+        let domainOwner;
+
+        domainOwner = await getOwnerFromDomainTld(wallet.connection, destinationAddress);
+
+        if (!domainOwner) {
+          setAddressHelperText(
+            `This domain name is not registered`,
+          );
+          setPassValidation(undefined);
+          setShouldShowOverride(undefined);
+          return;
+        }
+        setIsDomainName(true);
+        setDomainOwner(domainOwner);
+      }
+
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
         setPassValidation(undefined);
