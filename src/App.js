@@ -131,20 +131,8 @@ function WalletSuggestionDialog({ open, onClose, onIgnore }) {
       <DialogTitle>Looking for a Wallet?</DialogTitle>
       <DialogContent>
         <Typography>
-          Sollet is an{' '}
-          <a
-            style={{ color: 'inherit' }}
-            href="https://github.com/project-serum/spl-token-wallet"
-            target="__blank"
-          >
-            {' '}
-            open source
-          </a>{' '}
-          wallet for advanced users and developers. For the best Solana
-          experience and user support, it is recommended to use <b>
-            Phantom
-          </b>{' '}
-          or <b>Solflare</b>.
+          For the best Solana experience, it is recommended to use{' '}
+          <b>Backpack</b>
         </Typography>
         <List disablePadding style={{ marginTop: '16px' }}>
           <ListItem button disablePadding style={{ padding: 0 }}>
@@ -152,14 +140,14 @@ function WalletSuggestionDialog({ open, onClose, onIgnore }) {
               className={classes.walletButton}
               style={{ display: 'flex' }}
               onClick={() => {
-                window.location = 'https://phantom.app/';
+                window.location = 'https://backpack.app/download';
               }}
             >
               <div>
                 <img
                   alt=""
                   style={{ height: '39px' }}
-                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg"
+                  src="https://github.com/coral-xyz/backpack/raw/master/assets/backpack.png"
                 />
               </div>
               <div>
@@ -173,38 +161,7 @@ function WalletSuggestionDialog({ open, onClose, onIgnore }) {
                     fontWeight: 'bold',
                   }}
                 >
-                  Phantom
-                </Typography>
-              </div>
-            </div>
-          </ListItem>
-          <ListItem button disablePadding style={{ padding: 0 }}>
-            <div
-              onClick={() => {
-                window.location = 'https://solflare.com/';
-              }}
-              className={classes.walletButton}
-              style={{ display: 'flex' }}
-            >
-              <div>
-                <img
-                  alt=""
-                  style={{ height: '39px' }}
-                  src="https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg"
-                />
-              </div>
-              <div>
-                <Typography
-                  style={{
-                    marginLeft: '16px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    height: '39px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Solflare
+                  Backpack
                 </Typography>
               </div>
             </div>
