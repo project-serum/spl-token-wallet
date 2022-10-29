@@ -1,6 +1,6 @@
 # SPL Token Wallet
 
-Note. This repository is used as a developer tool. Non security related issues and PRs will not be actively supported. For a wallet, it's recommended to use Backpack.
+Note. This repository is used as a developer tool. Non security related issues and PRs will not be actively supported. For a wallet, it's recommended to use [Backpack](https://backpack.app/download).
 
 Example Solana wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
 
