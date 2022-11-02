@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Keypair, Connection, PublicKey } from '@solana/web3.js';
+import { useMediaQuery } from '@material-ui/core';
+import * as bs58 from 'bs58';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
 
 export function useLocalStorageState<T>(
   key: string,
@@ -84,4 +87,32 @@ export async function confirmTransaction(
     new Date().getTime() - startTime.getTime(),
   );
   return result.value;
+}
+
+// TODO consolidate popup dimensions
+export function useIsExtensionWidth() {
+  return useMediaQuery('(max-width:450px)');
+}
+
+export const isExtension = window.location.protocol === 'chrome-extension:';
+
+export const isExtensionPopup = isExtension && window.opener;
+/**
+ * Returns an account object when given the private key
+ */
+export const decodeAccount = (privateKey: string) => {
+  try {
+    return Keypair.fromSecretKey(new Uint8Array(JSON.parse(privateKey)));
+  } catch (_) {
+    try {
+      return Keypair.fromSecretKey(new Uint8Array(bs58.decode(privateKey)));
+    } catch (_) {
+      return undefined;
+    }
+  }
+}
+
+// shorten the checksummed version of the input address to have 4 characters at start and end
+export function shortenAddress(address: string, chars = 4): string {
+  return `${address.slice(0, chars)}...${address.slice(-chars)}`;
 }
