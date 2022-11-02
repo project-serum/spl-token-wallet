@@ -63,7 +63,10 @@ export default function DepositDialog({
     if (!mint) {
       firstTab = 'SOL';
     } else {
-      if (localStorage.getItem('sollet-private') || swapInfo.blockchain !== 'eth') {
+      if (
+        localStorage.getItem('sollet-private') ||
+        swapInfo.blockchain !== 'eth'
+      ) {
         secondTab = `${
           swapInfo.coin.erc20Contract ? 'ERC20' : 'Native'
         } ${secondTab}`;
@@ -103,7 +106,20 @@ export default function DepositDialog({
           </div>
         )}
       </DialogTitle>
-      {tabs}
+      {tabs === null ? (
+        <Tabs
+          value={tab}
+          variant="fullWidth"
+          onChange={(e, value) => setTab(value)}
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab label={mint ? 'SPL' : 'SOL'} />
+          <Tab label="Wormhole" />
+        </Tabs>
+      ) : (
+        tabs
+      )}
       <DialogContent style={{ paddingTop: 16 }}>
         {tab === 0 ? (
           <>
@@ -142,6 +158,19 @@ export default function DepositDialog({
               </Link>
             </DialogContentText>
           </>
+        ) : tab === 1 ? (
+          <DialogContentText>
+            Please use the{' '}
+            <a
+              href="https://www.portalbridge.com/#/transfer"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'white' }}
+            >
+              Wormhole Portal Bridge
+            </a>{' '}
+            to bridge your assets.
+          </DialogContentText>
         ) : (
           <SolletSwapDepositAddress
             balanceInfo={balanceInfo}

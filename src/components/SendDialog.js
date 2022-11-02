@@ -80,15 +80,24 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
   const { mint, tokenName, tokenSymbol } = balanceInfo;
 
   const getTabs = (mint) => {
+    // if sollet-private key not there, just show the SPL tab
+    if (!localStorage.getItem('sollet-private'))
+      return [
+        <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
+        <Tab label={`Wormhole`} key="wormhole" value="wormhole" />,
+      ];
+
     if (mint?.equals(WUSDC_MINT)) {
       return [
         <Tab label="SPL WUSDC" key="spl" value="spl" />,
+        <Tab label={`Wormhole`} key="wormhole" value="wormhole" />,
         <Tab label="SPL USDC" key="wusdcToSplUsdc" value="wusdcToSplUsdc" />,
         <Tab label="ERC20 USDC" key="swap" value="swap" />,
       ];
     } else if (mint?.equals(WUSDT_MINT)) {
       return [
         <Tab label="SPL WUSDT" key="spl" value="spl" />,
+        <Tab label={`Wormhole`} key="wormhole" value="wormhole" />,
         <Tab label="SPL USDT" key="wusdtToSplUsdt" value="wusdtToSplUsdt" />,
         <Tab label="ERC20 USDT" key="swap" value="swap" />,
       ];
@@ -98,6 +107,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
     ) {
       return [
         <Tab label="SPL USDC" key="spl" value="spl" />,
+        <Tab label={`Wormhole`} key="wormhole" value="wormhole" />,
         <Tab label="SPL WUSDC" key="usdcToSplWUsdc" value="usdcToSplWUsdc" />,
         <Tab label="ERC20 USDC" key="swap" value="swap" />,
       ];
@@ -113,6 +123,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
       );
       const tabs = [
         <Tab label={`SPL ${swapCoinInfo.ticker}`} key="spl" value="spl" />,
+        <Tab label={`Wormhole`} key="wormhole" value="wormhole" />,
       ];
       if (
         !DISABLED_ERC20_MINTS.has(mint.toString()) ||
@@ -153,7 +164,18 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
           >
             {getTabs(mint)}
           </Tabs>
-        ) : null}
+        ) : (
+          <Tabs
+            value={tab}
+            variant="fullWidth"
+            onChange={(e, value) => setTab(value)}
+            textColor="primary"
+            indicatorColor="primary"
+          >
+            <Tab label="SPL" key="spl" value="spl" />
+            <Tab label={`Wormhole`} key="wormhole" value="wormhole" />
+          </Tabs>
+        )}
         {tab === 'spl' ? (
           <SendSplDialog
             onClose={onClose}
@@ -161,6 +183,21 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo }) {
             balanceInfo={balanceInfo}
             onSubmitRef={onSubmitRef}
           />
+        ) : tab === 'wormhole' ? (
+          <DialogContent>
+            <DialogContentText>
+              Please use the{' '}
+              <a
+                href="https://www.portalbridge.com/#/transfer"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'white' }}
+              >
+                Wormhole Portal Bridge
+              </a>{' '}
+              to bridge your assets.
+            </DialogContentText>
+          </DialogContent>
         ) : tab === 'wusdcToSplUsdc' ? (
           <SendSwapDialog
             key={tab}
