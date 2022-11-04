@@ -42,6 +42,10 @@ import {
   getNameKey,
 } from '../utils/name-service';
 
+import {
+  getOwnerFromDomainTld,
+} from '../utils/alt-name-service';
+
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
 );
