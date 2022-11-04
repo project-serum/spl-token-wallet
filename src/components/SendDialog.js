@@ -42,6 +42,10 @@ import {
   getNameKey,
 } from '../utils/name-service';
 
+import {
+  getOwnerFromDomainTld,
+} from '../utils/alt-name-service';
+
 const WUSDC_MINT = new PublicKey(
   'BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW',
 );
@@ -319,6 +323,24 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
         setIsDomainName(true);
         setDomainOwner(domainOwner);
       }
+
+      if (!domainOwner && destinationAddress.split('.').length === 2) {
+        let domainOwner;
+
+        domainOwner = await getOwnerFromDomainTld(wallet.connection, destinationAddress);
+
+        if (!domainOwner) {
+          setAddressHelperText(
+            `This domain name is not registered`,
+          );
+          setPassValidation(undefined);
+          setShouldShowOverride(undefined);
+          return;
+        }
+        setIsDomainName(true);
+        setDomainOwner(domainOwner);
+      }
+
       if (!destinationAddress) {
         setAddressHelperText(defaultAddressHelperText);
         setPassValidation(undefined);
