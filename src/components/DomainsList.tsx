@@ -193,7 +193,14 @@ const TransferDialog = ({
             color="primary"
             style={{ padding: 10 }}
           >
-            {loading ? <LoadingIndicator height="10px" /> : 'Transfer'}
+            {loading ? (
+              <LoadingIndicator
+                // @ts-ignore
+                height="10px"
+              />
+            ) : (
+              'Transfer'
+            )}
           </Button>
         </div>
       </Paper>

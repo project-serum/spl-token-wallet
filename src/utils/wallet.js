@@ -147,12 +147,9 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const [{
-    mnemonic,
-    seed,
-    importsEncryptionKey,
-    derivationPath,
-  }] = useUnlockedMnemonicAndSeed();
+  const [
+    { mnemonic, seed, importsEncryptionKey, derivationPath },
+  ] = useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();

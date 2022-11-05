@@ -58,7 +58,9 @@ export function useIsProdNetwork() {
   if (!context) {
     throw new Error('Missing connection context');
   }
-  return context.endpoint === MAINNET_URL || context.endpoint === MAINNET_BACKUP_URL;
+  return (
+    context.endpoint === MAINNET_URL || context.endpoint === MAINNET_BACKUP_URL
+  );
 }
 
 export function useSolanaExplorerUrlSuffix() {
@@ -131,5 +133,5 @@ export async function getMultipleSolanaAccounts(
 ): Promise<
   Array<null | { publicKey: PublicKey; account: AccountInfo<Buffer> }>
 > {
-	return anchor.utils.rpc.getMultipleAccounts(connection, publicKeys);
+  return anchor.utils.rpc.getMultipleAccounts(connection, publicKeys);
 }

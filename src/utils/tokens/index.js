@@ -16,27 +16,8 @@ import {
   TOKEN_PROGRAM_ID,
   transferChecked,
 } from './instructions';
-import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
-
-export async function getOwnedTokenAccounts(connection, publicKey) {
-  let filters = getOwnedAccountsFilters(publicKey);
-  let resp = await connection.getProgramAccounts(
-    TOKEN_PROGRAM_ID,
-    {
-      filters,
-    },
-  );
-  return resp
-    .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
-      publicKey: new PublicKey(pubkey),
-      accountInfo: {
-        data,
-        executable,
-        owner: new PublicKey(owner),
-        lamports,
-      },
-    }))
-}
+import { ACCOUNT_LAYOUT, MINT_LAYOUT } from './data';
+export * from './rpc';
 
 export async function signAndSendTransaction(
   connection,

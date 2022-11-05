@@ -167,18 +167,20 @@ export default function AddTokenDialog({ open, onClose }) {
           </React.Fragment>
         ) : tab === 'popular' ? (
           <List disablePadding>
-            {popularTokens.filter(tokenInfo => tokenInfo.address).map((tokenInfo) => (
-              <TokenListItem
-                key={tokenInfo.address}
-                tokenInfo={tokenInfo}
-                existingAccount={(walletAccounts || []).find(
-                  (account) =>
-                    account.parsed.mint.toBase58() === tokenInfo.address,
-                )}
-                onSubmit={onSubmit}
-                disabled={sending}
-              />
-            ))}
+            {popularTokens
+              .filter((tokenInfo) => tokenInfo.address)
+              .map((tokenInfo) => (
+                <TokenListItem
+                  key={tokenInfo.address}
+                  tokenInfo={tokenInfo}
+                  existingAccount={(walletAccounts || []).find(
+                    (account) =>
+                      account.parsed.mint.toBase58() === tokenInfo.address,
+                  )}
+                  onSubmit={onSubmit}
+                  disabled={sending}
+                />
+              ))}
           </List>
         ) : tab === 'erc20' ? (
           <>
@@ -243,8 +245,7 @@ function TokenListItem({ tokenInfo, onSubmit, disabled, existingAccount }) {
                 target="_blank"
                 rel="noopener"
                 href={
-                  `https://solscan.io/account/${tokenInfo.address}` +
-                  urlSuffix
+                  `https://solscan.io/account/${tokenInfo.address}` + urlSuffix
                 }
               >
                 {tokenInfo.name ?? abbreviateAddress(tokenInfo.address)}
