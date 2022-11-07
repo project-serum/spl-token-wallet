@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 
-export default function TokenIcon({ mint, url, tokenName, size = 20, ...props }) {
+export default function TokenIcon({
+  mint,
+  url,
+  tokenName,
+  size = 20,
+  ...props
+}) {
   const [hasError, setHasError] = useState(false);
 
   if (!url && mint === null) {
-    url = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
+    url =
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
   }
 
   if (hasError || !url) {

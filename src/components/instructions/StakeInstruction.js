@@ -25,7 +25,11 @@ const DATA_LABELS = {
   authoritySeed: { label: 'Authority seed', address: false },
   authorityOwner: { label: 'Authority owner', address: true },
   newAuthorizedPubkey: { label: 'New authorized', address: true },
-  stakeAuthorizationType: { label: 'Stake authorization type', address: false, transform: () => JSON.stringify },
+  stakeAuthorizationType: {
+    label: 'Stake authorization type',
+    address: false,
+    transform: () => JSON.stringify,
+  },
   custodianPubkey: { label: 'Custodian', address: true },
   splitStakePubkey: { label: 'Split to', address: true },
   lamports: { label: 'Lamports', address: false },
@@ -54,7 +58,13 @@ export default function StakeInstruction({ instruction, onOpenAddress }) {
             <LabelValue
               key={key}
               label={label + ''}
-              value={address ? value?.toBase58() : (transform ? transform(value) : value)}
+              value={
+                address
+                  ? value?.toBase58()
+                  : transform
+                  ? transform(value)
+                  : value
+              }
               link={address}
               onClick={() => address && onOpenAddress(value?.toBase58())}
             />

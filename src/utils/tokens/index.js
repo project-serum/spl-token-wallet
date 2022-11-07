@@ -20,14 +20,11 @@ import { ACCOUNT_LAYOUT, getOwnedAccountsFilters, MINT_LAYOUT } from './data';
 
 export async function getOwnedTokenAccounts(connection, publicKey) {
   let filters = getOwnedAccountsFilters(publicKey);
-  let resp = await connection.getProgramAccounts(
-    TOKEN_PROGRAM_ID,
-    {
-      filters,
-    },
-  );
-  return resp
-    .map(({ pubkey, account: { data, executable, owner, lamports } }) => ({
+  let resp = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+    filters,
+  });
+  return resp.map(
+    ({ pubkey, account: { data, executable, owner, lamports } }) => ({
       publicKey: new PublicKey(pubkey),
       accountInfo: {
         data,
@@ -35,7 +32,8 @@ export async function getOwnedTokenAccounts(connection, publicKey) {
         owner: new PublicKey(owner),
         lamports,
       },
-    }))
+    }),
+  );
 }
 
 export async function signAndSendTransaction(
@@ -389,14 +387,12 @@ async function createAndTransferToAccount({
   mint,
   decimals,
 }) {
-  const [
-    createAccountInstruction,
-    newAddress,
-  ] = await createAssociatedTokenAccountIx(
-    owner.publicKey,
-    destinationPublicKey,
-    mint,
-  );
+  const [createAccountInstruction, newAddress] =
+    await createAssociatedTokenAccountIx(
+      owner.publicKey,
+      destinationPublicKey,
+      mint,
+    );
   let transaction = new Transaction();
   transaction.add(
     assertOwner({
@@ -405,8 +401,8 @@ async function createAndTransferToAccount({
     }),
   );
   transaction.add(createAccountInstruction);
-  const transferBetweenAccountsTxn = createTransferBetweenSplTokenAccountsInstruction(
-    {
+  const transferBetweenAccountsTxn =
+    createTransferBetweenSplTokenAccountsInstruction({
       ownerPublicKey: owner.publicKey,
       mint,
       decimals,
@@ -414,8 +410,7 @@ async function createAndTransferToAccount({
       destinationPublicKey: newAddress,
       amount,
       memo,
-    },
-  );
+    });
   transaction.add(transferBetweenAccountsTxn);
   let signers = [];
   return await signAndSendTransaction(connection, transaction, owner, signers);

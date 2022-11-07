@@ -7,7 +7,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 /* TODO consolidate popup dimensions */
 html,
 body,
@@ -35,9 +34,9 @@ body,
   }
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
-  #root::-webkit-scrollbar { 
-      width: 1px;
-      background: transparent;
+  #root::-webkit-scrollbar {
+    width: 1px;
+    background: transparent;
   }
 }
 

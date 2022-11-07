@@ -259,16 +259,11 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
-  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState(
-    false,
-  );
+  const [overrideDestinationCheck, setOverrideDestinationCheck] =
+    useState(false);
   const [shouldShowOverride, setShouldShowOverride] = useState();
-  let {
-    fields,
-    destinationAddress,
-    transferAmountString,
-    validAmount,
-  } = useForm(balanceInfo, addressHelperText, passValidation);
+  let { fields, destinationAddress, transferAmountString, validAmount } =
+    useForm(balanceInfo, addressHelperText, passValidation);
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
   const [isDomainName, setIsDomainName] = useState(false);
