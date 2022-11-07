@@ -230,6 +230,13 @@ const POPULAR_TOKENS = {
       tokenName: 'Maps.me Token',
     },
     {
+      mintAddress: '6QxNGjZsLaKa35pKnxY2sa7GcUCnWSni9LPfw7KDLqYr',
+      tokenName: 'Molar Finance',
+      tokenSymbol: 'MOF',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6QxNGjZsLaKa35pKnxY2sa7GcUCnWSni9LPfw7KDLqYr/logo.png',
+    },
+    {
       tokenSymbol: 'RAY',
       mintAddress: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
       tokenName: 'Raydium',
