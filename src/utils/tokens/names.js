@@ -279,6 +279,20 @@ const POPULAR_TOKENS = {
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/logo.png',
     },
     {
+      tokenSymbol: 'SAIL',
+      mintAddress: '6kwTqmdQkJd8qRr9RjSnUX9XJ24RmJRSrU1rsragP97Y',
+      tokenName: 'SAIL Token',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/6kwTqmdQkJd8qRr9RjSnUX9XJ24RmJRSrU1rsragP97Y/logo.png',
+    },
+    {
+      tokenSymbol: 'gSAIL',
+      mintAddress: 'Gsai2KN28MTGcSZ1gKYFswUpFpS7EM9mvdR9c8f6iVXJ',
+      tokenName: 'gSAIL Governance Token',
+      icon:
+        'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Gsai2KN28MTGcSZ1gKYFswUpFpS7EM9mvdR9c8f6iVXJ/logo.png',
+     },
+     {
       tokenSymbol: 'stSOL',
       mintAddress: '7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj',
       tokenName: 'Lido Staked SOL',
