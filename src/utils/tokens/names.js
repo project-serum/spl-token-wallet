@@ -285,6 +285,11 @@ const POPULAR_TOKENS = {
       icon:
         'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj/logo.png',
     },
+    {
+      tokenSymbol: 'ODOP',
+      mintAddress: '4pk3pf9nJDN1im1kNwWJN1ThjE8pCYCTexXYGyFjqKVf',
+      tokenName: 'OuroSRL Tokenized Dominican Peso',
+    },
   ],
 };
 
